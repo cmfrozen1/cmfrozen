@@ -1,0 +1,170 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400&display=swap');
+
+* {
+    font-family: Kanit, serif;
+    font-weight: 300;
+}
+
+.body-blue {
+    background-color: rgb(15, 18, 180);
+}
+
+h4 {
+    font-size: 1.2rem;
+    /*font-weight: bold;*/
+}
+
+.text-red {
+    color: red;
+}
+
+.text-white {
+    color: white;
+}
+
+.text-smoke {
+    color: #e7e7e7;
+}
+
+.text-smoker {
+    color: #b6b6b6;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.font-2 {
+    font-size: 2rem;
+}
+
+.title-img {
+    max-width: 100%;
+    /*height: auto;*/
+    background-color: rgb(15, 18, 180);
+    /*background: rgb(59,83,178);*/
+    /*background: linear-gradient(90deg, rgba(59,83,178,1) 0%, rgba(106,100,210,1) 100%);*/
+    z-index: -1;
+    padding: 0 0 4rem 0;
+}
+
+.back-icon {
+    max-width: 100%;
+    background-color: rgb(15, 18, 180);
+    padding: 1rem 1rem 0 1rem;
+    color: white;
+}
+
+.my-body {
+    background: white;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    /*height: 100vh;*/
+    margin-top: -3rem;
+    padding-top: 2rem;
+    height: 100%;
+    /*box-shadow: none!important;*/
+}
+.text-l {
+    font-size: 1.5rem!important;
+    font-weight: bold!important;
+}
+
+.my-box-red {
+    border-radius: 10px;
+    background-color: #f8e3e7;
+    color: #cb052d;
+    padding: 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.my-box-green {
+    border-radius: 10px;
+    background-color: #e1f8f7;
+    /*color: #17b8a8;*/
+    color: rgb(15, 18, 180);
+    padding: 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.my-box-greens {
+    border-radius: 10px;
+    background-color: #e8e8e8;
+    /*color: #17b8a8;*/
+    color: rgb(15, 18, 180)
+    padding: 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.my-box-orange {
+    border-radius: 10px;
+    background-color: #fceae1!important;
+    color: #ec6401!important;
+    padding: 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+
+}
+
+.my-box-pp {
+    border-radius: 10px;
+    background-color: #EDF1FA;
+    color: rgb(15, 18, 180);
+    padding: 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+
+}
+
+.my-box-yellow {
+    border-radius: 10px;
+    background-color: #ffdd57;
+    color: #585858;
+    padding: 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.legend {
+    font-size: 1rem;
+}
+
+.box {
+    border-radius: 20px!important;
+}
+
+.tag {
+    font-size: 1rem!important;
+}
+
+.box-head {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.box-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.box-subtitle {
+    font-size: 1rem;
+    color: #82878c;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+    color: red;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: underline;
+}
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}

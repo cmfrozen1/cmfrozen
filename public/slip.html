@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html langlang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/ad42651166.js" crossorigin="anonymous"></script>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous" />
+  <title>ทดสอบทำตัวสลิปโอนเงิน</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Kanit" />
+    <style>
+        body {
+            font-family: "Kanit", sans-serif;
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+<!--   เริ่มฟอร์ม   -->
+        <form class="m-4" id="registform">
+            <div class="row justify-content-center">
+                <div class="col text-center">
+                    <h3 class="text-blue fw-bold" >ทดสอบส่งFlex</h3>
+                </div>
+            </div>
+            <div class="row justify-content-center mt-2">
+                <div class="col-md-3 mt-3">
+                 <label for="name" class="form-label" style="font-size:20px;">เรื่อง</label>                  
+                 <input type="text" class="form-control" id="position" name="position" value=""placeholder="" required />
+                </div>
+              <div class="justify-content-center">
+            </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-3 mt-3">
+                    <div class="col-md mt-2 text-center">
+                        <img id="img-upload" width="150px" />
+                    </div>
+                    <label class="form-label">รูปส่วนหัว</label>
+                    <input type="file" name="img_bill" accept="image/*" class="form-control" id="img_bill" required />
+                </div>
+            </div>
+            <div class="row justify-content-center mt-2">
+                <div class="col-md-3 mt-3">
+                 <label for="name" class="form-label" style="font-size:20px;">ชื่อปุ่ม1</label>                  
+                 <input type="text" class="form-control" id="buttonname1" name="buttonname1" value=""placeholder="" required />
+                </div>
+                </div>
+            <div class="row justify-content-center mt-2">
+                    <div class="col-md-3 mt-3">
+                     <label for="name" class="form-label" style="font-size:20px;">ลิงค์ปุ่ม1</label>                  
+                     <input type="text" class="form-control" id="linkbutton1" name="linkbutton1" value="https://linecorp.com" placeholder="" required />
+                    </div>
+                    </div>
+            <div class="row justify-content-center">
+                <div class="col-md-3 mt-4 text-center">
+                    <button class="btn btn-outline-success btn-lg" type="submit" id="btn_submit">
+                        บันทึกข้อมูล
+                    </button>
+                </div>
+              <div class="justify-content-center">
+            <p class="justify-content-center">
+              **อย่าปิดหน้านี้ จนกว่าจะบันทึกสำเร็จ**
+              </p>
+          </div>
+            </div>
+        </form>
+  <!--   จบฟอร์ม   -->
+  
+    
+    <script>
+     // สร้าง liff ใน line OA ก่อน 
+        let liffId = "1656079273-o01DeLed"; // เปลี่ยน liffid
+        var scriptURL =
+            "https://script.google.com/macros/s/AKfycbyE0NAnRSPE904X_cpMCHjsWngsqyp396N05WAagRVlgxxiA6Dm0SJTavq90fAsuph1/exec"; // เปลี่ยน script
+    // คำสั่งของของระบบ line   
+        (async () => {
+            liff.ready.then(async() => {
+              //ถ้ายังไม่ได้ login ให้ login
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    let profile = await liff.getProfile()
+                    $("#img-upload").hide();
+                    let url = `${scriptURL}?opt=getname&uid=${profile.userId}`;
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(response => {
+                            setName(response);
+                        });
+                }
+            });
+            //firebaseInit();
+            await liff.init({ liffId: liffId });
+        })();
+        function setDropdown(data) {
+            let dropdown = [...new Set(data.data)];
+            dropdown.forEach((row, i) => {
+                if (i == 0) {
+                    $("#position").append(
+                        `<option value="" disabled="" selected="">list รายชื่อนักกีฬา</option>`
+                    );
+                }
+                $("#position").append(`<option value="${row}">${row}</option>`);
+            });
+            if (dropdown.length == 1) {
+                $("#dropdown").val(dropdown[0]);
+            }
+            $('#')
+        }
+       
+       
+      
+    </script>
+    <script>
+    //สร้างไฟล์รูปภาพ
+        let img_bill;
+        let form = $("form")[0];
+        $("#img_bill").on("change", () => {
+            $("#img-upload").show();
+            let file = $("#img_bill").prop("files")[0];
+            if (file != undefined) {
+                let fr = new FileReader();
+                fr.readAsArrayBuffer(file);
+                fr.onload = f => {
+                    img_bill = JSON.stringify([...new Int8Array(f.target.result)]);
+                };
+            }
+        });
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            $("#btn_submit").html(
+                `<span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>  ...กำลังบันทึก`
+            );
+
+            let formdata = new FormData(form);
+            formdata.set("img_bill", img_bill);
+            formdata.append("billName", $("#img_bill").prop("files")[0]?.name);
+            formdata.append("billMimeType", $("#img_bill").prop("files")[0]?.type);
+            console.log(...formdata);
+            fetch(scriptURL, {
+                method: "POST",
+                body: formdata
+            })
+                .then(response => response.json())
+                .then(response => {
+                    $("#btn_submit").html("บันทึกข้อมูล");
+                    if (response.result == "success") {
+                        if (liff.isInClient()) {
+                            liff
+                                .sendMessages([
+                                    {
+                                        type: "flex",
+                                        altText: "ทดสอบส่ง Flex",
+                                        contents:
+                                        // วาง Json ที่ copy จาก flex simulator ตรงนี้
+                                        {
+                                            
+  "type": "bubble",
+  "hero": {
+    "type": "image",
+    "url": response.url.replace("&export=download",""),      
+    "size": "full",
+    "aspectRatio": "20:13",
+    "aspectMode": "cover",
+    "action": {
+      "type": "uri",
+      "uri": "https://linecorp.com"
+    }
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "ผู้ส่ง"+ $("#position").val(),
+        "weight": "bold",
+        "size": "xl"
+      },
+      {
+        "type": "box",
+        "layout": "baseline",
+        "margin": "md",
+        "contents": [
+          {
+            "type": "icon",
+            "size": "sm",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
+          },
+          {
+            "type": "icon",
+            "size": "sm",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
+          },
+          {
+            "type": "icon",
+            "size": "sm",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
+          },
+          {
+            "type": "icon",
+            "size": "sm",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gold_star_28.png"
+          },
+          {
+            "type": "icon",
+            "size": "sm",
+            "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/review_gray_star_28.png"
+          },
+          {
+            "type": "text",
+            "text": "4.0",
+            "size": "sm",
+            "color": "#999999",
+            "margin": "md",
+            "flex": 0
+          }
+        ]
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "margin": "lg",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "Place",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": "Miraina Tower, 4-1-6 Shinjuku, Tokyo",
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "ส่งโดย",
+                "color": "#aaaaaa",
+                "size": "sm",
+                "flex": 1
+              },
+              {
+                "type": "text",
+                "text": "10:00 - 23:00",
+                "wrap": true,
+                "color": "#666666",
+                "size": "sm",
+                "flex": 5
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "spacing": "sm",
+    "contents": [
+      {
+        "type": "button",
+        "style": "link",
+        "height": "sm",
+        "action": {
+          "type": "uri",
+          "label": ""+ $("#buttonname1").val(),
+          "uri": ""
+        }
+      },
+      {
+        "type": "button",
+        "style": "link",
+        "height": "sm",
+        "action": {
+          "type": "uri",
+          "label": "WEBSITE",
+          "uri": "https://linecorp.com"
+        }
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [],
+        "margin": "sm"
+      }
+    ],
+    "flex": 0
+  }
+}  
+//   {
+//   "type": "bubble",
+//   "body": {
+//     "type": "box",
+//     "layout": "vertical",
+//     "contents": [
+//       {
+//         "type": "text",
+//         "text": "ส่งสลิปสำเร็จแล้ว",
+//         "weight": "bold",
+//         "color": "#1DB446",
+//         "size": "lg"
+//       },
+//       {
+//         "type": "separator",
+//         "margin": "xxl"
+//       },
+//       {
+//         "type": "box",
+//         "layout": "vertical",
+//         "contents": [
+//           {
+//             "type": "text",
+//             "text": "ขอบคุณสำหรับการโอนเงินสั่งซื้อสินค้า",
+//             "size": "sm",
+//             "margin": "md",
+//             "wrap": true
+//           },
+//           {
+//             "type": "text",
+//             "text": "สินค้าของท่านจะถูกจัดส่งภายใน24ชั่วโมง",
+//             "size": "sm",
+//             "wrap": true
+//           },
+//           {
+//             "type": "text",
+//             "text": "ขอบคุณที่ใช้บริการค่ะ",
+//             "size": "sm",
+//             "wrap": true
+//           }
+//         ]
+//       },
+       
+//       {
+//         "type": "box",
+//         "layout": "vertical",
+//         "margin": "xxl",
+//         "contents": [
+//           {
+//             "type": "image",
+//             "url": response.url.replace("&export=download",""),
+//             "size": "full"
+//           },
+//           {
+//             "type": "separator"
+//           },
+//           {
+//             "type": "text",
+//             "text": "ชื่อผู้โอนเงิน : " + $("#position").val(),
+//             "color": "#aaaaaa"
+//           }
+//         ],
+//         "spacing": "xxl"
+//       }
+//     ]
+//   },
+//   "styles": {
+//     "footer": {
+//       "separator": true
+//     }
+//   }
+// }
+                                        ///ปิด flex ตรงนี้
+                                   }
+                                ])
+                         // sendMessage เข้าไลน์ แบบข้อความธรรมดา
+                          liff.sendMessages([
+                {
+                  type: "text",
+                  text: ""+ $("#position").val()
+                },
+                //   {
+                //   type: "text",
+                //   text: "" +response.url
+                // },
+                {
+                  type: "text",
+                  text: ""+ $("#buttonname1").val()
+                },
+                {
+                  type: "text",
+                  text: ""+ $("#linkbutton1").val()
+                }
+              ])
+                          
+                          
+                                .then(() => {
+                                    console.log("message sent");
+                                    liff.closeWindow();
+                                })
+                                .catch(err => {
+                                    alert(err);
+                                });
+                        } else {
+                            Swal.fire({
+                                position: "center",
+                                icon: "success",
+                                title: "บันทึกเรียบร้อย",
+                                showConfirmButton: true
+                            });
+                        }
+                    } else {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "มีข้อผิดพลาด",
+                            text: response.error,
+                            showConfirmButton: true
+                        });
+                    }
+                });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(document).on("change", ".btn-file :file", function () {
+                var input = $(this),
+                    label = input
+                        .val()
+                        .replace(/\\/g, "/")
+                        .replace(/.*\//, "");
+                input.trigger("fileselect", [label]);
+            });
+
+            $(".btn-file :file").on("fileselect", function (event, label) {
+                var input = $(this)
+                    .parents(".input-group")
+                    .find(":text"),
+                    log = label;
+
+                if (input.length) {
+                    input.val(log);
+                } else {
+                    if (log) alert(log);
+                }
+            });
+
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $("#img-upload").attr("src", e.target.result);
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#img_bill").change(function () {
+                readURL(this);
+            });
+        });
+    </script>
+  
+  <script>
+var urlParams = new URLSearchParams(window.location.search);
+
+for (let p of urlParams) { 
+if (p[0] == "name") addvalue("position", p[1]) 
+    console.log(p[0] + " : " + p[1]); 
+}
+  
+function addvalue(name, val) {
+    const element = document.getElementById(name).value = val;
+}
+
+</script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</body>
+
+</html>
+  
+  

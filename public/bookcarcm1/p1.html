@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Submission</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <style>
+    body {
+      padding-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar is-fixed-top is-light" role="navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="#">Portfolio</a>
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+  </nav>
+
+  <section class="hero is-primary">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">Submit Your Portfolio</h1>
+        <h2 class="subtitle">Showcase your best work</h2>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-half">
+          <form id="portfolioForm">
+            <div class="field">
+              <label class="label">Name</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="Enter your name" name="name" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Email</label>
+              <div class="control">
+                <input class="input" type="email" placeholder="Enter your email" name="email" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Project Title</label>
+              <div class="control">
+                <input class="input" type="text" placeholder="Enter project title" name="project_title" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Project Description</label>
+              <div class="control">
+                <textarea class="textarea" placeholder="Describe your project" name="project_description" required></textarea>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Project URL</label>
+              <div class="control">
+                <input class="input" type="url" placeholder="Enter project URL" name="project_url" required>
+              </div>
+            </div>
+
+            <div class="field is-grouped">
+              <div class="control">
+                <button class="button is-link" type="submit">Submit</button>
+              </div>
+              <div class="control">
+                <button class="button is-light" type="reset">Cancel</button>
+              </div>
+            </div>
+          </form>
+          <div id="responseMessage" class="notification is-success is-hidden">
+            Submission successful!
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>Portfolio by <strong>Your Name</strong></p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("portfolioForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      // ดึง IP Address จาก ipify API
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      const ipAddress = ipData.ip;
+
+      const form = event.target;
+      const formData = new FormData(form);
+      formData.append("ip_address", ipAddress);  // เพิ่ม IP ลงในข้อมูลฟอร์ม
+
+      const data = new URLSearchParams(formData);
+
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwuxqr1aR-IoSmm7eKrJy_FEklu7WBv5-ntxLt0ssJ8PCDwj0NzWznNy4U7Kf9JTV2oiA/exec", {
+          method: "POST",
+          body: data
+        });
+
+        if (response.ok) {
+          document.getElementById("responseMessage").classList.remove("is-hidden");
+        } else {
+          alert("There was an issue with your submission.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    });
+  </script>
+</body>
+</html>

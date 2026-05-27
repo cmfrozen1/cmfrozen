@@ -1,0 +1,118 @@
+
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>My Liff</title>
+  </head>
+  <body onload="window.sendMessage(); window.close();">
+    <form autocomplete="on">
+      <p>กำลังส่ง flex Message... </p>
+      <!-- <input type="text" name="text" /> -->
+      <!-- <input type="submit" value="send" /> -->
+    </form>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+
+      function handleSubmit(event) {
+        event.preventDefault();
+        const gudf = new FormData(event.target);
+        const text = gudf.get("text");
+        // if (text == "1234") {
+          sendMessage();
+        }
+     // }
+      
+      const form = document.querySelector("form");
+      form.addEventListener("submit", handleSubmit);
+
+      function sendMessage() {
+        // Initialize LIFF
+        liff
+          .init({ liffId: "1656079273-BzA4OwOj" })
+          .then(() => {
+            if (liff.isLoggedIn()) {
+              liff.sendMessages([
+                {
+                  type: "flex",
+        altText:"ทดสอบส่งflex",
+        contents: {
+  "type": "bubble",
+  "hero": {
+    "type": "image",
+    "url": "https://thumbs.dreamstime.com/b/qr-code-icon-screen-mobile-barcode-qrcode-scanning-app-smartphone-scan-price-payment-phone-flat-silhouette-cellphone-191075556.jpg",
+    "size": "full",
+    "aspectRatio": "20:13",
+    "aspectMode": "fit",
+    "action": {
+      "type": "uri",
+      "uri": "http://linecorp.com/"
+    }
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "สแกนคิวอาร์โค๊ดได้ง่ายๆ",
+        "weight": "bold",
+        "size": "xl",
+        "align": "center"
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "spacing": "sm",
+    "contents": [
+      {
+        "type": "button",
+        "style": "primary",
+        "height": "sm",
+        "action": {
+          "type": "uri",
+          "label": "สแกนคิวอาร์โค๊ด",
+          "uri": "line://nv/QRCodeReader"
+        },
+        "color": "#1F618D"
+      },
+      {
+        "type": "button",
+        "style": "primary",
+        "height": "sm",
+        "action": {
+          "type": "uri",
+          "label": "แชร์เมนู",
+          "uri": "https://liff.line.me/1655989732-rGgxEp9G"
+        },
+        "color": "#C70039"
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [],
+        "margin": "sm"
+      }
+    ],
+    "flex": 0
+  }
+},
+      
+       }
+    ])
+              .then(() => {
+                liff.closeWindow();
+              })
+            } else {
+              liff.login();
+            }
+          })
+          .catch((err) => {
+            alert(err);
+          });
+      }
+    </script>
+  </body>
+</html>

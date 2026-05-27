@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover">
+  <title>กำลังแชร์...</title> 
+</head>
+<body>
+<script src="https://static.line-scdn.net/liff/edge/versions/2.5.0/sdk.js"></script>
+  <script>
+    async function main() {
+      await liff.init({ liffId: "1655989732-w0axv0nj" }) //เปบี่ยน id
+      await liff.shareTargetPicker([
+      {
+        type: "flex",
+        altText:"ระบบเลือกตั้งคณะกรรมการออนไลน์",
+        contents: {
+  "type": "bubble",
+  "hero": {
+    "type": "image",
+    "url": "https://www.ubisecure.com/wp-content/uploads/2019/12/General-Election-piece.png",
+    "size": "full",
+    "aspectRatio": "20:13",
+    "aspectMode": "cover",
+    "action": {
+      "type": "uri",
+      "uri": "https://cmfrozen-387fd.web.app/vote/"
+    }
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "ระบบเลือกตั้งคณะกรรมการสวัสดิการ",
+        "weight": "bold",
+        "size": "sm",
+        "align": "center",
+        "color": "#003333"
+        
+      },
+      
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "ดูผลคะแนนการเลือกตั้ง",
+          "uri": "https://cmfrozen-387fd.web.app/vote/score.html"
+        },
+        "color": "#CC0033",
+        "style": "primary",
+        "gravity": "bottom",
+        "height": "sm"
+      },
+      
+      {
+        "type": "button",
+        "style": "primary",
+        "action": {
+          "type": "uri",
+          "label": "แชร์เมนูนี้ให้แผนกอื่น",
+          "uri": "https://liff.line.me/1655989732-w0axv0nj"
+        },
+        "color": "#9400D3",
+        "gravity": "bottom",
+        "height": "sm"
+      },
+      {
+        "type": "spacer",
+        "size": "sm"
+      }
+    ],
+    "flex": 0
+  }
+},
+        
+       }
+    ])
+    liff.closeWindow()
+  }
+    main()
+  </script>
+</body>
+</html>

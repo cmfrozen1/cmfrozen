@@ -1,0 +1,122 @@
+<script>
+  let items = [];
+
+  const swalDark = Swal.mixin({
+    background: '#0f172a',
+    color: '#f8fafc',
+    confirmButtonColor: '#2563eb',
+    cancelButtonColor: '#334155'
+  });
+
+  document.addEventListener('DOMContentLoaded', loadData);
+
+  function loadData() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '<tr><td colspan="3" class="py-24 text-center text-slate-500"><div class="animate-pulse">กำลังดึงข้อมูล...</div></td></tr>';
+
+    google.script.run
+      .withFailureHandler((err) => {
+        console.error('Fetch Failed:', err);
+        swalDark.fire('ผิดพลาด', err.message, 'error');
+        tbody.innerHTML = `<tr><td colspan="3" class="py-16 text-center text-rose-500">Error: ${err.message}</td></tr>`;
+      })
+      .withSuccessHandler((data) => {
+        console.log('Raw Data from Server:', data);
+        items = data;
+        renderTable();
+      })
+      .getData();
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    if (!items || items.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" class="py-24 text-center text-slate-500">📭 ไม่พบข้อมูล (Sheet ว่างเปล่าหรือไม่มีข้อมูลพนักงาน)</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = items.map(item => `
+      <tr class="hover:bg-slate-800/40 border-b border-slate-800 transition-colors">
+        <td class="py-6 px-8 text-white font-semibold">${item.name || '-'}</td>
+        <td class="py-6 px-8 text-slate-400 italic">${item.email || '-'}</td>
+        <td class="py-6 px-8 text-center">
+          <div class="flex justify-center gap-3">
+            <button onclick="editItem('${item.id}')" class="px-3 py-2 bg-blue-600/20 text-blue-400 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-sm font-bold">แก้ไข</button>
+            <button onclick="confirmDelete('${item.id}')" class="px-3 py-2 bg-rose-600/20 text-rose-400 rounded-lg hover:bg-rose-600 hover:text-white transition-all text-sm font-bold">ลบ</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function openModal(id = null) {
+    const modal = document.getElementById('modal');
+    modal.classList.remove('hidden');
+    if (id) {
+      const item = items.find(i => i.id === id);
+      if(item) {
+        document.getElementById('modalTitle').innerText = 'แก้ไขข้อมูล';
+        document.getElementById('itemId').value = item.id;
+        document.getElementById('name').value = item.name;
+        document.getElementById('email').value = item.email;
+      }
+    } else {
+      document.getElementById('modalTitle').innerText = 'เพิ่มข้อมูลใหม่';
+      document.getElementById('crudForm').reset();
+      document.getElementById('itemId').value = '';
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById('itemId').value;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const item = { name, email };
+    
+    swalDark.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => swalDark.showLoading() });
+
+    const action = id ? 'updateData' : 'createData';
+    const args = id ? [id, item] : [item];
+
+    google.script.run
+      .withFailureHandler((err) => {
+        console.error('Submit Failed:', err);
+        swalDark.fire('ผิดพลาด', err.message, 'error');
+      })
+      .withSuccessHandler(() => {
+        closeModal();
+        loadData();
+        swalDark.fire({ icon: 'success', title: 'สำเร็จ', timer: 1500, showConfirmButton: false });
+      })[action](...args);
+  }
+
+  function editItem(id) { openModal(id); }
+
+  function confirmDelete(id) {
+    swalDark.fire({
+      title: 'ลบข้อมูล?',
+      text: "คุณจะไม่สามารถกู้คืนข้อมูลนี้ได้",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ลบข้อมูล',
+      cancelButtonText: 'ยกเลิก',
+      reverseButtons: true
+    }).then((res) => {
+      if (res.isConfirmed) {
+        swalDark.fire({ title: 'กำลังลบ...', allowOutsideClick: false, didOpen: () => swalDark.showLoading() });
+        google.script.run
+          .withFailureHandler((err) => swalDark.fire('ผิดพลาด', err.message, 'error'))
+          .withSuccessHandler(() => {
+            loadData();
+            swalDark.fire({ icon: 'success', title: 'ลบเรียบร้อย', timer: 1500, showConfirmButton: false });
+          })
+          .deleteData(id);
+      }
+    });
+  }
+</script>

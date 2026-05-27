@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta property="og:locale" content="th_TH" />
+    <meta property="og:site_name" content="Beauty.Diamond" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Beauty.Diamond" />
+    <meta property="og:description" content="Beauty.Diamond" />
+    <meta property="og:url" content="https://shop.line.me/@beauty.diamond" />
+    <meta property="og:image"
+        content="https://profile.line-scdn.net/0hjXg8qFmYNXdaQSck8dZKIGYEOxotbzM_InJ7FSpCbEUgd3cnYiQtRixDbhR2JXV2M3V5EHwRbEZ1" />
+    <meta property="og:image:secure_url"
+        content="https://profile.line-scdn.net/0hjXg8qFmYNXdaQSck8dZKIGYEOxotbzM_InJ7FSpCbEUgd3cnYiQtRixDbhR2JXV2M3V5EHwRbEZ1" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <title>ลงทะเบียนใช้งานระบบจองรถ</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <!-- LineSeed Fonts -->
+    <link href="https://cdn.jsdelivr.net/gh/maketline/goodday/font/stylesheet.min.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            font-family: 'line_seed_sans_th';
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mt-4">
+        <div clas="justify-content-center align-items-center">
+            <!-- ดึงไฟล์ jsTimer.html มารวมกับ index.html -->
+            <!-- Ref:https://dev.to/code_mystery/simple-countdown-timer-using-javascript-1jab -->
+
+            <!-- -------- ตัวเลขนับถอยหลัง ------ -->
+            <div class="container">
+                <form action="" id="loginForm" class="was-validated" autocomplete="off" name="google-sheet">
+                    <!--                     <div class="form-group">
+                        <textarea id="complain" class="form-control" rows="4" placeholder="โปรดกรอกข้อความ" name="complain" required></textarea>
+                    </div> -->
+                    <div class="form-group col-md-4">
+                        <label for="number1">username</label>
+                        <input type="text" class="form-control"
+                            placeholder="username" id="username" name="username"  required>
+                        <div class="valid-feedback">ป้อนเบอร์โทรครบแล้ว</div>
+                        <div class="invalid-feedback">กรุณาป้อนusername</div>
+                    </div>
+
+                    <div class="form-group col-md-2">
+                        <label for="number1">password</label>
+                        <input type="password" class="form-control" 
+                            placeholder="รหัสผ่าน" id="password" name="password"  required>
+                        <div class="valid-feedback">ป้อนเลขครบ2หลักแล้ว</div>
+                        <div class="invalid-feedback">กรุณาป้อนเลขที่จะทายให้ครบ2หลัก</div>
+                    </div>
+                    <div class="form-group col-md-2" style="display:none;">
+                        <label for="number2">right</label>
+                        <input type="text" class="form-control" 
+                            placeholder="เลขที่2" id="right" name="right" value="user" required>
+                        <div class="valid-feedback">ป้อนเลขครบ2หลักแล้ว</div>
+                        <div class="invalid-feedback">กรุณาป้อนเลขที่จะทายให้ครบ2หลัก</div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="number3">dept</label>
+                        <input type="text" class="form-control"
+                            placeholder="แผนก" id="dept" name="dept" required>
+                        <div class="valid-feedback">ป้อนเลขครบ2หลักแล้ว</div>
+                        <div class="invalid-feedback">กรุณาป้อนเลขที่จะทายให้ครบ2หลัก</div>
+                    </div>
+                    <div class="row"> </div>
+                    <div class="col"> </div>
+                    <div class="form-check mb-3">
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+                        <input type="checkbox" class="form-check-input" name='visto' id='visto' value='' required>
+                        <label class="form-check-label" for="validationFormCheck1">ยอมรับเงื่อนไขตามตกลง</label>
+                        <div class="invalid-feedback">หากไม่ยอมรับเงื่อนนไขจะไม่สามารถลงทะเบียนได้</div>
+                    </div>
+                    <button type="submit" id="message"
+                        class="btn btn-primary bd-indigo-500 btn-block text-white">ลงทะเบียนใช้งานระบบจองรถ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="loading-overlay" class="fixed-top vh-100 vw-100 d-none justify-content-center align-items-center"
+        style="background: rgba(128, 128, 128, 0.5);">
+        <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXJka28zMXRvcWw2Ym5vdTZieDRuM2dsNzljeWNqbXppd2VhdnoyZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/iGoyzwQnDS6lzNhdZK/giphy.webp"
+            alt="Loading..." class="w-50 h-auto">
+    </div>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        window.onload = async function () {
+            const defaultLiffId = "1661009147-41AR8RXk"; //IDLiff
+            await initializeLiff(defaultLiffId);
+        };
+
+        async function initializeLiff(defaultLiffId) {
+            try {
+                await liff.init({
+                    liffId: defaultLiffId,
+                    withLoginOnExternalBrowser: true,
+                });
+
+                liff.ready.then(async () => {
+                    if (!liff.isLoggedIn()) {
+                        liff.login();
+                    }
+                    const profile = await liff.getProfile();
+                    document.getElementById('pictureUrl').src = profile.pictureUrl;
+                    document.getElementById('displayName').textContent = profile.displayName;
+                });
+            } catch (error) {
+                console.error('LIFF Initialization failed', error);
+            }
+        }
+
+        document.getElementById('message').onclick = async function (event) {
+            event.preventDefault();
+            try {
+                const profile = await liff.getProfile();
+                const userId = profile.userId;
+                const name = profile.displayName;
+                const picture = profile.pictureUrl;
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const right = document.getElementById('right').value;
+                const dept = document.getElementById('dept').value;
+                const number = ""
+
+                if (!username || !password || !right || !dept ) {
+                    Swal.fire('ผิดพลาด', 'โปรดระบุเลขหมายและเบอร์โทรให้ครบก่อนส่งด้วยค่ะ', 'info');
+                    return;
+                }
+                await sendToSheet(number,username,password,right,name,dept,picture,userId);
+            } catch (error) {
+                console.error('Error getting profile or sending to sheet', error);
+            }
+        }
+
+        async function sendToSheet(number,username,password,right,name,dept,picture,userId) {
+            $('#loading-overlay').removeClass('d-none');
+            try {
+                const response = await $.post('https://script.google.com/macros/s/AKfycbxnvRZEiouyAJZ3mPHuUL0-mopllAuB7RqMEX2yx37putTo30abLmgUv7JVXzbNAlrL/exec', {
+                    number:number,
+                    username: username,
+                    password: password,
+                    right: right,
+                    name: name,
+                    dept: dept,
+                    picture: picture,
+                    userId: userId,
+                    name: name,
+                });
+                $('#loading-overlay').addClass('d-none');
+                if (response.statusCode === 200) {
+                    const flexMessage = JSON.parse(response.body);
+                    Swal.fire('ดำเนินการสำเร็จ', 'ขอบคุณสำหรับร่วมกิจกรรมกับเรา', 'success').then(() => {
+                        sendMessages([flexMessage]);
+                    });
+                }
+            } catch (error) {
+                console.error('Error sending data to sheet', error);
+                $('#loading-overlay').addClass('d-none');
+            }
+        }
+
+        async function sendMessages(msg) {
+            try {
+                await liff.sendMessages(msg);
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "ส่งทายผลเรียบร้อยแล้ว",
+                    showConfirmButton: false,
+                    timer: 1500,
+                }).then(() => {
+                    liff.closeWindow();
+                });
+            } catch (error) {
+                console.error('Error sending messages', error);
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+        crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            $('#message').prop('disabled', true);
+
+            $('#visto').click(function () {
+                if ($(this).is(':checked')) {
+                    $('#message').prop('disabled', false);
+                }
+                else {
+                    $('#message').prop('disabled', true);
+                }
+            });
+        });
+
+        function closeMe() {
+            setTimeout(window.close, 0);
+            liff.closeWindow();
+        }
+    </script>
+</body>
+
+</html>

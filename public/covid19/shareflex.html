@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover">
+  <title>กำลังแชร์...</title> 
+</head>
+<body>
+  <!-- <div class="mb-3">
+    <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+    <textarea class="form-control" id="flex" name = "flex" rows="7"></textarea>
+  </div> -->
+<script src="https://static.line-scdn.net/liff/edge/versions/2.5.0/sdk.js"></script>
+  <script>
+    async function main() {
+      await liff.init({ liffId: "1655989732-LDywJaMO" }) //เปบี่ยน id
+      await liff.shareTargetPicker([
+      {
+        type: "flex",
+        altText:"ขายน้ำพริกลาบลำปาง เผ็ดสะใจ",
+        contents: {
+  "type": "bubble",
+  "size": "giga",
+  "header": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "น้ำพริกลาบลำปาง หนานแก้วฅนเมืองละกอน",
+        "color": "#FFFFFF",
+        "weight": "bold"
+      }
+    ],
+    "backgroundColor": "#C70039"
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "image",
+        "url": "https://i.ibb.co/BfC5Nm7/image.png",
+        "aspectMode": "cover",
+        "size": "full",
+        "offsetBottom": "0.5px",
+        "offsetStart": "0.5px",
+        "offsetEnd": "0.5px",
+        "offsetTop": "none",
+        "gravity": "top",
+        "align": "center"
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "button",
+            "action": {
+              "type": "uri",
+              "label": "แชร์",
+              "uri": "https://liff.line.me/1655989732-rGgxEp9G"
+            },
+            "style": "primary"
+          }
+        ]
+      }
+    ]
+  }
+},
+      
+       }
+    ])
+    liff.closeWindow()
+  }
+    main()
+  </script>
+</body>
+</html>

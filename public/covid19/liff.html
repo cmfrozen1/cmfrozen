@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport"
+  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0,viewport-fit=cover">
+  <link rel="icon" href="https://line.me/favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+ <script src="https://static.line-scdn.net/liff/edge/versions/2.6.0/sdk.js"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ <link href='https://fonts.googleapis.com/css?family=Kanit|Niramit|Pattaya|Prompt|Sarabun|Sriracha|Questrial|Mitr|Mali|Itim' rel='stylesheet' type='text/css'>
+<script defer src="https://use.fontawesome.com/releases/v5.14.0/js/all.js"></script>
+<!--<img src = "https://www.apivat.com/liff2/logo_red.png" width="20%"><br> -->
+<title>Share Flex Message</title>
+ <style>
+  .prompt {
+  font-family: 'Prompt', sans-serif;
+}
+.mali {
+  font-family: 'Mali', sans-serif;
+}
+@font-face {
+  font-family: 'prompt';
+}      
+body { font-family: 'prompt' !important; }
+::placeholder {
+  color: peachpuff;
+  font-size: 15px;
+}
+ </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="card-header">
+    <center><div data-v-2d21851d="" class="mdBox01Inner <div data-v-2d21851d="" class="MdLogo01"><h2 class="mdLogo01Img">LINE Flex Message Design</h2></div></center>
+        </div>
+    <div class="card">
+        <div class="card-body">
+        <div class="col-md-3">
+            <label for="altText" class="form-label">ระบุข้อความปรากฎเมื่อส่งข้อความ(altText)</label>
+            <input class="form-control" type="text" id="altText" value="มีข้อความใหม่" placeholder="แก้ไข altText">
+          </div>
+        <div class="col-md-12">
+            <label for="inputEmail4" class="form-label">ลิ้งค์บทความหรือลิงค์คลิปวีดีโอ</label>
+            <input class="form-control" type="text" id="linkUrl" placeholder="วางลิงค์ของท่าน ทีนี่">
+          </div>
+          <div class="col-md-12">
+            <label for="linkHero" class="form-label">ลิ้งค์ภาพส่วนหัว</label>
+            <input type="text"    class="form-control" value="https://samuelkleinberg.com/wp-content/uploads/2017/03/no-image.jpg" id="linkHero" placeholder="วางลิงค์ของภาพ">
+          </div>
+          <div class="col-12">
+            <label for="videoName" class="form-label">ระบุหัวเรื่อง</label>
+            <input type="text" class="form-control" id="videoName" placeholder="ระบุคำบรรยาย">
+          </div>
+          <div class="col-12">
+            <label for="lable1" class="form-label">ข้อความปุ่ม1</label>
+            <input type="text" class="form-control" id="lable1" placeholder="ระบุข้อความปุ่ม">
+          </div>
+          <div class="col-12">
+            <label for="colorbtn1" class="form-label">เลือกสีปุ่ม1</label>
+            <input type="color" class="form-control" id="colorbtn1" value="#0099FF" placeholder="ระบุโค๊ดสีที่นี่">
+          </div>
+          <div class="col-12">
+            <label for="lable2" class="form-label">ข้อความปุ่ม2</label>
+            <input type="text" class="form-control" id="lable2" placeholder="ระบุข้อความปุ่ม">
+          </div>
+          <div class="col-md-12">
+            <label for="shareurl" class="form-label">ลิงค์ปุ่มที่2 **หากไม่ใช้ไม่ต้องแก้</label>
+            <input class="form-control" type="text" id="shareurl" value="https://liff.line.me/1656032875-8NogMqA9?refer=clip" placeholder="วางลิงค์ของท่าน ทีนี่">
+          </div>
+          <div class="col-12">
+            <label for="colorbtn1" class="form-label">เลือกสีปุ่ม2</label>
+            <input type="color" class="form-control" id="colorbtn2" value="#CC0000" placeholder="ระบุโค๊ดสีที่นี่">
+          </div>
+            <p>
+                <center>
+            <div class="col-12 center">
+            <button type="submit" class="btn btn-primary"onclick="save()"><i class="fas fa-save"></i>บันทึกข้อมูลก่อนส่ง</button>
+             <!-- <button id="btnshareClip"   class=" btn btn-success" onclick="shareClip()">แชร์คลิปใน Line OA</button> -->
+             <button id="btnforwardFlex" class=" btn btn-success"onclick="forwardFlex()"><i class="fas fa-share-alt"></i>Send to </button>
+             <!-- <button id="btnShareMsg" class="btn btn-danger" onclick="shareMsg()">ส่งข้อความ</button> -->
+             </center>
+        </div>
+          </div>
+          </div>
+          </div>
+ <script>
+ var clipUrl = ""
+ var clipName = ""
+ var picHeader = ""
+ var shareFreind = ""    
+ var linkImage =""
+ var linkToUrl =""
+ var buttoncolor1 =""
+ var buttoncolor2 =""
+ var labelbtn1 = ""
+ var labelbtn2 = ""
+ var altText = ""
+
+ function save(){
+    clipUrl = document.getElementById("linkUrl").value 
+    picHeader = document.getElementById("linkHero").value
+    buttoncolor1 = document.getElementById("colorbtn1").value
+    labelbtn1 = document.getElementById("lable1").value 
+    labelbtn2 = document.getElementById("lable2").value 
+    shareFreind = document.getElementById("shareurl").value 
+    altText = document.getElementById("altText").value 
+	clipName = document.getElementById("videoName").value
+              document.getElementById("linkUrl").value = ""
+              document.getElementById("linkHero").value = ""
+			  document.getElementById("videoName").value = ""
+              document.getElementById("lable1").value = ""  
+              document.getElementById("lable2").value = ""  
+              document.getElementById("shareurl").value = "" 
+              document.getElementById("altText").value = ""
+    buttoncolor1 = document.getElementById("colorbtn1").value 
+    buttoncolor2 = document.getElementById("colorbtn2").value 
+    Swal.fire({
+  position: 'top-end',
+  icon: 'success',
+  title: 'บันทึกค่า Flex Message เรียบร้อยแล้ว',
+  showConfirmButton: false,
+  timer: 1500
+})
+ }
+ function add(){
+    linkImage = document.getElementById("linkImg").value
+    linkToUrl = document.getElementById("linkTo").value
+                document.getElementById("linkImg").value = ""
+                document.getElementById("linkTo").value = ""
+ }
+ async function main() {
+      await liff.init({ liffId: "1656032875-8NogMqA9" })
+      liff.ready.then(()=>{
+      if (liff.isLoggedIn()) {
+      let refer = getParameterByName('refer')
+      if(refer) forwardFlex()
+      } else {
+        liff.login()
+      }
+      })
+   }
+    main()  
+  function getParameterByName(name) {
+    let url = window.location.href;
+        url = new URL(url)
+    let param = url.searchParams.get(name)
+        return param
+    }
+ 
+
+     //////////กดปุ่มแชร์ตส่งต่อให้เพื่อนดู/////////////   
+
+  function forwardFlex(){
+  liff.shareTargetPicker([
+    {
+    "type": "flex",
+    "altText": altText,
+    "contents": 
+ ////เริ่มตรงนี้
+ {
+        "type": "bubble",
+        "hero": {
+        "type": "image",
+        "url": picHeader,
+        "size": "full",
+        "aspectRatio": "20:13",
+        "aspectMode": "cover",
+        "action": {
+        "type": "uri",
+        "uri": clipUrl
+        }
+  },
+       "body": {
+       "type": "box",
+       "layout": "vertical",
+       "contents": [
+       {
+        "type": "text",
+        "text": clipName,
+        "weight": "bold",
+        "size": "xs",
+        "contents": [],
+        "align": "center",
+        "color": "#FF0033"
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": labelbtn1,
+          "uri": clipUrl
+        },
+        "style": "primary",
+        "height": "md",
+        "color": buttoncolor1,
+        "gravity": "center",
+        "position": "relative",
+        "adjustMode": "shrink-to-fit",
+        "margin": "sm"
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label":labelbtn2,
+          "uri": shareFreind
+        },
+        "style": "primary",
+        "margin": "md",
+        "color": buttoncolor2
+      },
+      
+    {
+        "type": "text",
+        "text": "Developed by Teerapong",
+        "align": "center",
+        "color": "#3366FF",
+      }
+    ]
+   }
+  }
+
+
+
+ //// ถึงตรงนี้
+  }
+      ]).then(() => {
+         swal.fire({
+            title: 'สำเร็จ',
+            text: 'ดำเนินการส่งเรียบร้อย',
+            type: 'success',
+            timer: 1500,
+            onClose: () => {
+              liff.closeWindow();
+            }
+          });
+    })
+    }
+ 
+ //////////ส่ง Flex ในไลน์ OA///////////// 
+ function shareClip(){
+      liff.sendMessages([
+    {
+    "type": "flex",
+    "altText": "Flex Message",
+    "contents": 
+ ////เริ่มตรงนี้
+ {
+  "type": "bubble",
+  "direction": "ltr",
+  "hero": {
+    "type": "image",
+    "url": picHeader,
+    "size": "full",
+    "aspectRatio": "1.51:1",
+    "aspectMode": "fit"
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": clipName,
+        "weight": "bold",
+        "align": "center",
+        "wrap": true,
+        "contents": []
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "horizontal",
+    "contents": [
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "คลิกดูเลยจ้า!!",
+          "uri": clipUrl
+        },
+        "style": "primary"
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "แชร์ให้เพื่อนดู!!",
+          "uri": shareFreind
+        },
+        "style": "secondary"
+      }
+    ]
+  }
+}
+ //// ถึงตรงนี้
+  }
+      ]).then(() => {
+         swal.fire({
+            title: 'สำเร็จ',
+            text: 'ดำเนินการส่งเรียบร้อย',
+            type: 'success',
+            onClose: () => {
+              liff.closeWindow();
+            }
+          });
+    })
+    }
+ 
+     /////ส่งภาพ//////// 
+ function shareimage() {
+ liff.sendMessages([
+    {
+ "type": "flex",
+    "altText": "Flex Message",
+    "contents": {
+    "type": "bubble",
+    "size": "giga",
+    "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "image",
+        "url": linkImage,
+        "size": "full",
+        "action": {
+          "type": "uri",
+          "label": "action",
+          "uri": linkToUrl
+        },
+        "aspectMode": "cover"
+      }
+    ],
+    "spacing": "none",
+    "margin": "none",
+    "paddingAll": "0px"
+        }
+       }
+     }
+    ]).then(() => {
+         swal.fire({
+            title: 'สำเร็จ',
+            text: 'ดำเนินการส่งเรียบร้อย',
+            type: 'success',
+            onClose: () => {
+              liff.closeWindow();
+            }
+          });
+    })
+ 
+ }
+ 
+ //////////ส่งข้อความ/////////////
+   async function shareMsg(){
+     await liff.shareTargetPicker([
+    {
+      type: "text",
+      text: "สวัสดีครับ"
+    }
+     ]).then(() => {
+         swal.fire({
+            title: 'สำเร็จ',
+            text: 'ดำเนินการส่งเรียบร้อย',
+            type: 'success',
+            onClose: () => {
+              liff.closeWindow();
+            }
+          });
+    })
+  }
+
+ </script>
+
+</body>
+
+</html>
