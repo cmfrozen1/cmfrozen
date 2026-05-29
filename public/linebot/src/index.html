@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #6366F1;
+            --secondary: #10B981;
+            --bg-dark: #0F172A;
+            --card-dark: #1E293B;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
+            background-color: var(--bg-dark);
+            color: #F8FAFC;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { transform: translateY(-4px); transition: transform 0.2s; }
+
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; display: none;
+        }
+
+        /* FAB Button Custom */
+        .fab-btn {
+            background: linear-gradient(135deg, #6366F1, #818CF8);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .image-preview-container {
+            width: 50px; height: 50px; border-radius: 12px; overflow: hidden;
+            background: #334155;
+        }
+
+        input, select, textarea {
+            background-color: #1E293B !important;
+            border: 1px solid #334155 !important;
+            color: #F8FAFC !important;
+        }
+        
+        input::placeholder {
+            color: #64748B !important;
+        }
+
+        .bottom-nav {
+            background: rgba(15, 23, 42, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="pb-24">
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-500"></div>
+            <p class="mt-4 text-sm font-semibold text-indigo-300">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Sticky Header -->
+    <header class="glass fixed top-0 w-full z-40 px-6 py-4">
+        <div class="flex justify-between items-center max-w-lg mx-auto">
+            <div>
+                <h1 class="text-xl font-bold text-white tracking-tight">DomoBot</h1>
+                <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest" id="statsCount">Loading...</p>
+            </div>
+            <div class="relative">
+                <button onclick="toggleSearch()" class="p-2 rounded-full hover:bg-slate-800 transition">
+                    <i class="fas fa-search text-slate-400"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Search Bar -->
+        <div id="searchBar" class="max-w-lg mx-auto mt-3 hidden">
+            <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="Search records..." 
+                   class="w-full px-4 py-2 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm outline-none">
+        </div>
+    </header>
+
+    <main class="mt-24 px-6 max-w-lg mx-auto">
+        
+        <!-- Tab 1: Home/List -->
+        <div id="home" class="tab-content active">
+            <div class="space-y-4" id="cardContainer">
+                <!-- Cards will be injected here -->
+            </div>
+        </div>
+
+        <!-- Tab 2: Form -->
+        <div id="formView" class="tab-content">
+            <div class="bg-slate-800/50 rounded-3xl p-6 card-shadow border border-slate-700/50">
+                <h2 class="text-xl font-bold text-white mb-6 flex items-center">
+                    <i class="fas fa-edit text-indigo-400 mr-2"></i> Record Info
+                </h2>
+                <form id="crudForm" class="space-y-5">
+                    <input type="hidden" id="rowId">
+                    <input type="hidden" id="existingFileUrl">
+                    <input type="hidden" id="existingFileId">
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Order</label>
+                        <input type="text" id="order" readonly placeholder="Automatic" 
+                               class="w-full rounded-xl p-3 text-sm font-medium opacity-60 cursor-not-allowed">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Full Name</label>
+                        <input type="text" id="name" required placeholder="Enter name"
+                               class="w-full rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email</label>
+                        <input type="email" id="email" required placeholder="email@example.com"
+                               class="w-full rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Keyword (Line Trigger)</label>
+                        <input type="text" id="keyword" required placeholder="e.g. hello"
+                               class="w-full rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Attachment</label>
+                        <div class="relative">
+                            <input type="file" id="uploadFile" class="hidden">
+                            <label for="uploadFile" class="flex items-center justify-center w-full p-4 border-2 border-dashed border-slate-700 rounded-2xl cursor-pointer hover:bg-slate-800 transition">
+                                <i class="fas fa-cloud-upload-alt text-indigo-400 text-xl mr-2"></i>
+                                <span class="text-xs font-semibold text-slate-400" id="fileNameDisplay">Upload Image/PDF</span>
+                            </label>
+                            <p id="fileStatus" class="mt-2 text-[10px] text-slate-500 text-center"></p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex gap-3">
+                        <button type="submit" id="submitBtn" class="flex-1 fab-btn text-white font-bold py-3 rounded-2xl transition transform active:scale-95">
+                            Save Data
+                        </button>
+                        <button type="button" onclick="switchTab('home'); resetForm();" class="px-5 bg-slate-700 text-slate-300 font-bold py-3 rounded-2xl active:scale-95 transition">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab 3: Users -->
+        <div id="settings" class="tab-content">
+            <div class="space-y-4" id="userContainer">
+                <p class="text-center text-slate-500 py-12 text-sm">Fetching Line friends...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav glass fixed bottom-0 w-full py-4 px-8 z-40">
+        <div class="flex justify-between items-center max-w-lg mx-auto">
+            <button onclick="switchTab('home')" class="nav-item active flex flex-col items-center space-y-1 transition" id="navHome">
+                <i class="fas fa-th-large text-lg"></i>
+                <span class="text-[9px] font-black uppercase tracking-tighter">Home</span>
+            </button>
+            
+            <button onclick="switchTab('formView')" class="fab-btn w-14 h-14 rounded-full -mt-10 flex items-center justify-center text-white text-xl transition transform hover:scale-110 active:scale-90 z-50 shadow-lg">
+                <i class="fas fa-plus"></i>
+            </button>
+
+            <button onclick="switchTab('settings')" class="nav-item flex flex-col items-center space-y-1 transition text-slate-500" id="navSettings">
+                <i class="fas fa-users text-lg"></i>
+                <span class="text-[9px] font-black uppercase tracking-tighter">Users</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        const firebaseConfig = JSON.parse(<?= firebaseConfig ?>);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const dataRef = db.ref('records');
+        const userRef = db.ref('users');
+
+        let allData = [];
+        let allUsers = [];
+
+        function showLoading() { document.getElementById('loading').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('loading').style.display = 'none'; }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('text-indigo-600', 'active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.add('text-slate-500'));
+            
+            if (tabId === 'home') document.getElementById('navHome').classList.add('active', 'text-indigo-600');
+            if (tabId === 'settings') document.getElementById('navSettings').classList.add('active', 'text-indigo-600');
+            
+            if (tabId === 'home') loadData();
+            if (tabId === 'settings') loadUsers();
+        }
+
+        function toggleSearch() {
+            const sb = document.getElementById('searchBar');
+            sb.classList.toggle('hidden');
+            if (!sb.classList.contains('hidden')) document.getElementById('searchBox').focus();
+        }
+
+        // Realtime Data sync
+        dataRef.on('value', snap => {
+            const data = snap.val();
+            allData = data ? Object.keys(data).map(k => ({ ...data[k], id: k })) : [];
+            allData.sort((a, b) => b.order - a.order);
+            document.getElementById('statsCount').innerText = `${allData.length} records active`;
+            renderCards(allData);
+        });
+
+        function renderCards(data) {
+            const container = document.getElementById('cardContainer');
+            if (data.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 text-slate-500 text-sm">No records found</div>`;
+                return;
+            }
+            container.innerHTML = data.map(row => `
+                <div class="card-item p-4 rounded-3xl card-shadow flex items-center space-x-4 animate-fadeIn">
+                    <div class="image-preview-container flex-shrink-0 flex items-center justify-center border border-slate-700">
+                        ${row.fileUrl ? 
+                            `<img src="${row.fileUrl}" class="w-full h-full object-cover" onclick="window.open('${row.fileUrl}')">` : 
+                            `<i class="fas fa-file-alt text-slate-600"></i>`}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-white text-sm truncate">${row.name}</h3>
+                            <span class="text-[10px] font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md">#${row.order}</span>
+                        </div>
+                        <p class="text-xs text-slate-400 truncate mt-0.5">${row.email}</p>
+                        <div class="mt-2 flex items-center">
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/20 uppercase tracking-tighter">
+                                KW: ${row.keyword}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col space-y-2">
+                        <button onclick='editRow(${JSON.stringify(row)})' class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xs active:scale-75 transition border border-indigo-500/20">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button onclick="deleteRow('${row.id}', '${row.fileId}')" class="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs active:scale-75 transition border border-rose-500/20">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadUsers() {
+            userRef.once('value', snap => {
+                const data = snap.val();
+                const container = document.getElementById('userContainer');
+                if (!data) {
+                    container.innerHTML = `<p class="text-center text-slate-500 py-12 text-sm">No Line friends added yet.</p>`;
+                    return;
+                }
+                const users = Object.keys(data).map(k => ({ ...data[k], id: k }));
+                container.innerHTML = users.map(u => `
+                    <div class="card-item p-4 rounded-3xl card-shadow flex items-center space-x-4">
+                        <img src="${u.pictureUrl || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-2xl object-cover ring-2 ring-slate-700 shadow-lg">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-white text-sm">${u.displayName}</h3>
+                            <p class="text-[10px] text-indigo-400 uppercase tracking-widest font-black">UID: ${u.id.substring(0,10)}...</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                            <i class="fab fa-line text-emerald-400 text-xl"></i>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // Form handling
+        document.getElementById('uploadFile').onchange = function() {
+            document.getElementById('fileNameDisplay').innerText = this.files[0].name;
+        };
+
+        const form = document.getElementById('crudForm');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            const fileInput = document.getElementById('uploadFile');
+            let fileBase64 = null, fileName = null;
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileName = file.name;
+                fileBase64 = await toBase64(file);
+            }
+
+            const recordId = document.getElementById('rowId').value;
+            const existingFileId = document.getElementById('existingFileId').value;
+            const existingFileUrl = document.getElementById('existingFileUrl').value;
+
+            if (fileBase64) {
+                google.script.run
+                    .withSuccessHandler(fileInfo => {
+                        saveToFirebase(recordId, fileInfo.url, fileInfo.id);
+                        if (existingFileId) google.script.run.deleteFile(existingFileId);
+                    })
+                    .withFailureHandler(err => { hideLoading(); Swal.fire('Error', err.message, 'error'); })
+                    .uploadFile(fileBase64, fileName);
+            } else {
+                saveToFirebase(recordId, existingFileUrl, existingFileId);
+            }
+        };
+
+        function saveToFirebase(id, fileUrl, fileId) {
+            let order;
+            if (id) order = parseInt(document.getElementById('order').value);
+            else order = allData.length > 0 ? Math.max(...allData.map(d => d.order)) + 1 : 1;
+
+            const data = {
+                order,
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                keyword: document.getElementById('keyword').value,
+                fileUrl: fileUrl || '',
+                fileId: fileId || '',
+                updatedAt: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            const ref = id ? dataRef.child(id) : dataRef.push();
+            ref.set(data).then(() => {
+                hideLoading();
+                Swal.fire({ title: 'Success', text: 'Data synchronized', icon: 'success', customClass: { popup: 'rounded-3xl' } });
+                resetForm();
+                switchTab('home');
+            }).catch(err => { hideLoading(); Swal.fire('Error', err.message, 'error'); });
+        }
+
+        function editRow(row) {
+            switchTab('formView');
+            document.getElementById('rowId').value = row.id;
+            document.getElementById('order').value = row.order;
+            document.getElementById('name').value = row.name;
+            document.getElementById('email').value = row.email;
+            document.getElementById('keyword').value = row.keyword;
+            document.getElementById('existingFileUrl').value = row.fileUrl || '';
+            document.getElementById('existingFileId').value = row.fileId || '';
+            document.getElementById('fileStatus').innerText = row.fileUrl ? 'Existing file found. Upload again to replace.' : '';
+            document.getElementById('submitBtn').innerText = 'Update Record';
+        }
+
+        function deleteRow(id, fileId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Record and Drive file will be permanently removed.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#4F46E5',
+                cancelButtonColor: '#EF4444',
+                confirmButtonText: 'Yes, delete it!',
+                customClass: { popup: 'rounded-3xl' }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+                    dataRef.child(id).remove().then(() => {
+                        if (fileId) google.script.run.withSuccessHandler(() => { hideLoading(); Swal.fire('Deleted', 'Record & file removed', 'success'); }).deleteFile(fileId);
+                        else { hideLoading(); Swal.fire('Deleted', 'Record removed', 'success'); }
+                    });
+                }
+            });
+        }
+
+        function resetForm() {
+            form.reset();
+            document.getElementById('rowId').value = '';
+            document.getElementById('order').value = '';
+            document.getElementById('fileNameDisplay').innerText = 'Upload Image/PDF';
+            document.getElementById('fileStatus').innerText = '';
+            document.getElementById('submitBtn').innerText = 'Save Data';
+        }
+
+        function filterTable() {
+            const term = document.getElementById('searchBox').value.toLowerCase();
+            const filtered = allData.filter(r => r.name.toLowerCase().includes(term) || r.email.toLowerCase().includes(term) || r.keyword.toLowerCase().includes(term));
+            renderCards(filtered);
+        }
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result); reader.onerror = e => reject(e);
+        });
+    </script>
+</body>
+</html>

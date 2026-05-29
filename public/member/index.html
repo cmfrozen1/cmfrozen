@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty QR Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        prompt: ['Prompt', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        #reader { border: none !important; }
+        #reader video { border-radius: 1rem; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen pb-20">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black/70 z-50 flex flex-col items-center justify-center hidden">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+        <p class="mt-4 text-indigo-400 font-medium">กำลังดำเนินการ...</p>
+    </div>
+
+    <div class="max-w-md mx-auto px-4 pt-6">
+        
+        <!-- Home Section: QR Scan & List -->
+        <div id="section-home">
+            <header class="mb-6">
+                <h1 class="text-2xl font-semibold mb-4 text-white text-center">สแกนสะสมแต้ม</h1>
+                
+                <!-- QR Scanner Area -->
+                <div class="bg-gray-800 border border-gray-700 rounded-3xl p-4 mb-6 shadow-xl relative overflow-hidden">
+                    <div id="reader"></div>
+                    <div id="scanner-placeholder" class="py-12 text-center">
+                        <div class="bg-indigo-500/10 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 17h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                        </div>
+                        <button id="start-scan-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-medium shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
+                            เริ่มสแกน QR Code
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="ค้นหาชื่อหรือเบอร์โทร..." 
+                        class="w-full bg-gray-800 border border-gray-700 rounded-2xl py-4 px-4 pl-12 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </header>
+
+            <div id="member-list" class="space-y-4">
+                <!-- Members will be injected here -->
+            </div>
+            
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-10 text-gray-500">
+                <p>ไม่พบข้อมูลสมาชิก</p>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div id="section-chart" class="hidden">
+            <h1 class="text-2xl font-semibold mb-6 text-white text-center">สถิติระบบ</h1>
+            <div class="bg-gray-800 border border-gray-700 p-6 rounded-3xl mb-6 shadow-xl">
+                <canvas id="pointsChart"></canvas>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-800 border border-gray-700 p-5 rounded-3xl text-center shadow-lg">
+                    <p class="text-gray-400 text-xs mb-1 uppercase tracking-wider">สมาชิก</p>
+                    <p id="total-members" class="text-3xl font-bold text-indigo-400">0</p>
+                </div>
+                <div class="bg-gray-800 border border-gray-700 p-5 rounded-3xl text-center shadow-lg">
+                    <p class="text-gray-400 text-xs mb-1 uppercase tracking-wider">แต้มทั้งหมด</p>
+                    <p id="total-points" class="text-3xl font-bold text-yellow-400">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div id="section-info" class="hidden">
+            <h1 class="text-2xl font-semibold mb-6 text-white text-center">ตั้งค่าระบบ</h1>
+            <div class="bg-gray-800 border border-gray-700 p-6 rounded-3xl space-y-6 shadow-xl">
+                <div class="flex items-center gap-4">
+                    <div class="bg-indigo-600 p-3 rounded-2xl text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-lg">Loyalty Program</p>
+                        <p class="text-sm text-gray-400">ระบบสะสมแต้มผ่าน QR Code</p>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-gray-700">
+                    <p class="text-sm text-gray-300 mb-2">คำแนะนำการใช้งาน:</p>
+                    <ul class="text-xs text-gray-400 space-y-2">
+                        <li>1. ลงทะเบียนสมาชิกด้วยเบอร์โทรศัพท์</li>
+                        <li>2. ใช้มือถือลูกค้าแสดง QR Code (เบอร์โทร)</li>
+                        <li>3. สแกนเพื่อเพิ่มแต้มครั้งละ 1 แต้ม</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800/80 backdrop-blur-xl border-t border-gray-700 px-6 py-4 z-40">
+        <div class="max-w-md mx-auto flex justify-around items-center">
+            <button id="nav-home" class="nav-btn flex flex-col items-center text-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+            </button>
+            <button id="nav-chart" class="nav-btn flex flex-col items-center text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002 2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </button>
+            <button id="open-add-modal" class="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-2xl -mt-12 shadow-xl shadow-indigo-500/40 transform transition active:scale-90">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+            </button>
+            <button id="nav-info" class="nav-btn flex flex-col items-center text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Modal Form -->
+    <div id="product-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+        <div class="bg-gray-800 border border-gray-700 w-full max-w-md rounded-3xl shadow-2xl z-10 overflow-hidden transform transition-all scale-95 opacity-0 duration-300" id="modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="modal-title" class="text-xl font-bold">ลงทะเบียนสมาชิก</h2>
+                    <button id="close-modal" class="text-gray-400 hover:text-white bg-gray-700/50 p-2 rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="member-form" class="space-y-4">
+                    <input type="hidden" id="member-id">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-widest">เบอร์โทรศัพท์</label>
+                        <input type="tel" id="member-phone" required placeholder="08xxxxxxxx"
+                            class="w-full bg-gray-900 border border-gray-700 rounded-2xl py-4 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-widest">ชื่อ-นามสกุล</label>
+                        <input type="text" id="member-name" required placeholder="สมชาย มุ่งมั่น"
+                            class="w-full bg-gray-900 border border-gray-700 rounded-2xl py-4 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div id="points-field" class="hidden">
+                        <label class="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-widest">แต้มปัจจุบัน</label>
+                        <input type="number" id="member-points" value="0"
+                            class="w-full bg-gray-900 border border-gray-700 rounded-2xl py-4 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <button type="submit" id="submit-btn" 
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-500/20 transition-all mt-4">
+                        ยืนยันการลงทะเบียน
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- QR Display Modal -->
+    <div id="qr-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+        <div class="bg-white p-8 rounded-3xl shadow-2xl z-10 text-center max-w-xs w-full transform transition-all scale-95 opacity-0 duration-300" id="qr-modal-content">
+            <h2 id="qr-modal-name" class="text-gray-900 text-xl font-bold mb-2">QR Code สมาชิก</h2>
+            <p id="qr-modal-phone" class="text-gray-500 text-sm mb-6 font-mono"></p>
+            <div id="qrcode-canvas" class="flex justify-center mb-6"></div>
+            <button onclick="hideQRModal()" class="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+
+    <!-- Redemption Modal -->
+    <div id="redeem-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+        <div class="bg-gray-800 border border-gray-700 w-full max-w-md rounded-3xl shadow-2xl z-10 overflow-hidden transform transition-all scale-95 opacity-0 duration-300" id="redeem-modal-content">
+            <div class="p-6">
+                <h2 class="text-xl font-bold mb-2">แลกรับรางวัล</h2>
+                <p id="redeem-member-info" class="text-gray-400 text-sm mb-6"></p>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <button onclick="redeemPoints(10)" class="bg-gray-700 hover:bg-indigo-600 p-4 rounded-2xl text-center transition-all group">
+                        <p class="text-2xl font-bold group-hover:text-white">10</p>
+                        <p class="text-[10px] text-gray-400 group-hover:text-indigo-200">ใช้ 10 แต้ม</p>
+                    </button>
+                    <button onclick="redeemPoints(20)" class="bg-gray-700 hover:bg-indigo-600 p-4 rounded-2xl text-center transition-all group">
+                        <p class="text-2xl font-bold group-hover:text-white">20</p>
+                        <p class="text-[10px] text-gray-400 group-hover:text-indigo-200">ใช้ 20 แต้ม</p>
+                    </button>
+                </div>
+                <div class="flex gap-4">
+                    <input type="number" id="custom-redeem" placeholder="ระบุแต้มอื่นๆ" class="flex-1 bg-gray-900 border border-gray-700 rounded-2xl px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button onclick="redeemPoints(document.getElementById('custom-redeem').value)" class="bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-4 rounded-2xl transition-all">แลกแต้ม</button>
+                </div>
+                <button onclick="hideRedeemModal()" class="w-full mt-4 text-gray-500 text-sm py-2">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
