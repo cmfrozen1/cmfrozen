@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Information | CM Frozen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cm-green': '#76B82D',
+                        'cm-cream': '#F9F7F2',
+                        'cm-dark': '#1A1A1A',
+                    },
+                    fontFamily: {
+                        heading: ['Montserrat', 'Kanit', 'sans-serif'],
+                        body: ['Inter', 'Sarabun', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Kanit:wght@300;400;500;600&family=Sarabun:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', 'Sarabun', sans-serif;
+            background-color: #F9F7F2;
+            color: #1A1A1A;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Montserrat', 'Kanit', sans-serif;
+            letter-spacing: -0.03em;
+        }
+
+        .nav-link {
+            position: relative;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #76B82D;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .glass-nav {
+            background: rgba(249, 247, 242, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .data-row {
+            transition: all 0.3s ease;
+        }
+
+        .data-row:hover {
+            background-color: white;
+            transform: scale(1.01);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav border-b border-gray-100">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-3 group">
+                <div class="w-12 h-12 bg-cm-green rounded-2xl flex items-center justify-center text-white rotate-3 group-hover:rotate-0 transition-all duration-500">
+                    <i class="fas fa-snowflake text-2xl"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-2xl font-black tracking-tighter leading-none">CM FROZEN</span>
+                    <span class="text-[9px] font-extrabold tracking-[0.4em] text-cm-green uppercase mt-1">Financial Info</span>
+                </div>
+            </a>
+            
+            <div class="hidden xl:flex items-center space-x-10">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="investor.html" class="nav-link">Investors Hub</a>
+                <a href="investor-financial.html" class="nav-link border-b-2 border-cm-green">Financial</a>
+                <a href="investor-shareholder.html" class="nav-link">Shareholders</a>
+                <a href="investor-publications.html" class="nav-link">Publications</a>
+                <a href="investor-governance.html" class="nav-link">Governance</a>
+                <div class="h-4 w-[1px] bg-gray-200"></div>
+                <button id="langToggle" class="group flex items-center space-x-2 font-black text-xs hover:text-cm-green transition-colors">
+                    <i class="fas fa-globe text-cm-green group-hover:rotate-180 transition-transform duration-700"></i>
+                    <span id="langText">TH</span>
+                </button>
+            </div>
+
+            <div class="xl:hidden flex items-center space-x-4">
+                <button id="langToggleMobile" class="text-[10px] font-black text-cm-green border-2 border-cm-green px-2 py-1 rounded-lg">TH</button>
+                <button id="mobileMenuBtn" class="text-2xl">
+                    <i class="fas fa-bars-staggered"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-48 pb-24 bg-cm-dark text-white overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10">
+            <h1 class="text-5xl md:text-8xl font-black mb-8 tracking-tighter uppercase" data-key="hero-title">Financial Information</h1>
+            <p class="text-gray-400 text-lg md:text-2xl max-w-3xl leading-relaxed" data-key="hero-subtitle">
+                Accurate and timely reporting of our financial performance and business health.
+            </p>
+        </div>
+        <div class="absolute bottom-0 right-0 text-[15rem] font-black text-white/[0.02] leading-none -mb-10 pointer-events-none uppercase">Finance</div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-24 bg-white">
+        <div class="container mx-auto px-6">
+            <!-- Financial Statements -->
+            <div class="mb-32">
+                <h2 class="text-4xl font-black mb-12 uppercase tracking-tighter" data-key="sec-stmt">Financial Statements</h2>
+                <div class="space-y-4">
+                    <div class="p-8 bg-cm-cream/30 rounded-3xl data-row flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div class="flex items-center space-x-6">
+                            <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-red-500 shadow-sm"><i class="fas fa-file-pdf text-xl"></i></div>
+                            <div>
+                                <h4 class="font-black uppercase tracking-tight text-sm">Year 2025 - Financial Statement</h4>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Released: Feb 2026</p>
+                            </div>
+                        </div>
+                        <a href="https://cmfrozen.com/investor-relations/financial-information/financial-statements/" target="_blank" class="bg-cm-dark text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-cm-green transition-all">Download PDF</a>
+                    </div>
+                    <div class="p-8 bg-cm-cream/30 rounded-3xl data-row flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div class="flex items-center space-x-6">
+                            <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-red-500 shadow-sm"><i class="fas fa-file-pdf text-xl"></i></div>
+                            <div>
+                                <h4 class="font-black uppercase tracking-tight text-sm">Year 2024 - Financial Statement</h4>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Released: Feb 2025</p>
+                            </div>
+                        </div>
+                        <a href="https://cmfrozen.com/investor-relations/financial-information/financial-statements/" target="_blank" class="bg-cm-dark text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-cm-green transition-all">Download PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MD&A -->
+            <div>
+                <h2 class="text-4xl font-black mb-12 uppercase tracking-tighter" data-key="sec-mda">Management Discussion & Analysis</h2>
+                <div class="space-y-4">
+                    <div class="p-8 bg-cm-cream/30 rounded-3xl data-row flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div class="flex items-center space-x-6">
+                            <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-cm-green shadow-sm"><i class="fas fa-chart-pie text-xl"></i></div>
+                            <div>
+                                <h4 class="font-black uppercase tracking-tight text-sm">MD&A Year 2025</h4>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Detailed Business Insights</p>
+                            </div>
+                        </div>
+                        <a href="https://cmfrozen.com/investor-relations/financial-information/management-discussion-and-analysis/" target="_blank" class="bg-cm-dark text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-cm-green transition-all">Read MD&A</a>
+                    </div>
+                    <div class="p-8 bg-cm-cream/30 rounded-3xl data-row flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div class="flex items-center space-x-6">
+                            <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-cm-green shadow-sm"><i class="fas fa-chart-pie text-xl"></i></div>
+                            <div>
+                                <h4 class="font-black uppercase tracking-tight text-sm">MD&A Year 2024</h4>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Detailed Business Insights</p>
+                            </div>
+                        </div>
+                        <a href="https://cmfrozen.com/investor-relations/financial-information/management-discussion-and-analysis/" target="_blank" class="bg-cm-dark text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-cm-green transition-all">Read MD&A</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-cm-dark text-white pt-24 pb-12">
+        <div class="container mx-auto px-6 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-16 gap-12 text-center md:text-left">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-cm-green rounded-xl flex items-center justify-center text-white rotate-3">
+                        <i class="fas fa-snowflake text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter text-white">CM FROZEN</span>
+                </a>
+                <div class="flex space-x-12">
+                    <a href="investor.html" class="hover:text-white transition-colors">Investors Hub</a>
+                    <a href="investor-shareholder.html" class="hover:text-white transition-colors">Shareholders</a>
+                    <a href="investor-publications.html" class="hover:text-white transition-colors">Publications</a>
+                </div>
+                <p>&copy; 2026 Chiangmai Frozen Foods PCL.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const translations = {
+            'th': {
+                'hero-title': 'ข้อมูลทางการเงิน',
+                'hero-subtitle': 'การรายงานผลการดำเนินงานทางการเงินและความมั่นคงของธุรกิจที่ถูกต้องและทันเวลา',
+                'sec-stmt': 'งบการเงิน',
+                'sec-mda': 'คำอธิบายของฝ่ายจัดการ (MD&A)'
+            },
+            'en': {
+                'hero-title': 'Financial Information',
+                'hero-subtitle': 'Accurate and timely reporting of our financial performance and business health.',
+                'sec-stmt': 'Financial Statements',
+                'sec-mda': 'Management Discussion & Analysis'
+            }
+        };
+
+        let currentLang = 'th';
+
+        function updateContent() {
+            const elements = document.querySelectorAll('[data-key]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (translations[currentLang][key]) {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            });
+            document.getElementById('langText').innerText = currentLang.toUpperCase();
+            document.getElementById('langToggleMobile').innerText = currentLang.toUpperCase();
+        }
+
+        updateContent();
+
+        const toggleButtons = [document.getElementById('langToggle'), document.getElementById('langToggleMobile')];
+        toggleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentLang = currentLang === 'th' ? 'en' : 'th';
+                updateContent();
+            });
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

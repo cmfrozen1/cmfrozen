@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "cmfrozen-387fd"
+  },
+  "targets": {
+    "cmfrozen-387fd": {
+      "hosting": {
+        "testweb": [
+          "cmfrozen-testweb"
+        ],
+        "app": [
+          "cmfrozen-387fd"
+        ]
+      }
+    }
   }
 }
