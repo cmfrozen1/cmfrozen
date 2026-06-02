@@ -89,11 +89,9 @@
     </div>
 
     <script>
-        // 🔗 PRODUCTION CONFIGURATION
-        const RENDER_URL = 'https://crud-qtje.onrender.com';
-        
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const API_URL = (isLocal ? '' : RENDER_URL) + '/api/users';
+        // 🔗 AUTOMATIC CONFIGURATION
+        // ใช้ relative path เพื่อให้รองรับทั้ง Local และ Production โดยไม่ต้องแก้ URL
+        const API_URL = '/api/users';
         
         let isEditing = false;
 
@@ -108,7 +106,8 @@
             } catch (err) {
                 console.error(err);
                 updateStatus('API Offline / 404', 'bg-rose-100 text-rose-700 border-rose-200');
-                document.getElementById('loading').innerHTML = '<p class="text-rose-500 font-bold">Error: Cannot reach the backend API.</p>';
+                // แสดงข้อความ Error ที่ชัดเจนบนหน้าจอ
+                document.getElementById('userList').innerHTML = `<tr><td colspan="3" class="py-10 text-center text-rose-500 font-bold">Error: Cannot reach the backend API. Please check Render Logs.</td></tr>`;
             } finally {
                 document.getElementById('loading').style.display = 'none';
             }

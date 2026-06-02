@@ -28,6 +28,9 @@ async function startServer() {
         const users = db.collection('users');
         console.log(`✅ Connected to MongoDB Atlas (Database: ${dbName})`);
 
+        // Health Check
+        app.get('/health', (req, res) => res.json({ status: 'ok', db: dbName }));
+
         // API Endpoints
         app.get('/api/users', async (req, res) => {
             try {
