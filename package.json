@@ -1,27 +1,24 @@
 {
-  "name": "cmfrozen",
+  "name": "cmfrozen-all-in-one",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Production setup for CMFrozen",
+  "main": "public/testweb/server.js",
   "scripts": {
+    "start": "node public/testweb/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hrcmfrozen/covid19.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/hrcmfrozen/covid19/issues"
-  },
-  "homepage": "https://github.com/hrcmfrozen/covid19#readme",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "mongodb": "^6.0.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.12",
-    "react-router-dom": "^6.4.3",
-    "xai-sdk": "^1.0.0-alpha.0"
+    "react-router-dom": "^6.4.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
