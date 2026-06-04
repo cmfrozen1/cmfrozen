@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB Atlas App Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://sdk.mongodb.com/realm/web/mongo-realm-web-sdk.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold mb-8">MongoDB + JavaScript</h1>
+        
+        <div class="bg-white p-6 rounded shadow mb-8">
+            <h2 class="text-xl mb-4">ตั้งค่าก่อนใช้:</h2>
+            <ol class="list-decimal pl-5">
+                <li>เข้า MongoDB Atlas → App Services → Create App</li>
+                <li>Enable Anonymous Authentication</li>
+                <li>นำ App ID มาใส่ด้านล่าง</li>
+            </ol>
+        </div>
+
+        <div id="content">
+            <p>กำลังเชื่อมต่อ...</p>
+        </div>
+    </div>
+
+    <script>
+        // TODO: ใส่ App ID ของคุณ
+        const APP_ID = "YOUR_APP_ID_HERE";
+        
+        async function connectMongoDB() {
+            if (APP_ID === "YOUR_APP_ID_HERE") {
+                document.getElementById('content').innerHTML = `
+                    <div class="bg-yellow-100 p-4 rounded">
+                        ⚠️ ต้องตั้งค่า App Services ก่อน<br>
+                        1. เข้า MongoDB Atlas<br>
+                        2. สร้าง App Services App<br>
+                        3. นำ App ID มาใส่ในโค้ด
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const app = new mongodb.Realm.App({ id: APP_ID });
+                const credentials = mongodb.Realm.Credentials.anonymous();
+                const user = await app.logIn(credentials);
+                
+                const mongodb = user.mongoClient("mongodb-atlas");
+                const collection = mongodb.db("testdb").collection("users");
+                
+                // ทดสอบอ่านข้อมูล
+                const results = await collection.find({});
+                document.getElementById('content').innerHTML = `
+                    <div class="bg-green-100 p-4 rounded">
+                        ✅ เชื่อมต่อสำเร็จ!<br>
+                        พบข้อมูล ${results.length} รายการ
+                        <pre class="mt-2 bg-gray-800 text-white p-2 rounded text-sm">${JSON.stringify(results, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('content').innerHTML = `
+                    <div class="bg-red-100 p-4 rounded">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        connectMongoDB();
+    </script>
+</body>
+</html>
