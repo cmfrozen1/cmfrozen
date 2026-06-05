@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการสมาชิก | Supabase CRUD</title>
+    
+    <!-- Google Fonts: Inter (English) & Sarabun (Thai) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Sarabun', 'sans-serif'],
+                    },
+                    colors: {
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        
+        /* Shimmer effect for loading */
+        .shimmer {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading-shimmer 1.5s infinite;
+        }
+        @keyframes loading-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-dark-950 text-dark-50 font-sans min-h-full flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Glow Effect -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-80 bg-brand-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <!-- Main Container -->
+    <div class="flex-grow flex flex-col max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        
+        <!-- Header -->
+        <header class="flex flex-col sm:flex-row justify-between items-center gap-4 pb-8 border-b border-dark-800/60 mb-8">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-500 text-xl shadow-lg shadow-brand-500/5">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-dark-100 to-dark-400 bg-clip-text text-transparent">
+                        ระบบจัดการสมาชิก
+                    </h1>
+                    <p class="text-xs text-dark-400 font-medium">Supabase Realtime Member Database</p>
+                </div>
+            </div>
+            
+            <!-- Connection Status -->
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    เชื่อมต่อ Supabase แล้ว
+                </span>
+            </div>
+        </header>
+
+        <!-- Dashboard Statistics -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+            <!-- Total Members Card -->
+            <div class="bg-dark-900/40 border border-dark-800/60 rounded-3xl p-6 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-dark-700/60">
+                <div class="absolute -right-6 -bottom-6 text-dark-800/10 text-8xl font-bold pointer-events-none">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-semibold text-dark-400">สมาชิกทั้งหมด</span>
+                    <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500 text-sm">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="stat-total-members" class="text-4xl font-extrabold text-white tracking-tight">0</span>
+                    <span class="text-sm font-semibold text-dark-400">คน</span>
+                </div>
+            </div>
+
+            <!-- Total Points Card -->
+            <div class="bg-dark-900/40 border border-dark-800/60 rounded-3xl p-6 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-dark-700/60">
+                <div class="absolute -right-6 -bottom-6 text-dark-800/10 text-8xl font-bold pointer-events-none">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-semibold text-dark-400">คะแนนสะสมรวม</span>
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 text-sm">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="stat-total-points" class="text-4xl font-extrabold text-white tracking-tight">0</span>
+                    <span class="text-sm font-semibold text-dark-400">คะแนน</span>
+                </div>
+            </div>
+
+            <!-- Average Points Card -->
+            <div class="bg-dark-900/40 border border-dark-800/60 rounded-3xl p-6 backdrop-blur-md relative overflow-hidden transition-all duration-300 hover:border-dark-700/60">
+                <div class="absolute -right-6 -bottom-6 text-dark-800/10 text-8xl font-bold pointer-events-none">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-semibold text-dark-400">คะแนนเฉลี่ย</span>
+                    <div class="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-500 text-sm">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="stat-avg-points" class="text-4xl font-extrabold text-white tracking-tight">0</span>
+                    <span class="text-sm font-semibold text-dark-400">คะแนน/คน</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <main class="bg-dark-900/30 border border-dark-800/50 rounded-[32px] p-6 sm:p-8 backdrop-blur-lg shadow-xl shadow-black/10 flex-grow flex flex-col">
+            
+            <!-- Controls Bar -->
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
+                <!-- Search Box -->
+                <div class="relative flex-grow max-w-md">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark-505">
+                        <i class="fa-solid fa-magnifying-glass text-sm text-dark-500"></i>
+                    </div>
+                    <input type="text" id="search-input" placeholder="ค้นหาชื่อ หรือเบอร์โทรศัพท์..."
+                        class="w-full pl-10 pr-4 py-2.5 bg-dark-900/80 border border-dark-800 rounded-2xl text-sm text-white placeholder-dark-500 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all duration-200">
+                </div>
+
+                <!-- Add Button -->
+                <button onclick="openAddModal()" 
+                    class="px-5 py-2.5 rounded-2xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-500/15 transition-all duration-200">
+                    <i class="fa-solid fa-user-plus text-xs"></i>
+                    เพิ่มสมาชิกใหม่
+                </button>
+            </div>
+
+            <!-- Members List & Table -->
+            <div class="flex-grow overflow-x-auto min-h-[300px]">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="border-b border-dark-800 text-xs font-bold text-dark-400 uppercase tracking-wider">
+                            <th class="py-4 px-4">ลำดับ</th>
+                            <th class="py-4 px-4">ชื่อ-นามสกุล</th>
+                            <th class="py-4 px-4">เบอร์โทรศัพท์</th>
+                            <th class="py-4 px-4">คะแนนสะสม</th>
+                            <th class="py-4 px-4">วันที่สมัคร</th>
+                            <th class="py-4 px-4 text-right">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="members-table-body" class="text-sm divide-y divide-dark-800/40">
+                        <!-- Table rows will be injected dynamically -->
+                    </tbody>
+                </table>
+                
+                <!-- Loading Shimmer State -->
+                <div id="table-loading-state" class="hidden py-10 space-y-4">
+                    <div class="h-10 shimmer rounded-xl"></div>
+                    <div class="h-10 shimmer rounded-xl"></div>
+                    <div class="h-10 shimmer rounded-xl"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="table-empty-state" class="hidden flex flex-col items-center justify-center py-16 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-dark-900 border border-dark-800 flex items-center justify-center text-dark-500 text-xl mb-4">
+                        <i class="fa-solid fa-user-slash"></i>
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-1">ไม่พบข้อมูลสมาชิก</h3>
+                    <p class="text-xs text-dark-400">กรุณาลองเปลี่ยนคำค้นหา หรือเพิ่มสมาชิกใหม่ในระบบ</p>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="pt-8 mt-8 border-t border-dark-800/40 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-dark-500">
+            <div>
+                <span>ระบบจัดการข้อมูลสมาชิกแบบย่อ (Minimal CRUD) v1.0</span>
+            </div>
+            <div class="font-medium text-dark-400">
+                <span>พัฒนาโดย:ครบเครื่องเรื่องไอที</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal Form overlay -->
+    <div id="form-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-all duration-350 opacity-0">
+        <!-- Modal Card -->
+        <div id="modal-card" class="bg-dark-900 border border-dark-800 rounded-[32px] w-full max-w-md p-6 sm:p-8 shadow-2xl relative transition-all duration-300 transform scale-95 opacity-0">
+            
+            <!-- Close Button -->
+            <button onclick="closeFormModal()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-dark-800/50 hover:bg-dark-800 text-dark-400 hover:text-white flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex items-center gap-3 mb-6">
+                <div id="modal-icon-container" class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500 text-sm">
+                    <i id="modal-icon" class="fa-solid fa-user-plus"></i>
+                </div>
+                <div>
+                    <h2 id="modal-title" class="text-lg font-bold text-white">เพิ่มสมาชิกใหม่</h2>
+                    <p id="modal-subtitle" class="text-xs text-dark-400">กรอกรายละเอียดเพื่อบันทึกลงระบบ</p>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="member-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                <input type="hidden" id="member-id">
+                
+                <!-- Name Field -->
+                <div class="space-y-1.5">
+                    <label for="input-name" class="text-xs font-bold text-dark-400 uppercase tracking-wider">ชื่อ-นามสกุล</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark-500">
+                            <i class="fa-solid fa-user text-sm"></i>
+                        </div>
+                        <input type="text" id="input-name" required placeholder="เช่น สมชาย ใจดี"
+                            class="w-full pl-10 pr-4 py-2.5 bg-dark-950 border border-dark-800 rounded-xl text-sm text-white placeholder-dark-600 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all duration-200">
+                    </div>
+                </div>
+
+                <!-- Phone Field -->
+                <div class="space-y-1.5">
+                    <label for="input-phone" class="text-xs font-bold text-dark-400 uppercase tracking-wider">เบอร์โทรศัพท์</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark-500">
+                            <i class="fa-solid fa-phone text-sm"></i>
+                        </div>
+                        <input type="tel" id="input-phone" required pattern="[0-9]{9,10}" placeholder="เช่น 0854212232"
+                            class="w-full pl-10 pr-4 py-2.5 bg-dark-950 border border-dark-800 rounded-xl text-sm text-white placeholder-dark-600 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all duration-200">
+                    </div>
+                </div>
+
+                <!-- Points Field -->
+                <div class="space-y-1.5">
+                    <label for="input-points" class="text-xs font-bold text-dark-400 uppercase tracking-wider">คะแนนสะสม</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark-500">
+                            <i class="fa-solid fa-star text-sm"></i>
+                        </div>
+                        <input type="number" id="input-points" required min="0" placeholder="เช่น 5"
+                            class="w-full pl-10 pr-4 py-2.5 bg-dark-950 border border-dark-800 rounded-xl text-sm text-white placeholder-dark-600 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all duration-200">
+                    </div>
+                </div>
+
+                <!-- Submit / Cancel Buttons -->
+                <div class="flex items-center gap-3 pt-3">
+                    <button type="button" onclick="closeFormModal()"
+                        class="flex-1 py-2.5 rounded-xl border border-dark-800 hover:bg-dark-850 active:scale-95 text-sm font-semibold text-dark-300 transition-all duration-150">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" id="form-submit-btn"
+                        class="flex-1 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-sm font-semibold text-white shadow-lg shadow-brand-500/10 transition-all duration-150 flex items-center justify-center gap-2">
+                        <span>บันทึกข้อมูล</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Application Logic -->
+    <script>
+        // Disable Inspect Protection
+        (function() {
+            // Prevent right-click (context menu)
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+
+            // Prevent developer shortcut keys
+            document.addEventListener('keydown', (e) => {
+                // F12
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                }
+                // Ctrl+Shift+I or Cmd+Option+I
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+                    e.preventDefault();
+                }
+                // Ctrl+Shift+J or Cmd+Option+J
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
+                    e.preventDefault();
+                }
+                // Ctrl+Shift+C or Cmd+Option+C
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+                    e.preventDefault();
+                }
+                // Ctrl+U (View Source)
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u')) {
+                    e.preventDefault();
+                }
+            });
+
+            // Active debugger protection loop
+            // This pauses execution when developer tools are opened
+            setInterval(() => {
+                try {
+                    (function a(i) {
+                        if (("" + i / i).length !== 1 || i % 20 === 0) {
+                            (function() {}).constructor("debugger")();
+                        } else {
+                            debugger;
+                        }
+                        a(++i);
+                    })(0);
+                } catch (e) {}
+            }, 100);
+        })();
+
+        // Supabase credentials
+        const SUPABASE_URL = "https://dozxxknekdhnvpbfetib.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_56uJhm9sp4SbzzwWgO3P6Q_oboIl3Jo";
+        
+        // Initialize Supabase client
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // State variables
+        let membersData = [];
+        let filteredMembers = [];
+        let isEditMode = false;
+
+        // Custom SweetAlert2 Mixin for cohesive Dark Theme without Emojis
+        const darkSwal = Swal.mixin({
+            customClass: {
+                popup: 'border border-dark-800 bg-dark-900 text-dark-50 rounded-[24px] shadow-2xl p-6',
+                title: 'text-lg font-bold text-white mt-2',
+                htmlContainer: 'text-xs text-dark-400 mt-2',
+                confirmButton: 'px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs font-semibold outline-none focus:ring-2 focus:ring-brand-500/50 mx-1.5 my-1 transition-all duration-150',
+                cancelButton: 'px-5 py-2.5 rounded-xl bg-dark-800 border border-dark-700/60 hover:bg-dark-750 active:scale-95 text-dark-200 text-xs font-semibold outline-none focus:ring-2 focus:ring-dark-800/50 mx-1.5 my-1 transition-all duration-150'
+            },
+            buttonsStyling: false,
+            background: '#0f172a',
+            color: '#f8fafc'
+        });
+
+        // Initialize application when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMembers();
+            
+            // Real-time search filter event handler
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                const keyword = e.target.value.trim().toLowerCase();
+                filterMembers(keyword);
+            });
+        });
+
+        // Fetch all members from Supabase Database
+        async function fetchMembers() {
+            setLoadingState(true);
+            try {
+                const { data, error } = await supabaseClient
+                    .from('members')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                
+                membersData = data || [];
+                filteredMembers = [...membersData];
+                
+                updateStatistics();
+                renderTable();
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                darkSwal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาดในการโหลดข้อมูล',
+                    text: error.message || 'ไม่สามารถติดต่อฐานข้อมูลได้'
+                });
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        // Toggle elements for loading state
+        function setLoadingState(isLoading) {
+            const tableBody = document.getElementById('members-table-body');
+            const loadingState = document.getElementById('table-loading-state');
+            const emptyState = document.getElementById('table-empty-state');
+            
+            if (isLoading) {
+                tableBody.classList.add('hidden');
+                emptyState.classList.add('hidden');
+                loadingState.classList.remove('hidden');
+            } else {
+                loadingState.classList.add('hidden');
+                tableBody.classList.remove('hidden');
+            }
+        }
+
+        // Calculate and update statistics dashboard
+        function updateStatistics() {
+            const totalMembers = membersData.length;
+            const totalPoints = membersData.reduce((sum, item) => sum + (Number(item.points) || 0), 0);
+            const avgPoints = totalMembers > 0 ? (totalPoints / totalMembers).toFixed(1) : '0.0';
+
+            // Animated counters for premium feel
+            animateCounter('stat-total-members', totalMembers);
+            animateCounter('stat-total-points', totalPoints);
+            animateCounter('stat-avg-points', avgPoints);
+        }
+
+        // Counter animation helper
+        function animateCounter(elementId, targetVal) {
+            const el = document.getElementById(elementId);
+            const target = parseFloat(targetVal);
+            const current = parseFloat(el.innerText) || 0;
+            if (target === current) return;
+
+            const isFloat = String(targetVal).includes('.');
+            const start = Date.now();
+            const duration = 800; // ms
+
+            function update() {
+                const timePassed = Date.now() - start;
+                let progress = timePassed / duration;
+                if (progress > 1) progress = 1;
+
+                const value = current + (target - current) * progress;
+                el.innerText = isFloat ? value.toFixed(1) : Math.floor(value).toLocaleString();
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        // Search filter matching name or phone number
+        function filterMembers(keyword) {
+            if (!keyword) {
+                filteredMembers = [...membersData];
+            } else {
+                filteredMembers = membersData.filter(member => 
+                    (member.name && member.name.toLowerCase().includes(keyword)) ||
+                    (member.phone && member.phone.includes(keyword))
+                );
+            }
+            renderTable();
+        }
+
+        // Render table records list dynamically
+        function renderTable() {
+            const tableBody = document.getElementById('members-table-body');
+            const emptyState = document.getElementById('table-empty-state');
+            
+            if (filteredMembers.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            tableBody.innerHTML = filteredMembers.map((member, index) => {
+                const signupDate = member.created_at 
+                    ? new Date(member.created_at).toLocaleDateString('th-TH', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })
+                    : '-';
+                
+                return `
+                    <tr class="hover:bg-dark-900/20 transition-colors group">
+                        <td class="py-4 px-4 font-semibold text-dark-400">${index + 1}</td>
+                        <td class="py-4 px-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500 text-xs font-semibold uppercase">
+                                    ${member.name ? member.name.substring(0, 2) : 'M'}
+                                </div>
+                                <div>
+                                    <span class="block font-bold text-white text-base">${member.name || '-'}</span>
+                                    <span class="block text-[10px] text-dark-500 font-medium font-mono">ID: ${member.id}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-4 font-mono font-medium text-dark-300">
+                            <i class="fa-solid fa-phone text-xs text-dark-500 mr-2"></i>${member.phone || '-'}
+                        </td>
+                        <td class="py-4 px-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                <i class="fa-solid fa-star text-[10px] text-amber-500"></i>
+                                ${Number(member.points).toLocaleString()} คะแนน
+                            </span>
+                        </td>
+                        <td class="py-4 px-4 text-xs font-semibold text-dark-400">
+                            ${signupDate}
+                        </td>
+                        <td class="py-4 px-4 text-right">
+                            <div class="flex justify-end gap-2.5 opacity-80 group-hover:opacity-100 transition-opacity">
+                                <button onclick="editMember('${member.id}')" title="แก้ไข"
+                                    class="w-8 h-8 rounded-lg border border-dark-800 bg-dark-900 hover:bg-dark-800 hover:border-dark-700 text-indigo-400 hover:text-indigo-350 flex items-center justify-center text-xs transition-all duration-150">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                                <button onclick="deleteMember('${member.id}', '${member.name}')" title="ลบ"
+                                    class="w-8 h-8 rounded-lg border border-dark-800 bg-dark-900 hover:bg-dark-800 hover:border-dark-700 text-rose-400 hover:text-rose-350 flex items-center justify-center text-xs transition-all duration-150">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Open Modal for adding member
+        function openAddModal() {
+            isEditMode = false;
+            
+            // Reset fields
+            document.getElementById('member-id').value = '';
+            document.getElementById('member-form').reset();
+            
+            // Setup title & icons
+            document.getElementById('modal-title').innerText = 'เพิ่มสมาชิกใหม่';
+            document.getElementById('modal-subtitle').innerText = 'กรอกรายละเอียดสมาชิกใหม่เพื่อบันทึกลงระบบ';
+            document.getElementById('modal-icon').className = 'fa-solid fa-user-plus';
+            document.getElementById('modal-icon-container').className = 'w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-500 text-sm';
+            
+            // Submit button style
+            const submitBtn = document.getElementById('form-submit-btn');
+            submitBtn.className = 'flex-1 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-sm font-semibold text-white shadow-lg shadow-brand-500/10 transition-all duration-150 flex items-center justify-center gap-2';
+            submitBtn.innerHTML = `<span>บันทึกข้อมูล</span>`;
+
+            showModal(true);
+        }
+
+        // Open Modal for editing member
+        function editMember(id) {
+            const member = membersData.find(item => item.id === id);
+            if (!member) return;
+
+            isEditMode = true;
+
+            // Load data into inputs
+            document.getElementById('member-id').value = member.id;
+            document.getElementById('input-name').value = member.name || '';
+            document.getElementById('input-phone').value = member.phone || '';
+            document.getElementById('input-points').value = member.points || 0;
+
+            // Setup title & icons
+            document.getElementById('modal-title').innerText = 'แก้ไขข้อมูลสมาชิก';
+            document.getElementById('modal-subtitle').innerText = 'ปรับเปลี่ยนข้อมูลรายละเอียดสมาชิกในระบบ';
+            document.getElementById('modal-icon').className = 'fa-solid fa-user-pen';
+            document.getElementById('modal-icon-container').className = 'w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 text-sm';
+            
+            // Submit button style
+            const submitBtn = document.getElementById('form-submit-btn');
+            submitBtn.className = 'flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-550 active:scale-95 text-sm font-semibold text-white shadow-lg shadow-indigo-600/10 transition-all duration-150 flex items-center justify-center gap-2';
+            submitBtn.innerHTML = `<span>อัปเดตข้อมูล</span>`;
+
+            showModal(true);
+        }
+
+        // Toggle Modal Animation and Display
+        function showModal(visible) {
+            const modal = document.getElementById('form-modal');
+            const card = document.getElementById('modal-card');
+            
+            if (visible) {
+                modal.classList.remove('hidden');
+                // Allow browser to render then transition
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    card.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                card.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // Close Modal Form
+        function closeFormModal() {
+            showModal(false);
+        }
+
+        // Handle Add/Edit Form submission
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('member-id').value;
+            const name = document.getElementById('input-name').value.trim();
+            const phone = document.getElementById('input-phone').value.trim();
+            const points = parseInt(document.getElementById('input-points').value);
+
+            // Validation checks
+            if (!name || !phone) {
+                darkSwal.fire({
+                    icon: 'warning',
+                    title: 'ข้อมูลไม่ครบถ้วน',
+                    text: 'กรุณากรอกชื่อและเบอร์โทรศัพท์'
+                });
+                return;
+            }
+
+            // Show loading indicators inside submission button
+            const submitBtn = document.getElementById('form-submit-btn');
+            const origHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-sm"></i> กำลังบันทึก...`;
+
+            try {
+                if (isEditMode) {
+                    // Update Operation
+                    const { error } = await supabaseClient
+                        .from('members')
+                        .update({ name, phone, points })
+                        .eq('id', id);
+
+                    if (error) throw error;
+
+                    darkSwal.fire({
+                        icon: 'success',
+                        title: 'อัปเดตข้อมูลสำเร็จ',
+                        text: `ระบบทำการแก้ไขข้อมูลของคุณ ${name} เรียบร้อยแล้ว`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    // Create Operation
+                    const { error } = await supabaseClient
+                        .from('members')
+                        .insert([{ name, phone, points }]);
+
+                    if (error) throw error;
+
+                    darkSwal.fire({
+                        icon: 'success',
+                        title: 'เพิ่มสมาชิกใหม่สำเร็จ',
+                        text: `ระบบบันทึกรายชื่อคุณ ${name} เข้าสู่ระบบแล้ว`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+
+                closeFormModal();
+                fetchMembers(); // Reload table
+            } catch (error) {
+                console.error("Database operation failed:", error);
+                darkSwal.fire({
+                    icon: 'error',
+                    title: 'ไม่สามารถบันทึกข้อมูลได้',
+                    text: error.message || 'กรุณาลองใหม่อีกครั้งภายหลัง'
+                });
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = origHTML;
+            }
+        }
+
+        // Delete Member handler
+        async function deleteMember(id, name) {
+            const confirmResult = await darkSwal.fire({
+                title: 'ยืนยันการลบข้อมูล?',
+                text: `คุณต้องการลบรายชื่อสมาชิก คุณ ${name} ออกจากระบบใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช่, ต้องการลบ',
+                cancelButtonText: 'ยกเลิก'
+            });
+
+            if (confirmResult.isConfirmed) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('members')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) throw error;
+
+                    darkSwal.fire({
+                        icon: 'success',
+                        title: 'ลบข้อมูลสำเร็จ',
+                        text: 'ระบบได้ลบข้อมูลสมาชิกออกเรียบร้อยแล้ว',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    fetchMembers(); // Reload table
+                } catch (error) {
+                    console.error("Delete operation failed:", error);
+                    darkSwal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาดในการลบข้อมูล',
+                        text: error.message || 'กรุณาลองใหม่อีกครั้งภายหลัง'
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
