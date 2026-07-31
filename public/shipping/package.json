@@ -1,0 +1,15 @@
+{
+  "name": "shipping",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "clasp push",
+    "pull": "clasp pull",
+    "open": "clasp open",
+    "deploy": "clasp deploy"
+  },
+  "author": "",
+  "license": "ISC"
+}

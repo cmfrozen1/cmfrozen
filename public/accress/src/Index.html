@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการอุปกรณ์คอมพิวเตอร์ที่ชำรุด/เสีย</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+            padding: 30px 35px;
+            position: relative;
+        }
+        
+        /* ====== ปรับปรุงส่วนการพิมพ์ ====== */
+        @media print {
+            @page { 
+                size: A4 portrait; 
+                margin: 15mm 15mm 15mm 15mm;
+            }
+            
+            body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                color: black !important;
+            }
+            .container { 
+                box-shadow: none !important; 
+                border-radius: 0 !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                max-width: 100% !important; 
+                width: 100% !important;
+                background: transparent !important;
+            }
+            .no-print { display: none !important; }
+            .fab-container { display: none !important; }
+            .fill-field { 
+                border: none !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                background: white !important; 
+            }
+            .asset-table { 
+                page-break-inside: auto; 
+                width: 100% !important;
+                table-layout: fixed !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: 1.5px solid #1e2b3c !important;
+            }
+            .asset-table tr { page-break-inside: avoid; page-break-after: auto; }
+            .asset-table th { 
+                background-color: #f0f3f8 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                font-size: 13px;
+                border: 1px solid #1f2a3a !important;
+            }
+            .asset-table td { 
+                font-size: 12px;
+                border: 1px solid #1f2a3a !important;
+            }
+            
+            /* tfoot - ไร้เส้นขอบโดยสิ้นเชิง */
+            .asset-table tfoot {
+                display: none !important;
+            }
+            #tableWrap.print-paginated {
+                display: none !important;
+            }
+            .print-pages {
+                display: block !important;
+            }
+            .print-page {
+                page-break-after: always;
+                break-after: page;
+            }
+            .print-page:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
+            .print-page-footer {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                padding: 6px 6px 0 !important;
+                font-size: 11px !important;
+                font-weight: normal !important;
+                color: #333 !important;
+                border: 0 !important;
+                outline: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+            
+            .round-section button { display: none !important; }
+            
+            /* จัดกึ่งกลางส่วนหัวตอนพิมพ์ */
+            #printArea > div.flex.flex-wrap.justify-between.items-center {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                width: 100% !important;
+                margin-bottom: 20px !important;
+            }
+            #printArea > div.flex.flex-wrap.justify-between.items-center > div.text-2xl {
+                border-bottom: none !important;
+                margin-bottom: 10px !important;
+                text-align: center !important;
+            }
+            .round-section {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                gap: 15px !important;
+                width: 100% !important;
+                text-align: center !important;
+            }
+            .round-section input, .round-section select { 
+                border: none !important; 
+                border-bottom: 1px solid #1f2a3a !important; 
+                font-weight: bold !important; 
+                width: 75px !important; 
+                text-align: center !important;
+                background: transparent !important;
+            }
+            .record-date {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                font-weight: bold !important;
+            }
+            .record-date span {
+                border-bottom: 1px solid #1f2a3a !important;
+                padding: 0 8px !important;
+                display: inline-block !important;
+            }
+            
+            /* ปรับขนาดคอลัมน์ */
+            .col-seq { width: 5% !important; }
+            .col-desc { width: 28% !important; }
+            .col-asset-code { width: 14% !important; }
+            .col-sn { width: 14% !important; }
+            .col-note { width: 15% !important; }
+            .col-image { width: 24% !important; }
+            .col-action { display: none !important; }
+            
+            /* จัดการรูปภาพ */
+            .image-cell {
+                min-height: auto !important;
+                padding: 2px !important;
+                border: none !important;
+            }
+            .image-cell .placeholder,
+            .image-cell .fa-image {
+                display: none !important;
+            }
+            .image-thumbnails {
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                gap: 4px !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+            }
+            .image-thumbnails .thumb-item { 
+                width: 48% !important; 
+                height: 60px !important; 
+                border: 0.5px solid #000 !important;
+                border-radius: 2px !important;
+                flex-shrink: 0 !important;
+            }
+            .image-thumbnails .thumb-item img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+            }
+            .image-thumbnails .thumb-item:only-child {
+                width: 98% !important;
+                height: 75px !important;
+            }
+            .image-thumbnails .thumb-item:only-child img {
+                object-fit: contain !important;
+            }
+            .image-thumbnails .thumb-count {
+                width: 48% !important;
+                height: 60px !important;
+                border: 0.5px solid #000 !important;
+                font-size: 10px !important;
+                flex-shrink: 0 !important;
+                border-radius: 2px !important;
+                background: #f0f4fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+        }
+        
+        /* ส่วนอื่นๆ */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #loadingOverlay.active { display: flex; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text { color: white; font-size: 16px; margin-top: 15px; font-family: 'Sarabun', sans-serif; text-align: center; }
+        
+        .asset-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 12px;
+            border: 1.5px solid #1e2b3c;
+        }
+        .asset-table th, .asset-table td {
+            border: 1px solid #1f2a3a;
+            padding: 8px 6px;
+            vertical-align: middle;
+            text-align: left;
+        }
+        .asset-table th {
+            background-color: #f0f3f8;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid #1e2b3c;
+            padding: 10px 4px;
+        }
+        .col-seq { width: 5%; text-align: center; }
+        .col-desc { width: 27%; }
+        .col-asset-code { width: 15%; text-align: center; }
+        .col-sn { width: 15%; text-align: center; }
+        .col-note { width: 16%; text-align: center; }
+        .col-image { width: 15%; text-align: center; }
+        .col-action { width: 7%; text-align: center; }
+        
+        .fill-field {
+            border: none;
+            background: transparent;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            width: 100%;
+            padding: 4px 4px 2px 4px;
+            outline: none;
+            color: #0b1a2a;
+            min-height: 2em;
+            transition: background-color 0.3s;
+        }
+        .fill-field:focus {
+            background: #fafcfd;
+        }
+        .fill-asset-code { width: 95%; text-align: center; display: inline-block; }
+        .fill-sn { width: 95%; text-align: center; display: inline-block; }
+        .fill-note { width: 98%; }
+        
+        .image-cell {
+            cursor: pointer;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 4px;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+        .image-cell:hover { background: #f0f7ff; border: 2px dashed #4a90d9; }
+        .image-cell img { max-width: 100%; max-height: 70px; border-radius: 4px; border: 1px solid #d1d9e6; object-fit: cover; }
+        .image-cell .placeholder { color: #8899aa; font-size: 12px; }
+        .image-cell .fa-image { font-size: 24px; color: #b0c4d9; margin-bottom: 2px; }
+        
+        .image-thumbnails { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+        .image-thumbnails .thumb-item { width: 40px; height: 40px; border-radius: 4px; border: 1px solid #d1d9e6; overflow: hidden; cursor: pointer; position: relative; }
+        .image-thumbnails .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+        .image-thumbnails .thumb-count { width: 40px; height: 40px; background: #f0f4fa; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #555; border-radius: 4px; border: 1px solid #d1d9e6; }
+        
+        .round-section { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .round-section input, .round-section select {
+            border: none;
+            border-bottom: 1.5px solid #2c3e50;
+            background: transparent;
+            font-size: 14px;
+            width: 90px;
+            padding: 4px 6px;
+            font-family: 'Sarabun', sans-serif;
+            outline: none;
+            text-align: center;
+            cursor: pointer;
+        }
+        .round-section input:focus, .round-section select:focus { border-bottom: 2px solid #1e4b7a; }
+        .record-date {
+            font-size: 14px;
+            color: #1f2a3a;
+            padding: 4px 6px;
+            background: transparent;
+            border: none;
+            border-bottom: 1.5px solid #2c3e50;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-msg {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            background: #f0f4fa;
+            color: #1f2a3a;
+            font-family: 'Sarabun', sans-serif;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            z-index: 900;
+            transition: all 0.3s;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .status-msg.show { display: block; }
+        .status-msg.success { background: #d4edda; color: #155724; }
+        .status-msg.error { background: #f8d7da; color: #721c24; }
+        .status-msg.loading { background: #fff3cd; color: #856404; }
+        
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        .fab-main {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a7a4a, #0f6a3a);
+            color: white;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(26, 122, 74, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fab-main:hover { transform: scale(1.08); box-shadow: 0 8px 28px rgba(26, 122, 74, 0.5); }
+        .fab-main.active { transform: rotate(45deg); background: linear-gradient(135deg, #c0392b, #e74c3c); }
+        
+        .radial-menu {
+            position: absolute;
+            bottom: 75px;
+            right: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .radial-menu.open { display: flex; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.8); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .radial-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .radial-btn:hover { transform: scale(1.1); }
+        .radial-btn .tooltip {
+            position: absolute;
+            right: 60px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            font-family: 'Sarabun', sans-serif;
+            display: none;
+        }
+        .radial-btn:hover .tooltip { display: block; }
+        .radial-btn-save { background: linear-gradient(135deg, #1a7a4a, #0f6a3a); }
+        .radial-btn-load { background: linear-gradient(135deg, #2a5f8a, #1a4f7a); }
+        .radial-btn-upload { background: linear-gradient(135deg, #6c4a8a, #5a3a7a); }
+        .radial-btn-print { background: linear-gradient(135deg, #1f2a3a, #2c3e5a); }
+        .radial-btn-clear { background: linear-gradient(135deg, #6c757d, #5a6268); }
+        
+        /* Modal for History */
+        .history-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-item:hover { background: #f8f9fa; }
+        .history-item:last-child { border-bottom: none; }
+        
+        @media screen and (max-width: 768px) {
+            body { padding: 8px; }
+            .container { padding: 12px 8px; border-radius: 12px; }
+            .asset-table { font-size: 10px; min-width: 520px; }
+            .col-seq { width: 5%; min-width: 28px; }
+            .col-desc { width: 22%; min-width: 110px; }
+            .col-asset-code { width: 14%; min-width: 72px; }
+            .col-sn { width: 14%; min-width: 72px; }
+            .col-note { width: 16%; min-width: 80px; }
+            .col-image { width: 16%; min-width: 68px; }
+            .col-action { width: 13%; min-width: 64px; }
+            .fab-container { display: none !important; }
+            .round-section input, .round-section select { width: 76px; font-size: 12px; }
+            .record-date { font-size: 11px; padding: 3px 8px; }
+            .asset-table th, .asset-table td { padding: 5px 3px; }
+            .summary-box { font-size: 13px; padding: 8px 10px; }
+            .fill-field { font-size: 10px; padding: 2px; }
+            /* hint scroll */
+            #tableWrap { -webkit-overflow-scrolling: touch; }
+        }
+
+        /* ===== Mobile Banner ===== */
+        #mobileBanner {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 9998;
+            background: linear-gradient(135deg, #1a7a4a 0%, #0f4f8a 100%);
+            color: white;
+            padding: 10px 16px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 13px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        #mobileBanner.show { display: flex; }
+        #mobileBanner .mob-icon { font-size: 18px; flex-shrink: 0; }
+        #mobileBanner .mob-text { flex: 1; line-height: 1.4; }
+        #mobileBanner .mob-text strong { font-size: 14px; }
+        #mobileBanner .mob-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #mobileBanner .mob-close:hover { background: rgba(255,255,255,0.35); }
+        .mobile-banner-spacer { display: none; height: 52px; }
+        .mobile-banner-spacer.show { display: block; }
+
+        /* ===== Mobile Bottom Action Sheet ===== */
+        #mobileBottomNav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+            padding: 8px 4px 12px;
+            font-family: 'Sarabun', sans-serif;
+        }
+        #mobileBottomNav.show { display: flex; align-items: center; justify-content: space-around; }
+        .mob-nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 10px;
+            color: #4a5568;
+            font-size: 10px;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.2s;
+            min-width: 52px;
+        }
+        .mob-nav-btn i { font-size: 20px; }
+        .mob-nav-btn:active { background: #f0f4fa; transform: scale(0.93); }
+        .mob-nav-btn.save-btn { color: #1a7a4a; }
+        .mob-nav-btn.load-btn { color: #2a5f8a; }
+        .mob-nav-btn.upload-btn { color: #6c4a8a; }
+        .mob-nav-btn.print-btn { color: #374151; }
+        .mob-nav-btn.add-btn { color: #d97706; }
+        .mob-nav-btn.clear-btn { color: #dc2626; }
+        .mobile-bottom-spacer { display: none; height: 70px; }
+        .mobile-bottom-spacer.show { display: block; }
+
+        /* ===== Mobile scroll hint ===== */
+        @media screen and (max-width: 768px) {
+            .scroll-hint {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 11px;
+                color: #718096;
+                margin-bottom: 5px;
+                font-family: 'Sarabun', sans-serif;
+                justify-content: flex-end;
+            }
+            .scroll-hint i { font-size: 12px; }
+        }
+        @media screen and (min-width: 769px) {
+            .scroll-hint { display: none !important; }
+        }
+
+        /* ===== Mobile Edit Modal ===== */
+        #mobileEditModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0,0,0,0.55);
+            align-items: flex-end;
+        }
+        #mobileEditModal.show { display: flex; }
+        .mob-edit-sheet {
+            background: white;
+            width: 100%;
+            border-radius: 20px 20px 0 0;
+            padding: 0 0 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+            font-family: 'Sarabun', sans-serif;
+            animation: slideUpSheet 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes slideUpSheet {
+            from { transform: translateY(100%); }
+            to   { transform: translateY(0); }
+        }
+        .mob-edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+        .mob-edit-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2a3a;
+            margin: 0;
+        }
+        .mob-edit-close {
+            background: #f0f2f5;
+            border: none;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            color: #4a5568;
+        }
+        .mob-edit-body { padding: 16px 20px; }
+        .mob-edit-field { margin-bottom: 14px; }
+        .mob-edit-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .mob-edit-field input, .mob-edit-field textarea {
+            width: 100%;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: 'Sarabun', sans-serif;
+            outline: none;
+            color: #1f2a3a;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .mob-edit-field input:focus, .mob-edit-field textarea:focus {
+            border-color: #1a7a4a;
+            box-shadow: 0 0 0 3px rgba(26,122,74,0.1);
+        }
+        .mob-edit-field textarea { resize: vertical; min-height: 70px; }
+        .mob-edit-img-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .mob-edit-img-thumb {
+            width: 56px; height: 56px;
+            border-radius: 8px;
+            border: 1px solid #d1d9e6;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .mob-edit-img-add {
+            width: 56px; height: 56px;
+            border-radius: 8px;
+            border: 2px dashed #b0c4d9;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            cursor: pointer;
+            color: #718096;
+            font-size: 10px;
+            gap: 2px;
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+        .mob-edit-img-add:active { background: #e8f0fe; }
+        .mob-edit-img-add i { font-size: 20px; }
+        .mob-edit-footer {
+            padding: 0 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .mob-edit-save {
+            flex: 1;
+            background: linear-gradient(135deg, #1a7a4a, #0f6a3a);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            transition: opacity 0.2s;
+        }
+        .mob-edit-save:active { opacity: 0.85; }
+        .mob-edit-del {
+            background: #fff0f0;
+            color: #dc2626;
+            border: 1.5px solid #fecaca;
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .mob-edit-del:active { opacity: 0.8; }
+        /* ปุ่ม edit บนมือถือในตาราง */
+        .mob-edit-row-btn {
+            display: none;
+            background: #e8f4ee;
+            border: none;
+            color: #1a7a4a;
+            border-radius: 6px;
+            padding: 4px 7px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-right: 3px;
+        }
+        @media screen and (max-width: 768px) {
+            .mob-edit-row-btn { display: inline-flex; align-items: center; justify-content: center; }
+        }
+
+        /* ===== Mobile indicator badge ===== */
+        #mobileModeBadge {
+            display: none;
+            background: linear-gradient(135deg, #1a7a4a, #0f4f8a);
+            color: white;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-family: 'Sarabun', sans-serif;
+            align-items: center;
+            gap: 5px;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+        #mobileModeBadge.show { display: inline-flex; }
+        
+        .webapp-footer {
+            text-align: center;
+            font-size: 13px;
+            color: #718096;
+            margin-top: 30px;
+            margin-bottom: 25px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 500;
+        }
+        
+        /* ซ่อน tfoot ในหน้าจอปกติ (แสดงเฉพาะตอนพิมพ์) */
+        @media screen {
+            .asset-table tfoot {
+                display: none !important;
+            }
+            .print-pages {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Mobile Banner -->
+<div id="mobileBanner">
+    <span class="mob-icon"><i class="fas fa-mobile-alt"></i></span>
+    <div class="mob-text">
+        <strong>📱 โหมดมือถือ</strong> — บางคอลัมน์ถูกซ่อนเพื่อความสะดวก<br>
+        <span style="opacity:0.85">ใช้ปุ่มด้านล่างเพื่อจัดการข้อมูล</span>
+    </div>
+    <button class="mob-close" onclick="closeMobileBanner()"><i class="fas fa-times"></i></button>
+</div>
+<div class="mobile-banner-spacer" id="mobileBannerSpacer"></div>
+
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">กำลังโหลด...</div>
+</div>
+
+<div id="statusMsg" class="status-msg"></div>
+
+<div class="container" id="printArea">
+    <!-- หัวข้อและส่วนควบคุม -->
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+        <div class="text-2xl font-bold text-gray-800 border-b-2 border-gray-800 pb-2 flex items-center gap-2">
+            <i class="fas fa-laptop text-green-700"></i>
+            <span>รายการอุปกรณ์คอมพิวเตอร์ที่ชำรุด/เสีย</span>
+            <span id="mobileModeBadge"><i class="fas fa-mobile-alt"></i> Mobile</span>
+        </div>
+        <div class="round-section">
+            <div class="flex items-center gap-2">
+                <label class="font-semibold text-gray-700">รอบที่:</label>
+                <select id="roundInput" onchange="loadData()"></select>
+                <label class="font-semibold text-gray-700 ml-2">ปี:</label>
+                <select id="yearInput" onchange="loadData()"></select>
+                <button onclick="loadData()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm transition-colors">
+                    <i class="fas fa-sync-alt"></i> โหลด
+                </button>
+            </div>
+            <div class="record-date" id="recordDate">
+                <i class="far fa-calendar-alt mr-1"></i> วันที่: <span id="dateDisplay">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll hint บนมือถือ -->
+    <div class="scroll-hint no-print" id="scrollHint">
+        <i class="fas fa-arrows-left-right"></i> เลื่อนซ้าย-ขวาเพื่อดูข้อมูลครบ / กด <i class="fas fa-pen"></i> เพื่อแก้ไข
+    </div>
+
+    <!-- ตารางข้อมูล -->
+    <div class="overflow-x-auto" id="tableWrap">
+        <table class="asset-table" id="assetTable">
+            <thead>
+                <tr>
+                    <th class="col-seq">ลำดับ</th>
+                    <th class="col-desc">รายการอุปกรณ์คอมพิวเตอร์ที่ชำรุด/เสีย</th>
+                    <th class="col-asset-code">รหัสทรัพย์สิน</th>
+                    <th class="col-sn">S/N</th>
+                    <th class="col-note">หมายเหตุ</th>
+                    <th class="col-image">รูปภาพ</th>
+                    <th class="col-action no-print">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: left !important; font-weight: normal !important; padding: 6px 6px !important; border: none !important; background: transparent !important;">
+                        แผนกเทคโนโลยีสารสนเทศ
+                    </td>
+                    <td colspan="4" style="text-align: right !important; font-weight: normal !important; padding: 6px 6px !important; border: none !important; background: transparent !important;">
+                        <span class="page-number"></span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+    <!-- สรุปรายการ -->
+    <div class="summary-box flex justify-between items-center bg-gray-50 border border-gray-200 rounded-lg p-3 mt-3 font-semibold text-gray-700">
+        <span>รวมรายการอุปกรณ์ชำรุด/เสียทั้งหมด:</span>
+        <span class="text-blue-700 font-bold text-lg" id="totalItemsDisplay">0 รายการ</span>
+    </div>
+
+    <div class="no-print text-center mt-3">
+        <button onclick="addRow()" class="text-green-600 hover:text-green-700 text-sm font-medium transition-colors">
+            <i class="fas fa-plus-circle mr-1"></i> เพิ่มรายการ
+        </button>
+    </div>
+</div>
+
+<div class="mobile-bottom-spacer" id="mobileBottomSpacer"></div>
+
+<div class="webapp-footer no-print">
+    พัฒนาโดย: นายธีรพงศ์ พรหมวัง แผนกเทคโนโลยีสารสนเทศ สาขา 1
+</div>
+
+<!-- Mobile Edit Modal (Bottom Sheet) -->
+<div id="mobileEditModal" onclick="closeMobileEditIfBackdrop(event)">
+    <div class="mob-edit-sheet">
+        <div class="mob-edit-header">
+            <h3 id="mobEditTitle"><i class="fas fa-pen mr-2"></i>แก้ไขรายการ</h3>
+            <button class="mob-edit-close" onclick="closeMobileEditModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="mob-edit-body">
+            <input type="hidden" id="mobEditSeq">
+            <div class="mob-edit-field">
+                <label><i class="fas fa-desktop mr-1"></i>รายการอุปกรณ์ที่ชำรุด/เสีย</label>
+                <textarea id="mobEditDesc" placeholder="ระบุรายการอุปกรณ์..."></textarea>
+            </div>
+            <div class="mob-edit-field">
+                <label><i class="fas fa-barcode mr-1"></i>รหัสทรัพย์สิน</label>
+                <input type="text" id="mobEditAssetCode" placeholder="รหัสทรัพย์สิน">
+            </div>
+            <div class="mob-edit-field">
+                <label><i class="fas fa-hashtag mr-1"></i>Serial Number (S/N)</label>
+                <input type="text" id="mobEditSN" placeholder="S/N">
+            </div>
+            <div class="mob-edit-field">
+                <label><i class="fas fa-sticky-note mr-1"></i>หมายเหตุ</label>
+                <input type="text" id="mobEditNote" placeholder="หมายเหตุ">
+            </div>
+            <div class="mob-edit-field">
+                <label><i class="fas fa-images mr-1"></i>รูปภาพ (สูงสุด 2 รูป)</label>
+                <div class="mob-edit-img-row" id="mobEditImgRow">
+                    <!-- filled by JS -->
+                </div>
+            </div>
+        </div>
+        <div class="mob-edit-footer">
+            <button class="mob-edit-save" onclick="saveMobileEditModal()">
+                <i class="fas fa-check"></i> บันทึกรายการนี้
+            </button>
+            <button class="mob-edit-del" onclick="deleteMobileEditRow()" title="ลบแถว">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="fab-container no-print">
+    <div class="radial-menu" id="radialMenu">
+        <button class="radial-btn radial-btn-save" onclick="handleSaveAction()" title="บันทึก">
+            <i class="fas fa-save"></i>
+            <span class="tooltip">บันทึก</span>
+        </button>
+        <button class="radial-btn radial-btn-load" onclick="loadAllRounds()" title="ประวัติ/แก้ไข">
+            <i class="fas fa-history"></i>
+            <span class="tooltip">ประวัติ/แก้ไข</span>
+        </button>
+        <button class="radial-btn radial-btn-upload" onclick="uploadAllImages(true)" title="อัปโหลดรูป">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span class="tooltip">อัปโหลดรูปและบันทึก</span>
+        </button>
+        <button class="radial-btn radial-btn-clear" onclick="clearForm()" title="เคลียร์">
+            <i class="fas fa-eraser"></i>
+            <span class="tooltip">เคลียร์ฟอร์ม</span>
+        </button>
+        <button class="radial-btn radial-btn-print" onclick="window.print()" title="พิมพ์">
+            <i class="fas fa-print"></i>
+            <span class="tooltip">พิมพ์/PDF</span>
+        </button>
+    </div>
+    <button class="fab-main" id="fabMain" onclick="toggleRadialMenu()">
+        <i class="fas fa-plus"></i>
+    </button>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<div id="mobileBottomNav">
+    <button class="mob-nav-btn save-btn" onclick="handleSaveAction()">
+        <i class="fas fa-save"></i>
+        <span>บันทึก</span>
+    </button>
+    <button class="mob-nav-btn load-btn" onclick="loadAllRounds()">
+        <i class="fas fa-history"></i>
+        <span>ประวัติ</span>
+    </button>
+    <button class="mob-nav-btn add-btn" onclick="addRow(true)">
+        <i class="fas fa-plus-circle"></i>
+        <span>เพิ่มแถว</span>
+    </button>
+    <button class="mob-nav-btn upload-btn" onclick="uploadAllImages(true)">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <span>อัปโหลด</span>
+    </button>
+    <button class="mob-nav-btn print-btn" onclick="window.print()">
+        <i class="fas fa-print"></i>
+        <span>พิมพ์</span>
+    </button>
+    <button class="mob-nav-btn clear-btn" onclick="clearForm()">
+        <i class="fas fa-eraser"></i>
+        <span>เคลียร์</span>
+    </button>
+</div>
+
+<input type="file" id="hiddenFileInput" accept="image/*" style="display:none" multiple>
+
+<script>
+    // ================================================================
+    // ===== Mobile Mode Detection & Control =====
+    // ================================================================
+    var isMobileMode = false;
+    var mobileColVisible = { assetCode: false, sn: false };
+
+    function checkMobileMode() {
+        var wasMobile = isMobileMode;
+        var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        var isSmallScreen = window.innerWidth <= 768;
+        isMobileMode = isSmallScreen || isTouchDevice;
+
+        var banner = document.getElementById('mobileBanner');
+        var bannerSpacer = document.getElementById('mobileBannerSpacer');
+        var bottomNav = document.getElementById('mobileBottomNav');
+        var bottomSpacer = document.getElementById('mobileBottomSpacer');
+        var badge = document.getElementById('mobileModeBadge');
+        var fabContainer = document.querySelector('.fab-container');
+        var colToggle = document.getElementById('mobColToggle');
+
+        if (isMobileMode) {
+            if (!wasMobile) {
+                // แสดง banner เฉพาะครั้งแรกที่เข้าสู่ mobile mode
+                banner && banner.classList.add('show');
+                bannerSpacer && bannerSpacer.classList.add('show');
+            }
+            bottomNav && bottomNav.classList.add('show');
+            bottomSpacer && bottomSpacer.classList.add('show');
+            badge && badge.classList.add('show');
+            if (fabContainer) fabContainer.style.display = 'none';
+            if (colToggle) colToggle.style.display = 'flex';
+
+            // ซ่อนคอลัมน์ที่ไม่จำเป็นในโหมดมือถือ
+            applyMobileColumns();
+
+            // ปรับ body padding เพื่อรองรับ bottom nav
+            document.body.style.paddingBottom = '80px';
+        } else {
+            banner && banner.classList.remove('show');
+            bannerSpacer && bannerSpacer.classList.remove('show');
+            bottomNav && bottomNav.classList.remove('show');
+            bottomSpacer && bottomSpacer.classList.remove('show');
+            badge && badge.classList.remove('show');
+            if (fabContainer) fabContainer.style.display = '';
+            if (colToggle) colToggle.style.display = 'none';
+
+            // คืนค่าคอลัมน์ทั้งหมด
+            restoreAllColumns();
+
+            document.body.style.paddingBottom = '';
+        }
+    }
+
+    function closeMobileBanner() {
+        var banner = document.getElementById('mobileBanner');
+        var bannerSpacer = document.getElementById('mobileBannerSpacer');
+        if (banner) banner.classList.remove('show');
+        if (bannerSpacer) bannerSpacer.classList.remove('show');
+    }
+
+    function applyMobileColumns() { /* ไม่ซ่อนคอลัมน์แล้ว ใช้ scroll แทน */ }
+    function restoreAllColumns() { /* ไม่ซ่อนคอลัมน์แล้ว */ }
+    function toggleMobileCol() { /* deprecated */ }
+
+    // ===== helper: escape html =====
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ===== Mobile Edit Modal =====
+    var _mobEditSeqTarget = null;
+
+    function openMobileEditModal(btn, forceSeq) {
+        var seq = forceSeq;
+        if (!seq && btn) {
+            var tr = btn.closest('tr');
+            var tbody = document.getElementById('tableBody');
+            seq = Array.from(tbody.children).indexOf(tr) + 1;
+        }
+        if (!seq) return;
+        _mobEditSeqTarget = seq;
+
+        var tbody = document.getElementById('tableBody');
+        var tr = tbody.children[seq - 1];
+        if (!tr) return;
+
+        var descVal   = tr.querySelector('.col-desc input') ? tr.querySelector('.col-desc input').value : '';
+        var assetVal  = tr.querySelector('.col-asset-code input') ? tr.querySelector('.col-asset-code input').value : '';
+        var snVal     = tr.querySelector('.col-sn input') ? tr.querySelector('.col-sn input').value : '';
+        var noteVal   = tr.querySelector('.col-note input') ? tr.querySelector('.col-note input').value : '';
+
+        document.getElementById('mobEditSeq').value  = seq;
+        document.getElementById('mobEditDesc').value = descVal;
+        document.getElementById('mobEditAssetCode').value = assetVal;
+        document.getElementById('mobEditSN').value   = snVal;
+        document.getElementById('mobEditNote').value = noteVal;
+        document.getElementById('mobEditTitle').innerHTML = '<i class="fas fa-pen mr-2"></i>แก้ไขรายการที่ ' + seq;
+
+        // แสดงรูปภาพ
+        var imgRow = document.getElementById('mobEditImgRow');
+        imgRow.innerHTML = '';
+        var existingUrls = (savedImageUrls[seq] || []).concat(imageDataUrls[seq] || []);
+        existingUrls.slice(0, 2).forEach(function(url) {
+            var img = document.createElement('img');
+            img.src = url;
+            img.className = 'mob-edit-img-thumb';
+            img.onclick = function() { viewFullImage(url); };
+            imgRow.appendChild(img);
+        });
+        if (existingUrls.length < 2) {
+            var addBtn = document.createElement('div');
+            addBtn.className = 'mob-edit-img-add';
+            addBtn.innerHTML = '<i class="fas fa-camera"></i><span>เพิ่มรูป</span>';
+            addBtn.onclick = function() { currentImageIndex = seq; document.getElementById('hiddenFileInput').click(); };
+            imgRow.appendChild(addBtn);
+        }
+
+        document.getElementById('mobileEditModal').classList.add('show');
+        document.getElementById('mobEditDesc').focus();
+    }
+
+    function saveMobileEditModal() {
+        var seq = parseInt(document.getElementById('mobEditSeq').value);
+        if (!seq) return;
+
+        var tbody = document.getElementById('tableBody');
+        var tr = tbody.children[seq - 1];
+        if (!tr) return;
+
+        tr.querySelector('.col-desc input').value        = document.getElementById('mobEditDesc').value;
+        tr.querySelector('.col-asset-code input').value  = document.getElementById('mobEditAssetCode').value;
+        tr.querySelector('.col-sn input').value          = document.getElementById('mobEditSN').value;
+        tr.querySelector('.col-note input').value        = document.getElementById('mobEditNote').value;
+
+        updateSummaryCount();
+        closeMobileEditModal();
+        showStatus('✅ อัปเดตรายการที่ ' + seq + ' เรียบร้อย', 'success');
+    }
+
+    function deleteMobileEditRow() {
+        var seq = parseInt(document.getElementById('mobEditSeq').value);
+        if (!seq) return;
+
+        // ดึง tr ไว้ก่อนปิด modal
+        var tbody = document.getElementById('tableBody');
+        var tr = tbody.children[seq - 1];
+        if (!tr) return;
+
+        closeMobileEditModal();
+
+        // เรียก deleteRowByTr โดยตรง (ไม่ใช้ .click() เพื่อหลีก conflict กับ SweetAlert2)
+        deleteRowByTr(tr);
+    }
+
+    function closeMobileEditModal() {
+        document.getElementById('mobileEditModal').classList.remove('show');
+        _mobEditSeqTarget = null;
+    }
+
+    function closeMobileEditIfBackdrop(e) {
+        if (e.target === document.getElementById('mobileEditModal')) {
+            closeMobileEditModal();
+        }
+    }
+
+    // ===============================================================
+    var currentImageIndex = 0;
+    var imageDataUrls = {}; 
+    var savedImageUrls = {}; 
+    var savedFileIds = {}; 
+    var pendingDeleteFileIds = [];
+    
+    function showLoading(text) {
+        document.getElementById('loadingOverlay').classList.add('active');
+        document.getElementById('loadingText').textContent = text || 'กำลังโหลด...';
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('active');
+    }
+
+    function showStatus(msg, type) {
+        var el = document.getElementById('statusMsg');
+        el.textContent = msg;
+        el.className = 'status-msg show ' + (type || '');
+        clearTimeout(el._timeout);
+        el._timeout = setTimeout(function() { el.classList.remove('show'); }, 5000);
+    }
+
+    function toggleRadialMenu() {
+        var menu = document.getElementById('radialMenu');
+        var btn = document.getElementById('fabMain');
+        if (menu.classList.contains('open')) {
+            menu.classList.remove('open');
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="fas fa-plus"></i>';
+        } else {
+            menu.classList.add('open');
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="fas fa-times"></i>';
+        }
+    }
+
+    function handleImageClick(index) {
+        currentImageIndex = index;
+        var existingUrls = savedImageUrls[index] || [];
+        var pendingUrls = imageDataUrls[index] || [];
+        var total = existingUrls.length + pendingUrls.length;
+        
+        if (total > 0) {
+            var html = '<div class="text-left"><p class="mb-2 font-semibold text-sm">รายการรูปภาพ (' + total + '/2 รูป):</p>';
+            html += '<div class="flex gap-2 flex-wrap justify-center mb-3">';
+            var allUrls = existingUrls.concat(pendingUrls);
+            allUrls.forEach(function(url, i) {
+                html += '<img src="' + url + '" onclick="viewFullImage(\'' + url + '\')" class="cursor-pointer hover:opacity-80 transition-opacity border rounded" style="width:65px;height:65px;object-fit:cover;">';
+            });
+            html += '</div></div>';
+            
+            var showAddBtn = total < 2;
+            
+            Swal.fire({
+                title: 'จัดการรูปภาพ แถวที่ ' + index,
+                html: html,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#1a7a4a',
+                cancelButtonColor: '#d33',
+                confirmButtonText: showAddBtn ? '<i class="fas fa-plus"></i> เพิ่มรูป' : '<i class="fas fa-ban"></i> รูปครบ 2 รูปแล้ว',
+                cancelButtonText: '<i class="fas fa-trash"></i> ลบทั้งหมด',
+                showDenyButton: true,
+                denyButtonText: '<i class="fas fa-eye"></i> ดูรูปแรก',
+                denyButtonColor: '#6c757d',
+                preConfirm: function() {
+                    if (!showAddBtn && Swal.getClickedButton() && Swal.getClickedButton().classList.contains('swal2-confirm')) {
+                        Swal.showValidationMessage('สามารถอัปโหลดรูปภาพได้สูงสุด 2 รูปเท่านั้น');
+                        return false;
+                    }
+                }
+            }).then(function(result) {
+                if (result.isConfirmed && showAddBtn) {
+                    document.getElementById('hiddenFileInput').click();
+                } else if (result.isDenied) {
+                    if (allUrls.length > 0) viewFullImage(allUrls[0]);
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    deleteAllImages(index);
+                }
+            });
+        } else {
+            document.getElementById('hiddenFileInput').click();
+        }
+    }
+
+    function viewFullImage(url) {
+        Swal.fire({
+            imageUrl: url,
+            imageAlt: 'รูปภาพอุปกรณ์',
+            width: 'auto',
+            showConfirmButton: false,
+            showCloseButton: true,
+            background: 'rgba(0,0,0,0.85)',
+            backdrop: 'rgba(0,0,0,0.9)'
+        });
+    }
+
+    document.getElementById('hiddenFileInput').addEventListener('change', async function(e) {
+        var files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        var existingUrls = savedImageUrls[currentImageIndex] || [];
+        var pendingUrls = imageDataUrls[currentImageIndex] || [];
+        var currentTotal = existingUrls.length + pendingUrls.length;
+        
+        var allowedNew = 2 - currentTotal;
+        if (allowedNew <= 0) {
+            showStatus('⚠️ แถวนี้อัปโหลดรูปภาพครบ 2 รูปแล้ว', 'error');
+            this.value = '';
+            return;
+        }
+        
+        if (files.length > allowedNew) {
+            showStatus('⚠️ เลือกรูปได้อีกเพียง ' + allowedNew + ' รูป (ระบบจำกัด 2 รูปต่อแถว)', 'error');
+            files = files.slice(0, allowedNew);
+        }
+
+        if (!imageDataUrls[currentImageIndex]) imageDataUrls[currentImageIndex] = [];
+        
+        showLoading('กำลังเตรียมรูปภาพ... (0/' + files.length + ')');
+        
+        var processed = 0;
+        var errors = 0;
+
+        for (var i = 0; i < files.length; i++) {
+            try {
+                var compressedDataUrl = await compressImage(files[i]);
+                imageDataUrls[currentImageIndex].push(compressedDataUrl);
+            } catch (err) {
+                console.error('Error processing file:', files[i].name, err);
+                errors++;
+            }
+            processed++;
+            document.getElementById('loadingText').textContent = 'กำลังเตรียมรูปภาพ... (' + processed + '/' + files.length + ')';
+        }
+
+        hideLoading();
+        displayImagesInCell(currentImageIndex);
+        
+        if (errors > 0) {
+            showStatus('⚠️ เตรียมรูปเสร็จสิ้น แต่พบข้อผิดพลาด ' + errors + ' ไฟล์', 'error');
+        } else {
+            showStatus('✅ เพิ่มรูป ' + files.length + ' ไฟล์เรียบร้อย', 'success');
+            uploadAllImages(true);
+        }
+        
+        this.value = '';
+    });
+
+    function compressImage(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1200;
+                    const MAX_HEIGHT = 1200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    resolve(dataUrl);
+                };
+                img.onerror = (err) => reject(err);
+            };
+            reader.onerror = (err) => reject(err);
+        });
+    }
+
+    function displayImagesInCell(index) {
+        var displayDiv = document.getElementById('imageDisplay' + index);
+        if (!displayDiv) return;
+        
+        var existingUrls = savedImageUrls[index] || [];
+        var pendingUrls = imageDataUrls[index] || [];
+        var allUrls = existingUrls.concat(pendingUrls);
+        
+        if (allUrls.length === 0) {
+            displayDiv.innerHTML = '<i class="fas fa-image text-2xl text-gray-300"></i><div class="placeholder text-xs">คลิกเพื่อเพิ่มรูป</div>';
+            updateSummaryCount();
+            return;
+        }
+        
+        var html = '<div class="image-thumbnails">';
+        for (var i = 0; i < Math.min(allUrls.length, 2); i++) {
+            html += '<div class="thumb-item"><img src="' + allUrls[i] + '" alt="รูป"></div>';
+        }
+        html += '</div>';
+        displayDiv.innerHTML = html;
+        updateSummaryCount();
+    }
+
+    function deleteAllImages(index) {
+        Swal.fire({
+            title: 'ยืนยันการลบ',
+            text: 'คุณต้องการลบรูปทั้งหมดในแถวนี้ใช่หรือไม่? ไฟล์ใน Google Drive จะถูกลบหลังจากบันทึก',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'ลบออก',
+            cancelButtonText: 'ยกเลิก'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                if (savedFileIds[index]) {
+                    savedFileIds[index].forEach(id => {
+                        if (id) pendingDeleteFileIds.push(id);
+                    });
+                }
+                delete imageDataUrls[index];
+                delete savedImageUrls[index];
+                delete savedFileIds[index];
+                displayImagesInCell(index);
+                showStatus('🗑️ ลบรูปในแถวเรียบร้อย', 'success');
+                saveData();
+            }
+        });
+    }
+
+    function addRow(autoOpenMobile) {
+        var tbody = document.getElementById('tableBody');
+        var rowCount = tbody.children.length;
+        var newSeq = rowCount + 1;
+        var tr = document.createElement('tr');
+        tr.innerHTML = 
+            '<td class="col-seq text-center">' + newSeq + '</td>' +
+            '<td class="col-desc"><input type="text" class="fill-field" placeholder="ระบุรายการอุปกรณ์..."></td>' +
+            '<td class="col-asset-code"><input type="text" class="fill-field fill-asset-code" placeholder="รหัสทรัพย์สิน"></td>' +
+            '<td class="col-sn"><input type="text" class="fill-field fill-sn" placeholder="S/N"></td>' +
+            '<td class="col-note"><input type="text" class="fill-field fill-note" placeholder="หมายเหตุ"></td>' +
+            '<td class="col-image"><div class="image-cell" id="imageCell' + newSeq + '" onclick="handleImageClick(' + newSeq + ')"><div id="imageDisplay' + newSeq + '"><i class="fas fa-image text-2xl text-gray-300"></i><div class="placeholder text-xs">คลิกเพื่อเพิ่มรูป</div></div></div></td>' +
+            '<td class="col-action no-print text-center">' +
+                '<button class="mob-edit-row-btn" onclick="openMobileEditModal(this)" title="แก้ไข"><i class="fas fa-pen"></i></button>' +
+                '<button class="text-red-500 hover:text-red-700 text-lg transition-colors" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button>' +
+            '</td>';
+        tbody.appendChild(tr);
+        updateSeqNumbers();
+        // เปิด modal อัตโนมัติบนมือถือเมื่อกดปุ่ม "เพิ่มแถว"
+        if (autoOpenMobile && isMobileMode) {
+            setTimeout(function() { openMobileEditModal(null, newSeq); }, 120);
+        }
+    }
+
+    function deleteRow(btn) {
+        var tbody = document.getElementById('tableBody');
+        var tr = btn.closest('tr');
+        deleteRowByTr(tr);
+    }
+
+    function deleteRowByTr(tr) {
+        var tbody = document.getElementById('tableBody');
+        if (!tbody || !tr || !tbody.contains(tr)) {
+            showStatus('❌ ไม่พบแถวที่ต้องการลบ', 'error');
+            return;
+        }
+        if (tbody.children.length <= 1) {
+            showStatus('⚠️ ต้องมีอย่างน้อย 1 รายการ', 'error');
+            return;
+        }
+        var seq = Array.from(tbody.children).indexOf(tr) + 1;
+        var rowCount = tbody.children.length;
+
+        var descInput = tr.querySelector('.fill-field');
+        var descText = descInput ? descInput.value.trim() : '';
+        var msgText = 'คุณต้องการลบรายการแถวที่ ' + seq;
+        if (descText) {
+            msgText += ' (' + descText + ')';
+        }
+        msgText += ' ใช่หรือไม่?';
+
+        Swal.fire({
+            title: 'ยืนยันการลบรายการ?',
+            text: msgText,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'ยืนยันลบ',
+            cancelButtonText: 'ยกเลิก'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                try {
+                    var round = document.getElementById('roundInput').value;
+                    var year = document.getElementById('yearInput').value;
+                    reorganizeImageVariables(seq, rowCount);
+                    tr.remove();
+                    updateSeqNumbers();
+                    deleteSheetRowOnly(round, year, seq);
+                } catch (e) {
+                    console.error(e);
+                    Swal.fire('Delete Error', e.message + '\n' + e.stack, 'error');
+                }
+            }
+        });
+    }
+
+    function toArrayValue(value) {
+        if (!value) return [];
+        return Array.isArray(value) ? value : [value];
+    }
+
+    function deleteSheetRowOnly(round, year, seq) {
+        google.script.run
+            .withSuccessHandler(function(res) {
+                if (res.status === 'success') {
+                    showStatus('🗑️ ลบรายการแถวที่ ' + seq + ' จาก Google Sheet เรียบร้อย', 'success');
+                    updateDropdowns();
+                    pendingDeleteFileIds = [];
+                } else {
+                    showStatus('❌ ' + res.message, 'error');
+                    Swal.fire('Delete Error', res.message, 'error');
+                    loadData();
+                }
+            })
+            .withFailureHandler(function(err) {
+                showStatus('❌ ลบข้อมูลใน Google Sheet ล้มเหลว: ' + err, 'error');
+                Swal.fire('Server Connection Error', String(err), 'error');
+                loadData();
+            })
+            .deleteRowFromSheet(round, year, seq);
+    }
+
+    function saveDataWithoutLoading(successMessage) {
+        try {
+            var data = getFormData();
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    if (res.status === 'success') {
+                        if (successMessage) {
+                            showStatus(successMessage, 'success');
+                        }
+                        document.getElementById('dateDisplay').textContent = getCurrentDate();
+                        updateDropdowns();
+                        processPendingDeletions();
+                    } else {
+                        showStatus('❌ ' + res.message, 'error');
+                        Swal.fire('Error Saving', res.message, 'error');
+                    }
+                })
+                .withFailureHandler(function(err) {
+                    showStatus('❌ บันทึกล้มเหลว: ' + err, 'error');
+                    Swal.fire('Server Connection Error', String(err), 'error');
+                })
+                .saveDataToSheet(data);
+        } catch (e) {
+            console.error(e);
+            Swal.fire('Client JS Error', e.message + '\n' + e.stack, 'error');
+        }
+    }
+
+    function reorganizeImageVariables(deletedSeq, totalRowsBeforeDelete) {
+        toArrayValue(savedFileIds[deletedSeq]).forEach(function(id) {
+            if (id) pendingDeleteFileIds.push(id);
+        });
+        for (var i = deletedSeq; i < totalRowsBeforeDelete; i++) {
+            var nextSeq = i + 1;
+            savedImageUrls[i] = toArrayValue(savedImageUrls[nextSeq]);
+            savedFileIds[i] = toArrayValue(savedFileIds[nextSeq]);
+            imageDataUrls[i] = toArrayValue(imageDataUrls[nextSeq]);
+        }
+        delete savedImageUrls[totalRowsBeforeDelete];
+        delete savedFileIds[totalRowsBeforeDelete];
+        delete imageDataUrls[totalRowsBeforeDelete];
+    }
+
+    function updateSeqNumbers() {
+        var rows = document.getElementById('tableBody').children;
+        for (var i = 0; i < rows.length; i++) {
+            var seq = i + 1;
+            rows[i].querySelector('.col-seq').textContent = seq;
+            
+            var imageCell = rows[i].querySelector('.image-cell');
+            if (imageCell) {
+                imageCell.id = 'imageCell' + seq;
+                imageCell.setAttribute('onclick', 'handleImageClick(' + seq + ')');
+            }
+            var imageDisplay = rows[i].querySelector('[id^="imageDisplay"]');
+            if (imageDisplay) {
+                imageDisplay.id = 'imageDisplay' + seq;
+            }
+        }
+        updateSummaryCount();
+    }
+
+    function updateSummaryCount() {
+        var tbody = document.getElementById('tableBody');
+        if (!tbody) return;
+        var rows = tbody.children;
+        var validCount = 0;
+        
+        for (var i = 0; i < rows.length; i++) {
+            var tr = rows[i];
+            var desc = tr.querySelector('.col-desc input') ? tr.querySelector('.col-desc input').value.trim() : '';
+            var assetCode = tr.querySelector('.col-asset-code input') ? tr.querySelector('.col-asset-code input').value.trim() : '';
+            var sn = tr.querySelector('.col-sn input') ? tr.querySelector('.col-sn input').value.trim() : '';
+            var note = tr.querySelector('.col-note input') ? tr.querySelector('.col-note input').value.trim() : '';
+            
+            var seq = i + 1;
+            var hasImages = (savedImageUrls[seq] && savedImageUrls[seq].length > 0) || (imageDataUrls[seq] && imageDataUrls[seq].length > 0);
+            
+            if (desc || assetCode || sn || note || hasImages) {
+                validCount++;
+            }
+        }
+        
+        var displayEl = document.getElementById('totalItemsDisplay');
+        if (displayEl) {
+            displayEl.textContent = validCount + ' รายการ';
+        }
+    }
+
+    function handleSaveAction() {
+        var data = getFormData();
+        if (!data.round || !data.year) {
+            showStatus('⚠️ กรุณาระบุรอบที่และปี', 'error');
+            return;
+        }
+
+        var pendingCount = 0;
+        for (var k in imageDataUrls) {
+            if (imageDataUrls[k] && imageDataUrls[k].length > 0) pendingCount += imageDataUrls[k].length;
+        }
+
+        if (pendingCount > 0) {
+            Swal.fire({
+                title: 'มีรูปที่ยังไม่ได้อัปโหลด',
+                text: 'ระบบจะอัปโหลดรูปภาพ ' + pendingCount + ' รูปขึ้น Cloud ก่อนบันทึก',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#1a7a4a',
+                confirmButtonText: 'อัปโหลดและบันทึก',
+                cancelButtonText: 'ยกเลิก'
+            }).then(function(result) {
+                if (result.isConfirmed) uploadAllImages(true);
+            });
+        } else {
+            saveData();
+        }
+    }
+
+    function getFormData() {
+        var rows = document.getElementById('tableBody').children;
+        var dataRows = [];
+        var allImages = [];
+        var allFileIds = [];
+        
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var seq = i + 1;
+            var descVal = row.querySelector('.col-desc input').value;
+            var assetCodeVal = row.querySelector('.col-asset-code input').value;
+            var snVal = row.querySelector('.col-sn input').value;
+            var noteVal = row.querySelector('.col-note input').value;
+            
+            var urls = savedImageUrls[seq] || [];
+            var ids = savedFileIds[seq] || [];
+            
+            dataRows.push({ 
+                desc: descVal, 
+                assetCode: assetCodeVal, 
+                sn: snVal, 
+                note: noteVal,
+                images: urls,
+                fileIds: ids
+            });
+            
+            urls.forEach(u => allImages.push(u));
+            ids.forEach(id => allFileIds.push(id));
+        }
+        
+        return {
+            round: document.getElementById('roundInput').value,
+            year: document.getElementById('yearInput').value,
+            rows: dataRows,
+            images: allImages,
+            fileIds: allFileIds
+        };
+    }
+
+    function saveData() {
+        try {
+            var data = getFormData();
+            showLoading('กำลังบันทึกข้อมูล...');
+            google.script.run
+                .withSuccessHandler(function(res) {
+                    hideLoading();
+                    if (res.status === 'success') {
+                        showStatus('✅ ' + res.message, 'success');
+                        document.getElementById('dateDisplay').textContent = getCurrentDate();
+                        updateDropdowns();
+                        processPendingDeletions();
+                    } else {
+                        showStatus('❌ ' + res.message, 'error');
+                        Swal.fire('Error Saving', res.message, 'error');
+                    }
+                })
+                .withFailureHandler(function(err) {
+                    hideLoading();
+                    showStatus('❌ บันทึกล้มเหลว: ' + err, 'error');
+                    Swal.fire('Server Connection Error', String(err), 'error');
+                })
+                .saveDataToSheet(data);
+        } catch (e) {
+            hideLoading();
+            console.error(e);
+            Swal.fire('Client JS Error', e.message + '\n' + e.stack, 'error');
+        }
+    }
+
+    function processPendingDeletions() {
+        if (pendingDeleteFileIds.length === 0) return;
+        var idsToDelete = [...pendingDeleteFileIds];
+        pendingDeleteFileIds = [];
+        google.script.run
+            .withSuccessHandler(function(res) {
+                console.log('Drive images cleanup status:', res);
+            })
+            .withFailureHandler(function(err) {
+                console.error('Failed to cleanup Drive images:', err);
+            })
+            .deleteImagesFromDrive(idsToDelete);
+    }
+
+    function loadData() {
+        var round = document.getElementById('roundInput').value;
+        var year = document.getElementById('yearInput').value;
+        if (!round || !year) return;
+        
+        showLoading('กำลังโหลดข้อมูล...');
+        google.script.run
+            .withSuccessHandler(function(res) {
+                hideLoading();
+                if (res.status === 'success') {
+                    if (res.data) {
+                        fillForm(res.data);
+                    } else {
+                        prepareEmptyForm(round, year);
+                    }
+                } else {
+                    showStatus('❌ โหลดล้มเหลว: ' + (res.message || 'เกิดข้อผิดพลาด'), 'error');
+                }
+            })
+            .withFailureHandler(function(err) {
+                hideLoading();
+                showStatus('❌ โหลดล้มเหลว: ' + err, 'error');
+            })
+            .loadDataFromSheet(round, year);
+    }
+
+    function prepareEmptyForm(round, year) {
+        document.getElementById('tableBody').innerHTML = '';
+        imageDataUrls = {};
+        savedImageUrls = {};
+        savedFileIds = {};
+        pendingDeleteFileIds = [];
+        document.getElementById('dateDisplay').textContent = getCurrentDate();
+        
+        addRow();
+        showStatus('📝 ไม่พบข้อมูลเดิม: พร้อมบันทึกข้อมูลรอบใหม่ (รอบที่ ' + round + ' ปี ' + year + ')', 'success');
+    }
+
+    function fillForm(data) {
+        var roundSelect = document.getElementById('roundInput');
+        var yearSelect = document.getElementById('yearInput');
+        
+        var roundVal = String(data.round || '').trim();
+        var yearVal = String(data.year || '').trim();
+        
+        var hasYear = false;
+        for (var i = 0; i < yearSelect.options.length; i++) {
+            if (yearSelect.options[i].value === yearVal) { hasYear = true; break; }
+        }
+        if (!hasYear && yearVal) {
+            var opt = document.createElement('option');
+            opt.value = yearVal;
+            opt.textContent = yearVal;
+            yearSelect.insertBefore(opt, yearSelect.firstChild);
+        }
+        
+        var hasRound = false;
+        for (var i = 0; i < roundSelect.options.length; i++) {
+            if (roundSelect.options[i].value === roundVal) { hasRound = true; break; }
+        }
+        if (!hasRound && roundVal) {
+            var opt = document.createElement('option');
+            opt.value = roundVal;
+            opt.textContent = 'รอบที่ ' + roundVal;
+            roundSelect.appendChild(opt);
+        }
+        
+        yearSelect.value = yearVal;
+        roundSelect.value = roundVal;
+        
+        document.getElementById('dateDisplay').textContent = data.recordDate || getCurrentDate();
+        
+        var tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        savedImageUrls = {};
+        savedFileIds = {};
+        imageDataUrls = {};
+        
+        var rows = data.rows || [];
+        var allImages = data.images || [];
+        var allFileIds = data.fileIds || [];
+        
+        rows.forEach(function(rowData, index) {
+            var seq = index + 1;
+            var tr = document.createElement('tr');
+            tr.innerHTML = 
+                '<td class="col-seq text-center">' + seq + '</td>' +
+                '<td class="col-desc"><input type="text" class="fill-field" value="' + escHtml(rowData.desc || '') + '"></td>' +
+                '<td class="col-asset-code"><input type="text" class="fill-field fill-asset-code" value="' + escHtml(rowData.assetCode || '') + '" placeholder="รหัสทรัพย์สิน"></td>' +
+                '<td class="col-sn"><input type="text" class="fill-field fill-sn" value="' + escHtml(rowData.sn || '') + '"></td>' +
+                '<td class="col-note"><input type="text" class="fill-field fill-note" value="' + escHtml(rowData.note || '') + '"></td>' +
+                '<td class="col-image"><div class="image-cell" id="imageCell' + seq + '" onclick="handleImageClick(' + seq + ')"><div id="imageDisplay' + seq + '"></div></div></td>' +
+                '<td class="col-action no-print text-center">' +
+                    '<button class="mob-edit-row-btn" onclick="openMobileEditModal(this)" title="แก้ไข"><i class="fas fa-pen"></i></button>' +
+                    '<button class="text-red-500 hover:text-red-700 text-lg transition-colors" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button>' +
+                '</td>';
+            tbody.appendChild(tr);
+            
+            var rowImgs = rowData.images;
+            var rowIds = rowData.fileIds;
+            
+            if (!rowImgs) {
+                var start = index * 2;
+                rowImgs = allImages.slice(start, start + 2).filter(u => u);
+                rowIds = allFileIds.slice(start, start + 2).filter(i => i);
+            }
+            
+            if (rowImgs.length > 0) {
+                savedImageUrls[seq] = rowImgs;
+                savedFileIds[seq] = rowIds;
+                displayImagesInCell(seq);
+            } else {
+                displayImagesInCell(seq);
+            }
+        });
+        
+        if (rows.length === 0) addRow();
+        updateSummaryCount();
+        showStatus('✅ โหลดสำเร็จ', 'success');
+    }
+
+    function loadAllRounds() {
+        showLoading('กำลังโหลดประวัติ...');
+        google.script.run
+            .withSuccessHandler(function(res) {
+                hideLoading();
+                if (res.status === 'success' && res.data && res.data.length > 0) {
+                    showHistoryModal(res.data);
+                } else {
+                    Swal.fire('ไม่พบประวัติ', 'ยังไม่มีข้อมูลในระบบ', 'info');
+                }
+            })
+            .withFailureHandler(function(err) {
+                hideLoading();
+                showStatus('❌ โหลดประวัติล้มเหลว', 'error');
+            })
+            .loadAllRounds();
+    }
+
+    function showHistoryModal(history) {
+        var html = '<div class="max-h-60 overflow-y-auto border rounded text-left">';
+        history.forEach(function(item) {
+            html += '<div class="history-item" onclick="selectHistory(\'' + item.round + '\', \'' + item.year + '\')">';
+            html += '<span class="text-sm">รอบที่ <strong>' + item.round + '</strong> ปี <strong>' + item.year + '</strong></span>';
+            html += '<i class="fas fa-chevron-right text-gray-400"></i>';
+            html += '</div>';
+        });
+        html += '</div>';
+        
+        Swal.fire({
+            title: 'เลือกรายการประวัติ',
+            html: html,
+            showConfirmButton: false,
+            showCloseButton: true
+        });
+    }
+
+    function selectHistory(round, year) {
+        Swal.close();
+        document.getElementById('roundInput').value = round;
+        document.getElementById('yearInput').value = year;
+        loadData();
+    }
+
+    async function uploadAllImages(thenSave) {
+        if (thenSave === undefined) thenSave = true;
+        var round = document.getElementById('roundInput').value;
+        var year = document.getElementById('yearInput').value;
+        
+        var uploadQueue = [];
+        for (var k in imageDataUrls) {
+            if (imageDataUrls[k]) {
+                imageDataUrls[k].forEach(function(dataUrl, i) {
+                    uploadQueue.push({ index: k, data: dataUrl, name: 'Img_R' + round + '_Y' + year + '_Row' + k + '_' + i });
+                });
+            }
+        }
+        
+        if (uploadQueue.length === 0) {
+            if (thenSave) saveData();
+            return;
+        }
+
+        showLoading('กำลังอัปโหลดรูปภาพ (0/' + uploadQueue.length + ')');
+        var uploadedCount = 0;
+        
+        for (var i = 0; i < uploadQueue.length; i++) {
+            const item = uploadQueue[i];
+            try {
+                const res = await new Promise((resolve, reject) => {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)
+                        .uploadImageToDrive(item.data, item.name + '.jpg', round, year);
+                });
+                
+                if (res.status === 'success') {
+                    if (!savedImageUrls[item.index]) savedImageUrls[item.index] = [];
+                    if (!savedFileIds[item.index]) savedFileIds[item.index] = [];
+                    savedImageUrls[item.index].push(res.fileUrl);
+                    savedFileIds[item.index].push(res.fileId);
+                    displayImagesInCell(item.index);
+                }
+            } catch (err) {
+                console.error('Upload failed for item', i, err);
+            }
+            uploadedCount++;
+            document.getElementById('loadingText').textContent = 'กำลังอัปโหลดรูปภาพ (' + uploadedCount + '/' + uploadQueue.length + ')';
+        }
+
+        imageDataUrls = {}; 
+        
+        var rows = document.getElementById('tableBody').children;
+        for (var idx = 1; idx <= rows.length; idx++) {
+            displayImagesInCell(idx);
+        }
+        
+        hideLoading();
+        if (thenSave) saveData();
+        else showStatus('✅ อัปโหลดรูปสำเร็จ', 'success');
+    }
+
+    function updateDropdowns(callback) {
+        google.script.run
+            .withSuccessHandler(function(res) {
+                if (res.status === 'success' && res.data) {
+                    populateSelectOptions(res.data);
+                } else {
+                    populateSelectOptions([]);
+                }
+                if (callback) callback();
+            })
+            .withFailureHandler(function(err) {
+                console.error('Failed to load rounds for dropdowns:', err);
+                populateSelectOptions([]);
+                if (callback) callback();
+            })
+            .loadAllRounds();
+    }
+
+    function populateSelectOptions(historyData) {
+        var roundSelect = document.getElementById('roundInput');
+        var yearSelect = document.getElementById('yearInput');
+        if (!roundSelect || !yearSelect) return;
+        
+        var prevRound = roundSelect.value;
+        var prevYear = yearSelect.value;
+        
+        roundSelect.innerHTML = '';
+        yearSelect.innerHTML = '';
+        
+        var yearsSet = new Set();
+        var roundsSet = new Set();
+        
+        var currentYear = new Date().getFullYear() + 543;
+        for (var y = currentYear - 2; y <= currentYear + 5; y++) {
+            yearsSet.add(String(y));
+        }
+        for (var r = 1; r <= 10; r++) {
+            roundsSet.add(String(r));
+        }
+        
+        historyData.forEach(function(item) {
+            if (item.year) yearsSet.add(String(item.year).trim());
+            if (item.round) roundsSet.add(String(item.round).trim());
+        });
+        
+        var years = Array.from(yearsSet).sort(function(a, b) { return b - a; });
+        var rounds = Array.from(roundsSet).sort(function(a, b) { 
+            var na = parseInt(a), nb = parseInt(b);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            return a.localeCompare(b);
+        });
+        
+        years.forEach(function(y) {
+            var opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
+        });
+        
+        rounds.forEach(function(r) {
+            var opt = document.createElement('option');
+            opt.value = r;
+            opt.textContent = 'รอบที่ ' + r;
+            roundSelect.appendChild(opt);
+        });
+        
+        if (prevYear && yearsSet.has(prevYear)) {
+            yearSelect.value = prevYear;
+        } else if (years.length > 0) {
+            if (yearsSet.has(String(currentYear))) {
+                yearSelect.value = String(currentYear);
+            } else {
+                yearSelect.selectedIndex = 0;
+            }
+        }
+        
+        if (prevRound && roundsSet.has(prevRound)) {
+            roundSelect.value = prevRound;
+        } else if (rounds.length > 0) {
+            if (roundsSet.has('1')) {
+                roundSelect.value = '1';
+            } else {
+                roundSelect.selectedIndex = 0;
+            }
+        }
+    }
+
+    function clearForm() {
+        Swal.fire({
+            title: 'ล้างข้อมูลฟอร์ม?',
+            text: 'ข้อมูลที่ยังไม่ได้บันทึกจะหายไป',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'ล้างข้อมูล',
+            cancelButtonText: 'ยกเลิก'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                document.getElementById('tableBody').innerHTML = '';
+                imageDataUrls = {};
+                savedImageUrls = {};
+                savedFileIds = {};
+                
+                var currentYearThai = String(new Date().getFullYear() + 543);
+                var yearSelect = document.getElementById('yearInput');
+                var roundSelect = document.getElementById('roundInput');
+                if (yearSelect && yearSelect.querySelector('option[value="' + currentYearThai + '"]')) {
+                    yearSelect.value = currentYearThai;
+                }
+                if (roundSelect && roundSelect.querySelector('option[value="1"]')) {
+                    roundSelect.value = "1";
+                }
+                
+                addRow();
+                showStatus('🗑️ ล้างฟอร์มเรียบร้อย', 'success');
+            }
+        });
+    }
+
+    function getCurrentDate() {
+        var d = new Date();
+        var thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        return d.getDate() + ' ' + thMonths[d.getMonth()] + ' ' + (d.getFullYear() + 543);
+    }
+
+    function preparePrintLayout() {
+        cleanupPrintLayout();
+
+        var tableWrap = document.getElementById('tableWrap');
+        var sourceTable = document.getElementById('assetTable');
+        var sourceBody = document.getElementById('tableBody');
+        if (!tableWrap || !sourceTable || !sourceBody) return;
+
+        var rows = Array.from(sourceBody.children);
+        if (rows.length === 0) return;
+
+        var firstPageRows = 9;
+        var nextPageRows = 9;
+        var totalPages = rows.length <= firstPageRows ? 1 : 1 + Math.ceil((rows.length - firstPageRows) / nextPageRows);
+        var pagesWrap = document.createElement('div');
+        pagesWrap.id = 'printPages';
+        pagesWrap.className = 'print-pages';
+
+        var rowOffset = 0;
+        for (var page = 0; page < totalPages; page++) {
+            var rowsThisPage = page === 0 ? firstPageRows : nextPageRows;
+            var pageDiv = document.createElement('div');
+            pageDiv.className = 'print-page';
+
+            var table = document.createElement('table');
+            table.className = sourceTable.className + ' print-page-table';
+
+            var thead = sourceTable.querySelector('thead').cloneNode(true);
+            thead.querySelectorAll('.no-print').forEach(function(el) { el.remove(); });
+            table.appendChild(thead);
+
+            var tbody = document.createElement('tbody');
+            rows.slice(rowOffset, rowOffset + rowsThisPage).forEach(function(row) {
+                var clone = row.cloneNode(true);
+                clone.querySelectorAll('.no-print').forEach(function(el) { el.remove(); });
+                tbody.appendChild(clone);
+            });
+            rowOffset += rowsThisPage;
+            table.appendChild(tbody);
+
+            pageDiv.appendChild(table);
+
+            var footer = document.createElement('div');
+            footer.className = 'print-page-footer';
+            footer.innerHTML =
+                '<span>แผนกเทคโนโลยีสารสนเทศ</span>' +
+                '<span>หน้า ' + (page + 1) + '/' + totalPages + '</span>';
+            pageDiv.appendChild(footer);
+
+            pagesWrap.appendChild(pageDiv);
+        }
+
+        tableWrap.classList.add('print-paginated');
+        tableWrap.insertAdjacentElement('afterend', pagesWrap);
+    }
+
+    function cleanupPrintLayout() {
+        var oldPages = document.getElementById('printPages');
+        if (oldPages) oldPages.remove();
+
+        var tableWrap = document.getElementById('tableWrap');
+        if (tableWrap) tableWrap.classList.remove('print-paginated');
+    }
+
+    window.onload = function() {
+        document.getElementById('dateDisplay').textContent = getCurrentDate();
+        addRow();
+        
+        var tbody = document.getElementById('tableBody');
+        if (tbody) {
+            tbody.addEventListener('input', updateSummaryCount);
+        }
+        
+        updateDropdowns(function() {
+            setTimeout(loadData, 300);
+        });
+
+        // ตรวจสอบโหมดมือถือครั้งแรก
+        checkMobileMode();
+
+        // เมื่อบันทึกจาก mobile modal ให้อัปเดต img row ด้วย
+        document.addEventListener('mobileImgUpdated', function(e) {
+            if (_mobEditSeqTarget) openMobileEditModal(null, _mobEditSeqTarget);
+        });
+    };
+
+    // ตรวจสอบเมื่อหน้าต่างเปลี่ยนขนาด
+    window.addEventListener('resize', function() {
+        clearTimeout(window._mobileCheckTimer);
+        window._mobileCheckTimer = setTimeout(checkMobileMode, 200);
+    });
+
+    window.addEventListener('beforeprint', function() {
+        // ซ่อน bottom nav ขณะพิมพ์
+        var nav = document.getElementById('mobileBottomNav');
+        if (nav) nav.style.display = 'none';
+        var banner = document.getElementById('mobileBanner');
+        if (banner) banner.style.display = 'none';
+        preparePrintLayout();
+    });
+
+    window.addEventListener('afterprint', function() {
+        cleanupPrintLayout();
+        // คืนค่าหลังพิมพ์
+        checkMobileMode();
+    });
+</script>
+</body>
+</html>

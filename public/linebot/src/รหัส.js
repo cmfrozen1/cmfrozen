@@ -2,6 +2,9 @@ const FOLDER_ID = '1icvTKqeLMceMR88DVIJHV6z4GMqaLgSM';
 const LINE_ACCESS_TOKEN = 'RA3XHFAk0E16MpeUMSFYqEyS0a8EPwWH4dQKHdhbaSnY40tHMsnsNigLJCVqKgSB/zZ8TS+7hQRz8a5XTGgyBCSh5aoFyMKbSdcIuII47cvzGQsL9kNpWLN1gnRaMYNVekLIJbsUTx21Evn3uepWgAdB04t89/1O/w1cDnyilFU='; // ใส่ Access Token ของคุณที่นี่
 const FIREBASE_DB_URL = 'https://domo-bot-344b6-default-rtdb.firebaseio.com/'; // URL ของ Firebase Realtime Database
 
+// ==================== ตัวแปรระบบ ====================
+let reqEvent = null;
+
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAOA-mE0TCl5QvoHnXTZKqT0zM-EDoNVgg",
   authDomain: "domo-bot-344b6.firebaseapp.com",
@@ -30,6 +33,7 @@ function doPost(e) {
     }
 
     contents.events.forEach(event => {
+      reqEvent = event; // บันทึก Event
       const replyToken = event.replyToken;
       if (!replyToken) return; // Skip events without reply token (like beacon)
 
@@ -48,6 +52,11 @@ function doPost(e) {
         lineReply(replyToken, [flexMessage]);
       } 
       else if (event.type === 'message' && event.message && event.message.type === 'text') {
+        // เรียกใช้ Loading Animation เมื่อมีการเริ่มถามตอบบอท
+        if (userId) {
+          startLoadingAnimation(userId, LINE_ACCESS_TOKEN);
+        }
+
         const userMessage = event.message.text.trim().toLowerCase();
         const records = firebaseRequest('records', 'GET');
         
@@ -62,12 +71,21 @@ function doPost(e) {
           }
         }
 
-        if (foundRecord && foundRecord.fileUrl) {
-          lineReply(replyToken, [{
-            type: 'image',
-            originalContentUrl: foundRecord.fileUrl,
-            previewImageUrl: foundRecord.fileUrl
-          }]);
+        if (foundRecord) {
+          if (foundRecord.fileUrl) {
+            lineReply(replyToken, [{
+              type: 'image',
+              originalContentUrl: foundRecord.fileUrl,
+              previewImageUrl: foundRecord.fileUrl
+            }]);
+          } else {
+            // ตอบกลับเป็น Text (TypeText) พร้อมใส่ quoteToken
+            const textContent = `${foundRecord.name}\n${foundRecord.email}`;
+            lineReply(replyToken, [{
+              type: 'text',
+              text: textContent
+            }]);
+          }
         }
       }
     });
@@ -109,6 +127,21 @@ function testConfig() {
  * Line API Helpers
  */
 function lineReply(replyToken, messages) {
+  let finalMessages = messages;
+  
+  // เมื่อมีการตอบเป็น TypeText ให้เพิ่ม 'quoteToken': reqEvent.message.quoteToken
+  if (reqEvent && reqEvent.message && reqEvent.message.quoteToken) {
+    finalMessages = messages.map(msg => {
+      if (msg && msg.type === 'text') {
+        return {
+          ...msg,
+          quoteToken: reqEvent.message.quoteToken
+        };
+      }
+      return msg;
+    });
+  }
+
   UrlFetchApp.fetch('https://api.line.me/v2/bot/message/reply', {
     method: 'post',
     headers: {
@@ -117,9 +150,35 @@ function lineReply(replyToken, messages) {
     },
     payload: JSON.stringify({
       replyToken: replyToken,
-      messages: messages
+      messages: finalMessages
     })
   });
+}
+
+/**
+ * เรียกใช้ Loading Animation เมื่อมีการเริ่มถามตอบบอท
+ */
+function startLoadingAnimation(chatId, token) {
+  try {
+    if (!chatId || !token) return;
+    const url = "https://api.line.me/v2/bot/chat/loading/start";
+    const payload = {
+      chatId: chatId,
+      loadingSeconds: 5
+    };
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    };
+    UrlFetchApp.fetch(url, options);
+  } catch (error) {
+    console.error("Error starting loading animation:", error);
+  }
 }
 
 function getUserProfile(userId) {

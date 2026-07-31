@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <base target="_top" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ระบบเลือกตั้งคณะกรรมการสวัสดิการออนไลน์ - บริษัทเชียงใหม่โฟรเซ่นฟูดส์ จำกัด(มหาชน)" />
+
+    <?!= include('jsTimer'); ?>
+    <?!= include('css'); ?>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&family=Kanit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+    
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Prompt', 'sans-serif'],
+              display: ['Kanit', 'Prompt', 'sans-serif'],
+            },
+            colors: {
+              navy: {
+                50: '#f0f4ff',
+                100: '#dbe6ff',
+                200: '#bccfff',
+                300: '#8cadff',
+                400: '#5a80ff',
+                500: '#3458ff',
+                600: '#1a33ff',
+                700: '#0f28e6',
+                800: '#0d22b8',
+                900: '#0a1a8a',
+                950: '#060d4a',
+              },
+              gold: {
+                50: '#fffdf0',
+                100: '#fff9d4',
+                200: '#fff0a8',
+                300: '#ffe471',
+                400: '#ffd43b',
+                500: '#fcc419',
+                600: '#e6a800',
+                700: '#bf8900',
+                800: '#996d00',
+                900: '#735200',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    
+    <style>
+      /* ============ FONTS ============ */
+      * { font-family: 'Prompt', sans-serif; }
+      .font-display { font-family: 'Kanit', 'Prompt', sans-serif; }
+      
+      /* ============ BACKGROUND ============ */
+      body {
+        background: #030712;
+        background-image: 
+          radial-gradient(ellipse at 20% 50%, rgba(15, 40, 230, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 20%, rgba(26, 51, 255, 0.05) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 80%, rgba(15, 40, 230, 0.06) 0%, transparent 50%);
+        background-attachment: fixed;
+        min-height: 100vh;
+      }
+      
+      /* ============ TOP SECURITY BAR ============ */
+      .security-bar {
+        background: linear-gradient(90deg, #0a1a8a 0%, #0f28e6 50%, #0a1a8a 100%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .security-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+        animation: securityPulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes securityPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+      }
+      
+      /* ============ GLASS MORPHISM ============ */
+      .glass-premium {
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 
+          0 4px 24px -1px rgba(0, 0, 0, 0.3),
+          0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+      }
+      
+      /* ============ HEADER SECTION (Timer & Status) ============ */
+      .header-section {
+        transition: all 0.3s ease;
+      }
+      
+      .results-active .header-section {
+        display: none;
+      }
+      
+      .results-active .timer-container-premium,
+      .results-active #msgStatus {
+        display: none !important;
+      }
+      
+      /* ============ CHART CONTAINER ============ */
+      .chart-container {
+        position: relative;
+        margin: auto;
+        height: 55vh;
+        min-height: 400px;
+        width: 100%;
+      }
+      
+      .chart-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
+      
+      /* ============ BALLOT CARD - NEW DESIGN (X MARK) ============ */
+      .ballot-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.25rem;
+        padding: 1rem 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        position: relative;
+        min-height: 110px;
+      }
+      
+      .ballot-card:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(15, 23, 42, 0.8);
+        transform: translateY(-2px);
+      }
+      
+      /* ===== X-MARK CHECKBOX (Green Circle) ===== */
+      .ballot-checkbox {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-left: auto; /* Push to right */
+      }
+      
+      .ballot-checkbox .check-mark {
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: #22c55e; /* GREEN X */
+        font-size: 2rem;
+        font-weight: 900;
+        font-family: 'Arial', sans-serif;
+        line-height: 1;
+      }
+      
+      /* ===== SELECTED STATE ===== */
+      .ballot-card.selected {
+        border-color: #22c55e;
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+      }
+      
+      .ballot-card.selected .ballot-checkbox {
+        border-color: #22c55e;
+        background: rgba(34, 197, 94, 0.15);
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+      }
+      
+      .ballot-card.selected .ballot-checkbox .check-mark {
+        opacity: 1;
+        transform: scale(1);
+      }
+      
+      /* ===== NUMBER ===== */
+      .ballot-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+        font-weight: 800;
+        font-size: 1.3rem;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+      }
+      
+      .ballot-card.selected .ballot-number {
+        background: #22c55e;
+        color: white;
+        border-color: #22c55e;
+      }
+      
+      /* ===== INFO ===== */
+      .ballot-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      
+      .ballot-info .name {
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        line-height: 1.3;
+      }
+      
+      .ballot-info .detail {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        margin-top: 0.2rem;
+      }
+      
+      /* ===== IMAGE ===== */
+      .ballot-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        background: rgba(15, 23, 42, 0.5);
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      
+      .ballot-card.selected .ballot-image {
+        border-color: rgba(34, 197, 94, 0.3);
+      }
+      
+      /* ===== HIDE RADIO ===== */
+      .ballot-radio {
+        display: none;
+      }
+      
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 640px) {
+        .ballot-card { padding: 0.75rem 1rem; gap: 1rem; min-height: 90px; }
+        .ballot-checkbox { width: 40px; height: 40px; }
+        .ballot-checkbox .check-mark { font-size: 1.6rem; }
+        .ballot-number { min-width: 36px; height: 36px; font-size: 1.1rem; }
+        .ballot-image { width: 65px; height: 65px; }
+        .ballot-info .name { font-size: 0.95rem; }
+        .ballot-info .detail { font-size: 0.7rem; }
+      }
+      
+      @media (max-width: 480px) {
+        .ballot-card { padding: 0.5rem 0.75rem; gap: 0.75rem; min-height: 75px; }
+        .ballot-checkbox { width: 34px; height: 34px; }
+        .ballot-checkbox .check-mark { font-size: 1.4rem; }
+        .ballot-number { min-width: 30px; height: 30px; font-size: 0.9rem; }
+        .ballot-image { width: 55px; height: 55px; }
+        .ballot-info .name { font-size: 0.85rem; }
+      }
+      
+      /* ============ VOTE BUTTON ============ */
+      .vote-btn-container {
+        position: fixed;
+        right: 32px;
+        bottom: 40px;
+        z-index: 100;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .vote-btn-premium {
+        background: linear-gradient(135deg, #1a33ff 0%, #3458ff 100%);
+        color: white;
+        font-weight: 700;
+        padding: 16px 32px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 50px rgba(26, 51, 255, 0.5);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      
+      .vote-btn-premium:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 60px rgba(26, 51, 255, 0.6);
+      }
+      
+      /* ============ LOADING ============ */
+      .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(3, 7, 18, 0.95);
+        backdrop-filter: blur(30px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        opacity: 1;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+      }
+      
+      .loader-overlay.invisible {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      
+      .loader-content {
+        text-align: center;
+        animation: loaderEntry 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      
+      @keyframes loaderEntry {
+        from { opacity: 0; transform: scale(0.85); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      
+      .loader-emblem {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 2rem;
+      }
+      
+      .loader-ring-outer {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-top-color: #3458ff;
+        border-right-color: #5a80ff;
+        animation: spin 0.7s linear infinite;
+      }
+      
+      .loader-ring-inner {
+        position: absolute;
+        inset: 15px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-bottom-color: #5a80ff;
+        border-left-color: #8cadff;
+        animation: spin 0.5s linear infinite reverse;
+      }
+      
+      .loader-center {
+        position: absolute;
+        inset: 30px;
+        border-radius: 50%;
+        background: rgba(52, 88, 255, 0.1);
+        border: 1px solid rgba(52, 88, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 30px rgba(52, 88, 255, 0.2);
+      }
+      
+      .loader-center i {
+        font-size: 1.5rem;
+        color: #5a80ff;
+        animation: loaderPulse 1s ease-in-out infinite;
+      }
+      
+      @keyframes loaderPulse {
+        0%, 100% { opacity: 0.6; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.1); }
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      .loader-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: white;
+        letter-spacing: 0.05em;
+      }
+      
+      .loader-subtext {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+      
+      .loader-progress {
+        width: 200px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 1px;
+        margin: 1.25rem auto 0;
+        overflow: hidden;
+      }
+      
+      .loader-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #3458ff, #5a80ff, #3458ff);
+        background-size: 200% 100%;
+        border-radius: 1px;
+        animation: progressMove 1s linear infinite;
+      }
+      
+      @keyframes progressMove {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(400%); }
+      }
+      
+      /* ============ TIMER ============ */
+      .timer-container-premium {
+        background: rgba(3, 7, 18, 0.6);
+        border: 1px solid rgba(52, 88, 255, 0.2);
+        border-radius: 24px;
+        padding: 2rem 2.5rem;
+        backdrop-filter: blur(20px);
+        box-shadow: 
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 40px rgba(52, 88, 255, 0.08);
+        display: inline-block;
+      }
+      
+      .timer-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .timer-header .icon {
+        color: #5a80ff;
+        font-size: 0.875rem;
+      }
+      
+      .timer-header .label {
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+      
+      .timer-digits {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+      
+      .timer-block-premium {
+        background: linear-gradient(180deg, #0f172a 0%, #030712 100%);
+        border: 1px solid rgba(52, 88, 255, 0.25);
+        border-radius: 16px;
+        padding: 1.25rem 1.75rem;
+        min-width: 100px;
+        text-align: center;
+        position: relative;
+        box-shadow: 
+          0 8px 24px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      }
+      
+      .timer-block-premium .digit {
+        font-size: 3.5rem;
+        font-weight: 800;
+        font-family: 'Kanit', 'Prompt', sans-serif;
+        background: linear-gradient(180deg, #ffffff 0%, #8cadff 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        letter-spacing: 0.05em;
+      }
+      
+      .timer-block-premium .unit {
+        display: block;
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-top: 0.5rem;
+      }
+      
+      .timer-separator-premium {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #3458ff;
+        opacity: 0.6;
+        animation: separatorBlink 1s step-end infinite;
+        font-family: 'Kanit', 'Prompt', sans-serif;
+      }
+      
+      @keyframes separatorBlink {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 0.2; }
+      }
+      
+      @keyframes swipe-hint {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(5px); }
+      }
+      .animate-swipe {
+        display: inline-block;
+        animation: swipe-hint 1.2s ease-in-out infinite;
+      }
+      
+      /* ============ TABLE ============ */
+      .table-wrapper {
+        position: relative; /* สำหรับจัดตำแหน่ง Swipe Overlay */
+        border: 2px solid #1e293b;
+        border-radius: 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .table-premium {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      
+      .table-premium thead th {
+        background: linear-gradient(180deg, #0a1a8a 0%, #0d22b8 100%);
+        color: white;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.75rem 1rem;
+        border: 1px solid #1e293b;
+        text-align: center;
+        white-space: nowrap;
+      }
+      
+      .table-premium tbody td, .table-premium tfoot td {
+        padding: 0.75rem 1rem;
+        color: #cbd5e1;
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid #1e293b;
+        vertical-align: middle;
+        text-align: center;
+        white-space: nowrap;
+      }
+      
+      .table-premium tfoot td {
+        background: rgba(15, 23, 42, 0.65);
+        color: white;
+        font-weight: 700;
+      }
+      
+      .table-premium tbody td.name-column {
+        white-space: normal;
+        min-width: 150px;
+        max-width: 250px;
+        word-break: break-word;
+        text-align: left;
+      }
+      
+      .table-premium tbody td:first-child {
+        width: 100px;
+        text-align: center;
+        padding: 0.5rem;
+      }
+      
+      .table-premium tbody tr:nth-child(even) td {
+        background: rgba(15, 23, 42, 0.6);
+      }
+      
+      .table-premium tbody tr:hover td {
+        background: rgba(52, 88, 255, 0.12);
+        color: white;
+      }
+      
+      .candidate-img-table {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        display: block;
+        flex-shrink: 0;
+        margin: 0 auto;
+      }
+      
+      .table-premium tbody tr:hover .candidate-img-table {
+        border-color: rgba(52, 88, 255, 0.5);
+        box-shadow: 0 4px 24px rgba(52, 88, 255, 0.2);
+        transform: scale(1.05);
+      }
+      
+      .rank-badge-premium {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      
+      .rank-1-premium { 
+        background: linear-gradient(135deg, #fcc419, #e6a800); 
+        color: #000;
+        box-shadow: 0 0 20px rgba(252, 196, 25, 0.4);
+      }
+      .rank-2-premium { 
+        background: linear-gradient(135deg, #94a3b8, #64748b); 
+        color: white;
+        box-shadow: 0 0 20px rgba(148, 163, 184, 0.3);
+      }
+      .rank-3-premium { 
+        background: linear-gradient(135deg, #d97706, #b45309); 
+        color: white;
+        box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
+      }
+      
+      /* ============ BUTTONS ============ */
+      .print-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #1a33ff 0%, #3458ff 50%, #1a33ff 100%);
+        background-size: 200% 100%;
+        color: white;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(26, 51, 255, 0.3);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+      }
+      
+      .print-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(26, 51, 255, 0.5);
+        background-position: 100% 0;
+      }
+      
+      .export-excel-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #059669 0%, #10b981 50%, #059669 100%);
+        background-size: 200% 100%;
+        color: white;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(5, 150, 105, 0.3);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+      }
+      
+      .export-excel-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(5, 150, 105, 0.5);
+        background-position: 100% 0;
+      }
+      
+      /* ============ PRINT STYLES ============ */
+      @media print {
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        
+        body {
+          background: white !important;
+          color: #1a1a2e !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          font-size: 12px !important;
+        }
+        
+        .security-bar, nav, footer, .no-print, .print-btn, .export-excel-btn,
+        #btnResult, .header-section, .timer-container-premium, #msgStatus,
+        button:not(.print-btn), .vote-btn-container, .loader-overlay,
+        #loading, #cover, #loginPage, #votePage {
+          display: none !important;
+        }
+        
+        body > *:not(#resultsPage) {
+          display: none !important;
+        }
+        
+        #resultsPage {
+          display: block !important;
+          padding: 15px 20px !important;
+          margin: 0 auto !important;
+          background: white !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          overflow: visible !important;
+        }
+        
+        .glass-premium {
+          background: white !important;
+          border: 1px solid #d1d5db !important;
+          box-shadow: none !important;
+          backdrop-filter: none !important;
+          border-radius: 8px !important;
+          padding: 15px !important;
+          margin-bottom: 15px !important;
+        }
+        
+        #resultsPage .text-center h2 {
+          font-size: 22px !important;
+          color: #1a1a2e !important;
+        }
+        
+        #resultsPage .text-center p {
+          color: #4b5563 !important;
+          font-size: 14px !important;
+        }
+        
+        .chart-container {
+          height: 250px !important;
+          min-height: 200px !important;
+          max-height: 300px !important;
+          page-break-inside: avoid !important;
+          margin-bottom: 15px !important;
+        }
+        
+        .chart-container canvas {
+          max-height: 250px !important;
+        }
+        
+        .table-wrapper {
+          border: 2px solid #1e293b !important;
+          border-radius: 0 !important;
+        }
+        
+        .table-premium {
+          border-collapse: collapse !important;
+          width: 100% !important;
+          font-size: 11px !important;
+        }
+        
+        .table-premium thead th {
+          background: #1e293b !important;
+          color: white !important;
+          padding: 6px 8px !important;
+          font-size: 10px !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.5px !important;
+          border: 1px solid #1e293b !important;
+          text-align: center !important;
+          font-weight: 700 !important;
+        }
+        
+        .table-premium tbody td, .table-premium tfoot td {
+          padding: 5px 8px !important;
+          color: #1a1a2e !important;
+          background: white !important;
+          border: 1px solid #d1d5db !important;
+          text-align: center !important;
+          vertical-align: middle !important;
+          font-size: 11px !important;
+        }
+        
+        .table-premium tbody tr:nth-child(even) td {
+          background: #f8fafc !important;
+        }
+        
+        .table-premium tfoot td {
+          background: #f1f5f9 !important;
+          font-weight: bold !important;
+        }
+        
+        .candidate-img-table {
+          width: 50px !important;
+          height: 50px !important;
+          border-radius: 8px !important;
+          border: 1px solid #d1d5db !important;
+          box-shadow: none !important;
+          object-fit: cover !important;
+          display: block !important;
+          margin: 0 auto !important;
+        }
+        
+        .rank-badge-premium {
+          width: 28px !important;
+          height: 28px !important;
+          font-size: 11px !important;
+          border-radius: 6px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-weight: 700 !important;
+        }
+        
+        .print-date-info {
+          display: block !important;
+          text-align: center !important;
+          margin-top: 15px !important;
+          padding-top: 10px !important;
+          border-top: 1px solid #e5e7eb !important;
+        }
+        
+        .print-date-info p {
+          font-size: 10px !important;
+          color: #6b7280 !important;
+          margin: 2px 0 !important;
+        }
+        
+        .text-white {
+          color: #1a1a2e !important;
+        }
+        .text-navy-300, .text-navy-400 {
+          color: #4b5563 !important;
+        }
+        .text-navy-200 {
+          color: #4b5563 !important;
+        }
+        
+        #chartSection, #tableSection {
+          page-break-inside: avoid !important;
+        }
+        
+        #votingStatsSection {
+          display: grid !important;
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          gap: 10px !important;
+          margin-bottom: 20px !important;
+          page-break-inside: avoid !important;
+        }
+        #votingStatsSection .glass-premium {
+          background: white !important;
+          border: 1px solid #cbd5e1 !important;
+          padding: 10px !important;
+        }
+        #votingStatsSection h4 {
+          color: #1a1a2e !important;
+        }
+        #votingStatsSection p {
+          color: #475569 !important;
+        }
+        #votingStatsSection .text-green-400, #votingStatsSection .text-green-300 {
+          color: #16a34a !important;
+        }
+        #votingStatsSection .text-red-400, #votingStatsSection .text-red-300 {
+          color: #dc2626 !important;
+        }
+        
+
+        
+        @page {
+          margin: 1.5cm 1.2cm !important;
+          size: A4 portrait !important;
+        }
+      }
+      
+      /* ============ ANIMATIONS ============ */
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .animate-fade-in-up {
+        animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+      
+      .delay-100 { animation-delay: 0.1s; opacity: 0; }
+      .delay-200 { animation-delay: 0.2s; opacity: 0; }
+      .delay-300 { animation-delay: 0.3s; opacity: 0; }
+      
+      /* ============ RESPONSIVE ============ */
+      @media (max-width: 768px) {
+        .timer-block-premium { 
+          min-width: 70px; 
+          padding: 1rem 1rem; 
+        }
+        .timer-block-premium .digit { 
+          font-size: 2.25rem; 
+        }
+        .timer-separator-premium { 
+          font-size: 1.75rem; 
+        }
+        .vote-btn-container { 
+          right: 16px; 
+          bottom: 24px; 
+        }
+        .vote-btn-premium { 
+          padding: 14px 24px; 
+          font-size: 0.9rem; 
+        }
+        .timer-container-premium {
+          padding: 1.25rem 1.5rem;
+        }
+        .candidate-img-table {
+          width: 50px !important;
+          height: 50px !important;
+          border-radius: 10px;
+        }
+        .table-premium tbody td {
+          padding: 0.5rem 0.5rem;
+          font-size: 0.8rem;
+        }
+        .table-premium thead th {
+          padding: 0.5rem 0.5rem;
+          font-size: 0.7rem;
+        }
+        .chart-container {
+          height: 45vh;
+          min-height: 300px;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .timer-block-premium { 
+          min-width: 55px; 
+          padding: 0.75rem 0.75rem; 
+          border-radius: 12px;
+        }
+        .timer-block-premium .digit { 
+          font-size: 1.75rem; 
+        }
+        .timer-block-premium .unit {
+          font-size: 0.6rem;
+        }
+        .timer-separator-premium { 
+          font-size: 1.25rem; 
+        }
+        .timer-digits {
+          gap: 0.4rem;
+        }
+        .timer-container-premium {
+          padding: 1rem;
+          border-radius: 16px;
+        }
+        .candidate-img-table {
+          width: 40px !important;
+          height: 40px !important;
+          border-radius: 8px;
+        }
+        .table-premium tbody td {
+          padding: 0.3rem 0.3rem;
+          font-size: 0.7rem;
+        }
+        .table-premium thead th {
+          padding: 0.3rem 0.3rem;
+          font-size: 0.6rem;
+        }
+        .chart-container {
+          height: 40vh;
+          min-height: 200px;
+        }
+        .print-btn, .export-excel-btn {
+          padding: 8px 14px;
+          font-size: 0.7rem;
+        }
+      }
+    </style>
+  </head>
+  
+  <body onload="setFocus()" class="min-h-screen flex flex-col antialiased">
+    
+    <!-- ============ TOP SECURITY BAR ============ -->
+    <div class="security-bar no-print">
+      <div class="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-3 text-white/70">
+          <div class="flex items-center gap-1.5">
+            <div class="security-dot"></div>
+            <span>ระบบปลอดภัย SSL-256</span>
+          </div>
+          <span class="text-white/30 hidden sm:inline">|</span>
+          <span class="hidden sm:inline text-white/50">
+            <i class="fas fa-shield-halved mr-1"></i>การเลือกตั้งที่โปร่งใส
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-white/50">
+          <i class="fas fa-clock text-white/60"></i>
+          <span id="currentDateTime">--</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ============ NAVIGATION ============ -->
+    <nav class="relative bg-gradient-to-b from-navy-950 to-navy-900 border-b border-navy-700/50 sticky top-0 z-50 no-print">
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -left-40 w-80 h-80 bg-navy-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-600/5 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 sm:h-18">
+          <div class="flex items-center gap-3 cursor-pointer" onclick="openPage();">
+            <div class="relative shrink-0">
+              <div class="absolute inset-0 bg-navy-500/30 rounded-full blur-md"></div>
+              <img src="https://iili.io/d9SRCB9.png" alt="Logo" class="relative h-10 sm:h-11 w-auto drop-shadow-lg" />
+            </div>
+            <div class="hidden sm:block">
+              <p class="text-white font-semibold text-sm leading-tight">บริษัทเชียงใหม่โฟรเซ่นฟูดส์</p>
+              <p class="text-navy-300 text-xs">จำกัด(มหาชน) โรงงาน 1</p>
+            </div>
+          </div>
+          
+          <div class="hidden lg:block">
+            <div class="bg-white/3 backdrop-blur-sm rounded-full px-5 py-2 border border-white/8">
+              <p class="text-white font-display font-semibold text-base tracking-wide">
+                <i class="fas fa-vote-yea mr-2 text-gold-400"></i>
+                ระบบเลือกตั้งอิเล็กทรอนิกส์
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="reLoad();" class="text-white/80 hover:text-white bg-white/3 hover:bg-white/8 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 border border-white/5">
+              <i class="fas fa-home text-navy-300"></i>
+              <span class="hidden sm:inline">หน้าหลัก</span>
+            </button>
+            <button id="btnResult" onclick="openPage(true);" class="text-white/80 hover:text-white bg-white/3 hover:bg-white/8 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 border border-white/5" style="display:block;">
+              <i class="fas fa-chart-simple text-navy-300"></i>
+              <span class="hidden sm:inline">ผลคะแนน</span>
+            </button>
+            <button id="btnNonVoters" onclick="openNonVotersModal();" class="text-white/80 hover:text-white bg-white/3 hover:bg-white/8 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 border border-white/5">
+              <i class="fas fa-users-slash text-red-400"></i>
+              <span class="hidden sm:inline">ผู้ยังไม่ใช้สิทธิ์</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="lg:hidden text-center pb-3">
+          <span class="text-white/80 font-medium text-sm bg-white/3 px-4 py-1.5 rounded-full inline-flex items-center gap-2 border border-white/5">
+            <i class="fas fa-vote-yea text-gold-400 text-xs"></i>
+            ระบบเลือกตั้งอิเล็กทรอนิกส์
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============ LOADING OVERLAY ============ -->
+    <div id="loading" class="loader-overlay invisible">
+      <div class="loader-content">
+        <div class="loader-emblem">
+          <div class="loader-ring-outer"></div>
+          <div class="loader-ring-inner"></div>
+          <div class="loader-center">
+            <i class="fas fa-vote-yea"></i>
+          </div>
+        </div>
+        <p class="loader-text">กำลังดำเนินการ</p>
+        <p class="loader-subtext">ระบบกำลังประมวลผลคำขอของท่าน</p>
+        <div class="loader-progress">
+          <div class="loader-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ HEADER SECTION ============ -->
+    <div class="header-section relative mt-8 sm:mt-14 text-center px-4 pb-4">
+      <div class="grid-pattern absolute inset-0 -z-10 opacity-50"></div>
+      
+      <div class="flex flex-col items-center justify-center gap-8">
+        <div class="relative animate-fade-in-up">
+          <div class="absolute inset-0 bg-navy-500/20 rounded-full blur-3xl"></div>
+          <img src="https://iili.io/d9SRCB9.png" alt="Logo" class="relative h-20 sm:h-24 w-auto drop-shadow-2xl" />
+        </div>
+        
+        <div class="timer-container-premium animate-fade-in-up delay-200">
+          <div class="timer-header">
+            <i class="fas fa-hourglass-half icon"></i>
+            <span class="label">ระยะเวลาคงเหลือ</span>
+          </div>
+          <div id="timer" class="timer-digits"></div>
+        </div>
+        
+        <div id="msgStatus" class="text-base sm:text-lg font-medium text-navy-200 bg-navy-900/50 backdrop-blur-sm px-6 py-2.5 rounded-full border border-navy-700/30 animate-fade-in-up delay-300"></div>
+      </div>
+    </div>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <section id="cover" style="display:none;" class="flex-grow">
+      
+      <!-- ============ LOGIN PAGE ============ -->
+      <div id="loginPage" style="display:block;">
+        <div class="max-w-md mx-auto mt-8 sm:mt-12 px-4 animate-fade-in-up">
+          <div class="glass-premium rounded-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-navy-800 to-navy-900 px-6 py-6 text-center border-b border-navy-700/50">
+              <div class="w-14 h-14 bg-navy-600/30 rounded-xl flex items-center justify-center mx-auto mb-3 border border-navy-500/20">
+                <i id="loginCardIcon" class="fas fa-fingerprint text-2xl text-navy-200"></i>
+              </div>
+              <h3 id="loginCardTitle" class="text-xl font-display font-bold text-white">ยืนยันตัวตนผู้มีสิทธิ์</h3>
+              <p id="loginCardSub" class="text-navy-300 text-sm mt-1">กรอกรหัสพนักงานเพื่อเข้าสู่ระบบเลือกตั้ง</p>
+            </div>
+            
+            <div class="p-6 sm:p-8">
+              <form id="loginForm" onsubmit="checkLogin(); return false;">
+                <p id="errorMessage" class="text-red-400 text-center mb-5 font-medium bg-red-900/20 rounded-lg py-2.5 px-4 text-sm border border-red-500/20" style="display:none;"></p>
+                
+                <div class="space-y-5">
+                  <div>
+                    <label class="block text-sm font-semibold text-navy-200 mb-2" for="stdId">
+                      <i class="fas fa-id-card mr-1.5 text-navy-400"></i>รหัสพนักงาน
+                    </label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-user text-navy-500 text-lg"></i>
+                      </div>
+                      <input 
+                        type="text" 
+                        class="block w-full pl-12 pr-4 py-3.5 bg-navy-950/50 border border-navy-700/50 rounded-xl focus:ring-2 focus:ring-navy-500 focus:border-navy-500 text-white placeholder-navy-500 transition-all text-base font-medium" 
+                        id="stdId" 
+                        placeholder="ตัวอย่าง: 1001" 
+                        autocomplete="off"
+                        required 
+                      />
+                    </div>
+                  </div>
+                  
+                  <div style="display:none">
+                    <input type="password" id="citizenId" value="" />
+                  </div>
+                </div>
+                
+                <div class="mt-7">
+                  <button 
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-navy-600 via-navy-700 to-blue-800 hover:from-navy-500 hover:via-navy-600 hover:to-blue-700 text-white font-display font-semibold py-3.5 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.01] shadow-lg hover:shadow-navy-500/20 text-base flex items-center justify-center gap-3 border border-navy-500/20 group"
+                  >
+                    <i class="fas fa-shield-check group-hover:scale-110 transition-transform"></i>
+                    <span>ตรวจสอบสิทธิ์การเลือกตั้ง</span>
+                    <i class="fas fa-chevron-right text-sm group-hover:translate-x-1 transition-transform"></i>
+                  </button>
+                </div>
+              </form>
+
+              <!-- ============ EXPIRED ELECTION VIEW RESULTS BUTTON ============ -->
+              <div id="resultsExpiredContainer" style="display:none;">
+                <p class="text-center text-navy-300 text-sm mb-6 bg-navy-900/40 border border-navy-800/40 rounded-xl p-4 leading-relaxed">
+                  📢 ระบบลงคะแนนเลือกตั้งได้ปิดให้ลงคะแนนอย่างเป็นทางการแล้ว ท่านสามารถกดปุ่มด้านล่างเพื่อตรวจสอบรายงานผลคะแนนเลือกตั้งได้ทันที
+                </p>
+                <button 
+                  type="button"
+                  onclick="openPage();"
+                  class="w-full bg-gradient-to-r from-green-600 via-green-700 to-emerald-800 hover:from-green-500 hover:via-green-600 hover:to-emerald-700 text-white font-display font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.01] shadow-lg hover:shadow-green-500/20 text-base flex items-center justify-center gap-3 border border-green-500/20 group"
+                >
+                  <i class="fas fa-chart-simple group-hover:scale-110 transition-transform"></i>
+                  <span>ดูผลคะแนนการเลือกตั้ง</span>
+                  <i class="fas fa-chevron-right text-sm group-hover:translate-x-1 transition-transform"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ VOTE PAGE - X MARK BALLOT ============ -->
+      <div id="votePage" style="display:none;">
+        <div class="max-w-4xl mx-auto mt-6 sm:mt-10 px-4 pb-36 animate-fade-in-up">
+          <div class="glass-premium rounded-2xl overflow-hidden">
+            <!-- Ballot Header -->
+            <div class="bg-gradient-to-r from-navy-800 to-navy-900 px-6 py-5 text-center border-b border-navy-700/50">
+              <div class="flex items-center justify-center gap-3 mb-2">
+                <div class="w-12 h-12 bg-navy-600/30 rounded-2xl flex items-center justify-center border border-navy-500/20">
+                  <i class="fas fa-check-circle text-2xl text-navy-200"></i>
+                </div>
+              </div>
+              <h3 class="text-xl font-display font-bold text-white">บัตรเลือกตั้ง</h3>
+              <p class="text-navy-300 text-sm mt-1">กา <span class="text-green-400 font-bold">✕</span> เลือกผู้สมัคร <span class="text-gold-400 font-semibold">1 ท่าน</span></p>
+            </div>
+            
+            <div class="p-4 sm:p-6">
+              <p id="msgAlert" class="text-green-400 font-medium text-center mb-4 bg-green-900/20 rounded-lg py-2 px-4 text-sm border border-green-500/20" style="display:none;"></p>
+              
+              <!-- Candidate Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="candidateList">
+                <?!= getDataLeader() ?>
+              </div>
+              
+              <!-- Voting Instruction -->
+              <div class="mt-4 text-center text-xs text-navy-500 border-t border-navy-800/50 pt-3">
+                <i class="fas fa-gavel mr-1"></i>
+                กติกา : เลือกได้เพียง 1 ท่านเท่านั้น
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ปุ่มบันทึกคะแนนเสียง (แสดงขึ้นมาเมื่อมีการเลือกผู้สมัคร) -->
+        <div id="voteBtnContainer" class="vote-btn-container" style="display: none;">
+          <button onclick="AddData()" class="vote-btn-premium group" id="voteBtn">
+            <span class="shine"></span>
+            <span class="relative flex items-center gap-3">
+              <img src="https://iili.io/dHoqF9V.gif" alt="Vote" class="h-11 sm:h-13 w-auto drop-shadow-lg" />
+              <div class="text-left leading-tight">
+                <span class="text-xs opacity-70 font-medium">คลิกเพื่อ</span><br>
+                <span class="text-base sm:text-lg font-display font-bold tracking-wide">ยืนยันการลงคะแนน</span>
+              </div>
+            </span>
+          </button>
+        </div>
+      </div>
+      
+    </section>
+
+    <!-- ============ RESULT PAGE ============ -->
+    <div id="resultsPage" style="display:none;" class="flex-grow">
+      <div class="max-w-6xl mx-auto mt-8 sm:mt-12 px-4 sm:px-6 lg:px-8 pb-16">
+        
+        <div class="text-center mb-10 animate-fade-in-up">
+          <span class="inline-flex items-center gap-2 bg-navy-800/60 text-navy-200 text-xs font-semibold px-4 py-1.5 rounded-full border border-navy-600/30">
+            <div class="security-dot"></div>
+            ผลการเลือกตั้งอย่างเป็นทางการ
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-display font-black text-white mt-3 tracking-tight">
+            ประกาศผลการเลือกตั้ง
+          </h2>
+          <p class="text-navy-300 mt-2 text-sm sm:text-base">คณะกรรมการสวัสดิการในสถานประกอบกิจการ ประจำปี 2569</p>
+          <div class="w-20 h-0.5 bg-gradient-to-r from-transparent via-navy-500 to-transparent mx-auto mt-5"></div>
+          
+          <!-- ============ ALREADY VOTED BANNER ============ -->
+          <div id="alreadyVotedBanner" style="display:none;" class="max-w-md mx-auto mt-6 bg-green-500/10 border border-green-500/20 px-5 py-3 rounded-2xl flex items-center justify-center gap-3 no-print">
+            <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center shrink-0 border border-green-500/30">
+              <i class="fas fa-check text-green-400 text-sm"></i>
+            </div>
+            <p id="alreadyVotedMessage" class="text-green-300 text-sm font-medium text-left"></p>
+          </div>
+          
+          <div class="print-date-info" style="display:none; margin-top: 10px;">
+            <p style="font-size:12px;color:#6b7280;">พิมพ์เมื่อ: <span id="printDateTime"></span></p>
+            <p style="font-size:12px;color:#6b7280;">ระบบเลือกตั้งคณะกรรมการสวัสดิการ - บริษัทเชียงใหม่โฟรเซ่นฟูดส์ จำกัด(มหาชน)</p>
+          </div>
+          
+          <div class="mt-6 flex flex-wrap justify-center gap-3 no-print">
+            <button onclick="printResults()" class="print-btn">
+              <i class="fas fa-print"></i>
+              พิมพ์ผลคะแนน
+            </button>
+            <button onclick="exportToExcel()" class="export-excel-btn">
+              <i class="fas fa-file-excel"></i>
+              ส่งออก Excel
+            </button>
+            <button onclick="refreshChart()" class="print-btn" style="background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #7c3aed 100%);">
+              <i class="fas fa-sync-alt"></i>
+              รีเฟรชกราฟ
+            </button>
+          </div>
+        </div>
+        
+
+        
+        <!-- ============ STATISTICS SUMMARY ============ -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 animate-fade-in-up delay-75" id="votingStatsSection">
+          <!-- Card 1: Total Eligible Voters -->
+          <div class="glass-premium rounded-2xl p-5 border border-white/10 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-navy-300 uppercase tracking-wider">จำนวนผู้มีสิทธิ์เลือกตั้ง</p>
+              <h4 class="text-2xl font-bold text-white mt-1" id="statTotalVoters">-</h4>
+            </div>
+            <div class="w-12 h-12 bg-navy-500/10 rounded-xl flex items-center justify-center border border-navy-500/20 text-navy-400">
+              <i class="fas fa-users text-xl"></i>
+            </div>
+          </div>
+          
+          <!-- Card 2: Voted Voters -->
+          <div class="glass-premium rounded-2xl p-5 border border-white/10 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-navy-300 uppercase tracking-wider">ผู้มาใช้สิทธิ์แล้ว</p>
+              <h4 class="text-2xl font-bold text-green-400 mt-1">
+                <span id="statVotedVoters">-</span> คน 
+                <span class="text-sm font-normal text-green-300 ml-1.5" id="statVotedPercent">(-%)</span>
+              </h4>
+            </div>
+            <div class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center border border-green-500/20 text-green-400">
+              <i class="fas fa-vote-yea text-xl"></i>
+            </div>
+          </div>
+          
+          <!-- Card 3: Non-Voters -->
+          <div class="glass-premium rounded-2xl p-5 border border-white/10 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-navy-300 uppercase tracking-wider">เหลือผู้ยังไม่ลงคะแนน</p>
+              <h4 class="text-2xl font-bold text-red-400 mt-1">
+                <span id="statNonVoters">-</span> คน 
+                <span class="text-sm font-normal text-red-300 ml-1.5" id="statNonVotersPercent">(-%)</span>
+              </h4>
+            </div>
+            <div class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20 text-red-400">
+              <i class="fas fa-users-slash text-xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-premium rounded-2xl p-5 sm:p-8 mb-8 animate-fade-in-up delay-100" id="chartSection">
+          <div class="flex items-center gap-2 mb-5">
+            <i class="fas fa-chart-bar text-navy-400 text-lg"></i>
+            <h3 class="text-base font-display font-semibold text-white">กราฟแสดงผลคะแนน</h3>
+          </div>
+          <div class="chart-container" id="chartWrapper">
+            <canvas id="barchart"></canvas>
+          </div>
+        </div>
+        
+        <div class="glass-premium rounded-2xl p-5 sm:p-8 overflow-x-auto animate-fade-in-up delay-200" id="tableSection">
+          <div class="flex items-center gap-2 mb-5">
+            <i class="fas fa-table text-navy-400 text-lg"></i>
+            <h3 class="text-base font-display font-semibold text-white">ตารางสรุปคะแนน</h3>
+          </div>
+          
+          <div class="table-wrapper relative">
+            <!-- Swipe Overlay Indicator for Mobile (กระพริบกลางตาราง โปร่งแสง หายไปเมื่อมีการสัมผัสหรือเลื่อน) -->
+            <div id="tableSwipeOverlay" class="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center pointer-events-none transition-all duration-500 sm:hidden no-print">
+              <div class="glass-premium rounded-2xl p-5 border border-white/10 flex flex-col items-center gap-3 text-center max-w-[200px] shadow-2xl animate-pulse">
+                <div class="w-14 h-14 bg-gold-500/10 rounded-full flex items-center justify-center border border-gold-500/20 text-gold-400">
+                  <i class="fas fa-exchange-alt text-2xl animate-swipe"></i>
+                </div>
+                <div class="text-xs font-semibold text-white">เลื่อนซ้าย-ขวา</div>
+                <div class="text-[10px] text-navy-300">เพื่อดูข้อมูลตารางเพิ่มเติม</div>
+              </div>
+            </div>
+            <table class="table-premium min-w-full text-sm" id="resultTable">
+              <thead>
+                <tr>
+                  <th class="text-center" style="width: 110px;">รูปผู้สมัคร</th>
+                  <th class="text-center" style="width: 80px;">หมายเลข</th>
+                  <th class="text-left" style="min-width: 180px;">ชื่อ - นามสกุล</th>
+                  <th class="text-center" style="width: 120px;">
+                    <i class="fas fa-star text-gold-400 mr-1 text-xs"></i>คะแนนเสียง
+                  </th>
+                  <th class="text-center" style="width: 90px;">ร้อยละ</th>
+                  <th class="text-center" style="width: 90px;">อันดับ</th>
+                </tr>
+              </thead>
+              <tbody id="resultTableBody">
+                <?!= getDataResult() ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="bg-navy-950 border-t border-navy-800/50 mt-auto no-print">
+      <div class="max-w-7xl mx-auto py-5 px-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p class="text-navy-400 text-xs sm:text-sm">
+            © 2022 - <script>document.write(new Date().getFullYear());</script> 
+            <span class="text-white/70 font-medium">นายธีรพงศ์ พรหมวัง</span>
+          </p>
+          <div class="flex items-center gap-3 text-navy-500 text-xs">
+            <span class="flex items-center gap-1">
+              <i class="fas fa-lock text-navy-600"></i> การเข้ารหัสแบบ end-to-end
+            </span>
+            <span class="text-navy-700">|</span>
+            <span class="flex items-center gap-1">
+              <i class="fas fa-check-circle text-navy-600"></i> ผ่านการตรวจสอบโดยคณะกรรมการ
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ============ MODAL: NON-VOTERS ============ -->
+    <div id="nonVotersModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300 no-print">
+      <div class="glass-premium rounded-2xl border border-white/10 w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden transform scale-95 transition-all duration-300">
+        
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-navy-800 to-navy-900 px-6 py-4 flex items-center justify-between border-b border-navy-700/50">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center border border-red-500/30">
+              <i class="fas fa-users-slash text-red-400 text-lg"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-display font-bold text-white leading-tight">ผู้ยังไม่ใช้สิทธิ์ลงคะแนน</h3>
+              <p class="text-xs text-navy-300">รายชื่อผู้มีสิทธิ์ที่ยังไม่ได้ทำการลงคะแนนเสียง</p>
+            </div>
+          </div>
+          <button onclick="closeNonVotersModal();" class="text-navy-400 hover:text-white transition-colors p-1.5 hover:bg-white/5 rounded-lg">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <!-- Modal Controls -->
+        <div class="px-6 py-4 bg-navy-950/40 border-b border-navy-900/50 flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <!-- Department Filter -->
+          <div class="w-full sm:w-auto flex items-center gap-3">
+            <label for="deptFilter" class="text-sm font-semibold text-navy-200 shrink-0">
+              <i class="fas fa-filter text-navy-400 mr-1.5"></i>แผนก:
+            </label>
+            <select id="deptFilter" onchange="filterNonVoters();" class="block w-full sm:w-56 bg-navy-950/80 border border-navy-700/50 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-navy-500 text-sm font-medium transition-all">
+              <option value="all">ทั้งหมด</option>
+            </select>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="w-full sm:w-64 relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <i class="fas fa-search text-navy-500 text-sm"></i>
+            </div>
+            <input 
+              type="text" 
+              id="voterSearch" 
+              oninput="filterNonVoters();"
+              placeholder="ค้นหาชื่อ หรือ รหัสพนักงาน..." 
+              class="block w-full pl-9 pr-4 py-2 bg-navy-950/80 border border-navy-700/50 rounded-xl text-white placeholder-navy-500 focus:ring-2 focus:ring-navy-500 text-sm transition-all"
+            />
+          </div>
+        </div>
+
+        <!-- Modal Body (Table) -->
+        <div class="flex-grow overflow-y-auto p-6 min-h-[300px]">
+          <!-- Loader inside modal -->
+          <div id="modalLoader" class="flex flex-col items-center justify-center py-16 gap-3">
+            <div class="w-10 h-10 border-4 border-navy-500 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-navy-300 text-sm">กำลังโหลดข้อมูล...</p>
+          </div>
+
+          <!-- Table wrapper -->
+          <div id="modalTableWrapper" class="hidden overflow-x-auto rounded-xl border border-navy-800/50 bg-navy-950/30">
+            <table class="w-full text-left border-collapse" id="nonVotersTable">
+              <thead>
+                <tr class="bg-navy-900/40 text-navy-300 text-xs font-semibold uppercase tracking-wider border-b border-navy-800/50">
+                  <th class="px-5 py-3.5 text-center w-16">ลำดับ</th>
+                  <th class="px-5 py-3.5 w-32">รหัสพนักงาน</th>
+                  <th class="px-5 py-3.5">ชื่อ - นามสกุล</th>
+                  <th class="px-5 py-3.5 w-48">แผนก</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-navy-800/30 text-white text-sm" id="nonVotersBody">
+                <!-- Rows will be injected dynamically -->
+              </tbody>
+            </table>
+
+            <!-- Empty state -->
+            <div id="modalEmptyState" class="hidden flex-col items-center justify-center py-16 text-center">
+              <i class="fas fa-check-circle text-4xl text-green-500 mb-3 opacity-60"></i>
+              <p class="text-white font-medium text-base">ลงคะแนนครบทุกคนแล้ว!</p>
+              <p class="text-navy-400 text-sm mt-1">ไม่พบผู้ยังไม่ลงคะแนนตามเงื่อนไขที่เลือก</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 bg-navy-950/60 border-t border-navy-800/30 flex items-center justify-between shrink-0">
+          <div class="text-xs text-navy-400">
+            <span class="font-semibold text-gold-400 mr-1" id="nonVotersCount">0</span> คนที่ยังไม่ใช้สิทธิ์
+          </div>
+          <button onclick="closeNonVotersModal();" class="bg-navy-800 hover:bg-navy-700 text-white font-medium px-5 py-2 rounded-xl text-sm transition-all border border-navy-600/30">
+            ปิดหน้าต่าง
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ SCRIPTS ============ -->
+    <?!= include('jsChart'); ?>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script>
+      // ============ PAGE STATE MANAGEMENT ============
+      function updatePageState() {
+        const resultsPage = document.getElementById('resultsPage');
+        const headerSection = document.querySelector('.header-section');
+        const body = document.body;
+        
+        if (resultsPage && resultsPage.style.display !== 'none') {
+          if (headerSection) {
+            headerSection.style.display = 'none';
+          }
+          body.classList.add('results-active');
+          silentUpdateResults(); // ดึงคะแนนและสถิติทันทีเมื่อเปิดหน้าผลลัพธ์
+        } else {
+          if (headerSection) {
+            headerSection.style.display = '';
+          }
+          body.classList.remove('results-active');
+        }
+      }
+      
+      var resultsPageObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+            updatePageState();
+          }
+        });
+      });
+      
+      var resultsPage = document.getElementById('resultsPage');
+      if (resultsPage) {
+        resultsPageObserver.observe(resultsPage, {
+          attributes: true,
+          attributeFilter: ['style']
+        });
+      }
+      
+      setTimeout(updatePageState, 500);
+      
+      // ============ UPDATE DATE TIME ============
+      function updateDateTime() {
+        const now = new Date();
+        const options = { 
+          year: 'numeric', month: 'long', day: 'numeric',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        };
+        const el = document.getElementById('currentDateTime');
+        if (el) {
+          el.textContent = now.toLocaleDateString('th-TH', options);
+        }
+      }
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+      
+      // ============ FIX TABLE DISPLAY ============
+      function fixTableDisplay() {
+        const table = document.getElementById('resultTable');
+        if (!table) return;
+        
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+          row.style.display = 'table-row';
+        });
+        
+        const images = table.querySelectorAll('.candidate-img-table');
+        images.forEach(img => {
+          img.style.width = '80px';
+          img.style.height = '80px';
+          img.style.objectFit = 'cover';
+          img.style.borderRadius = '16px';
+          img.style.display = 'block';
+          img.style.margin = '0 auto';
+        });
+      }
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(fixTableDisplay, 500);
+        
+        // จัดการเลื่อนซ้าย-ขวาบนมือถือ (Swipe Overlay ให้หายไปเมื่อกระทำ)
+        setTimeout(function() {
+          const wrapper = document.querySelector('.table-wrapper');
+          const overlay = document.getElementById('tableSwipeOverlay');
+          if (wrapper && overlay) {
+            const fadeOut = () => {
+              overlay.style.opacity = '0';
+              setTimeout(() => {
+                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+              }, 500);
+              wrapper.removeEventListener('scroll', fadeOut);
+              wrapper.removeEventListener('touchstart', fadeOut);
+              wrapper.removeEventListener('click', fadeOut);
+            };
+            wrapper.addEventListener('scroll', fadeOut);
+            wrapper.addEventListener('touchstart', fadeOut, { passive: true });
+            wrapper.addEventListener('click', fadeOut);
+            
+            // จางหายไปเองอัตโนมัติเมื่อครบ 4 วินาที
+            setTimeout(fadeOut, 4000);
+          }
+        }, 1000);
+      });
+      
+      var tableObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.target.id === 'resultsPage' && 
+              mutation.target.style.display !== 'none') {
+            setTimeout(fixTableDisplay, 500);
+          }
+        });
+      });
+      
+      if (resultsPage) {
+        tableObserver.observe(resultsPage, {
+          attributes: true,
+          attributeFilter: ['style']
+        });
+      }
+      
+      // ============ HANDLE BALLOT CARD CLICK (X-MARK LOGIC) ============
+      function handleBallotClick(radioId) {
+        const radio = document.getElementById(radioId);
+        if (!radio) return;
+        
+        // Uncheck all radios
+        document.querySelectorAll('.ballot-radio').forEach(r => r.checked = false);
+        // Remove selected class from all cards
+        document.querySelectorAll('.ballot-card').forEach(c => c.classList.remove('selected'));
+        
+        // Check selected radio
+        radio.checked = true;
+        // Add selected class to parent card
+        const card = radio.closest('.ballot-card');
+        if (card) {
+          card.classList.add('selected');
+        }
+        
+        // Show save button
+        const btnContainer = document.getElementById('voteBtnContainer');
+        if (btnContainer) {
+          btnContainer.style.display = 'block';
+        }
+        
+        // Trigger change event for detection
+        const event = new Event('change', { bubbles: true });
+        radio.dispatchEvent(event);
+      }
+      
+      // ============ CHECK LOGIN FUNCTION ============
+      function checkLogin() {
+        var stdId = document.getElementById('stdId').value.trim();
+        var errorMessage = document.getElementById('errorMessage');
+        var loadingEl = document.getElementById('loading');
+        
+        errorMessage.style.display = 'none';
+        errorMessage.textContent = '';
+        
+        if (stdId === '') {
+          errorMessage.textContent = '⚠️ กรุณากรอกรหัสพนักงาน';
+          errorMessage.style.display = 'block';
+          document.getElementById('stdId').focus();
+          return;
+        }
+        
+        loadingEl.classList.remove('invisible');
+        
+        google.script.run
+          .withSuccessHandler(function(response) {
+            loadingEl.classList.add('invisible');
+            console.log('Response from server:', response);
+            
+            if (Array.isArray(response) && response[0] === 'already_voted') {
+              var name = response[1];
+              Swal.fire({
+                icon: 'warning',
+                title: 'คุณใช้สิทธิลงคะแนนเสียงแล้ว',
+                html: '<h3 style="color:#ef4444; font-weight:600; margin-bottom:10px;">คุณ ' + name + '</h3><h4 style="color:#e2e8f0;">คุณสามารถใช้สิทธิได้เพียงครั้งเดียวเท่านั้น</h4>',
+                background: '#0f172a',
+                color: '#fff',
+                confirmButtonColor: '#22c55e',
+                confirmButtonText: 'ตกลง'
+              }).then(function() {
+                const banner = document.getElementById('alreadyVotedBanner');
+                const message = document.getElementById('alreadyVotedMessage');
+                if (banner && message) {
+                  message.innerHTML = 'คุณ <span class="text-gold-400 font-bold">' + name + '</span> ได้ใช้สิทธิ์ลงคะแนนเรียบร้อยแล้ว';
+                  banner.style.display = 'flex';
+                }
+                openPage();
+              });
+              document.getElementById('stdId').value = '';
+              document.getElementById('stdId').focus();
+              
+            } else if (Array.isArray(response) && response.length > 0) {
+              var stdId = response[0];
+              var fullname = response[1];
+              var status = response[2];
+              
+              document.getElementById('loginPage').style.display = 'none';
+              document.getElementById('votePage').style.display = 'block';
+              document.getElementById('cover').style.display = 'block';
+              
+              var msgAlert = document.getElementById('msgAlert');
+              if (msgAlert) {
+                msgAlert.textContent = '✅ ยินดีต้อนรับคุณ ' + fullname + ' ท่านสามารถเลือกผู้สมัครได้ 1 ท่าน';
+                msgAlert.style.display = 'block';
+                msgAlert.className = 'text-green-400 font-medium text-center mb-4 bg-green-900/20 rounded-lg py-2 px-4 text-sm border border-green-500/20';
+              }
+              
+              document.getElementById('citizenId').value = stdId;
+              
+              var msgStatus = document.getElementById('msgStatus');
+              if (msgStatus) {
+                msgStatus.textContent = '✅ สวัสดีคุณ ' + fullname + ' | กรุณาเลือกผู้สมัครที่ต้องการ';
+                msgStatus.className = 'text-green-400 bg-green-900/30 backdrop-blur-sm px-6 py-2.5 rounded-full border border-green-700/30';
+              }
+              
+              document.getElementById('votePage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+              
+            } else if (response === 'already_voted') {
+              Swal.fire({
+                icon: 'warning',
+                title: 'คุณใช้สิทธิลงคะแนนเสียงแล้ว',
+                html: '<h4 style="color:#e2e8f0;">คุณสามารถใช้สิทธิได้เพียงครั้งเดียวเท่านั้น</h4>',
+                background: '#0f172a',
+                color: '#fff',
+                confirmButtonColor: '#22c55e',
+                confirmButtonText: 'ตกลง'
+              }).then(function() {
+                const banner = document.getElementById('alreadyVotedBanner');
+                const message = document.getElementById('alreadyVotedMessage');
+                if (banner && message) {
+                  message.innerHTML = 'ท่านได้ใช้สิทธิ์ลงคะแนนเรียบร้อยแล้ว';
+                  banner.style.display = 'flex';
+                }
+                openPage();
+              });
+              document.getElementById('stdId').value = '';
+              document.getElementById('stdId').focus();
+              
+            } else {
+              errorMessage.textContent = '❌ รหัสพนักงานที่ท่านกรอกไม่ถูกต้อง! กรุณาตรวจสอบและลองใหม่';
+              errorMessage.style.display = 'block';
+              document.getElementById('stdId').focus();
+              document.getElementById('stdId').select();
+            }
+          })
+          .withFailureHandler(function(error) {
+            loadingEl.classList.add('invisible');
+            console.error('Error:', error);
+            errorMessage.textContent = '❌ เกิดข้อผิดพลาดในการเชื่อมต่อระบบ กรุณาลองใหม่อีกครั้ง';
+            errorMessage.style.display = 'block';
+          })
+          .checkLogin(stdId, '');
+      }
+      
+      // ============ REFRESH CHART FUNCTION ============
+      function refreshChart() {
+        const chartCanvas = document.getElementById('barchart');
+        if (!chartCanvas) {
+          console.warn('Chart canvas not found');
+          return;
+        }
+        
+        const existingChart = Chart.getChart('barchart');
+        if (existingChart) {
+          existingChart.destroy();
+        }
+        
+        Swal.fire({
+          title: 'กำลังรีเฟรชกราฟ',
+          text: 'กรุณารอสักครู่...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
+        if (typeof google !== 'undefined' && google.script) {
+          google.script.run
+            .withSuccessHandler(function() {
+              setTimeout(function() {
+                const chartWrapper = document.getElementById('chartWrapper');
+                if (chartWrapper) {
+                  chartWrapper.style.display = 'block';
+                  chartWrapper.style.opacity = '1';
+                }
+                
+                if (typeof drawChart === 'function') {
+                  drawChart();
+                }
+                
+                Swal.close();
+                
+                Swal.fire({
+                  icon: 'success',
+                  title: 'รีเฟรชสำเร็จ',
+                  text: 'กราฟแสดงผลคะแนนได้รับการอัปเดตแล้ว',
+                  timer: 1500,
+                  showConfirmButton: false,
+                  background: '#0f172a',
+                  color: '#fff',
+                  iconColor: '#22c55e'
+                });
+              }, 500);
+            })
+            .withFailureHandler(function(error) {
+              Swal.close();
+              Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถรีเฟรชกราฟได้: ' + error,
+                confirmButtonColor: '#3458ff',
+                background: '#0f172a',
+                color: '#fff',
+                iconColor: '#ef4444'
+              });
+            })
+            .getChartData();
+        } else {
+          Swal.close();
+          if (typeof drawChart === 'function') {
+            drawChart();
+            Swal.fire({
+              icon: 'success',
+              title: 'รีเฟรชสำเร็จ',
+              text: 'กราฟได้รับการวาดใหม่',
+              timer: 1500,
+              showConfirmButton: false,
+              background: '#0f172a',
+              color: '#fff',
+              iconColor: '#22c55e'
+            });
+          }
+        }
+      }
+      
+      // ============ VOTE FUNCTION ============
+      function AddData() {
+        var selectedRadio = document.querySelector('.ballot-radio:checked');
+        
+        if (!selectedRadio) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'กรุณาเลือกผู้สมัคร',
+            text: 'ท่านยังไม่ได้เลือกผู้สมัครที่ต้องการลงคะแนน',
+            confirmButtonText: 'เข้าใจแล้ว',
+            confirmButtonColor: '#3458ff',
+            background: '#0f172a',
+            color: '#fff',
+            iconColor: '#fbbf24'
+          });
+          return;
+        }
+        
+        Swal.fire({
+          title: 'ยืนยันการลงคะแนน',
+          text: 'ท่านต้องการยืนยันการลงคะแนนให้ผู้สมัครที่เลือกใช่หรือไม่?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'ยืนยัน',
+          cancelButtonText: 'ยกเลิก',
+          confirmButtonColor: '#3458ff',
+          cancelButtonColor: '#64748b',
+          background: '#0f172a',
+          color: '#fff',
+          iconColor: '#5a80ff',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            var loadingEl = document.getElementById('loading');
+            loadingEl.classList.remove('invisible');
+            
+            google.script.run
+              .withSuccessHandler(function(response) {
+                setTimeout(function() {
+                  loadingEl.classList.add('invisible');
+                  
+                  if (Array.isArray(response) && response[0] === 'success') {
+                    var fullname = response[1];
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'ลงคะแนนสำเร็จ!',
+                      html: '<p class="text-navy-200">ขอบคุณที่ใช้สิทธิ์เลือกตั้ง</p><p class="text-gold-400 text-sm mt-1">เสียงของคุณมีความหมาย</p>',
+                      showConfirmButton: true,
+                      confirmButtonText: 'ตกลง',
+                      confirmButtonColor: '#3458ff',
+                      timer: 2000,
+                      timerProgressBar: true,
+                      background: '#0f172a',
+                      color: '#fff',
+                      iconColor: '#22c55e',
+                      customClass: {
+                        timerProgressBar: 'bg-navy-500'
+                      }
+                    }).then(function() {
+                      const banner = document.getElementById('alreadyVotedBanner');
+                      const message = document.getElementById('alreadyVotedMessage');
+                      if (banner && message) {
+                        message.innerHTML = 'คุณ <span class="text-gold-400 font-bold">' + fullname + '</span> ได้ใช้สิทธิ์ลงคะแนนเรียบร้อยแล้ว';
+                        banner.style.display = 'flex';
+                      }
+                      openPage();
+                    });
+                    
+                    setTimeout(function() {
+                      if (Swal.isVisible()) {
+                        Swal.close();
+                        const banner = document.getElementById('alreadyVotedBanner');
+                        const message = document.getElementById('alreadyVotedMessage');
+                        if (banner && message) {
+                          message.innerHTML = 'คุณ <span class="text-gold-400 font-bold">' + fullname + '</span> ได้ใช้สิทธิ์ลงคะแนนเรียบร้อยแล้ว';
+                          banner.style.display = 'flex';
+                        }
+                        openPage();
+                      }
+                    }, 2100);
+                  } else {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'เกิดข้อผิดพลาด',
+                      text: 'ไม่สามารถบันทึกการลงคะแนนได้ กรุณาลองใหม่อีกครั้ง',
+                      confirmButtonText: 'ตกลง',
+                      confirmButtonColor: '#3458ff',
+                      background: '#0f172a',
+                      color: '#fff',
+                      iconColor: '#ef4444'
+                    });
+                  }
+                }, 350);
+              })
+              .withFailureHandler(function(error) {
+                loadingEl.classList.add('invisible');
+                console.error('Error:', error);
+                
+                Swal.fire({
+                  icon: 'error',
+                  title: 'เกิดข้อผิดพลาด',
+                  text: 'ไม่สามารถดำเนินการได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง',
+                  confirmButtonText: 'ลองใหม่',
+                  confirmButtonColor: '#3458ff',
+                  background: '#0f172a',
+                  color: '#fff',
+                  iconColor: '#ef4444'
+                });
+              })
+              .recordData(document.getElementById('citizenId').value, selectedRadio.value);
+          }
+        });
+      }
+      
+      // ============ RESET TO LOGIN ============
+      function resetToLoginPage() {
+        document.querySelectorAll('.ballot-radio').forEach(function(radio) {
+          radio.checked = false;
+        });
+        document.querySelectorAll('.ballot-card').forEach(function(card) {
+          card.classList.remove('selected');
+        });
+        
+        // Hide save button
+        const btnContainer = document.getElementById('voteBtnContainer');
+        if (btnContainer) {
+          btnContainer.style.display = 'none';
+        }
+        
+        var stdIdInput = document.getElementById('stdId');
+        if (stdIdInput) {
+          stdIdInput.value = '';
+        }
+        
+        var citizenInput = document.getElementById('citizenId');
+        if (citizenInput) {
+          citizenInput.value = '';
+        }
+        
+        var errorMessage = document.getElementById('errorMessage');
+        if (errorMessage) {
+          errorMessage.textContent = '';
+          errorMessage.style.display = 'none';
+        }
+        
+        var msgAlert = document.getElementById('msgAlert');
+        if (msgAlert) {
+          msgAlert.textContent = '';
+          msgAlert.style.display = 'none';
+        }
+        
+        const alreadyVotedBanner = document.getElementById('alreadyVotedBanner');
+        if (alreadyVotedBanner) {
+          alreadyVotedBanner.style.display = 'none';
+        }
+        
+        document.getElementById('loginPage').style.display = 'block';
+        document.getElementById('votePage').style.display = 'none';
+        document.getElementById('resultsPage').style.display = 'none';
+        document.getElementById('cover').style.display = 'block';
+        
+        updatePageState();
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(function() {
+          if (stdIdInput) stdIdInput.focus();
+        }, 400);
+      }
+      
+      // ============ EXPORT TO EXCEL FUNCTION ============
+      function exportToExcel() {
+        Swal.fire({
+          title: 'ส่งออกข้อมูล Excel',
+          text: 'กำลังสร้างไฟล์ Excel...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
+        const table = document.getElementById('resultTable');
+        if (!table) {
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            title: 'ไม่พบข้อมูล',
+            text: 'ไม่พบตารางข้อมูล',
+            confirmButtonColor: '#3458ff',
+            background: '#0f172a',
+            color: '#fff'
+          });
+          return;
+        }
+        
+        let csv = '\uFEFF';
+        csv += '"หมายเลข","ชื่อ - นามสกุล","คะแนนเสียง","ร้อยละ","อันดับ"\n';
+        
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length >= 6) {
+            const number = cells[1].textContent.trim();
+            const name = cells[2].textContent.trim();
+            const votes = cells[3].textContent.trim();
+            const percent = cells[4].textContent.trim();
+            const rank = cells[5].textContent.trim();
+            
+            csv += `"${number}","${name}","${votes}","${percent}","${rank}"\n`;
+          }
+        });
+        
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('th-TH', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        csv += '\n';
+        csv += `"รายงานผลการเลือกตั้งคณะกรรมการสวัสดิการ","${dateStr}"\n`;
+        csv += `"บริษัทเชียงใหม่โฟรเซ่นฟูดส์ จำกัด(มหาชน) โรงงาน 1"\n`;
+        
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const fileName = `ผลคะแนนเลือกตั้ง_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}.csv`;
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        
+        Swal.close();
+        
+        Swal.fire({
+          icon: 'success',
+          title: 'ส่งออกสำเร็จ!',
+          text: `ดาวน์โหลดไฟล์ ${fileName} เรียบร้อยแล้ว`,
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: '#3458ff',
+          background: '#0f172a',
+          color: '#fff',
+          iconColor: '#22c55e'
+        });
+      }
+      
+      // ============ PRINT FUNCTION ============
+      function printResults() {
+        Swal.fire({
+          title: 'พิมพ์ผลคะแนน',
+          text: 'ต้องการพิมพ์ผลคะแนนการเลือกตั้งใช่หรือไม่?',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: '<i class="fas fa-print mr-2"></i>พิมพ์',
+          cancelButtonText: 'ยกเลิก',
+          confirmButtonColor: '#3458ff',
+          cancelButtonColor: '#64748b',
+          background: '#0f172a',
+          color: '#fff',
+          iconColor: '#5a80ff',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const now = new Date();
+            const printTime = now.toLocaleDateString('th-TH', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+            
+            const printDateTimeEl = document.getElementById('printDateTime');
+            if (printDateTimeEl) {
+              printDateTimeEl.textContent = printTime;
+            }
+            
+            const printDateInfo = document.querySelector('.print-date-info');
+            if (printDateInfo) {
+              printDateInfo.style.display = 'block';
+            }
+            
+            const headerSection = document.querySelector('.header-section');
+            if (headerSection) {
+              headerSection.style.display = 'none';
+            }
+            
+            const chartWrapper = document.getElementById('chartWrapper');
+            if (chartWrapper) {
+              chartWrapper.style.display = 'block';
+              chartWrapper.style.opacity = '1';
+            }
+            
+            setTimeout(() => {
+              window.print();
+              
+              setTimeout(() => {
+                if (printDateInfo) {
+                  printDateInfo.style.display = 'none';
+                }
+                updatePageState();
+              }, 1000);
+            }, 300);
+          }
+        });
+      }
+      
+      // ============ MONITOR CHART VISIBILITY ============
+      function setupChartObserver() {
+        const chartWrapper = document.getElementById('chartWrapper');
+        if (!chartWrapper) return;
+        
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && 
+                (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+              if (chartWrapper.style.display === 'none' || 
+                  chartWrapper.style.opacity === '0' ||
+                  chartWrapper.style.visibility === 'hidden') {
+                chartWrapper.style.display = 'block';
+                chartWrapper.style.opacity = '1';
+                chartWrapper.style.visibility = 'visible';
+              }
+            }
+          });
+        });
+        
+        observer.observe(chartWrapper, {
+          attributes: true,
+          attributeFilter: ['style', 'class']
+        });
+      }
+      
+      var resultsVisibilityObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.target.id === 'resultsPage' && 
+              mutation.target.style.display !== 'none') {
+            setTimeout(setupChartObserver, 1000);
+            updatePageState();
+          }
+        });
+      });
+      
+      if (resultsPage) {
+        resultsVisibilityObserver.observe(resultsPage, {
+          attributes: true,
+          attributeFilter: ['style']
+        });
+      }
+      
+      // ============ KEYBOARD SHORTCUT ============
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && document.getElementById('loginPage').style.display !== 'none') {
+          e.preventDefault();
+          checkLogin();
+        }
+        
+        if (e.key === 'Escape' && document.getElementById('votePage').style.display !== 'none') {
+          e.preventDefault();
+          resetToLoginPage();
+        }
+        
+        if ((e.ctrlKey || e.metaKey) && e.key === 'p' && document.getElementById('resultsPage').style.display !== 'none') {
+          e.preventDefault();
+          printResults();
+        }
+      });
+      
+      // ============ PREVENT ACCIDENTAL BACK ============
+      window.addEventListener('beforeunload', function(e) {
+        if (document.getElementById('votePage').style.display !== 'none') {
+          var selectedRadio = document.querySelector('.ballot-radio:checked');
+          if (selectedRadio) {
+            e.preventDefault();
+            e.returnValue = 'ท่านยังไม่ได้ยืนยันการลงคะแนน';
+            return e.returnValue;
+          }
+        }
+      });
+      
+      // ============ ENSURE CHART IS VISIBLE ON LOAD ============
+      window.addEventListener('load', function() {
+        if (typeof startRealtimeUpdates === 'function') {
+          startRealtimeUpdates();
+        }
+        
+        setTimeout(function() {
+          const chartWrapper = document.getElementById('chartWrapper');
+          if (chartWrapper && document.getElementById('resultsPage').style.display !== 'none') {
+            chartWrapper.style.display = 'block';
+            chartWrapper.style.opacity = '1';
+            chartWrapper.style.visibility = 'visible';
+            
+            const chartCanvas = document.getElementById('barchart');
+            if (chartCanvas && typeof Chart !== 'undefined') {
+              const chart = Chart.getChart('barchart');
+              if (chart) {
+                chart.resize();
+              }
+            }
+            
+            updatePageState();
+          }
+        }, 1500);
+      });
+      
+      // ============ OPEN PAGE ============
+      window.openPage = function(hideBanner) {
+        document.getElementById("votePage").style.display = "none";
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("resultsPage").style.display = "block";
+        if (hideBanner) {
+          const banner = document.getElementById('alreadyVotedBanner');
+          if (banner) banner.style.display = 'none';
+        }
+      };
+
+      // ============ RELOAD ============
+      function reLoad() {
+        if (typeof google !== 'undefined' && google.script) {
+          google.script.run.withSuccessHandler(function(url){
+            window.open(url,'_top');
+          }).getURL();
+        } else {
+          window.location.reload();
+        }
+      }
+
+      // ============ INPUT VALIDATION ============
+      document.addEventListener('DOMContentLoaded', function() {
+        var stdIdInput = document.getElementById('stdId');
+        if (stdIdInput) {
+          stdIdInput.addEventListener('input', function () {
+            var errorMessage = document.getElementById('errorMessage');
+            if (/^\d*$/.test(this.value)) {
+              this.classList.remove('border-red-500');
+              if (errorMessage) {
+                errorMessage.style.display = 'none';
+              }
+            } else {
+              this.classList.add('border-red-500');
+              if (errorMessage) {
+                errorMessage.textContent = '⚠️ กรุณากรอกเฉพาะตัวเลขเท่านั้น';
+                errorMessage.style.display = 'block';
+              }
+            }
+          });
+
+          stdIdInput.addEventListener('keypress', function (e) {
+            if (!/\d/.test(e.key)) {
+              e.preventDefault();
+            }
+          });
+        }
+      });
+
+      // ============ OVERRIDE openPage ============
+      var originalOpenPage = window.openPage;
+      if (typeof originalOpenPage === 'function') {
+        window.openPage = function() {
+          originalOpenPage.apply(this, arguments);
+          setTimeout(updatePageState, 300);
+        };
+      }
+      
+      // ============ NON-VOTERS MODAL LOGIC ============
+      var allNonVotersData = [];
+
+      function openNonVotersModal() {
+        const modal = document.getElementById('nonVotersModal');
+        if (!modal) return;
+        
+        const modalContent = modal.querySelector('.glass-premium');
+        
+        // แสดง Modal
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        if (modalContent) {
+          modalContent.classList.remove('scale-95');
+        }
+        
+        // แสดง Loading
+        document.getElementById('modalLoader').classList.remove('hidden');
+        document.getElementById('modalTableWrapper').classList.add('hidden');
+        
+        if (typeof google !== 'undefined' && google.script) {
+          google.script.run
+            .withSuccessHandler(function(response) {
+              document.getElementById('modalLoader').classList.add('hidden');
+              document.getElementById('modalTableWrapper').classList.remove('hidden');
+              
+              if (response && response.nonVoters) {
+                allNonVotersData = response.nonVoters;
+                
+                // ใส่ข้อมูลในตัวกรองแผนก
+                const deptFilter = document.getElementById('deptFilter');
+                deptFilter.innerHTML = '<option value="all">ทั้งหมด</option>';
+                
+                if (response.departments) {
+                  response.departments.forEach(function(dept) {
+                    const option = document.createElement('option');
+                    option.value = dept;
+                    option.textContent = dept;
+                    deptFilter.appendChild(option);
+                  });
+                }
+                
+                renderNonVoters(allNonVotersData);
+              } else if (response && response.error) {
+                showModalError(response.error);
+              } else {
+                showModalError('เกิดข้อผิดพลาดในการดึงข้อมูล');
+              }
+            })
+            .withFailureHandler(function(error) {
+              document.getElementById('modalLoader').classList.add('hidden');
+              showModalError('เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error);
+            })
+            .getNonVoters();
+        } else {
+          // จำลองข้อมูลสำหรับการทดสอบในเครื่องภายใน
+          setTimeout(function() {
+            document.getElementById('modalLoader').classList.add('hidden');
+            document.getElementById('modalTableWrapper').classList.remove('hidden');
+            allNonVotersData = [
+              { id: '1001', name: 'นายสมศักดิ์ แสนดี', dept: 'แผนกผลิต A' },
+              { id: '1002', name: 'นางสาวสุดา รักเรียน', dept: 'แผนกผลิต B' },
+              { id: '1003', name: 'นายวิชัย เก่งกาจ', dept: 'แผนกช่างเทคนิค' },
+              { id: '1004', name: 'นางประภา เจริญผล', dept: 'แผนกบัญชี' },
+              { id: '1005', name: 'นายกิตติศักดิ์ ใจกว้าง', dept: 'แผนกคลังสินค้า' },
+            ];
+            
+            const deptFilter = document.getElementById('deptFilter');
+            deptFilter.innerHTML = '<option value="all">ทั้งหมด</option>';
+            const mockDepts = ['แผนกผลิต A', 'แผนกผลิต B', 'แผนกช่างเทคนิค', 'แผนกบัญชี', 'แผนกคลังสินค้า'];
+            mockDepts.forEach(function(dept) {
+              const option = document.createElement('option');
+              option.value = dept;
+              option.textContent = dept;
+              deptFilter.appendChild(option);
+            });
+            
+            renderNonVoters(allNonVotersData);
+          }, 800);
+        }
+      }
+
+      function closeNonVotersModal() {
+        const modal = document.getElementById('nonVotersModal');
+        if (!modal) return;
+        
+        const modalContent = modal.querySelector('.glass-premium');
+        
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        if (modalContent) {
+          modalContent.classList.add('scale-95');
+        }
+      }
+
+      function renderNonVoters(data) {
+        const tbody = document.getElementById('nonVotersBody');
+        const emptyState = document.getElementById('modalEmptyState');
+        const table = document.getElementById('nonVotersTable');
+        
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+          if (emptyState) emptyState.classList.remove('hidden');
+          if (table) table.classList.add('hidden');
+          document.getElementById('nonVotersCount').textContent = '0';
+          return;
+        }
+        
+        if (emptyState) emptyState.classList.add('hidden');
+        if (table) table.classList.remove('hidden');
+        
+        data.forEach(function(voter, index) {
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-navy-900/20 transition-colors border-b border-navy-800/30';
+          row.innerHTML = `
+            <td class="px-5 py-3 text-center text-navy-400 font-semibold">${index + 1}</td>
+            <td class="px-5 py-3 font-semibold text-white">${voter.id}</td>
+            <td class="px-5 py-3 text-navy-200">${voter.name}</td>
+            <td class="px-5 py-3 text-navy-300 font-medium">${voter.dept}</td>
+          `;
+          tbody.appendChild(row);
+        });
+        
+        document.getElementById('nonVotersCount').textContent = data.length.toString();
+      }
+
+      function filterNonVoters() {
+        const selectedDept = document.getElementById('deptFilter').value;
+        const searchQuery = document.getElementById('voterSearch').value.toLowerCase().trim();
+        
+        const filtered = allNonVotersData.filter(function(voter) {
+          const matchDept = (selectedDept === 'all' || voter.dept === selectedDept);
+          const matchSearch = (
+            voter.name.toLowerCase().includes(searchQuery) ||
+            voter.id.toLowerCase().includes(searchQuery)
+          );
+          return matchDept && matchSearch;
+        });
+        
+        renderNonVoters(filtered);
+      }
+
+      function showModalError(msg) {
+        const emptyState = document.getElementById('modalEmptyState');
+        const table = document.getElementById('nonVotersTable');
+        
+        if (emptyState) {
+          emptyState.classList.remove('hidden');
+          emptyState.innerHTML = `
+            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-3 opacity-60"></i>
+            <p class="text-white font-medium text-base">เกิดข้อผิดพลาด</p>
+            <p class="text-navy-400 text-sm mt-1">${msg}</p>
+          `;
+        }
+        if (table) table.classList.add('hidden');
+        document.getElementById('nonVotersCount').textContent = '0';
+      }
+
+      // ============ REAL-TIME UPDATES (POLLING) ============
+      var realtimeInterval = null;
+
+      function startRealtimeUpdates() {
+        if (realtimeInterval) return;
+        
+        realtimeInterval = setInterval(function() {
+          const resultsPage = document.getElementById('resultsPage');
+          const nonVotersModal = document.getElementById('nonVotersModal');
+          
+          // 1. อัปเดตผลคะแนนและกราฟเบื้องหลัง (หากอยู่หน้าผลการเลือกตั้ง)
+          if (resultsPage && resultsPage.style.display !== 'none') {
+            silentUpdateResults();
+          }
+          
+          // 2. อัปเดตรายชื่อผู้ที่ยังไม่ได้ใช้สิทธิ์ (หากกำลังเปิด Modal ดูรายชื่ออยู่)
+          if (nonVotersModal && !nonVotersModal.classList.contains('opacity-0')) {
+            silentUpdateNonVoters();
+          }
+        }, 5000); // ทำงานทุกๆ 5 วินาที
+      }
+
+      function silentUpdateResults() {
+        if (typeof google !== 'undefined' && google.script) {
+          // อัปเดตเฉพาะแถวในตารางผลคะแนน (ไม่เปิด Swal โหลดหน้าจอ)
+          google.script.run.withSuccessHandler(function(html) {
+            if (html) {
+              const tbody = document.getElementById('resultTableBody');
+              if (tbody) {
+                tbody.innerHTML = html;
+              }
+            }
+          }).getDataResult();
+          
+          // อัปเดตข้อมูลสถิติผู้มาใช้สิทธิ์ โดยใช้ getNonVoters ที่มีอยู่แล้วเพื่อความเสถียร
+          google.script.run.withSuccessHandler(function(response) {
+            if (response && response.nonVoters) {
+              const nonVotersCount = response.nonVoters.length;
+              const totalVoters = response.totalVoters || 0;
+              const votedVoters = totalVoters - nonVotersCount;
+              
+              updateVotingStatsUI({
+                totalVoters: totalVoters,
+                votedVoters: votedVoters,
+                nonVoters: nonVotersCount
+              });
+            }
+          }).getNonVoters();
+          
+          // อัปเดตกราฟแท่ง
+          google.script.run.withSuccessHandler(function(ar) {
+            if (ar && Array.isArray(ar)) {
+              var data = [];
+              var labels = [];
+              ar.forEach(function(item) {
+                labels.push(item[0]);
+                data.push(item[1]);
+              });
+              
+              const chart = Chart.getChart('barchart');
+              if (chart) {
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = data;
+                chart.update('active'); // อัปเดตและแสดง Animation แท่งกราฟเคลื่อนที่อย่างลื่นไหล
+              }
+            }
+          }).getCases();
+        } else {
+          // ส่วนการทดสอบจำลอง (Mock data) เมื่อเปิดไฟล์แบบโลคอลในเครื่อง
+          const chart = Chart.getChart('barchart');
+          if (chart && chart.data.datasets[0].data.length > 0) {
+            const idx = Math.floor(Math.random() * chart.data.datasets[0].data.length);
+            chart.data.datasets[0].data[idx] += Math.floor(Math.random() * 2);
+            chart.update();
+            
+            const rows = document.querySelectorAll('#resultTableBody tr');
+            if (rows[idx]) {
+              const scoreCell = rows[idx].querySelector('td:nth-child(4)');
+              if (scoreCell) {
+                let currentScore = parseInt(scoreCell.textContent) || 0;
+                scoreCell.textContent = (currentScore + 1).toString();
+              }
+            }
+          }
+          
+          // จำลองข้อมูลสถิติสำหรับการเปิดในเครื่องแบบ Local
+          updateVotingStatsUI({
+            totalVoters: 250,
+            votedVoters: 185,
+            nonVoters: 65,
+            votedPercent: '74.00',
+            nonVotedPercent: '26.00'
+          });
+        }
+      }
+
+      function updateVotingStatsUI(stats) {
+        const totalEl = document.getElementById('statTotalVoters');
+        const votedEl = document.getElementById('statVotedVoters');
+        const votedPctEl = document.getElementById('statVotedPercent');
+        const nonVotedEl = document.getElementById('statNonVoters');
+        const nonVotedPctEl = document.getElementById('statNonVotersPercent');
+        
+        const total = parseInt(stats.totalVoters) || 0;
+        const voted = parseInt(stats.votedVoters) || 0;
+        const nonVoted = parseInt(stats.nonVoters) || 0;
+        
+        // คำนวณร้อยละแบบมั่นใจบนฝั่ง Client
+        const votedPct = total > 0 ? ((voted / total) * 100).toFixed(2) : '0.00';
+        const nonVotedPct = total > 0 ? ((nonVoted / total) * 100).toFixed(2) : '0.00';
+        
+        if (totalEl) totalEl.textContent = total;
+        if (votedEl) votedEl.textContent = voted;
+        if (votedPctEl) votedPctEl.textContent = '(' + votedPct + '%)';
+        if (nonVotedEl) nonVotedEl.textContent = nonVoted;
+        if (nonVotedPctEl) nonVotedPctEl.textContent = '(' + nonVotedPct + '%)';
+
+        // เติมค่าท้ายตาราง
+        const footVoted = document.getElementById('footVotedVoters');
+        const footVotedPct = document.getElementById('footVotedPercent');
+        if (footVoted) footVoted.textContent = voted + ' คน';
+        if (footVotedPct) footVotedPct.textContent = votedPct + '%';
+      }
+
+      function silentUpdateNonVoters() {
+        if (typeof google !== 'undefined' && google.script) {
+          google.script.run
+            .withSuccessHandler(function(response) {
+              if (response && response.nonVoters) {
+                allNonVotersData = response.nonVoters;
+                // อัปเดตและกรองข้อมูลโดยไม่ทับการพิมพ์ช่องค้นหาหรือตัวเลือกแผนกเดิมที่เลือกอยู่
+                filterNonVoters();
+              }
+            })
+            .getNonVoters();
+        } else {
+          // ส่วนการทดสอบจำลอง (Mock data) ค่อยๆ เอาผู้ใช้สิทธิ์ออกจำลองว่าทะยอยมาเลือกตั้ง
+          if (allNonVotersData.length > 0 && Math.random() > 0.6) {
+            const idx = Math.floor(Math.random() * allNonVotersData.length);
+            allNonVotersData.splice(idx, 1);
+            filterNonVoters();
+          }
+        }
+      }
+
+      // ============ SET FOCUS ============
+      function setFocus() {
+        setTimeout(function() {
+          var stdIdInput = document.getElementById('stdId');
+          if (stdIdInput) {
+            stdIdInput.focus();
+          }
+        }, 500);
+      }
+    </script>
+    
+    <?!= include('js'); ?>
+    
+  </body>
+</html>

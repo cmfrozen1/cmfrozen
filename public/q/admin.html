@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Queue - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .sprite-preview {
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+    <div id="app" class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col">
+            <div class="p-6 border-b border-gray-800">
+                <h1 class="text-xl font-bold text-yellow-400">ADMIN PANEL</h1>
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Pixel QMS v1.0</p>
+            </div>
+            <nav class="flex-grow p-4">
+                <ul class="space-y-2">
+                    <li><a href="#" class="block p-3 rounded bg-gray-800 border-l-4 border-yellow-400">Queue Control</a></li>
+                    <li><a href="#" class="block p-3 rounded hover:bg-gray-800 transition-colors">Character CRUD</a></li>
+                    <li><a href="#" class="block p-3 rounded hover:bg-gray-800 transition-colors">Props Sandbox</a></li>
+                    <li><a href="#" class="block p-3 rounded hover:bg-gray-800 transition-colors">Shop Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col bg-gray-50">
+            <!-- Topbar -->
+            <header class="bg-white border-b p-4 flex justify-between items-center shadow-sm">
+                <h2 id="current-shop-name" class="font-bold text-lg">Loading Shop...</h2>
+                <div class="flex gap-2">
+                    <button id="btn-clear-all" class="px-4 py-2 bg-red-100 text-red-600 rounded hover:bg-red-200 text-sm font-bold">Clear All</button>
+                    <div class="h-8 w-8 rounded-full bg-yellow-400 border-2 border-white shadow-sm"></div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="p-6 flex-grow overflow-y-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Queue Status Cards -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded shadow-sm border-l-4 border-blue-500">
+                                <p class="text-xs text-gray-500 uppercase">Waiting</p>
+                                <h3 id="stat-waiting" class="text-3xl font-bold">0</h3>
+                            </div>
+                            <div class="bg-white p-4 rounded shadow-sm border-l-4 border-green-500">
+                                <p class="text-xs text-gray-500 uppercase">Called</p>
+                                <h3 id="stat-called" class="text-3xl font-bold">0</h3>
+                            </div>
+                        </div>
+
+                        <!-- Queue List -->
+                        <div class="bg-white rounded shadow-sm overflow-hidden">
+                            <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                                <h4 class="font-bold">Waiting List</h4>
+                                <button id="btn-call-next" class="px-6 py-2 bg-yellow-400 text-black rounded font-black hover:bg-yellow-500 shadow-sm active:scale-95 transition-all">CALL NEXT</button>
+                            </div>
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-100 text-xs uppercase text-gray-500">
+                                    <tr>
+                                        <th class="p-4">No.</th>
+                                        <th class="p-4">Customer</th>
+                                        <th class="p-4">Time</th>
+                                        <th class="p-4">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="queue-tbody">
+                                    <!-- Queues injected here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Quick Config / Notifications -->
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded shadow-sm">
+                            <h4 class="font-bold mb-4">Shop Config</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">SHOP NAME</label>
+                                    <input type="text" id="input-shop-name" class="w-full border p-2 rounded focus:ring-2 ring-yellow-400 outline-none">
+                                </div>
+                                <button id="btn-update-shop" class="w-full bg-gray-900 text-white py-2 rounded hover:bg-gray-800">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 pointer-events-none"></div>
+
+    <script src="js/supabase.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

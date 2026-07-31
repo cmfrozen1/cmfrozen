@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Queue - Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-900 text-white font-mono">
+    <div id="app" class="max-w-md mx-auto p-4 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="text-center py-6">
+            <h1 id="shop-name" class="text-3xl font-bold text-yellow-400 pixel-text">PIXEL SHOP</h1>
+            <p class="text-xs text-gray-400 mt-2">REAL-TIME QUEUE SYSTEM</p>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading" class="flex-grow flex items-center justify-center">
+            <div class="animate-bounce text-yellow-400">LOADING...</div>
+        </div>
+
+        <!-- Login / Registration -->
+        <div id="login-view" class="hidden flex-grow flex flex-col justify-center gap-6">
+            <div class="bg-gray-800 p-6 rounded-lg border-4 border-gray-700">
+                <h2 class="text-xl mb-4 text-center">JOIN THE QUEUE</h2>
+                <div class="mb-4">
+                    <label class="block text-xs mb-1 text-gray-400">NICKNAME</label>
+                    <input type="text" id="nickname" class="w-full bg-gray-900 border-2 border-gray-600 p-2 text-yellow-400 focus:outline-none focus:border-yellow-400" placeholder="Enter your name">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-xs mb-1 text-gray-400">CHOOSE CHARACTER</label>
+                    <div id="character-list" class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-gray-900 rounded border-2 border-gray-600">
+                        <!-- Characters injected here -->
+                    </div>
+                </div>
+                <button id="btn-join" class="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 rounded-sm transform active:scale-95 transition-all">
+                    GET TICKET
+                </button>
+            </div>
+        </div>
+
+        <!-- Ticket View -->
+        <div id="ticket-view" class="hidden flex-grow flex flex-col gap-4">
+            <div class="bg-yellow-400 text-black p-6 rounded-sm border-b-8 border-yellow-600 relative overflow-hidden">
+                <div class="absolute top-2 right-2 text-xs font-bold opacity-30">#PIXEL-Q</div>
+                <div class="text-center">
+                    <p class="text-sm font-bold uppercase tracking-widest">Your Number</p>
+                    <h2 id="queue-number" class="text-7xl font-black my-2">00</h2>
+                    <p id="queue-status" class="bg-black text-white px-2 py-1 inline-block text-xs font-bold rounded">WAITING</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 p-4 rounded border-2 border-gray-700 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-400">PERSONS AHEAD</p>
+                    <p id="ahead-count" class="text-2xl font-bold text-yellow-400">0</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-400">ESTIMATED WAIT</p>
+                    <p id="est-wait" class="text-2xl font-bold">-- MIN</p>
+                </div>
+            </div>
+
+            <!-- Visual Walkway Mini-Preview -->
+            <div class="flex-grow bg-black rounded border-2 border-gray-700 relative overflow-hidden h-48" id="visual-walkway">
+                <div class="absolute bottom-4 left-0 w-full h-8 bg-gray-800 opacity-50"></div>
+                <!-- Characters injected here -->
+            </div>
+
+            <button id="btn-cancel" class="text-red-400 text-xs underline py-2 hover:text-red-300 transition-colors">
+                Cancel my queue
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 left-4 right-4 z-50 pointer-events-none"></div>
+
+    <script src="js/supabase.js"></script>
+    <script src="js/animation.js"></script>
+    <script src="js/client.js"></script>
+</body>
+</html>

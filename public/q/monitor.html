@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Queue - Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @font-face {
+            font-family: 'PixelFont';
+            src: url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        }
+        .pixel-text { font-family: 'Press Start 2P', cursive; }
+        
+        #walkway {
+            background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 70%, #0f3460 100%);
+            image-rendering: pixelated;
+        }
+
+        .entrance {
+            position: absolute;
+            right: 10%;
+            top: 40%;
+            width: 80px;
+            height: 100px;
+            background: #4e342e;
+            border: 4px solid #3e2723;
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.3);
+        }
+        .entrance-mat {
+            position: absolute;
+            right: 8%;
+            top: 75%;
+            width: 100px;
+            height: 40px;
+            background: #b71c1c;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body class="bg-black text-white overflow-hidden h-screen flex flex-col">
+    
+    <!-- Top Display: Currently Calling -->
+    <div class="h-1/3 bg-gray-900 flex flex-col items-center justify-center border-b-8 border-yellow-400 p-4">
+        <h1 id="shop-name-display" class="pixel-text text-xl text-yellow-500 mb-4">PIXEL SHOP</h1>
+        <div class="flex items-center gap-12">
+            <div class="text-center">
+                <p class="text-xs uppercase tracking-tighter text-gray-400 mb-2">Now Serving</p>
+                <div id="now-serving" class="pixel-text text-9xl text-white">--</div>
+            </div>
+            <div id="serving-char" class="h-32 w-32 bg-contain bg-no-repeat bg-center"></div>
+        </div>
+    </div>
+
+    <!-- Middle: Walkway & Animation -->
+    <div id="walkway" class="flex-grow relative">
+        <!-- Entrance -->
+        <div class="entrance">
+            <div class="w-full h-full flex items-center justify-center">
+                <p class="text-[8px] pixel-text text-yellow-200">ENTER</p>
+            </div>
+        </div>
+        <div class="entrance-mat"></div>
+
+        <!-- Props & Characters will be injected here -->
+        <div id="props-layer" class="absolute inset-0 pointer-events-none"></div>
+        <div id="chars-layer" class="absolute inset-0 pointer-events-none"></div>
+    </div>
+
+    <!-- Bottom: Next 5 Queues -->
+    <div class="h-24 bg-gray-800 border-t-4 border-gray-700 p-4 flex items-center overflow-x-auto gap-4">
+        <p class="pixel-text text-xs text-yellow-400 mr-4">NEXT:</p>
+        <div id="next-queues" class="flex gap-4">
+            <!-- Next queue bubbles here -->
+        </div>
+    </div>
+
+    <script src="js/supabase.js"></script>
+    <script src="js/animation.js"></script>
+    <script src="js/monitor.js"></script>
+</body>
+</html>

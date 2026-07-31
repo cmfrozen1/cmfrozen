@@ -1,0 +1,93 @@
+<!-- Ref:https://dev.to/code_mystery/simple-countdown-timer-using-javascript-1jab -->
+
+<script>
+	//ตั้งเวลาเปิดการลงคะแนนเสียง
+	var future = Date.parse("july 6, 2026 08:00:00");
+
+	//ตั้งเวลาปิดการลงคะแนนเสียง (ขยายเป็นเวลา 23:00 น. เพื่อให้ทดสอบได้)
+	var future2 = Date.parse("july 6, 2026 16:00:00");
+	var timeEnd = 0;
+	var status = 0;
+
+	function updateTimer() {
+
+		var now = new Date();
+		if (future - now < 0) {
+			timeEnd = future2;
+			status = 1
+		} else {
+			timeEnd = future;
+			status = 0
+		}
+		if (future2 - now < 0) {
+			status = 2
+		}
+
+		diff = timeEnd - now;
+
+		days = Math.floor(diff / (1000 * 60 * 60 * 24));
+		hours = Math.floor(diff / (1000 * 60 * 60));
+		mins = Math.floor(diff / (1000 * 60));
+		secs = Math.floor(diff / 1000);
+
+		d = days;
+		h = hours - days * 24;
+		m = mins - hours * 60;
+		s = secs - mins * 60;
+		h = h < 10 ? "0" + h : h;
+		m = m < 10 ? "0" + m : m;
+		s = s < 10 ? "0" + s : s;
+
+		document.getElementById("timer").innerHTML =
+			'<div>' + d + '<span>วัน</span></div>' +
+			'<div>' + h + '<span>ชั่วโมง</span></div>' +
+			'<div>' + m + '<span>นาที</span></div>' +
+			'<div>' + s + '<span>วินาที</span></div>';
+
+		/**  -- ควบคุมการเปิดหน้าต่างๆ ตามเวลาที่กำหนด -- **/
+		if (status == 0) {
+			document.getElementById("msgStatus").innerHTML = "<h2>จะเปิดการลงคะแนน</h2>"
+			document.getElementById("btnResult").style.display = "none";
+			document.getElementById("cover").style.display = "none";
+		} else if (status == 1) {
+			document.getElementById("msgStatus").innerHTML = "<h2>จะปิดการลงคะแนน</h2>"
+			document.getElementById("btnResult").style.display = "none";
+			document.getElementById("cover").style.display = "block";
+
+			// คืนค่าหน้าล็อกอินปกติ
+			const loginForm = document.getElementById("loginForm");
+			const expiredContainer = document.getElementById("resultsExpiredContainer");
+			if (loginForm) loginForm.style.display = "block";
+			if (expiredContainer) expiredContainer.style.display = "none";
+
+			const cardTitle = document.getElementById("loginCardTitle");
+			const cardSub = document.getElementById("loginCardSub");
+			const cardIcon = document.getElementById("loginCardIcon");
+			if (cardTitle) cardTitle.textContent = "ยืนยันตัวตนผู้มีสิทธิ์";
+			if (cardSub) cardSub.textContent = "กรอกรหัสพนักงานเพื่อเข้าสู่ระบบเลือกตั้ง";
+			if (cardIcon) cardIcon.className = "fas fa-fingerprint text-2xl text-navy-200";
+		} else {
+			document.getElementById("msgStatus").innerHTML = "<h2>หมดเวลาของการลงคะแนนแล้ว</h2>"
+			document.getElementById("timer").style.display = "none";
+			document.getElementById("cover").style.display = "block"; // แสดง Cover เสมอเพื่อแสดงปุ่มดูผลการลงคะแนน
+			document.getElementById("btnResult").style.display = "block"; // แสดงปุ่มผลคะแนนด้านบนด้วย
+
+			// ซ่อนฟอร์มล็อกอินเดิมและแสดงปุ่มดูผลคะแนนการเลือกตั้งแทน
+			const loginForm = document.getElementById("loginForm");
+			const expiredContainer = document.getElementById("resultsExpiredContainer");
+			if (loginForm) loginForm.style.display = "none";
+			if (expiredContainer) expiredContainer.style.display = "block";
+
+			// อัปเดตข้อความหัวการ์ดบอกสถานะปิดระบบ
+			const cardTitle = document.getElementById("loginCardTitle");
+			const cardSub = document.getElementById("loginCardSub");
+			const cardIcon = document.getElementById("loginCardIcon");
+			if (cardTitle) cardTitle.textContent = "ปิดการลงคะแนนแล้ว";
+			if (cardSub) cardSub.textContent = "หมดเวลาสำหรับการลงคะแนนเสียงเลือกตั้ง";
+			if (cardIcon) cardIcon.className = "fas fa-clock text-2xl text-red-400 animate-pulse";
+		}
+	}
+	setInterval('updateTimer()', 1000);
+
+
+</script>

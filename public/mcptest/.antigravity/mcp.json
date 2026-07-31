@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "line-bot": {
+      "command": "node",
+      "args": ["line-mcp-server.js"]
+    }
+  }
+}

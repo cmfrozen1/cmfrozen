@@ -1,0 +1,48 @@
+---
+name: teerapong-skill
+description: Personal skill for Teerapong to manage custom workflows and preferences.
+---
+
+# Teerapong's Skill
+
+Welcome, Teerapong. This skill is a template for your personalized workflows.
+
+## User Profile
+- **Name:** Teerapong
+
+## Custom Workflows
+- [Add your custom workflows here]
+
+## Instructions for Gemini CLI
+- When this skill is active, remember that you are assisting Teerapong.
+- Follow any specific project conventions defined in this workspace.
+markdown---
+name: Database CRUD Manager
+description: จัดการข้อมูล (Create, Read, Update, Delete) บนฐานข้อมูลผู้ใช้ (User) ผ่าน API
+requirements:
+  - python>=3.8
+  - requests>=2.0.0
+---
+
+## คำแนะนำการทำงาน (Instructions)
+ทักษะนี้มีไว้เพื่อให้ AI ดำเนินการจัดการข้อมูลในฐานข้อมูลตามคำสั่งของผู้ใช้
+ให้ตรวจสอบความถูกต้องและครบถ้วนของข้อมูลก่อนทำการสั่งการ API เสมอ
+
+## รูปแบบการเรียกใช้งาน (API Endpoints)
+สำหรับจัดการข้อมูล User ให้ใช้ Base URL: `https://example.com`
+1. **Create (สร้าง):** `POST /`
+   - Body: `{"name": "string", "email": "string"}`
+2. **Read (อ่าน):** `GET /{id}` หรือ `GET /` (ดูทั้งหมด)
+3. **Update (อัปเดต):** `PUT /{id}`
+   - Body: `{"name": "string", "email": "string"}`
+4. **Delete (ลบ):** `DELETE /{id}`
+
+## ขั้นตอนการทำงาน (Workflow)
+1. **วิเคราะห์เจตนา:** ดูว่าผู้ใช้ต้องการทำอะไร (สร้าง อ่าน แก้ไข หรือลบ)
+2. **ขอข้อมูลที่จำเป็น:** หากข้อมูลไม่ครบ เช่น ต้องการสร้างแต่ไม่มีอีเมล ให้ถามผู้ใช้ก่อน
+3. **เรียกใช้เครื่องมือ/สคริปต์:** ดำเนินการผ่านเครื่องมือที่เตรียมไว้
+4. **สรุปผล:** แจ้งผลลัพธ์ที่ชัดเจนให้ผู้ใช้ทราบ เช่น "สร้างผู้ใช้สำเร็จแล้ว ID คือ 123"
+
+## ข้อควรระวัง
+- ห้ามทำการลบข้อมูล (Delete) โดยไม่ได้รับการยืนยันจากผู้ใช้ก่อนเด็ดขาด
+- ตรวจสอบรูปแบบอีเมล (Email format) ทุกครั้งก่อนส่งข้อมูล Create หรือ Update
