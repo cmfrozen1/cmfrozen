@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap");
+  body {
+    font-family: "Sarabun", sans-serif;
+    line-height: 1.6;
+    color: #1e293b;
+    padding: 30px;
+    background-color: #ffffff;
+  }
+  h1 {
+    color: #0f172a;
+    border-bottom: 3px solid #0284c7;
+    padding-bottom: 8px;
+    font-size: 24px;
+  }
+  h2 {
+    color: #0369a1;
+    margin-top: 24px;
+    font-size: 18px;
+    border-left: 4px solid #0284c7;
+    padding-left: 10px;
+  }
+  h3 {
+    color: #334155;
+    font-size: 15px;
+    margin-top: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 13px;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  code {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #0f766e;
+  }
+  pre {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 12px;
+  }
+  pre code {
+    background: transparent;
+    color: #f8fafc;
+    border: none;
+  }
+  .box {
+    background-color: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 15px 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>📘 คู่มือการใช้งานระบบ LINE MCP Server (mcptest)</h1>
+<p><strong>ระบบแจ้งเตือนราคาทองคำ ราคาน้ำมัน ดัชนีหุ้น และคริปโตเคอร์เรนซีผ่าน LINE Flex Message</strong></p>
+
+<h2>📌 1. บทนำ (Overview)</h2>
+<p><strong>LINE MCP Server (<code>mcptest</code>)</strong> คือส่วนขยายในรูปแบบ <strong>Model Context Protocol (MCP)</strong> ที่พัฒนาขึ้นด้วย Node.js สำหรับเชื่อมต่อปัญญาประดิษฐ์ (AI Assistant) กับระบบ <strong>LINE Messaging API</strong> ช่วยให้ผู้ใช้และ AI สามารถสั่งการให้ดึงข้อมูลการเงิน การลงทุน และราคาสินค้าโภคภัณฑ์แบบ Real-time แล้วสร้างเป็น <strong>LINE Flex Message</strong> ดีไซน์พรีเมียม สวยงาม อ่านง่าย ส่งตรงไปยังบัญชี LINE ผู้ใช้หรือส่งประกาศ (Broadcast) ได้ทันที</p>
+
+<h2>🏗️ 2. สถาปัตยกรรมระบบ (System Architecture)</h2>
+<pre>
+[ Antigravity / AI Assistant ]
+              │ (MCP JSON-RPC / Stdin-Stdout)
+              ▼
+    [ LINE MCP Server ] (line-mcp-server.js)
+              │
+     ┌────────┼───────────────┬────────────────┐
+     ▼        ▼               ▼                ▼
+[สมาคมค้าทองคำ] [บางจาก]  [Yahoo Finance]  [CoinGecko]
+     │        │               │                │
+     └────────┴───────┬───────┴────────────────┘
+                      ▼
+            [ LINE Messaging API ]
+                      │ (Push / Broadcast)
+                      ▼
+           📱 [ ผู้ใช้งาน LINE App ]
+</pre>
+
+<h2>🛠️ 3. การติดตั้งและตั้งค่าระบบ (Setup & Configuration)</h2>
+<h3>3.1 ความต้องการของระบบ (Prerequisites)</h3>
+<ul>
+  <li><strong>Node.js</strong>: เวอร์ชัน 18.x หรือใหม่กว่า (แนะนำ v20+)</li>
+  <li><strong>LINE Official Account Access Token</strong>: สำหรับใช้งาน Push / Broadcast API</li>
+  <li><strong>LINE User ID</strong>: รหัสผู้รับข้อความแจ้งเตือน</li>
+</ul>
+
+<h3>3.2 โครงสร้างโฟลเดอร์โปรเจกต์</h3>
+<pre>
+mcptest/
+├── .antigravity/
+│   └── mcp.json               # ไฟล์ตั้งค่าสำหรับ Antigravity MCP Client
+├── line-mcp-server.js         # ซอร์สโค้ดหลักของ MCP Server
+├── USER_MANUAL_MCPTEST.md     # คู่มือฉบับ Markdown
+└── USER_MANUAL_MCPTEST.pdf    # คู่มือการใช้งาน (เอกสาร PDF)
+</pre>
+
+<h3>3.3 การตั้งค่า API Token และ User ID</h3>
+<p>เปิดไฟล์ <code>line-mcp-server.js</code> เพื่อตรวจสอบหรือแก้ไข Token:</p>
+<pre><code>const CHANNEL_ACCESS_TOKEN = YOUR_LINE_CHANNEL_ACCESS_TOKEN;
+const MY_USER_ID = YOUR_LINE_USER_ID;</code></pre>
+
+<h2>🧰 4. เครื่องมือที่รองรับ (Available MCP Tools)</h2>
+<p>ระบบมีเครื่องมือ (Tools) สำหรับให้ AI หรือระบบภายนอกเรียกใช้งานทั้งหมด <strong>6 เครื่องมือหลัก</strong>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>ชื่อเครื่องมือ (Tool Name)</th>
+      <th>คำอธิบาย (Description)</th>
+      <th>พารามิเตอร์ (Parameters)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>send_gold_price_flex</code></td>
+      <td>ดึงราคาทองคำแท่ง/รูปพรรณ 96.5%, Gold Spot และ USD/THB ส่งเป็น Flex Message</td>
+      <td><code>userId</code> (Optional)</td>
+    </tr>
+    <tr>
+      <td><code>send_oil_price_flex</code></td>
+      <td>ดึงราคาน้ำมันทุกประเภทจากบางจาก (Bangchak) ส่งเป็น Flex Message</td>
+      <td><code>userId</code> (Optional)</td>
+    </tr>
+    <tr>
+      <td><code>send_set50_flex</code></td>
+      <td>ดึงดัชนี SET/SET50 และราคาหุ้นไทยยอดนิยม 10 อันดับ ส่งเป็น Flex Message</td>
+      <td><code>userId</code> (Optional)</td>
+    </tr>
+    <tr>
+      <td><code>send_crypto_flex</code></td>
+      <td>ดึงราคาคริปโตเคอร์เรนซี 10 อันดับแรกจาก CoinGecko ส่งเป็น Flex Message</td>
+      <td><code>userId</code> (Optional)</td>
+    </tr>
+    <tr>
+      <td><code>send_line_message</code></td>
+      <td>ส่งข้อความตัวอักษรธรรมดา (Text Message) หาผู้ใช้</td>
+      <td><code>message</code> (Required), <code>userId</code> (Optional)</td>
+    </tr>
+    <tr>
+      <td><code>broadcast</code></td>
+      <td>ส่งข้อความประกาศหาผู้ใช้ทุกคนที่เป็นเพื่อนกับ LINE Official Account</td>
+      <td><code>message</code> (Required)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>📊 5. รายละเอียดคุณสมบัติเด่น (Key Features)</h2>
+
+<h3>5.1 ระบบแจ้งเตือนราคาทองคำ (<code>send_gold_price_flex</code>)</h3>
+<ul>
+  <li><strong>แหล่งข้อมูล</strong>: สมาคมค้าทองคำ (Gold Traders Association) + Yahoo Finance (<code>GC=F</code>, <code>THB=X</code>)</li>
+  <li><strong>ข้อมูลที่แสดง</strong>:
+    <ul>
+      <li>ราคารับซื้อ - ขายออก <strong>ทองคำแท่ง 96.5%</strong></li>
+      <li>ราคารับซื้อ (ฐานภาษี) - ขายออก <strong>ทองรูปพรรณ 96.5%</strong></li>
+      <li>ราคา <strong>Gold Spot ตลาดโลก</strong> (USD/oz) พร้อมอัตราเปลี่ยนแปลง</li>
+      <li>อัตราแลกเปลี่ยน <strong>USD / THB</strong></li>
+    </ul>
+  </li>
+  <li><strong>ธีม Flex Message</strong>: ธีมทองคำหรูหรา (Golden Luxury Header <code>#b78103</code>)</li>
+</ul>
+
+<h3>5.2 ระบบแจ้งเตือนราคาน้ำมันบางจาก (<code>send_oil_price_flex</code>)</h3>
+<ul>
+  <li><strong>แหล่งข้อมูล</strong>: Bangchak Oil Price API</li>
+  <li><strong>ข้อมูลที่แสดง</strong>: ราคาน้ำมัน Hi Premium, E20, E85, Gasohol 95/91, Diesel พร้อมส่วนต่างราคาจากเมื่อวาน</li>
+</ul>
+
+<h3>5.3 ระบบแจ้งเตือนราคาหุ้นไทย (<code>send_set50_flex</code>)</h3>
+<ul>
+  <li><strong>แหล่งข้อมูล</strong>: Yahoo Finance</li>
+  <li><strong>ข้อมูลที่แสดง</strong>: ดัชนี SET Index, SET50 Index และหุ้น 10 ตัวยอดนิยม (PTT, AOT, CPALL, BDMS, ADVANC, GULF, KBANK, SCB, DELTA, PTTEP)</li>
+</ul>
+
+<h2>💻 6. ตัวอย่างการใช้งาน (Usage Examples)</h2>
+<div class="box">
+  <p><strong>การเรียกสั่งการผ่าน AI Assistant (Antigravity):</strong></p>
+  <ul>
+    <li><em>"ดึงราคาทองคำส่งเข้า LINE หน่อย"</em> ➔ AI จะเรียก tool <code>send_gold_price_flex</code></li>
+    <li><em>"ขอราคาน้ำมันบางจากวันนี้"</em> ➔ AI จะเรียก tool <code>send_oil_price_flex</code></li>
+    <li><em>"อัปเดตราคาหุ้น SET50"</em> ➔ AI จะเรียก tool <code>send_set50_flex</code></li>
+  </ul>
+</div>
+
+<h2>❓ 7. การแก้ไขปัญหาเบื้องต้น (Troubleshooting)</h2>
+<ol>
+  <li><strong>ส่งข้อความไม่ผ่าน / เกิด Error 401 Unauthorized</strong>:<br>
+      ให้ตรวจสอบ <code>CHANNEL_ACCESS_TOKEN</code> ในไฟล์ <code>line-mcp-server.js</code> ว่ายังไม่หมดอายุหรือสะกดถูกต้อง</li>
+  <li><strong>ไม่ได้รับข้อความใน LINE</strong>:<br>
+      ตรวจสอบ <code>MY_USER_ID</code> ว่าเป็น User ID ของบัญชี LINE ที่สแกนเป็นเพื่อนกับ LINE Official Account แล้วหรือไม่</li>
+  <li><strong>พอร์ต 3000 ชน (EADDRINUSE)</strong>:<br>
+      หากรันเว็บเซิร์ฟเวอร์เสริมพอร์ต 3000 ให้ตรวจสอบกระบวนการ Node.js ที่ค้างอยู่ด้วย <code>lsof -i:3000</code> แล้วสั่งปิดกระบวนการเดิม</li>
+</ol>
+
+<hr>
+<p style="text-align: center; color: #94a3b8; font-size: 12px;">เอกสารจัดทำขึ้นเมื่อ: 31 กรกฎาคม 2026 | ระบบ LINE MCP Server (mcptest)</p>
+
+</body>
+</html>
