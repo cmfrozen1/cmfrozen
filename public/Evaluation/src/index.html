@@ -1978,7 +1978,8 @@
                 .then(function (text) {
                     let parsed;
                     try {
-                        parsed = JSON.parse(text);
+                        // GAS Web App จะใส่ prefix {}&& หน้า JSON เพื่อกัน XSS
+                        parsed = JSON.parse(text.replace(/^\{\}\&\&/, ''));
                     } catch (err) {
                         if (onFailure) onFailure(new Error('เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง: ' + text.slice(0, 100)));
                         return;
