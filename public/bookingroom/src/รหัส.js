@@ -1558,8 +1558,23 @@ function doGet(e) {
 function handleRequest(e) {
   console.log('Request received');
   
-  const params = e.parameter || {};
-  const path = params.path || '';
+  const rawParams = e.parameter || {};
+  const path = rawParams.path || '';
+  
+  // Parse JSON strings ที่ส่งมาจาก FormData (callGAS จะ JSON.stringify array/object ก่อนส่ง)
+  const params = {};
+  Object.keys(rawParams).forEach(key => {
+    const val = rawParams[key];
+    if (typeof val === 'string' && (val.startsWith('[') || val.startsWith('{'))) {
+      try { params[key] = JSON.parse(val); return; } catch(e) {}
+    }
+    // แปลง boolean strings
+    if (val === 'true') { params[key] = true; return; }
+    if (val === 'false') { params[key] = false; return; }
+    // แปลง number strings
+    if (val !== '' && !isNaN(val) && key !== 'roomId' && key !== 'path') { params[key] = Number(val); return; }
+    params[key] = val;
+  });
   
   try {
     if (path === 'webhook' || (e.postData && e.postData.contents && e.postData.contents.includes('events'))) {
@@ -2380,15 +2395,24 @@ function checkMultiDayAvailability(params) {
   
   if (firstDate < today) {
     return { success: false, message: 'ไม่สามารถจองย้อนหลังได้' };
+  }  // รองรับทั้ง ISO string (2026-08-31T09:00:00.000Z) และ time string (09:00)
+  let startHour, startMinute, endHour, endMinute;
+  if (startTimeStr.includes('T')) {
+    const sDate = new Date(startTimeStr);
+    startHour = sDate.getHours();
+    startMinute = sDate.getMinutes();
+    const eDate = new Date(endTimeStr);
+    endHour = eDate.getHours();
+    endMinute = eDate.getMinutes();
+  } else {
+    [startHour, startMinute] = startTimeStr.split(':').map(Number);
+    [endHour, endMinute] = endTimeStr.split(':').map(Number);
   }
-  
-  const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-  const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-  
+
   if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
     return { success: false, message: 'รูปแบบเวลาไม่ถูกต้อง' };
   }
-  
+
   const startMinutes = startHour * 60 + startMinute;
   const endMinutes = endHour * 60 + endMinute;
   

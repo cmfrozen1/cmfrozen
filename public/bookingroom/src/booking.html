@@ -2378,7 +2378,9 @@
 
                 Object.keys(data).forEach(key => {
                     if (data[key] !== undefined && data[key] !== null) {
-                        formData.append(key, data[key]);
+                        // Array/Object ต้อง JSON.stringify ก่อนส่ง เพราะ FormData แปลงทุกอย่างเป็น string
+                        const val = data[key];
+                        formData.append(key, typeof val === 'object' ? JSON.stringify(val) : String(val));
                     }
                 });
 
