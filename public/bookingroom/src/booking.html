@@ -908,12 +908,22 @@
             opacity: 0.3;
         }
 
-        .calendar-day.has-booking {
+        .calendar-day.has-booking:not(.has-multi-day) {
             background: rgba(6, 199, 85, 0.1);
             border: 1px solid var(--primary);
         }
 
-        .calendar-day.has-booking::after {
+        /* วันที่มี multi-day booking: ไม่ทาพื้นหลัง ให้แถบ bar แสดงแทน */
+        .calendar-day.has-multi-day {
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        .calendar-day.has-multi-day:hover {
+            border-color: var(--primary);
+        }
+
+        .calendar-day.has-booking:not(.has-multi-day)::after {
             content: '';
             position: absolute;
             bottom: 4px;
@@ -923,9 +933,55 @@
             background: var(--primary);
         }
 
-        .calendar-day.has-booking.multiple::after {
+        .calendar-day.has-booking.multiple:not(.has-multi-day)::after {
             width: 8px;
             background: var(--primary);
+        }
+
+        /* Multi-day bar: แถบเชื่อมระหว่างวันที่จองข้ามวัน */
+        .calendar-day .multi-day-bar {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 18px;
+            background: rgba(6, 199, 85, 0.18);
+            z-index: 0;
+        }
+
+        .calendar-day .multi-day-bar.bar-start {
+            left: 0;
+            right: -1px;
+            border-radius: 6px 0 0 6px;
+        }
+
+        .calendar-day .multi-day-bar.bar-middle {
+            left: -1px;
+            right: -1px;
+            border-radius: 0;
+        }
+
+        .calendar-day .multi-day-bar.bar-end {
+            left: -1px;
+            right: 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .calendar-day .multi-day-bar.bar-single {
+            left: 0;
+            right: 0;
+            border-radius: 6px;
+        }
+
+        .calendar-day .multi-day-dot {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--primary);
+            z-index: 1;
         }
 
         .date-bookings-list {
@@ -2335,7 +2391,9 @@
                 clearTimeout(timeoutId);
 
                 const text = await res.text();
-                return JSON.parse(text);
+                // GAS Web App จะใส่ prefix {}&& หน้า JSON เพื่อกัน XSS
+                const jsonStr = text.replace(/^\{\}\&\&/, '');
+                return JSON.parse(jsonStr);
             } catch (error) {
                 console.error('API Error:', error);
 
@@ -3260,6 +3318,31 @@
             }
         }
 
+        // คำนวณตำแหน่งแถบ multi-day สำหรับวันที่กำหนด
+        function getMultiDayBarInfo(dateStr) {
+            const bookings = state.dateBookings[dateStr] || [];
+            const multiDayBookings = bookings.filter(b => b.isPartOfMultiDay);
+            if (multiDayBookings.length === 0) return null;
+
+            // ใช้ booking ตัวแรกที่เป็น multi-day
+            const b = multiDayBookings[0];
+            const prevDate = new Date(new Date(dateStr + 'T00:00:00').getTime() - 86400000);
+            const nextDate = new Date(new Date(dateStr + 'T00:00:00').getTime() + 86400000);
+            const prevStr = formatDateForInput(prevDate);
+            const nextStr = formatDateForInput(nextDate);
+
+            const prevBookings = state.dateBookings[prevStr] || [];
+            const nextBookings = state.dateBookings[nextStr] || [];
+
+            const hasPrev = prevBookings.some(pb => pb.bookingId === b.bookingId && pb.isPartOfMultiDay);
+            const hasNext = nextBookings.some(nb => nb.bookingId === b.bookingId && nb.isPartOfMultiDay);
+
+            if (hasPrev && hasNext) return 'middle';
+            if (!hasPrev && hasNext) return 'start';
+            if (hasPrev && !hasNext) return 'end';
+            return 'single';
+        }
+
         function renderCalendar() {
             const year = state.currentMonth.getFullYear();
             const month = state.currentMonth.getMonth();
@@ -3284,8 +3367,9 @@
                 const hasBooking = bookings.length > 0;
                 const hasMultiDayBooking = bookings.some(b => b.isPartOfMultiDay);
                 const isToday = isSameDay(date, new Date());
+                const barInfo = getMultiDayBarInfo(dateStr);
 
-                html += renderCalendarDay(day, true, hasBooking, isToday, dateStr, bookings.length, false, hasMultiDayBooking);
+                html += renderCalendarDay(day, true, hasBooking, isToday, dateStr, bookings.length, false, hasMultiDayBooking, barInfo);
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -3296,8 +3380,9 @@
                 const hasMultiDayBooking = bookings.some(b => b.isPartOfMultiDay);
                 const isToday = isSameDay(date, new Date());
                 const isSelected = isSameDay(date, state.selectedDate);
+                const barInfo = getMultiDayBarInfo(dateStr);
 
-                html += renderCalendarDay(day, false, hasBooking, isToday, dateStr, bookings.length, isSelected, hasMultiDayBooking);
+                html += renderCalendarDay(day, false, hasBooking, isToday, dateStr, bookings.length, isSelected, hasMultiDayBooking, barInfo);
             }
 
             const totalCells = 42;
@@ -3308,14 +3393,15 @@
                 const bookings = state.dateBookings[dateStr] || [];
                 const hasBooking = bookings.length > 0;
                 const hasMultiDayBooking = bookings.some(b => b.isPartOfMultiDay);
+                const barInfo = getMultiDayBarInfo(dateStr);
 
-                html += renderCalendarDay(day, true, hasBooking, false, dateStr, bookings.length, false, hasMultiDayBooking);
+                html += renderCalendarDay(day, true, hasBooking, false, dateStr, bookings.length, false, hasMultiDayBooking, barInfo);
             }
 
             $.calendarDays.innerHTML = html;
         }
 
-        function renderCalendarDay(day, isOtherMonth, hasBooking, isToday, dateStr, bookingCount = 0, isSelected = false, hasMultiDayBooking = false) {
+        function renderCalendarDay(day, isOtherMonth, hasBooking, isToday, dateStr, bookingCount = 0, isSelected = false, hasMultiDayBooking = false, barInfo = null) {
             let classes = 'calendar-day';
             if (isOtherMonth) classes += ' other-month';
             if (isToday) classes += ' today';
@@ -3325,12 +3411,22 @@
                 if (bookingCount > 1 || hasMultiDayBooking) {
                     classes += ' multiple';
                 }
+                if (hasMultiDayBooking) {
+                    classes += ' has-multi-day';
+                }
+            }
+
+            // สร้างแถบเชื่อม multi-day
+            let barHtml = '';
+            if (barInfo) {
+                barHtml = `<span class="multi-day-bar bar-${barInfo}"></span>`;
             }
 
             return `
                 <div class="${classes}" onclick="selectDate('${dateStr}')">
-                    ${day}
-                    ${hasMultiDayBooking ? '<span class="multi-day-badge">📅</span>' : ''}
+                    ${barHtml}
+                    <span style="position:relative;z-index:1;">${day}</span>
+                    ${hasMultiDayBooking && barInfo === 'start' ? '<span class="multi-day-badge" style="position:relative;z-index:1;">📅</span>' : ''}
                 </div>
             `;
         }
@@ -4106,27 +4202,38 @@
                 return;
             }
 
+            // สร้างรายการวันที่ทั้งหมดระหว่าง startDate ถึง endDate
+            const multiDayDates = [];
+            const tmpDate = new Date(startDate + 'T00:00:00');
+            const endDateObj = new Date(endDate + 'T00:00:00');
+            while (tmpDate <= endDateObj) {
+                multiDayDates.push(tmpDate.toISOString().split('T')[0]);
+                tmpDate.setDate(tmpDate.getDate() + 1);
+            }
+            const isMultiDay = multiDayDates.length > 1;
+
+            // ตรวจสอบ max 7 วัน
+            if (multiDayDates.length > 7) {
+                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ จองได้สูงสุด 7 วันต่อเนื่อง</span>';
+                $.availabilityStatus.classList.remove('hidden');
+                $.saveBookingBtn.disabled = true;
+                return;
+            }
+
+            // ตรวจสอบเวลาทำการ: วันแรกต้องเริ่ม 08:00-20:00, วันสุดท้ายต้องสิ้นสุด 08:00-20:00
             const startHour = startDateTime.getHours();
             const endHour = endDateTime.getHours();
             const endMinutes = endDateTime.getMinutes();
 
             if (startHour < 8 || startHour > 20 || (startHour === 20 && startDateTime.getMinutes() > 0)) {
-                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาทำการ 08:00 - 20:00 น.</span>';
+                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาเริ่มต้องอยู่ในช่วง 08:00 - 20:00 น.</span>';
                 $.availabilityStatus.classList.remove('hidden');
                 $.saveBookingBtn.disabled = true;
                 return;
             }
 
             if (endHour < 8 || endHour > 20 || (endHour === 20 && endMinutes > 0)) {
-                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาทำการ 08:00 - 20:00 น.</span>';
-                $.availabilityStatus.classList.remove('hidden');
-                $.saveBookingBtn.disabled = true;
-                return;
-            }
-
-            const durationHours = (endDateTime - startDateTime) / (1000 * 60 * 60);
-            if (durationHours > 24) {
-                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ จองได้ครั้งละไม่เกิน 24 ชั่วโมง</span>';
+                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาสิ้นสุดต้องอยู่ในช่วง 08:00 - 20:00 น.</span>';
                 $.availabilityStatus.classList.remove('hidden');
                 $.saveBookingBtn.disabled = true;
                 return;
@@ -4148,7 +4255,9 @@
                     roomId,
                     startTime: startDateTime.toISOString(),
                     endTime: endDateTime.toISOString(),
-                    bookingId: editBookingId || undefined
+                    bookingId: editBookingId || undefined,
+                    isMultiDay: isMultiDay,
+                    multiDayDates: isMultiDay ? multiDayDates : []
                 });
 
                 if (result.success) {
@@ -4362,6 +4471,16 @@
                     return;
                 }
 
+                // สร้างรายการวันที่ทั้งหมดสำหรับจองข้ามวัน
+                const saveMultiDayDates = [];
+                const tmpSaveDate = new Date(startDate + 'T00:00:00');
+                const saveEndDateObj = new Date(endDate + 'T00:00:00');
+                while (tmpSaveDate <= saveEndDateObj) {
+                    saveMultiDayDates.push(tmpSaveDate.toISOString().split('T')[0]);
+                    tmpSaveDate.setDate(tmpSaveDate.getDate() + 1);
+                }
+                const saveIsMultiDay = saveMultiDayDates.length > 1;
+
                 const selectedRoom = state.rooms.find(r => r.roomId === roomId);
                 if (selectedRoom && attendees > selectedRoom.capacity) {
                     showToast(`จำนวนผู้เข้าร่วม (${attendees}) เกินความจุห้อง (${selectedRoom.capacity} คน)`, 'error');
@@ -4375,7 +4494,9 @@
                     roomId,
                     startTime: startDateTime.toISOString(),
                     endTime: endDateTime.toISOString(),
-                    bookingId: id || undefined
+                    bookingId: id || undefined,
+                    isMultiDay: saveIsMultiDay,
+                    multiDayDates: saveIsMultiDay ? saveMultiDayDates : []
                 });
 
                 if (!checkResult.success || !checkResult.data.available) {
@@ -4412,7 +4533,9 @@
                     endTime: endDateTime.toISOString(),
                     attendees: attendees,
                     userName: state.user.displayName,
-                    lineUserId: state.user.lineUserId
+                    lineUserId: state.user.lineUserId,
+                    isMultiDay: saveIsMultiDay,
+                    multiDayDates: saveIsMultiDay ? saveMultiDayDates : []
                 };
 
                 if (id) data.bookingId = id;

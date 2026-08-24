@@ -1634,7 +1634,7 @@ function routeRequest(path, params) {
     case 'booking/approve': return approveBooking(params);
     case 'booking/reject': return rejectBooking(params);
     case 'booking/admin-cancel': return adminCancelBooking(params);
-    case 'booking/check-availability': return checkAvailability(params);
+    case 'booking/check-availability': return (params.isMultiDay || (params.multiDayDates && params.multiDayDates.length > 0)) ? checkMultiDayAvailability({ ...params, dates: params.multiDayDates || [], excludeBookingId: params.bookingId || params.excludeBookingId }) : checkAvailability({ ...params, excludeBookingId: params.bookingId || params.excludeBookingId });
     case 'booking/check-multi-day-availability': return checkMultiDayAvailability(params);
     
     // Admin
