@@ -1,0 +1,13 @@
+{
+  "name": "pushmessage-line-proxy",
+  "version": "1.0.0",
+  "description": "LINE webhook proxy that returns 200 to LINE and forwards events to the Google Apps Script web app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "ISC"
+}

@@ -1,0 +1,3213 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบประเมินผลการฝึกอบรม (F-HR-004/03)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert2 for clean alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Font Awesome 6 Free - SVG+JS version (works in Google Apps Script) -->
+    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/js/all.min.js" defer
+        crossorigin="anonymous"></script>
+    <!-- Google Fonts: Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f3f4f6;
+            color: #000;
+            font-weight: 400;
+        }
+
+        .page-container {
+            min-height: 297mm;
+            display: flex;
+            flex-direction: column;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .form-footer {
+            position: relative;
+            margin-top: auto;
+            padding: 1.2mm 1mm .6mm;
+            min-height: 6mm;
+            font-size: 11px;
+            line-height: 1;
+            letter-spacing: .15px;
+        }
+
+        .dotted-line {
+            border-bottom: 1px dotted #374151;
+            background: transparent;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .dotted-line:focus {
+            border-bottom: 1.5px solid #2563eb;
+        }
+
+        .bg-header-blue,
+        .bg-header-blue th,
+        .bg-header-blue td {
+            background-color: #9ac2d9 !important;
+        }
+
+        table th,
+        table td {
+            border-bottom: 1px solid #000;
+        }
+
+        /* เส้นคั่นหนา 2px สำหรับแต่ละแถวย่อย (1.1-1.5, 2.1-2.4, 3.1-3.5 และ sup 1-5) */
+        tr.section-row>td {
+            border-bottom: 2px solid #000 !important;
+        }
+
+        /* Keep the running number as a real visual column. */
+        .evaluation-table tbody tr:not(.total-row)>td:first-child {
+            padding: 0 !important;
+        }
+
+        .evaluation-table {
+            font-size: 13px;
+            line-height: 1.35;
+            font-weight: 400;
+        }
+
+        .numbered-layout {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            min-height: 1.75rem;
+        }
+
+        .numbered-layout>.order {
+            display: table-cell;
+            width: 3rem;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            border-right: 1px solid #000;
+            padding: .125rem;
+        }
+
+        .numbered-layout>.description {
+            display: table-cell;
+            vertical-align: middle;
+            padding: .125rem .5rem;
+            white-space: nowrap;
+            font-size: 12px;
+            letter-spacing: -.1px;
+        }
+
+        .font-bold .numbered-layout>.description {
+            font-size: 13px;
+            letter-spacing: normal;
+        }
+
+        .evaluation-heading {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            min-height: 2.75rem;
+            padding: 0 !important;
+            font-weight: 700;
+        }
+
+        .evaluation-heading>span {
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            padding: .375rem;
+        }
+
+        .evaluation-heading>span:first-child {
+            width: 3rem;
+            white-space: nowrap;
+            border-right: 1px solid #000;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 4mm 8mm 2mm 8mm;
+            }
+
+            body {
+                background-color: #ffffff;
+                padding: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .page-container {
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-height: 291mm !important;
+                border: none !important;
+            }
+        }
+
+        /* Custom radio checkmark styling */
+        .evaluation-table input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid #9ca3af;
+            border-radius: 4px;
+            /* Optional: makes it look more like a checklist box */
+            background-color: white;
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0;
+        }
+
+        .evaluation-table input[type="radio"]:checked {
+            background-color: #1e40af;
+            border-color: #1e40af;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512' fill='white'%3E%3Cpath d='M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z'/%3E%3C/svg%3E");
+            background-size: 70%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: #1e40af;
+        }
+
+        canvas {
+            touch-action: none;
+        }
+
+        #sig1,
+        #sig2 {
+            height: 52px !important;
+            min-height: 52px;
+            flex-shrink: 0;
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        #sig1 {
+            width: 160px !important;
+        }
+
+        #sig2 {
+            width: 220px !important;
+        }
+
+        .signature-preview {
+            cursor: pointer;
+        }
+
+        .signature-preview:focus {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+        }
+
+        .signature-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(15, 23, 42, .72);
+        }
+
+        .signature-modal.active {
+            display: flex;
+        }
+
+        .signature-modal-panel {
+            width: min(96vw, 920px);
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, .28);
+            padding: 1rem;
+        }
+
+        .signature-modal-canvas-wrap {
+            height: min(58vh, 430px);
+            min-height: 260px;
+            border: 1px solid #94a3b8;
+            background: #f8fafc;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #signatureModalCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        @media (max-width: 640px) {
+            .signature-modal {
+                padding: .5rem;
+            }
+
+            .signature-modal-panel {
+                width: 100%;
+                padding: .75rem;
+            }
+
+            .signature-modal-canvas-wrap {
+                height: 62vh;
+                min-height: 320px;
+            }
+        }
+
+        /* Metadata rows: force single line like the source form */
+        .meta-row {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: baseline;
+            gap: 0.35rem;
+        }
+
+        /* แถว identity (ชื่อ/รหัส/แผนก): ใช้ CSS Grid บังคับสัดส่วนคอลัมน์แบบ minmax(0, xfr)
+           เพื่อให้ชื่อแผนกยาว ๆ ไม่ดันเนื้อหาเกินกรอบ (flex-basis:auto คำนวณจากความยาวเนื้อหา) */
+        @media (min-width: 768px) {
+            .meta-row.meta-row-identity {
+                display: grid;
+                grid-template-columns: minmax(0, 2.5fr) minmax(0, 1.25fr) minmax(0, 3.25fr);
+                align-items: baseline;
+            }
+
+            .meta-row.meta-row-identity>div {
+                min-width: 0;
+            }
+
+            /* ชื่อแผนกยาว: ตัดเป็น ... แทนการล้นกรอบ */
+            .meta-row.meta-row-identity #department {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        .meta-row input[type="text"] {
+            min-width: 0;
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+
+            input,
+            select,
+            textarea,
+            button {
+                min-height: 34px;
+            }
+
+            input[type="radio"],
+            input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                min-height: 18px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: .75rem .5rem;
+                overflow-x: hidden;
+            }
+
+            .page-container {
+                width: 100%;
+                max-width: 100% !important;
+                min-height: auto;
+                padding: 1rem !important;
+                font-size: 14px;
+                line-height: 1.45;
+            }
+
+            .meta-row {
+                flex-wrap: wrap;
+                align-items: center;
+                gap: .35rem .5rem;
+            }
+
+            .meta-row>span.inline-flex {
+                flex: 1 1 210px;
+            }
+
+            #course_name.course-name-input {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+
+            .meta-row input[type="text"],
+            .meta-row input[type="number"],
+            .meta-row select,
+            .dotted-line {
+                font-size: 16px;
+            }
+
+            .evaluation-table {
+                font-size: 14px;
+            }
+
+            .evaluation-table th:first-child {
+                width: 62% !important;
+            }
+
+            .numbered-layout>.order,
+            .evaluation-heading>span:first-child {
+                width: 2.35rem;
+            }
+
+            .numbered-layout>.description {
+                white-space: normal;
+                font-size: 13px;
+                letter-spacing: 0;
+            }
+
+            .evaluation-heading {
+                min-height: 2.4rem;
+            }
+
+            .evaluation-heading>span {
+                padding: .3rem .2rem;
+            }
+
+            .evaluation-table input[type="radio"] {
+                width: 20px;
+                height: 20px;
+            }
+
+            .evaluation-table .grid.grid-cols-5>div {
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: .5rem .35rem;
+            }
+
+            .page-container {
+                padding: .65rem !important;
+                border-width: 1px;
+                box-shadow: none;
+                font-size: 13.5px;
+            }
+
+            .relative.mb-3.min-h-\[40px\] {
+                min-height: auto;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                gap: .35rem;
+            }
+
+            .relative.mb-3.min-h-\[40px\]>div.absolute {
+                position: static;
+                order: 1;
+            }
+
+            .relative.mb-3.min-h-\[40px\]>div.text-center {
+                flex-basis: 100%;
+                order: 0;
+                padding-top: 0;
+            }
+
+            .meta-row {
+                align-items: stretch;
+            }
+
+            .meta-row>span.font-bold {
+                flex: 0 0 auto;
+                padding-top: .25rem;
+            }
+
+            .meta-row:first-child>span:first-child {
+                flex: 1 0 100%;
+                padding-top: 0;
+            }
+
+            #course_name.course-name-input {
+                flex: 1 0 100%;
+                width: 100%;
+                min-width: 100%;
+            }
+
+            #course_name.course-name-input+span.font-bold {
+                margin-top: .25rem;
+            }
+
+            .date-label {
+                flex: 0 0 auto;
+            }
+
+            .date-input-group {
+                flex: 1 1 calc(100% - 4.5rem);
+                min-width: 0;
+            }
+
+            .end-date-label {
+                flex-basis: auto;
+                clear: left;
+            }
+
+            .end-date-group {
+                flex-grow: 1;
+            }
+
+            .meta-row input[type="text"],
+            .meta-row input[type="number"],
+            .meta-row select {
+                min-height: 36px;
+            }
+
+            .evaluation-table th:first-child {
+                width: 58% !important;
+            }
+
+            .numbered-layout>.order,
+            .evaluation-heading>span:first-child {
+                width: 2rem;
+            }
+
+            .numbered-layout>.description {
+                padding: .25rem .35rem;
+                font-size: 12.5px;
+            }
+
+            .font-bold .numbered-layout>.description {
+                font-size: 12.8px;
+            }
+
+            .evaluation-table input[type="radio"] {
+                width: 22px;
+                height: 22px;
+            }
+
+            #sig1,
+            #sig2 {
+                height: 62px !important;
+                min-height: 62px;
+            }
+
+            #sig1 {
+                width: min(180px, 54vw) !important;
+            }
+
+            #sig2 {
+                width: min(220px, 58vw) !important;
+            }
+
+            .signature-inline-row {
+                flex-wrap: wrap;
+                align-items: flex-start;
+                max-width: 100%;
+                row-gap: .25rem;
+            }
+
+            .signature-field {
+                flex: 0 1 auto;
+                max-width: calc(100vw - 7.5rem);
+            }
+
+            .signature-role {
+                white-space: normal !important;
+                overflow-wrap: anywhere;
+            }
+
+            .supervisor-signature-row {
+                gap: .25rem .35rem;
+            }
+
+            .supervisor-signature-role {
+                flex: 1 1 100%;
+                padding-top: .1rem;
+                line-height: 1.25;
+            }
+
+            .signature-modal {
+                align-items: stretch;
+                padding: env(safe-area-inset-top, .5rem) .5rem env(safe-area-inset-bottom, .5rem);
+            }
+
+            .signature-modal-panel {
+                display: flex;
+                flex-direction: column;
+                max-height: calc(100dvh - 1rem);
+                overflow: hidden;
+            }
+
+            .signature-modal-canvas-wrap {
+                flex: 1 1 auto;
+                height: clamp(260px, 54dvh, 430px);
+                min-height: 0;
+            }
+
+            #signatureModalCanvas {
+                min-height: 0;
+            }
+
+            .signature-modal-panel button {
+                min-height: 42px;
+            }
+
+            #btnSaveBottom {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-container {
+                padding: .5rem !important;
+                font-size: 13px;
+            }
+
+            .evaluation-table {
+                font-size: 12.5px;
+            }
+
+            .evaluation-table th:first-child {
+                width: 56% !important;
+            }
+
+            .evaluation-heading {
+                font-size: 11px;
+            }
+
+            .numbered-layout>.order,
+            .evaluation-heading>span:first-child {
+                width: 1.75rem;
+            }
+
+            .numbered-layout>.description {
+                padding: .22rem .3rem;
+                font-size: 12px;
+            }
+
+            .evaluation-table .grid.grid-cols-5>div {
+                min-height: 40px;
+            }
+
+            .signature-field {
+                max-width: calc(100vw - 5.25rem);
+            }
+
+            #sig1,
+            #sig2 {
+                width: min(190px, 64vw) !important;
+            }
+
+            .flex.items-center.space-x-4 {
+                flex-wrap: wrap;
+                gap: .35rem .75rem;
+                row-gap: .35rem;
+            }
+
+            .flex.items-center.space-x-4>* {
+                margin-left: 0 !important;
+            }
+
+            .signature-modal-canvas-wrap {
+                height: clamp(250px, 52dvh, 390px);
+            }
+
+            #signatureModalCanvas {
+                min-height: 0;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 540px) {
+            .signature-modal-panel {
+                padding: .6rem;
+            }
+
+            .signature-modal-canvas-wrap {
+                height: min(48dvh, 230px);
+                min-height: 150px;
+            }
+
+            #signatureModalCanvas {
+                min-height: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- Navigation Tabs -->
+    <div class="bg-blue-800 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14">
+                <div class="flex space-x-2 sm:space-x-4">
+                    <button id="tab-trainee" onclick="switchView('trainee')"
+                        class="bg-blue-900 text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors">
+                        <i class="fa-solid fa-file-pen mr-1"></i> ผู้เข้าอบรม (สร้างใหม่)
+                    </button>
+                    <button id="tab-dashboard" onclick="promptSupervisorLogin()"
+                        class="text-blue-200 hover:bg-blue-700 hover:text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors flex items-center">
+                        <i class="fa-solid fa-clipboard-list mr-1"></i> หัวหน้างาน (รอประเมิน)
+                        <span id="pendingCountBadge"
+                            class="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full hidden shadow">0</span>
+                    </button>
+                    <!-- ปุ่มรายงานสรุป: แสดงเฉพาะ Admin ที่ login แล้ว -->
+                    <button id="tab-report" onclick="openReportSummary()" style="display:none;"
+                        class="text-blue-200 hover:bg-blue-700 hover:text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors flex items-center">
+                        <i class="fa-solid fa-chart-column mr-1"></i> รายงานสรุป
+                    </button>
+                </div>
+                <!-- ปุ่มออกจากระบบ: แสดงเมื่อ login แล้ว -->
+                <button id="btn-logout" onclick="logoutSupervisor()" style="display:none;"
+                    class="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md shadow transition-all focus:outline-none">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    ออกจากระบบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Dashboard -->
+    <div id="view-dashboard" style="display:none;"
+        class="page-container max-w-4xl mx-auto my-6 p-4 bg-white rounded-lg shadow">
+        <div class="bg-blue-700 text-white p-4 rounded-t-lg">
+            <h1 class="text-xl font-bold"><i class="fa-solid fa-clipboard-list mr-2"></i>รายการรอประเมินจากหัวหน้างาน
+            </h1>
+            <p class="text-blue-100 text-sm mt-1">รายการทั้งหมดด้านล่างนี้ ผู้เข้าอบรมได้ทำการเซ็นชื่อแล้ว
+                รอหัวหน้างานประเมินในขั้นตอนสุดท้าย</p>
+        </div>
+        <div class="p-4 border border-t-0 rounded-b-lg">
+            <div id="dashboardControls"
+                class="mb-4 flex flex-col sm:flex-row justify-between items-center gap-2 hidden">
+                <input type="text" id="searchInput" oninput="filterTasks()"
+                    placeholder="ค้นหา (ชื่อ, รหัส, หลักสูตร, แผนก...)"
+                    class="border border-gray-300 rounded px-3 py-1.5 w-full sm:w-1/2 text-sm">
+                <!-- Bulk delete action bar (admin only, hidden by default) -->
+                <div id="bulk-action-bar"
+                    class="hidden items-center gap-2 bg-red-50 border border-red-300 rounded-lg px-3 py-2 text-sm">
+                    <span id="bulk-count-label" class="text-red-700 font-semibold text-xs">เลือก 0 รายการ</span>
+                    <button onclick="confirmBulkDelete()"
+                        class="inline-flex items-center gap-1 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-medium shadow transition-all">
+                        <i class="fa-solid fa-trash-can"></i> ลบที่เลือก
+                    </button>
+                    <button onclick="clearBulkSelection()"
+                        class="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-xs font-medium transition-all">
+                        ยกเลิก
+                    </button>
+                </div>
+            </div>
+            <div id="loading" class="text-center py-10 hidden">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="mt-2 text-gray-500">กำลังโหลดข้อมูล...</p>
+            </div>
+            <div id="noData"
+                class="hidden text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">ไม่มีรายการค้าง</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="taskTable" class="min-w-full divide-y divide-gray-200 hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th id="th-bulk-check" class="px-2 py-2 text-center text-xs font-medium text-red-500 hidden"
+                                style="width:36px;">
+                                <input type="checkbox" id="chk-select-all" title="เลือกทั้งหมด"
+                                    class="w-4 h-4 rounded border-gray-300 text-red-600 cursor-pointer"
+                                    onchange="toggleSelectAll(this.checked)">
+                            </th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">วันที่ส่ง</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">ผู้เข้าอบรม</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">หลักสูตร</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">แผนก</th>
+                            <th class="px-4 py-2 text-center text-xs font-medium text-gray-500">จัดการ</th>
+                            <th id="th-admin-delete"
+                                class="px-4 py-2 text-center text-xs font-medium text-red-500 hidden">ลบ (Admin)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="taskBody" class="bg-white divide-y divide-gray-200 text-sm">
+                    </tbody>
+                </table>
+            </div>
+            <div id="paginationControls" class="mt-4 flex justify-between items-center hidden">
+                <button onclick="prevPage()"
+                    class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 text-sm"
+                    id="btnPrevPage">ก่อนหน้า</button>
+                <span id="pageIndicator" class="text-sm text-gray-600">หน้า 1 / 1</span>
+                <button onclick="nextPage()"
+                    class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50 text-sm"
+                    id="btnNextPage">ถัดไป</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Form -->
+    <div id="view-form">
+
+
+        <!-- Loading Overlay -->
+        <div id="loadOverlay"
+            class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex flex-col items-center justify-center text-white">
+            <div
+                class="bg-white text-gray-800 rounded-2xl p-6 shadow-2xl flex flex-col items-center max-w-sm mx-4 text-center border border-gray-100 animate-fade-in">
+                <div class="relative w-16 h-16 mb-4">
+                    <div class="absolute inset-0 rounded-full border-4 border-emerald-200 animate-ping opacity-75">
+                    </div>
+                    <div
+                        class="absolute inset-0 rounded-full border-4 border-emerald-600 border-t-transparent animate-spin">
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">กำลังบันทึกข้อมูล</h3>
+                <p class="text-sm text-gray-500 mb-3">ระบบกำลังบันทึกข้อมูล อัปโหลดลายเซ็น และสร้างเอกสาร PDF...</p>
+                <span
+                    class="inline-flex items-center text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full font-medium border border-emerald-200">
+                    <svg class="w-3.5 h-3.5 mr-1.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    กรุณารอสักครู่ ห้ามปิดหน้าต่างนี้
+                </span>
+            </div>
+        </div>
+
+        <!-- Control Bar (Hidden when printing) -->
+        <div
+            class="max-w-[210mm] mx-auto mb-4 flex flex-wrap justify-between items-center gap-2 no-print bg-white p-3 rounded-lg shadow border border-gray-200">
+            <div class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <span><i class="fa-solid fa-file-lines mr-1"></i> แบบประเมินผลการฝึกอบรม (F-HR-004/03)</span>
+            </div>
+            <button onclick="resetForm()"
+                class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm font-medium transition shadow-sm">
+                ล้างข้อมูล
+            </button>
+        </div>
+
+        <!-- Paper Container -->
+        <div class="page-container max-w-[210mm] mx-auto bg-white p-6 md:p-8 shadow-lg border border-gray-300"
+            style="padding-bottom:2mm;">
+
+            <!-- Top Header Badges & Main Title -->
+            <div class="relative mb-3 min-h-[40px]">
+                <!-- Top Left Badge -->
+                <div class="absolute left-0 top-0 border border-black px-2 py-0.5 text-xs font-normal">
+                    แผนกบุคคลธุรการ
+                </div>
+
+                <!-- Top Right Badge -->
+                <div class="absolute right-0 top-0 border border-black px-3 py-0.5 text-xs font-normal">
+                    CM 2
+                </div>
+
+                <!-- Title -->
+                <div class="text-center pt-1">
+                    <h1 class="text-base font-bold tracking-wide">แบบประเมินผลการฝึกอบรม</h1>
+                </div>
+            </div>
+
+            <!-- Form Top Metadata Section -->
+            <div class="space-y-1.5 mb-2">
+                <div class="meta-row flex-wrap md:flex-nowrap">
+                    <div class="flex items-center gap-1 w-full md:w-auto md:flex-[3]">
+                        <span class="font-bold whitespace-nowrap">ชื่อหลักสูตร</span>
+                        <input type="text" id="course_name"
+                            class="course-name-input dotted-line flex-1 px-1 text-sm min-w-0">
+                    </div>
+                    <div class="flex items-center gap-1 w-full md:w-auto md:flex-1">
+                        <span class="date-label start-date-label font-bold whitespace-nowrap">วันที่</span>
+                        <span class="date-input-group start-date-group inline-flex items-center gap-0.5 flex-1">
+                            <select id="start_day"
+                                class="dotted-line px-0.5 text-sm text-center flex-1 min-w-[36px]"></select>
+                            <span class="text-xs">/</span>
+                            <select id="start_month"
+                                class="dotted-line px-0.5 text-sm text-center flex-1 min-w-[52px]"></select>
+                            <span class="text-xs">/</span>
+                            <select id="start_year"
+                                class="dotted-line px-0.5 text-sm text-center flex-1 min-w-[60px]"></select>
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-1 w-full md:w-auto md:flex-1">
+                        <span class="date-label end-date-label font-bold whitespace-nowrap">ถึงวันที่</span>
+                        <span class="date-input-group end-date-group inline-flex items-center gap-0.5 flex-1">
+                            <select id="end_day"
+                                class="dotted-line px-0.5 text-sm text-center flex-1 min-w-[36px]"></select>
+                            <span class="text-xs">/</span>
+                            <select id="end_month"
+                                class="dotted-line px-0.5 text-sm text-center flex-1 min-w-[52px]"></select>
+                            <span class="text-xs">/</span>
+                            <select id="end_year"
+                                class="dotted-line px-0.5 text-sm text-center flex-1 min-w-[60px]"></select>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="meta-row flex-wrap md:flex-nowrap">
+                    <div class="flex items-center gap-1 w-full flex-1">
+                        <span class="font-bold whitespace-nowrap">วิทยากร</span>
+                        <input type="text" id="speaker" class="dotted-line flex-1 px-1 text-sm min-w-0">
+                    </div>
+                </div>
+
+                <div class="meta-row meta-row-identity flex-wrap md:flex-nowrap">
+                    <div class="flex items-center gap-1 w-full md:w-auto">
+                        <span class="font-bold whitespace-nowrap">ชื่อ - นามสกุล</span>
+                        <select id="emp_title"
+                            class="dotted-line px-1 text-sm text-center bg-transparent cursor-pointer min-w-[60px]">
+                            <option value="">คำนำหน้า</option>
+                            <option value="นาย">นาย</option>
+                            <option value="นาง">นาง</option>
+                            <option value="นางสาว">นางสาว</option>
+                            <option value="MR">MR</option>
+                            <option value="MRS">MRS</option>
+                        </select>
+                        <input type="text" id="emp_name" oninput="syncAttendeeName(this.value)"
+                            class="dotted-line flex-1 px-1 text-sm min-w-0">
+                    </div>
+                    <div class="flex items-center gap-1 w-full md:w-auto">
+                        <span class="font-bold whitespace-nowrap">รหัสพนักงาน</span>
+                        <input type="number" id="emp_id" inputmode="numeric" pattern="[0-9]*" min="0"
+                            class="dotted-line flex-1 px-1 text-center text-sm min-w-0"
+                            style="-moz-appearance:textfield;" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                    </div>
+                    <div class="flex items-center gap-1 w-full md:w-auto">
+                        <span class="font-bold whitespace-nowrap">แผนก</span>
+                        <select id="department"
+                            class="dotted-line flex-1 px-1 text-sm bg-transparent cursor-pointer min-w-0">
+                            <option value="">-- กำลังโหลด --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating Scale Note -->
+            <div class="text-[12px] text-sky-700 font-medium mb-1">
+                หมายเหตุ : เกณฑ์การประเมิน 5 = มากที่สุด , 4 = มาก , 3 = ปานกลาง , 2 = น้อย , 1 = น้อยที่สุด
+            </div>
+
+            <!-- Outer Box for Table 1 & Questions 4, 5 -->
+            <div class="border-2 border-black mb-3">
+
+                <!-- Table 1: Main Evaluation -->
+                <table class="evaluation-table w-full border-collapse text-left">
+                    <thead>
+                        <tr class="bg-header-blue border-b-2 border-black text-center text-xs font-bold">
+                            <th class="border-r border-black p-0 w-[70%]">
+                                <div class="evaluation-heading"><span>ลำดับ</span><span>ข้อมูลการประเมินผล</span></div>
+                            </th>
+                            <th class="p-0" colspan="5">
+                                <div class="border-b border-black py-1">ผลการประเมิน</div>
+                                <div class="grid grid-cols-5 text-center font-normal">
+                                    <div class="border-r border-black py-0.5">5</div>
+                                    <div class="border-r border-black py-0.5">4</div>
+                                    <div class="border-r border-black py-0.5">3</div>
+                                    <div class="border-r border-black py-0.5">2</div>
+                                    <div class="py-0.5">1</div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Section 1 -->
+                        <tr class="bg-header-blue border-t border-black">
+                            <td class="p-1 font-bold border-r border-black bg-header-blue" colspan="6">1
+                                การประเมินผลเนื้อหาการสัมมนา</td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">1.1 <span class="underline">ก่อน</span>
+                                การอบรม / สัมมนา ท่านมีความรู้ในเรื่องนี้</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p1_1" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_1" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_1" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_1" value="2"></div>
+                                    <div><input type="radio" name="p1_1" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">1.2 <span class="underline">หลัง</span>
+                                การอบรม / สัมมนา ท่านมีความรู้เพิ่มขึ้น</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p1_2" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_2" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_2" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_2" value="2"></div>
+                                    <div><input type="radio" name="p1_2" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">1.3 ท่านได้รับความเข้าใจ /
+                                เนื้อหาวิชาที่ได้รับสามารถนำไปใช้ได้</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p1_3" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_3" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_3" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_3" value="2"></div>
+                                    <div><input type="radio" name="p1_3" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">1.4 ระยะเวลาในการอบรม / สัมมนาเหมาะสม
+                            </td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p1_4" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_4" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_4" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_4" value="2"></div>
+                                    <div><input type="radio" name="p1_4" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">1.5 เอกสารประกอบการฝึกอบรมสัมมนา</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p1_5" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_5" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_5" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p1_5" value="2"></div>
+                                    <div><input type="radio" name="p1_5" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Section 2 -->
+                        <tr class="bg-header-blue border-t border-black">
+                            <td class="p-1 font-bold border-r border-black bg-header-blue" colspan="6">2
+                                การประเมินผลวิทยากร</td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">2.1 วิธีการถ่ายทอดความรู้ /
+                                การยกตัวอย่างประกอบมีความชัดเจน</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p2_1" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_1" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_1" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_1" value="2"></div>
+                                    <div><input type="radio" name="p2_1" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">2.2 การสร้างบรรยากาศ / การมีส่วนร่วม /
+                                การกระตุ้นให้ผู้ฟังได้ใช้ความคิด</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p2_2" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_2" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_2" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_2" value="2"></div>
+                                    <div><input type="radio" name="p2_2" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">2.3 ภาษาและคำพูดที่ใช้ในการบรรยาย /
+                                การตอบคำถามชัดเจน</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p2_3" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_3" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_3" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_3" value="2"></div>
+                                    <div><input type="radio" name="p2_3" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">2.4 การตรงต่อเวลา</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p2_4" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_4" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_4" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p2_4" value="2"></div>
+                                    <div><input type="radio" name="p2_4" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Section 3 -->
+                        <tr class="bg-header-blue border-t border-black">
+                            <td class="p-1 font-bold border-r border-black bg-header-blue" colspan="6">3
+                                การประเมินผลการดำเนินงานของผู้จัดอบรมสัมมนา</td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">3.1
+                                สถานที่และสภาพแวดล้อมในการสัมมนามีความเหมาะสม</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p3_1" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_1" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_1" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_1" value="2"></div>
+                                    <div><input type="radio" name="p3_1" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">3.2 ความพร้อมของอุปกรณ์โสตทัศนูปกรณ์ต่าง
+                                ๆ
+                            </td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p3_2" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_2" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_2" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_2" value="2"></div>
+                                    <div><input type="radio" name="p3_2" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">3.3 อาหาร และเครื่องดื่ม</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p3_3" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_3" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_3" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_3" value="2"></div>
+                                    <div><input type="radio" name="p3_3" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">3.4 ความชัดเจนในการชี้แจงรายละเอียดต่าง ๆ
+                            </td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p3_4" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_4" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_4" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_4" value="2"></div>
+                                    <div><input type="radio" name="p3_4" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="section-row">
+                            <td class="pl-6 pr-2 py-0.5 border-r border-black">3.5 ความกระตือรือร้นในการให้บริการ /
+                                ช่วยเหลือ</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="p3_5" value="5"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_5" value="4"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_5" value="3"></div>
+                                    <div class="border-r border-black"><input type="radio" name="p3_5" value="2"></div>
+                                    <div><input type="radio" name="p3_5" value="1"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Question 4 -->
+                <div class="border-t border-black p-2">
+                    <span class="font-bold">4 ท่านคิดว่าประโยชน์ที่ได้รับจากการสัมมนาในครั้งนี้
+                        จะนำไปพัฒนาการทำงานของท่านในเรื่องใดบ้าง</span>
+                    <input type="text" id="benefit_1" class="dotted-line w-full px-1 mt-1 text-sm">
+                    <input type="text" id="benefit_2" class="dotted-line w-full px-1 mt-1 text-sm">
+                </div>
+
+                <!-- Question 5 & Attendee Signature Side-by-Side -->
+                <div class="border-t border-black grid grid-cols-1 md:grid-cols-12">
+                    <!-- Left: Item 5 & Feedback -->
+                    <div class="md:col-span-7 border-r-0 md:border-r border-black p-2 space-y-2">
+                        <div>
+                            <span class="font-bold">5 ท่านคิดว่าบริษัท /
+                                หน่วยงานควรจัดสัมมนาในหัวข้อเกี่ยวกับเรื่องใด</span>
+                            <input type="text" id="next_topic_1" class="dotted-line w-full px-1 mt-1 text-sm">
+                            <input type="text" id="next_topic_2" class="dotted-line w-full px-1 mt-1 text-sm">
+                        </div>
+                        <div>
+                            <span class="font-bold">ข้อคิดเห็นและข้อเสนอแนะอื่นๆ</span>
+                            <input type="text" id="comment_1" class="dotted-line w-full px-1 mt-1 text-sm">
+                            <input type="text" id="comment_2" class="dotted-line w-full px-1 mt-1 text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Right: Attendee Signature Block -->
+                    <div class="md:col-span-5 flex flex-col justify-between items-center text-center px-3 pt-3 pb-4">
+                        <div class="signature-inline-row w-full flex items-start justify-center gap-1">
+                            <span class="signature-prefix whitespace-nowrap pt-1">ลงชื่อ</span>
+                            <div class="signature-field flex flex-col items-center w-[160px]">
+                                <div class="relative inline-block border-b border-black">
+                                    <canvas id="sig1" width="640" height="208"
+                                        class="cursor-crosshair bg-gray-50/50 hover:bg-yellow-50/20 transition rounded"></canvas>
+                                    <button type="button" onclick="clearSig('sig1')"
+                                        class="no-print absolute top-0 right-0 text-[10px] bg-red-100 text-red-600 px-1 rounded hover:bg-red-200">ล้าง</button>
+                                </div>
+                                <div class="flex items-center justify-center gap-1 w-full">
+                                    <span>(</span>
+                                    <input type="text" id="attendee_name_bracket"
+                                        class="dotted-line flex-1 min-w-0 text-center px-1 text-sm">
+                                    <span>)</span>
+                                </div>
+                            </div>
+                            <span class="signature-role whitespace-nowrap pt-1">ผู้เข้าร่วมอบรม</span>
+                        </div>
+
+                        <!-- Red Warning Text -->
+                        <div class="text-[10px] text-red-600 font-medium mt-4 text-center leading-tight">
+                            *โปรดส่งคืนหัวหน้างานของท่านภายใน 7 วันนับตั้งแต่วันสิ้นสุดการฝึกอบรม*
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Supervisor Evaluation Box -->
+            <div id="supervisor-section" class="border-2 border-black" style="display: none;">
+                <!-- Red Header Banner -->
+                <div class="border-b border-black text-center py-0.5 bg-white">
+                    <span class="text-red-600 font-bold text-xs md:text-sm">การประเมินผลผู้เข้าร่วมอบรม (
+                        สำหรับหัวหน้างานเท่านั้น )</span>
+                </div>
+
+                <!-- Table 2: Supervisor Matrix -->
+                <table class="evaluation-table w-full border-collapse text-left">
+                    <thead>
+                        <tr class="bg-header-blue border-b border-black text-center text-xs font-bold">
+                            <th class="border-r border-black p-0 w-[70%]">
+                                <div class="evaluation-heading"><span>ลำดับ</span><span>ข้อมูลการประเมินผล</span></div>
+                            </th>
+                            <th class="p-0" colspan="5">
+                                <div class="border-b border-black py-1">ผลการประเมิน</div>
+                                <div class="grid grid-cols-5 text-center font-normal">
+                                    <div class="border-r border-black py-0.5">5</div>
+                                    <div class="border-r border-black py-0.5">4</div>
+                                    <div class="border-r border-black py-0.5">3</div>
+                                    <div class="border-r border-black py-0.5">2</div>
+                                    <div class="py-0.5">1</div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-black">
+                        <tr>
+                            <td class="pl-3 pr-2 py-0.5 border-r border-black">1 มีทัศนคติในการทำงานเชิงบวก
+                                สามารถปรับเปลี่ยนพฤติกรรมในการทำงานในทางที่ดีขึ้น</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="sup_1" value="5"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_1" value="4"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_1" value="3"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_1" value="2"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div><input type="radio" name="sup_1" value="1"
+                                            onchange="calculateSupervisorTotal()">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pl-3 pr-2 py-0.5 border-r border-black">2
+                                เพิ่มประสิทธิภาพการปฏิบัติงานในหน้าที่ที่ได้รับผิดชอบขึ้น</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="sup_2" value="5"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_2" value="4"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_2" value="3"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_2" value="2"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div><input type="radio" name="sup_2" value="1"
+                                            onchange="calculateSupervisorTotal()">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pl-3 pr-2 py-0.5 border-r border-black">3
+                                ประสานงานร่วมกับผู้อื่นหรือหน่วยงานที่เกี่ยวข้องได้อย่างมีประสิทธิภาพ</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="sup_3" value="5"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_3" value="4"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_3" value="3"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_3" value="2"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div><input type="radio" name="sup_3" value="1"
+                                            onchange="calculateSupervisorTotal()">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pl-3 pr-2 py-0.5 border-r border-black">4 สามารถนำความรู้ / ทักษะ
+                                ที่ได้รับจากการอบรมไปใช้ในการทำงานหรือแก้ปัญหาได้</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="sup_4" value="5"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_4" value="4"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_4" value="3"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_4" value="2"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div><input type="radio" name="sup_4" value="1"
+                                            onchange="calculateSupervisorTotal()">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pl-3 pr-2 py-0.5 border-r border-black">5 สามารถสร้างสรรค์แนวคิดใหม่ๆ
+                                ในการทำงานและนำความรู้ไปเผยแพร่หรือถ่ายทอดได้</td>
+                            <td class="p-0" colspan="5">
+                                <div class="grid grid-cols-5 text-center items-center py-0.5">
+                                    <div class="border-r border-black"><input type="radio" name="sup_5" value="5"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_5" value="4"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_5" value="3"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div class="border-r border-black"><input type="radio" name="sup_5" value="2"
+                                            onchange="calculateSupervisorTotal()"></div>
+                                    <div><input type="radio" name="sup_5" value="1"
+                                            onchange="calculateSupervisorTotal()">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Total Score Row -->
+                        <tr class="total-row font-bold border-t border-black">
+                            <td class="text-right pr-6 py-1 border-r border-black">คะแนนรวม</td>
+                            <td class="text-center py-1" colspan="5">
+                                <div class="flex flex-wrap justify-around items-center px-4 gap-2">
+                                    <span class="font-normal">คะแนน</span>
+                                    <input type="text" id="total_score" class="dotted-line w-16 text-center font-normal"
+                                        readonly>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Follow-up Options & Rating -->
+                <div class="p-2 border-t border-black space-y-2">
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                        <span class="font-bold">วิธีการติดตามผล หลังการฝึกอบรม</span>
+                        <label class="inline-flex items-center gap-1 cursor-pointer">
+                            <input type="checkbox" id="follow_interview" class="w-3.5 h-3.5">
+                            <span>สอบถามสัมภาษณ์</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1 cursor-pointer">
+                            <input type="checkbox" id="follow_test" class="w-3.5 h-3.5">
+                            <span>ทดสอบความรู้/ทดสอบปฏิบัติ</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1 cursor-pointer">
+                            <input type="checkbox" id="follow_observe" class="w-3.5 h-3.5">
+                            <span>สังเกต</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1 cursor-pointer">
+                            <input type="checkbox" id="follow_other_check" class="w-3.5 h-3.5">
+                            <span>อื่นๆ</span>
+                        </label>
+                        <input type="text" id="follow_other_detail"
+                            class="dotted-line flex-grow min-w-[120px] px-1 text-sm">
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span
+                            class="font-bold">ท่านมีความพึงพอใจกับการส่งพนักงานเข้ารอบรมในหลักสูตรนี้มากน้อยเพียงใด</span>
+                        <div class="flex items-center space-x-4">
+                            <label class="inline-flex items-center gap-1 cursor-pointer"><input type="radio" name="sat"
+                                    value="5"> 5</label>
+                            <label class="inline-flex items-center gap-1 cursor-pointer"><input type="radio" name="sat"
+                                    value="4"> 4</label>
+                            <label class="inline-flex items-center gap-1 cursor-pointer"><input type="radio" name="sat"
+                                    value="3"> 3</label>
+                            <label class="inline-flex items-center gap-1 cursor-pointer"><input type="radio" name="sat"
+                                    value="2"> 2</label>
+                            <label class="inline-flex items-center gap-1 cursor-pointer"><input type="radio" name="sat"
+                                    value="1"> 1</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="font-bold">ข้อคิดเห็นและข้อเสนอแนะอื่นๆ</span>
+                        <input type="text" id="sup_comment_1" class="dotted-line w-full px-1 mt-1 text-sm">
+                        <input type="text" id="sup_comment_2" class="dotted-line w-full px-1 mt-1 text-sm">
+                    </div>
+
+                    <!-- Supervisor Signature Block -->
+                    <div
+                        class="signature-inline-row supervisor-signature-row pt-2 pb-3 flex items-start justify-center text-center">
+                        <span class="signature-prefix whitespace-nowrap pt-1">ลงชื่อ</span>
+                        <div class="signature-field flex flex-col items-center w-[220px] mx-1">
+                            <div class="relative inline-block border-b border-black">
+                                <canvas id="sig2" width="880" height="208"
+                                    class="cursor-crosshair bg-gray-50/50 hover:bg-yellow-50/20 transition rounded"></canvas>
+                                <button type="button" onclick="clearSig('sig2')"
+                                    class="no-print absolute top-0 right-0 text-[10px] bg-red-100 text-red-600 px-1 rounded hover:bg-red-200">ล้าง</button>
+                            </div>
+                            <div class="flex items-center justify-center gap-1 w-full">
+                                <span>(</span>
+                                <input type="text" id="sup_name_bracket"
+                                    class="dotted-line flex-1 min-w-0 text-center px-1 text-sm" placeholder="หัวหน้า"
+                                    disabled>
+                                <span>)</span>
+                            </div>
+                            <div id="sup_name_display" class="text-sm text-center mt-1 text-gray-600"></div>
+                        </div>
+                        <span
+                            class="signature-role supervisor-signature-role whitespace-nowrap pt-1">ผู้ช่วย/รอง/หัวหน้าแผนก/ผู้จัดการฝ่าย/ผู้จัดการทั่วไป</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Footer Reference -->
+            <div class="form-footer text-right font-semibold">
+                F-HR-004/03
+            </div>
+
+        </div>
+
+        <!-- Bottom Action Bar (Hidden when printing) -->
+        <div class="max-w-[210mm] mx-auto mt-4 flex justify-center items-center no-print">
+            <button id="btnSaveBottom" onclick="submitForm()"
+                class="px-8 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-base font-semibold shadow-md transition flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                    </path>
+                </svg>
+                บันทึกข้อมูล
+            </button>
+        </div>
+
+        <div id="signatureModal" class="signature-modal no-print" aria-hidden="true">
+            <div class="signature-modal-panel">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <h2 id="signatureModalTitle" class="text-base font-bold text-slate-800">ลงลายเซ็น</h2>
+                    <button type="button" onclick="closeSignatureModal(false)"
+                        class="px-3 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm">ปิด</button>
+                </div>
+                <div class="signature-modal-canvas-wrap">
+                    <canvas id="signatureModalCanvas"></canvas>
+                </div>
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <button type="button" onclick="clearSignatureModal()"
+                        class="px-4 py-2 rounded bg-red-100 hover:bg-red-200 text-red-700 text-sm font-semibold">ล้างลายเซ็น</button>
+                    <button type="button" onclick="closeSignatureModal(false)"
+                        class="px-4 py-2 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold">ยกเลิก</button>
+                    <button type="button" onclick="saveSignatureModal()"
+                        class="px-5 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- End of view-form -->
+    </div>
+
+    <script>
+        let activeSignatureCanvasId = '';
+        let modalSignaturePadReady = false;
+
+        function setupCanvasDrawing(canvas) {
+            if (!canvas || canvas.dataset.signatureReady === 'true') return;
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = Number(canvas.dataset.signatureLineWidth || 2);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                let clientX = e.clientX;
+                let clientY = e.clientY;
+
+                if (e.touches && e.touches.length > 0) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                }
+
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
+            }
+
+            function startDrawing(e) {
+                e.preventDefault();
+                isDrawing = true;
+                const pos = getPos(e);
+                lastX = pos.x;
+                lastY = pos.y;
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const pos = getPos(e);
+
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+
+                lastX = pos.x;
+                lastY = pos.y;
+            }
+
+            function stopDrawing() {
+                isDrawing = false;
+            }
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+            canvas.addEventListener('touchstart', startDrawing, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing);
+            canvas.dataset.signatureReady = 'true';
+        }
+
+        function setupSignaturePad(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            canvas.classList.add('signature-preview');
+            canvas.setAttribute('tabindex', '0');
+            canvas.setAttribute('role', 'button');
+            canvas.setAttribute('aria-label', canvasId === 'sig1' ? 'คลิกเพื่อลงลายเซ็นผู้เข้าร่วมอบรม' : 'คลิกเพื่อลงลายเซ็นหัวหน้างาน');
+            canvas.title = 'คลิกเพื่อลงลายเซ็น';
+            canvas.addEventListener('click', function () {
+                openSignatureModal(canvasId);
+            });
+            canvas.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openSignatureModal(canvasId);
+                }
+            });
+        }
+
+        function openSignatureModal(canvasId) {
+            const targetCanvas = document.getElementById(canvasId);
+            const modal = document.getElementById('signatureModal');
+            const modalCanvas = document.getElementById('signatureModalCanvas');
+            const title = document.getElementById('signatureModalTitle');
+            if (!targetCanvas || !modal || !modalCanvas) return;
+
+            activeSignatureCanvasId = canvasId;
+            if (title) {
+                title.textContent = canvasId === 'sig1' ? 'ลงลายเซ็นผู้เข้าร่วมอบรม' : 'ลงลายเซ็นหัวหน้างาน';
+            }
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            resizeSignatureModalCanvas();
+
+            const ctx = modalCanvas.getContext('2d');
+            ctx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+            if (!isCanvasBlank(canvasId)) {
+                ctx.drawImage(targetCanvas, 0, 0, modalCanvas.width, modalCanvas.height);
+            }
+            setupCanvasDrawing(modalCanvas);
+            modalSignaturePadReady = true;
+        }
+
+        function resizeSignatureModalCanvas() {
+            const modalCanvas = document.getElementById('signatureModalCanvas');
+            if (!modalCanvas) return;
+            const rect = modalCanvas.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 3);
+            modalCanvas.width = Math.max(1, Math.round(rect.width * dpr));
+            modalCanvas.height = Math.max(1, Math.round(rect.height * dpr));
+            modalCanvas.dataset.signatureLineWidth = String(3 * dpr);
+            const ctx = modalCanvas.getContext('2d');
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 3 * dpr;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+
+        function clearSignatureModal() {
+            const modalCanvas = document.getElementById('signatureModalCanvas');
+            if (!modalCanvas) return;
+            const ctx = modalCanvas.getContext('2d');
+            ctx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+        }
+
+        function getCanvasInkBounds(canvas) {
+            const ctx = canvas.getContext('2d');
+            const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = image.data;
+            let minX = canvas.width;
+            let minY = canvas.height;
+            let maxX = -1;
+            let maxY = -1;
+
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const alpha = data[((y * canvas.width + x) * 4) + 3];
+                    if (alpha > 8) {
+                        minX = Math.min(minX, x);
+                        minY = Math.min(minY, y);
+                        maxX = Math.max(maxX, x);
+                        maxY = Math.max(maxY, y);
+                    }
+                }
+            }
+
+            if (maxX === -1) return null;
+            const pad = Math.round(Math.min(canvas.width, canvas.height) * 0.035);
+            minX = Math.max(0, minX - pad);
+            minY = Math.max(0, minY - pad);
+            maxX = Math.min(canvas.width - 1, maxX + pad);
+            maxY = Math.min(canvas.height - 1, maxY + pad);
+            return { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 };
+        }
+
+        function saveSignatureModal() {
+            const targetCanvas = document.getElementById(activeSignatureCanvasId);
+            const modalCanvas = document.getElementById('signatureModalCanvas');
+            if (!targetCanvas || !modalCanvas) return;
+            const targetCtx = targetCanvas.getContext('2d');
+            const bounds = getCanvasInkBounds(modalCanvas);
+            targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+
+            if (bounds) {
+                const maxWidth = targetCanvas.width * 0.94;
+                const maxHeight = targetCanvas.height * 0.82;
+                let drawWidth = maxWidth;
+                let drawHeight = drawWidth * (bounds.height / bounds.width);
+
+                if (drawHeight > maxHeight) {
+                    drawHeight = maxHeight;
+                    drawWidth = drawHeight * (bounds.width / bounds.height);
+                }
+
+                const dx = (targetCanvas.width - drawWidth) / 2;
+                const dy = (targetCanvas.height - drawHeight) / 2;
+                targetCtx.imageSmoothingEnabled = true;
+                targetCtx.imageSmoothingQuality = 'high';
+                targetCtx.drawImage(
+                    modalCanvas,
+                    bounds.x, bounds.y, bounds.width, bounds.height,
+                    dx, dy, drawWidth, drawHeight
+                );
+            }
+
+            closeSignatureModal(false);
+        }
+
+        function closeSignatureModal(clearActive) {
+            const modal = document.getElementById('signatureModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            if (clearActive !== false) activeSignatureCanvasId = '';
+        }
+
+        function clearSig(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function isCanvasBlank(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return true;
+            const ctx = canvas.getContext('2d');
+            const pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            return !pixelData.some(channel => channel !== 0);
+        }
+
+        function getCanvasBase64(canvasId) {
+            if (isCanvasBlank(canvasId)) return '';
+            const canvas = document.getElementById(canvasId);
+            return canvas ? canvas.toDataURL('image/png') : '';
+        }
+
+        function formatOrderLabel(orderLabel) {
+            return (orderLabel || '').replace(/\.$/, '');
+        }
+
+        function getFullName() {
+            const title = (document.getElementById('emp_title') || {}).value || '';
+            const name = (document.getElementById('emp_name') || {}).value || '';
+            return (title + ' ' + name).replace(/\s+/g, ' ').trim();
+        }
+
+        function syncAttendeeName(val) {
+            const bracketInput = document.getElementById('attendee_name_bracket');
+            if (bracketInput && (!bracketInput.value || bracketInput.dataset.autoSynced === 'true')) {
+                bracketInput.value = (val || '').trim() ? getFullName() : '';
+                bracketInput.dataset.autoSynced = 'true';
+            }
+        }
+
+        function calculateSupervisorTotal() {
+            let total = 0;
+            let count = 0;
+            for (let i = 1; i <= 5; i++) {
+                const checked = document.querySelector(`input[name="sup_${i}"]:checked`);
+                if (checked) {
+                    total += parseInt(checked.value, 10);
+                    count++;
+                }
+            }
+            const scoreEl = document.getElementById('total_score');
+            if (count > 0) {
+                scoreEl.value = total;
+
+                // Map score to satisfaction radio button
+                let satValue = 1;
+                if (total >= 21) satValue = 5;
+                else if (total >= 16) satValue = 4;
+                else if (total >= 11) satValue = 3;
+                else if (total >= 6) satValue = 2;
+                else satValue = 1;
+
+                const satRadio = document.querySelector(`input[name="sat"][value="${satValue}"]`);
+                if (satRadio) {
+                    satRadio.checked = true;
+                }
+                // Lock satisfaction radio buttons
+                document.querySelectorAll('input[name="sat"]').forEach(r => r.disabled = true);
+            } else {
+                scoreEl.value = '';
+                document.querySelectorAll('input[name="sat"]').forEach(r => {
+                    r.checked = false;
+                    r.disabled = false;
+                });
+            }
+        }
+
+        function resetForm(force = false) {
+            const doReset = () => {
+                document.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+                const titleEl = document.getElementById('emp_title');
+                if (titleEl) titleEl.value = '';
+                document.querySelectorAll('input[type="radio"]').forEach(i => {
+                    i.checked = false;
+                    i.disabled = false;
+                });
+                document.querySelectorAll('input[type="checkbox"]').forEach(i => i.checked = false);
+                clearSig('sig1');
+                clearSig('sig2');
+                if (!IS_SUPERVISOR_MODE) {
+                    prepareTraineeMode();
+                }
+            };
+
+            if (force === true) {
+                doReset();
+                return;
+            }
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'ยืนยันการล้างข้อมูล?',
+                    text: "ข้อมูลทั้งหมดในแบบประเมินจะถูกรีเซ็ต",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'ล้างข้อมูล',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        doReset();
+                    }
+                });
+            } else if (confirm('คุณต้องการล้างข้อมูลทั้งหมดในแบบประเมินใช่หรือไม่?')) {
+                doReset();
+            }
+        }
+
+        function getRadioVal(name) {
+            const selected = document.querySelector(`input[name="${name}"]:checked`);
+            return selected ? selected.value : '';
+        }
+
+        function getCheckboxVal(id) {
+            const el = document.getElementById(id);
+            return (el && el.checked) ? '✓' : '';
+        }
+
+        function highlightElement(el, msg) {
+            if (!el) return;
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (typeof el.focus === 'function') {
+                el.focus();
+            }
+
+            el.classList.add('ring-2', 'ring-red-500', 'border-red-500', 'bg-red-50');
+            setTimeout(() => {
+                el.classList.remove('ring-2', 'ring-red-500', 'border-red-500', 'bg-red-50');
+            }, 3500);
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+                    text: msg,
+                    confirmButtonColor: '#2563eb'
+                });
+            } else {
+                alert('⚠️ ' + msg);
+            }
+        }
+
+        function validateAndHighlightForm() {
+            // 1. Text metadata checks
+            const textFields = [
+                { id: 'course_name', name: 'ชื่อหลักสูตร' },
+                { id: 'speaker', name: 'วิทยากร' },
+                { id: 'emp_name', name: 'ชื่อ - นามสกุล' },
+                { id: 'emp_id', name: 'รหัสพนักงาน' },
+            ];
+
+            for (let f of textFields) {
+                const input = document.getElementById(f.id);
+                if (!input || !input.value.toString().trim()) {
+                    highlightElement(input, `กรุณากรอก "${f.name}"`);
+                    return false;
+                }
+            }
+
+            // บังคับเลือกคำนำหน้าชื่อ
+            const titleEl = document.getElementById('emp_title');
+            if (!titleEl || !titleEl.value) {
+                highlightElement(titleEl, 'กรุณาเลือกคำนำหน้าชื่อ');
+                return false;
+            }
+
+            // ตรวจสอบวันที่เริ่ม
+            if (!document.getElementById('start_day').value || !document.getElementById('start_month').value || !document.getElementById('start_year').value) {
+                highlightElement(document.getElementById('start_day'), 'กรุณาเลือกวันที่เริ่ม');
+                return false;
+            }
+            // ตรวจสอบวันที่สิ้นสุด
+            if (!document.getElementById('end_day').value || !document.getElementById('end_month').value || !document.getElementById('end_year').value) {
+                highlightElement(document.getElementById('end_day'), 'กรุณาเลือกถึงวันที่');
+                return false;
+            }
+            // ตรวจสอบแผนก
+            const deptEl = document.getElementById('department');
+            if (!deptEl || !deptEl.value.trim()) {
+                highlightElement(deptEl, 'กรุณาเลือกแผนก');
+                return false;
+            }
+
+            // 2. Main evaluation ratings (p1_1 .. p3_5)
+            const ratingGroups = [
+                { name: 'p1_1', label: '1.1 ก่อนการอบรมมีความรู้' },
+                { name: 'p1_2', label: '1.2 หลังการอบรมมีความรู้เพิ่มขึ้น' },
+                { name: 'p1_3', label: '1.3 เนื้อหาสามารถนำไปใช้ได้' },
+                { name: 'p1_4', label: '1.4 ระยะเวลาเหมาะสม' },
+                { name: 'p1_5', label: '1.5 เอกสารประกอบ' },
+                { name: 'p2_1', label: '2.1 วิธีการถ่ายทอดของวิทยากร' },
+                { name: 'p2_2', label: '2.2 การสร้างบรรยากาศ / การมีส่วนร่วม' },
+                { name: 'p2_3', label: '2.3 ภาษาและคำพูดที่ใช้' },
+                { name: 'p2_4', label: '2.4 การตรงต่อเวลา' },
+                { name: 'p3_1', label: '3.1 สถานที่และสภาพแวดล้อม' },
+                { name: 'p3_2', label: '3.2 ความพร้อมของอุปกรณ์' },
+                { name: 'p3_3', label: '3.3 อาหารและเครื่องดื่ม' },
+                { name: 'p3_4', label: '3.4 ความชัดเจนในการชี้แจง' },
+                { name: 'p3_5', label: '3.5 ความกระตือรือร้นในการให้บริการ' }
+            ];
+
+            for (let r of ratingGroups) {
+                const checked = document.querySelector(`input[name="${r.name}"]:checked`);
+                if (!checked) {
+                    const firstRadio = document.querySelector(`input[name="${r.name}"]`);
+                    highlightElement(firstRadio, `กรุณาเลือกประเมิน "${r.label}"`);
+                    return false;
+                }
+            }
+
+            // 3. Attendee Signature & Name
+            if (isCanvasBlank('sig1')) {
+                const canvas = document.getElementById('sig1');
+                highlightElement(canvas, 'กรุณาลงลายเซ็นผู้เข้าร่วมอบรม');
+                return false;
+            }
+
+            const attendeeBracket = document.getElementById('attendee_name_bracket');
+            if (!attendeeBracket || !attendeeBracket.value.trim()) {
+                highlightElement(attendeeBracket, 'กรุณาระบุชื่อผู้เข้าร่วมอบรม (ในวงเล็บใต้ลายเซ็น)');
+                return false;
+            }
+
+            // 4. Supervisor Matrix (sup_1 .. sup_5)
+            const supGroups = [
+                { name: 'sup_1', label: 'หัวหน้างานประเมิน ข้อ 1 (ทัศนคติเชิงบวก)' },
+                { name: 'sup_2', label: 'หัวหน้างานประเมิน ข้อ 2 (เพิ่มประสิทธิภาพ)' },
+                { name: 'sup_3', label: 'หัวหน้างานประเมิน ข้อ 3 (ประสานงาน)' },
+                { name: 'sup_4', label: 'หัวหน้างานประเมิน ข้อ 4 (นำความรู้ไปใช้)' },
+                { name: 'sup_5', label: 'หัวหน้างานประเมิน ข้อ 5 (สร้างสรรค์แนวคิดใหม่)' }
+            ];
+
+            for (let s of supGroups) {
+                const checked = document.querySelector(`input[name="${s.name}"]:checked`);
+                if (!checked) {
+                    const firstRadio = document.querySelector(`input[name="${s.name}"]`);
+                    highlightElement(firstRadio, `กรุณาประเมินหัวหน้างาน "${s.label}"`);
+                    return false;
+                }
+            }
+
+            // 5. Checkboxes for follow up
+            const cbIds = ['follow_interview', 'follow_test', 'follow_observe', 'follow_other_check'];
+            const anyChecked = cbIds.some(id => {
+                const el = document.getElementById(id);
+                return el && el.checked;
+            });
+            if (!anyChecked) {
+                const firstCb = document.getElementById('follow_interview');
+                highlightElement(firstCb, 'กรุณาเลือกวิธีการติดตามผลอย่างน้อย 1 รายการ');
+                return false;
+            }
+
+            // 6. Supervisor satisfaction (sat)
+            const satChecked = document.querySelector('input[name="sat"]:checked');
+            if (!satChecked) {
+                const firstSat = document.querySelector('input[name="sat"]');
+                highlightElement(firstSat, 'กรุณาเลือกความพึงพอใจของหัวหน้างาน');
+                return false;
+            }
+
+            // 7. Supervisor Signature & Name
+            if (isCanvasBlank('sig2')) {
+                const canvas = document.getElementById('sig2');
+                highlightElement(canvas, 'กรุณาลงลายเซ็นหัวหน้างาน');
+                return false;
+            }
+
+            const supBracket = document.getElementById('sup_name_bracket');
+            if (!supBracket || !supBracket.value.trim()) {
+                highlightElement(supBracket, 'กรุณาระบุชื่อหัวหน้างาน (ในวงเล็บใต้ลายเซ็น)');
+                return false;
+            }
+
+            return true;
+        }
+
+        function getDateValue(prefix) {
+            const d = document.getElementById(prefix + '_day').value;
+            const m = document.getElementById(prefix + '_month').value;
+            const y = document.getElementById(prefix + '_year').value;
+            if (!d || !m || !y) return '';
+            const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            return `${d} ${months[parseInt(m) - 1]} ${y}`;
+        }
+
+
+        // ============================================================
+        //  ตั้งค่า: URL ของ Web App (GAS) ที่ใช้เป็น API endpoint
+        //  ต้องใส่เสมอ เพราะ GAS ไม่มี doGet แล้ว (หน้าเว็บนี้โฮสต์ที่ Vercel)
+        //  วิธีหา: เปิด GAS Editor ของสคริปต์นี้ > Deploy > New deployment
+        //  (Execute as: Me, Who has access: Anyone) แล้วคัดลอก Web app URL มาใส่
+        // ============================================================
+        const WEB_APP_URL = "REPLACE_WITH_WEB_APP_URL";
+
+        // ============================================================
+        //  เรียก API ฝั่ง GAS: POST FormData (multipart) ไปที่ WEB_APP_URL
+        //  (GAS ไม่คืน CORS header ดังนั้นส่ง FormData = simple request
+        //   ไม่โดน CORS preflight — ใช้วิธีเดียวกันกับโปรเจกต์ pushmessage)
+        //  method = ชื่อฟังก์ชัน GAS, args = อาร์เรย์ของพารามิเตอร์
+        //  อาร์เรย์/อ็อบเจกต์/ตัวเลข จะถูก JSON.stringify ส่งไป และ GAS
+        //  จะ parse กลับให้อัตโนมัติ
+        // ============================================================
+        function callServer(method, args, onSuccess, onFailure) {
+            if (!WEB_APP_URL || WEB_APP_URL.indexOf('REPLACE_WITH') !== -1) {
+                if (onFailure) onFailure(new Error('กรุณาตั้งค่า WEB_APP_URL (URL ของ Web App) ใน index.html'));
+                return;
+            }
+            const fd = new FormData();
+            fd.append('action', method);
+            (args || []).forEach(function (a, i) {
+                fd.append('arg' + i, typeof a === 'string' ? a : JSON.stringify(a));
+            });
+            fetch(WEB_APP_URL, { method: 'POST', body: fd })
+                .then(function (res) { return res.text(); })
+                .then(function (text) {
+                    let parsed;
+                    try {
+                        parsed = JSON.parse(text);
+                    } catch (err) {
+                        if (onFailure) onFailure(new Error('เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง: ' + text.slice(0, 100)));
+                        return;
+                    }
+                    if (parsed && parsed.__error) {
+                        if (onFailure) onFailure(new Error(parsed.__error));
+                        return;
+                    }
+                    if (onSuccess) onSuccess(parsed.result);
+                })
+                .catch(function (err) {
+                    if (onFailure) onFailure(err);
+                });
+        }
+
+        // Inject Record ID if exists (Supervisor Mode)
+
+        let currentRecordId = '';
+        let IS_SUPERVISOR_MODE = false;
+        let currentSupervisorDept = null;
+        let globalDepts = [];
+
+        function promptSupervisorLogin() {
+            if (currentSupervisorDept) {
+                switchView('dashboard');
+                return;
+            }
+
+            if (globalDepts.length === 0) {
+                alert("กำลังโหลดข้อมูลแผนก กรุณารอสักครู่...");
+                return;
+            }
+
+            let optionsHtml = '<option value="">-- เลือกแผนก --</option>';
+            optionsHtml += '<option value="admin">Admin (ผู้ดูแลระบบ)</option>';
+            globalDepts.forEach(d => {
+                optionsHtml += `<option value="${d}">${d}</option>`;
+            });
+
+            Swal.fire({
+                title: 'เข้าสู่ระบบหัวหน้างาน',
+                html: `
+                    <select id="swal-dept" class="swal2-input w-full mx-0 mb-3 block" style="max-width: 100%; box-sizing: border-box; font-size: 16px;">
+                        ${optionsHtml}
+                    </select>
+                    <input type="password" id="swal-pass" class="swal2-input w-full mx-0 block" placeholder="รหัสพนักงาน / รหัสผ่าน" style="max-width: 100%; box-sizing: border-box;">
+                `,
+                confirmButtonText: 'เข้าสู่ระบบ',
+                showCancelButton: true,
+                cancelButtonText: 'ยกเลิก',
+                preConfirm: () => {
+                    const dept = document.getElementById('swal-dept').value;
+                    const pass = document.getElementById('swal-pass').value;
+                    if (!dept) {
+                        Swal.showValidationMessage('กรุณาเลือกแผนก');
+                        return false;
+                    }
+                    if (!pass) {
+                        Swal.showValidationMessage('กรุณากรอกรหัสพนักงาน/รหัสผ่าน');
+                        return false;
+                    }
+                    return { dept: dept, pass: pass };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    showLoadingOverlay(true);
+                    callServer('verifySupervisorLogin', [result.value.dept, result.value.pass],
+                        function (res) {
+                            showLoadingOverlay(false);
+                            if (res.success) {
+                                currentSupervisorDept = result.value.dept;
+                                // Auto‑fill supervisor name from login response
+                                if (res.supName) {
+                                    const nameInput = document.getElementById('sup_name_bracket');
+                                    if (nameInput) nameInput.value = res.supName;
+                                    const displayDiv = document.getElementById('sup_name_display');
+                                    if (displayDiv) displayDiv.textContent = res.supName;
+                                }
+                                // บันทึก session ลง sessionStorage
+                                sessionStorage.setItem('supervisorDept', currentSupervisorDept);
+                                sessionStorage.setItem('supervisorName', res.supName || '');
+                                // แสดงปุ่มออกจากระบบ
+                                const btnLogout = document.getElementById('btn-logout');
+                                if (btnLogout) btnLogout.style.display = 'flex';
+                                // แสดงปุ่มรายงานสรุปเฉพาะ Admin
+                                updateReportButtonVisibility();
+                                switchView('dashboard');
+                            } else {
+                                Swal.fire('เกิดข้อผิดพลาด', res.message, 'error');
+                            }
+                        },
+                        function (err) {
+                            showLoadingOverlay(false);
+                            Swal.fire('เกิดข้อผิดพลาด', String(err), 'error');
+                        });
+                }
+            });
+        }
+
+        function updatePendingCount() {
+            if (WEB_APP_URL && WEB_APP_URL.indexOf('REPLACE_WITH') === -1) {
+                callServer('getTotalPendingCount', [currentSupervisorDept],
+                    function (count) {
+                        const badge = document.getElementById('pendingCountBadge');
+                        if (badge) {
+                            if (count > 0) {
+                                badge.textContent = count;
+                                badge.classList.remove('hidden');
+                            } else {
+                                badge.classList.add('hidden');
+                            }
+                        }
+                    },
+                    function () { });
+            }
+        }
+
+        // แสดง/ซ่อนปุ่ม "รายงานสรุป" เฉพาะเมื่อ login ด้วย admin เท่านั้น
+        function updateReportButtonVisibility() {
+            const isAdminUser = currentSupervisorDept && currentSupervisorDept.toLowerCase() === 'admin';
+            const btnReport = document.getElementById('tab-report');
+            if (btnReport) btnReport.style.display = isAdminUser ? 'flex' : 'none';
+        }
+
+        // เปิดรายงานสรุป (เฉพาะ Admin) ในแท็บใหม่ โดยดึงข้อมูลจริงจาก Sheet
+        // ใช้วิธีเขียน HTML ลงหน้าต่างโดยตรง + callServer() เรียก API (ไม่ส่งพารามิเตอร์ผ่าน URL)
+        // ตัวกรองในหน้ารายงานจะส่งค่ากลับผ่าน postMessage แล้วเราคำนวณใหม่แล้วเขียนกลับไป
+        let reportFilterListenerReady = false;
+
+        // ชื่อผู้จัดทำ — ดึงจากข้อมูลการ login (supName / sessionStorage)
+        function getReportPreparedBy() {
+            const savedName = sessionStorage.getItem('supervisorName');
+            if (savedName && savedName.trim()) return savedName.trim();
+            const nameInput = document.getElementById('sup_name_bracket');
+            if (nameInput && nameInput.value.trim()) return nameInput.value.trim();
+            return '';
+        }
+
+        // หน้าโหลดรายงานแบบ LoadOverlay (spinner + ข้อความ) ใช้ในหน้าต่างรายงานใหม่
+        const REPORT_LOADING_HTML = `<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>กำลังโหลดรายงาน...</title><style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body { font-family: "TH Sarabun PSK", Sarabun, sans-serif; }
+            .report-loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+                background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; }
+            .report-loading .panel { background: #fff; color: #1f2937; border-radius: 16px; padding: 24px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center;
+                max-width: 320px; text-align: center; }
+            .report-loading .spinner { width: 56px; height: 56px; border: 5px solid #d1fae5; border-top-color: #059669;
+                border-radius: 50%; animation: rspin 0.9s linear infinite; margin-bottom: 14px; }
+            @keyframes rspin { to { transform: rotate(360deg); } }
+            .report-loading h3 { font-size: 18px; font-weight: bold; margin-bottom: 6px; }
+            .report-loading p { font-size: 14px; color: #6b7280; }
+        </style></head><body><div class="report-loading"><div class="panel">
+            <div class="spinner"></div>
+            <h3>กำลังโหลดรายงานสรุป</h3>
+            <p>กรุณารอสักครู่ ห้ามปิดหน้าต่างนี้...</p>
+        </div></div></body></html>`;
+
+        function ensureReportFilterListener() {
+            if (reportFilterListenerReady) return;
+            reportFilterListenerReady = true;
+            window.addEventListener('message', function (evt) {
+                const msg = evt.data;
+                if (!msg || msg.type !== 'reportFilter') return;
+                // รับจากหน้าต่างรายงานของเราเท่านั้น (เช็ค origin แบบหลวม ๆ)
+                const o = String(evt.origin || '');
+                if (o && o !== 'null' && o !== window.location.origin &&
+                    o.indexOf('script.google.com') === -1 && o.indexOf('script.googleusercontent.com') === -1) return;
+                const win = evt.source;
+                if (!win) return;
+                // แสดง LoadOverlay ที่หน้าต่างรายงานระหว่างคำนวณใหม่
+                try {
+                    win.document.open();
+                    win.document.write(REPORT_LOADING_HTML);
+                    win.document.close();
+                } catch (e) { }
+                callServer('getReportSummaryHtml', ['admin', msg.filters || {}, getReportPreparedBy()],
+                    function (html) {
+                        try {
+                            win.document.open();
+                            win.document.write(html);
+                            win.document.close();
+                        } catch (e) { }
+                    },
+                    function (err) {
+                        try {
+                            win.document.open();
+                            win.document.write('<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>เกิดข้อผิดพลาด</title></head><body style="font-family: Sarabun, sans-serif; padding: 40px; text-align: center;"><h3 style="color: #b91c1c;">เกิดข้อผิดพลาด</h3><p>' + String(err) + '</p></body></html>');
+                            win.document.close();
+                        } catch (e) { }
+                    });
+            });
+        }
+
+        function openReportSummary() {
+            const isAdminUser = currentSupervisorDept && currentSupervisorDept.toLowerCase() === 'admin';
+            if (!isAdminUser) {
+                Swal.fire('สิทธิ์ไม่เพียงพอ', 'เฉพาะผู้ดูแลระบบ (Admin) เท่านั้นที่สามารถดูรายงานสรุปได้', 'warning');
+                return;
+            }
+            if (!WEB_APP_URL || WEB_APP_URL.indexOf('REPLACE_WITH') !== -1) {
+                Swal.fire('ข้อผิดพลาด', 'กรุณาตั้งค่า WEB_APP_URL (URL ของ Web App) ใน index.html', 'error');
+                return;
+            }
+
+            ensureReportFilterListener();
+
+            // เปิดหน้าต่างก่อน (แบบ synchronous) เพื่อเลี่ยง popup blocker
+            const win = window.open('', '_blank');
+            if (!win) {
+                Swal.fire('ไม่สามารถเปิดหน้าต่างได้', 'กรุณาอนุญาตป๊อปอัปสำหรับหน้านี้ แล้วลองใหม่อีกครั้ง', 'warning');
+                return;
+            }
+            // แสดง LoadOverlay ในหน้าต่างรายงานระหว่างโหลด
+            win.document.open();
+            win.document.write(REPORT_LOADING_HTML);
+            win.document.close();
+
+            callServer('getReportSummaryHtml', ['admin', {}, getReportPreparedBy()],
+                function (html) {
+                    win.document.open();
+                    win.document.write(html);
+                    win.document.close();
+                },
+                function (err) {
+                    win.document.open();
+                    win.document.write('<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>เกิดข้อผิดพลาด</title></head><body style="font-family: Sarabun, sans-serif; padding: 40px; text-align: center;"><h3 style="color: #b91c1c;">เกิดข้อผิดพลาด</h3><p>' + String(err) + '</p></body></html>');
+                    win.document.close();
+                });
+        }
+
+
+        function switchView(viewName) {
+            const btnTrainee = document.getElementById('tab-trainee');
+            const btnDashboard = document.getElementById('tab-dashboard');
+            const viewForm = document.getElementById('view-form');
+            const viewDashboard = document.getElementById('view-dashboard');
+
+            // ซ่อนทั้งคู่ก่อน
+            viewForm.style.display = 'none';
+            viewDashboard.style.display = 'none';
+
+            // Reset tab styles
+            btnTrainee.className = 'text-blue-200 hover:bg-blue-700 hover:text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors';
+            btnDashboard.className = 'text-blue-200 hover:bg-blue-700 hover:text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors';
+
+            if (viewName === 'trainee') {
+                btnTrainee.className = 'bg-blue-900 text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors';
+                viewForm.style.display = 'block';
+                prepareTraineeMode();
+            } else if (viewName === 'dashboard') {
+                btnDashboard.className = 'bg-blue-900 text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors';
+                viewDashboard.style.display = 'block';
+                loadDashboardData();
+            } else if (viewName === 'supervisor_form') {
+                btnDashboard.className = 'bg-blue-900 text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-colors';
+                viewForm.style.display = 'block';
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prepareTraineeMode() {
+            IS_SUPERVISOR_MODE = false;
+            currentRecordId = '';
+            const topHeader = document.querySelector('#view-form .bg-blue-600 h1');
+            if (topHeader) topHeader.innerText = 'แบบประเมินผลการฝึกอบรม (F-HR-004/03)';
+
+            // Unlock all inputs
+            document.querySelectorAll('#view-form input, #view-form select, #view-form textarea').forEach(el => {
+                el.disabled = false;
+                el.classList.remove('bg-gray-100');
+            });
+
+            // Hide Supervisor Section completely for Trainee
+            const supSection = document.getElementById('supervisor-section');
+            if (supSection) supSection.style.display = 'none';
+
+            // Lock Supervisor Section for Trainee (backup)
+            document.querySelectorAll('input[name^="sup_"], input[name^="follow_"], input[name="sat"], #sup_comment_1, #sup_comment_2, #sup_name_bracket').forEach(el => {
+                el.disabled = true;
+            });
+            const sig2 = document.getElementById('sig2');
+            if (sig2) {
+                sig2.style.pointerEvents = 'none';
+                sig2.style.opacity = '0.5';
+            }
+
+            // Reset Trainee Sig visibility
+            document.getElementById('sig1').style.display = 'block';
+            const sig1Btn = document.getElementById('sig1').nextElementSibling;
+            if (sig1Btn) sig1Btn.style.display = 'inline-flex';
+            const oldMsg = document.getElementById('trainee-signed-msg');
+            if (oldMsg) oldMsg.remove();
+
+            const btnSaveBottom = document.getElementById('btnSaveBottom');
+            if (btnSaveBottom) btnSaveBottom.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg> ส่งแบบประเมิน (ให้หัวหน้างาน)`;
+        }
+
+        let allTasks = [];
+        let filteredTasks = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        function loadDashboardData() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('taskTable').classList.add('hidden');
+            document.getElementById('noData').classList.add('hidden');
+            if (document.getElementById('dashboardControls')) document.getElementById('dashboardControls').classList.add('hidden');
+            if (document.getElementById('paginationControls')) document.getElementById('paginationControls').classList.add('hidden');
+
+            if (WEB_APP_URL && WEB_APP_URL.indexOf('REPLACE_WITH') === -1) {
+                callServer('getPendingTasks', [],
+                    function (data) {
+                        document.getElementById('loading').classList.add('hidden');
+                        allTasks = data || [];
+
+                        if (allTasks.length > 0 && document.getElementById('dashboardControls')) {
+                            document.getElementById('dashboardControls').classList.remove('hidden');
+                        }
+
+                        const searchInput = document.getElementById('searchInput');
+                        if (searchInput) searchInput.value = '';
+
+                        filterTasks();
+                        updatePendingCount();
+                    },
+                    function (error) {
+                        document.getElementById('loading').innerHTML = `<p class="text-red-500">เกิดข้อผิดพลาด: ${error}</p>`;
+                    });
+            }
+        }
+
+        function silentDashboardUpdate() {
+            if (WEB_APP_URL && WEB_APP_URL.indexOf('REPLACE_WITH') === -1) {
+                callServer('getPendingTasks', [],
+                    function (data) {
+                        allTasks = data || [];
+                        if (document.getElementById('view-dashboard').style.display === 'block') {
+                            filterTasks();
+                        }
+                    },
+                    function () { });
+
+                updatePendingCount();
+            }
+        }
+
+        // Realtime polling every 30 seconds
+        setInterval(silentDashboardUpdate, 30000);
+
+        function filterTasks() {
+            const query = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : '';
+            filteredTasks = allTasks.filter(task => {
+                if (currentSupervisorDept && currentSupervisorDept.toLowerCase() !== 'admin' && task.department.trim() !== currentSupervisorDept.trim()) return false;
+
+                const searchString = `${task.empName} ${task.empId} ${task.courseName} ${task.department} ${task.status}`.toLowerCase();
+                return searchString.includes(query);
+            });
+            currentPage = 1;
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const tbody = document.getElementById('taskBody');
+            tbody.innerHTML = '';
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const tasksToShow = filteredTasks.slice(startIndex, endIndex);
+
+            if (tasksToShow.length === 0) {
+                document.getElementById('taskTable').classList.add('hidden');
+                document.getElementById('noData').classList.remove('hidden');
+                if (document.getElementById('paginationControls')) document.getElementById('paginationControls').classList.add('hidden');
+            } else {
+                document.getElementById('taskTable').classList.remove('hidden');
+                document.getElementById('noData').classList.add('hidden');
+                if (document.getElementById('paginationControls')) document.getElementById('paginationControls').classList.remove('hidden');
+
+                const isAdmin = currentSupervisorDept && currentSupervisorDept.toLowerCase() === 'admin';
+                // แสดง/ซ่อนคอลัมน์ checkbox และ ลบ ตาม role
+                const thAdminDelete = document.getElementById('th-admin-delete');
+                if (thAdminDelete) thAdminDelete.classList.toggle('hidden', !isAdmin);
+                const thBulkCheck = document.getElementById('th-bulk-check');
+                if (thBulkCheck) thBulkCheck.classList.toggle('hidden', !isAdmin);
+                // Reset select-all checkbox
+                const chkAll = document.getElementById('chk-select-all');
+                if (chkAll) chkAll.checked = false;
+                updateBulkActionBar();
+
+                tasksToShow.forEach(task => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-blue-50 transition-colors";
+                    tr.dataset.recordId = task.recordId;
+                    const dateStr = new Date(task.timestamp).toLocaleString('th-TH');
+
+                    const actionButton = task.status === 'COMPLETED'
+                        ? `<a href="${task.pdfUrl}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white rounded hover:bg-green-700 shadow text-center text-xs font-medium"><i class="fa-solid fa-print"></i> พิมพ์ใบประเมิน</a>`
+                        : `<button onclick="openSupervisorTask('${task.recordId}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 shadow text-xs font-medium"><i class="fa-solid fa-pen-to-square"></i> ประเมิน</button>`;
+
+                    const statusBadge = task.status === 'COMPLETED'
+                        ? `<span class="ml-1 text-xs text-green-600 font-semibold"><i class='fa-solid fa-circle-check'></i> เสร็จแล้ว</span>`
+                        : `<span class="ml-1 text-xs text-amber-600 font-semibold"><i class='fa-solid fa-clock'></i> รอประเมิน</span>`;
+
+                    // Checkbox cell (admin only)
+                    const checkboxCell = isAdmin
+                        ? `<td class="px-2 py-2 text-center">
+                              <input type="checkbox" class="row-check w-4 h-4 rounded border-gray-300 text-red-600 cursor-pointer"
+                                data-record-id="${task.recordId}"
+                                data-emp-name="${task.empName.replace(/"/g, '&quot;')}"
+                                data-course-name="${task.courseName.replace(/"/g, '&quot;')}"
+                                onchange="onRowCheckChange()">
+                           </td>`
+                        : `<td class="hidden"></td>`;
+
+                    const deleteCell = isAdmin
+                        ? `<td class="px-4 py-2 whitespace-nowrap text-center text-xs">
+                              <button onclick="confirmDeleteRecord('${task.recordId}', '${task.empName.replace(/'/g, "&#39;")}', '${task.courseName.replace(/'/g, "&#39;")}')"
+                                class="px-2 py-1 bg-red-500 hover:bg-red-700 text-white rounded shadow text-xs flex items-center gap-1 mx-auto transition-all">
+                                <i class='fa-solid fa-trash-can'></i> ลบ
+                              </button>
+                           </td>`
+                        : `<td class="hidden"></td>`;
+
+                    tr.innerHTML = `
+                        ${checkboxCell}
+                        <td class="px-4 py-2 whitespace-nowrap text-xs text-gray-500">${dateStr}</td>
+                        <td class="px-4 py-2 text-xs font-medium text-gray-900">${task.empName} <br><span class="text-gray-500">รหัส: ${task.empId}</span></td>
+                        <td class="px-4 py-2 text-xs text-gray-500 max-w-xs truncate" title="${task.courseName}">${task.courseName} ${statusBadge}</td>
+                        <td class="px-4 py-2 text-xs text-gray-500">${task.department || '-'}</td>
+                        <td class="px-4 py-2 whitespace-nowrap text-center text-xs">
+                            ${actionButton}
+                        </td>
+                        ${deleteCell}
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            const totalPages = Math.max(1, Math.ceil(filteredTasks.length / itemsPerPage));
+            if (document.getElementById('pageIndicator')) document.getElementById('pageIndicator').innerText = `หน้า ${currentPage} / ${totalPages}`;
+            if (document.getElementById('btnPrevPage')) document.getElementById('btnPrevPage').disabled = currentPage <= 1;
+            if (document.getElementById('btnNextPage')) document.getElementById('btnNextPage').disabled = currentPage >= totalPages;
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTasks();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredTasks.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTasks();
+            }
+        }
+
+        function openSupervisorTask(recordId) {
+            currentRecordId = recordId;
+            IS_SUPERVISOR_MODE = true;
+            switchView('supervisor_form');
+
+            const topHeader = document.querySelector('#view-form .bg-blue-600 h1');
+            if (topHeader) topHeader.innerText = 'แบบประเมิน - ส่วนของหัวหน้างาน';
+
+            const supSection = document.getElementById('supervisor-section');
+            if (supSection) supSection.style.display = '';
+
+            // Unlock supervisor inputs that were locked in trainee mode
+            document.querySelectorAll('input[name^="sup_"], input[name^="follow_"], input[name="sat"], #sup_comment_1, #sup_comment_2, #sup_name_bracket').forEach(el => {
+                el.disabled = false;
+            });
+            // Fill display name if already set in the hidden field
+            const nameInput = document.getElementById('sup_name_bracket');
+            const displayDiv = document.getElementById('sup_name_display');
+            if (nameInput && displayDiv) {
+                displayDiv.textContent = nameInput.value.trim();
+            }
+            const sig2 = document.getElementById('sig2');
+            if (sig2) {
+                sig2.style.pointerEvents = 'auto';
+                sig2.style.opacity = '1';
+                sig2.style.cursor = 'pointer';
+                sig2.style.backgroundColor = '#f8fafc'; // light slate to show it's active
+            }
+
+            const btnSaveBottom = document.getElementById('btnSaveBottom');
+            if (btnSaveBottom) btnSaveBottom.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg> อนุมัติและสร้าง PDF`;
+
+            loadExistingData();
+        }
+
+
+        function loadExistingData() {
+            if (!IS_SUPERVISOR_MODE) return;
+
+            showLoadingOverlay(true);
+            if (WEB_APP_URL && WEB_APP_URL.indexOf('REPLACE_WITH') === -1) {
+                callServer('getTaskById', [currentRecordId],
+                    function (data) {
+                        showLoadingOverlay(false);
+                        if (!data) {
+                            alert("ไม่พบข้อมูลการประเมิน หรือข้อมูลถูกประเมินไปแล้ว");
+                            switchView('dashboard');
+                            return;
+                        }
+
+                        // Populate Trainee Data and Lock it
+                        document.getElementById('course_name').value = data[1] || '';
+                        document.getElementById('speaker').value = data[4] || '';
+                        const fullName = String(data[5] || '').trim();
+                        // แยกคำนำหน้าออกจากชื่อ (นาย/นาง/นางสาว/MR/MRS) ไปใส่ select คำนำหน้า
+                        const TITLES = ['นาย', 'นางสาว', 'นาง', 'MR', 'MRS'];
+                        let titleVal = '';
+                        let restName = fullName;
+                        for (let t of TITLES) {
+                            if (fullName.toUpperCase().indexOf(t.toUpperCase()) === 0) {
+                                titleVal = t;
+                                restName = fullName.slice(t.length).trim();
+                                break;
+                            }
+                        }
+                        const titleSel = document.getElementById('emp_title');
+                        if (titleSel && titleVal) titleSel.value = titleVal;
+                        document.getElementById('emp_name').value = restName;
+                        document.getElementById('emp_id').value = data[6] || '';
+
+                        // Set Dates
+                        const monthsMap = { 'ม.ค.': '01', 'ก.พ.': '02', 'มี.ค.': '03', 'เม.ย.': '04', 'พ.ค.': '05', 'มิ.ย.': '06', 'ก.ค.': '07', 'ส.ค.': '08', 'ก.ย.': '09', 'ต.ค.': '10', 'พ.ย.': '11', 'ธ.ค.': '12' };
+                        function setDateDropdowns(prefix, dateStr) {
+                            if (!dateStr) return;
+                            const parts = dateStr.split(' ');
+                            if (parts.length === 3) {
+                                const dEl = document.getElementById(prefix + '_day');
+                                if (dEl) dEl.value = parseInt(parts[0], 10);
+                                const mEl = document.getElementById(prefix + '_month');
+                                if (mEl) mEl.value = monthsMap[parts[1]] || '';
+                                const yEl = document.getElementById(prefix + '_year');
+                                if (yEl) yEl.value = parts[2];
+                            }
+                        }
+                        setDateDropdowns('start', data[2]);
+                        setDateDropdowns('end', data[3]);
+
+                        // Set Department
+                        const deptSel = document.getElementById('department');
+                        if (deptSel) {
+                            const dVal = String(data[7] || '').trim();
+                            if (dVal) {
+                                if (!Array.from(deptSel.options).some(o => o.value === dVal)) {
+                                    deptSel.add(new Option(dVal, dVal));
+                                }
+                                deptSel.value = dVal;
+                            }
+                        }
+
+                        // Disable all trainee inputs
+                        document.querySelectorAll('input, select, textarea').forEach(el => {
+                            const name = el.name || el.id;
+                            if (name && !name.startsWith('sup_') && name !== 'total_score' && !name.startsWith('follow_') && name !== 'sat') {
+                                el.disabled = true;
+                                if (el.type === 'text' || el.tagName.toLowerCase() === 'textarea' || el.tagName.toLowerCase() === 'select') {
+                                    el.classList.add('bg-gray-100');
+                                }
+                            }
+                        });
+
+                        // Check radio buttons manually based on data (index 8 to 22)
+                        const radioMap = [
+                            { id: 'p1_1', val: data[8] }, { id: 'p1_2', val: data[9] }, { id: 'p1_3', val: data[10] },
+                            { id: 'p1_4', val: data[11] }, { id: 'p1_5', val: data[12] }, { id: 'p2_1', val: data[13] },
+                            { id: 'p2_2', val: data[14] }, { id: 'p2_3', val: data[15] }, { id: 'p2_4', val: data[16] },
+                            { id: 'p3_1', val: data[17] }, { id: 'p3_2', val: data[18] }, { id: 'p3_3', val: data[19] },
+                            { id: 'p3_4', val: data[20] }, { id: 'p3_5', val: data[21] }
+                        ];
+                        radioMap.forEach(item => {
+                            if (item.val) {
+                                const radio = document.querySelector(`input[name="${item.id}"][value="${item.val}"]`);
+                                if (radio) radio.checked = true;
+                            }
+                        });
+
+                        document.getElementById('benefit_1').value = data[22] || '';
+                        document.getElementById('benefit_2').value = data[23] || '';
+                        document.getElementById('next_topic_1').value = data[24] || '';
+                        document.getElementById('next_topic_2').value = data[25] || '';
+                        document.getElementById('comment_1').value = data[26] || '';
+                        document.getElementById('comment_2').value = data[27] || '';
+
+                        // Hide Trainee Signature pad, just show text that it's signed
+                        document.getElementById('sig1').style.display = 'none';
+                        const sig1Btn = document.getElementById('sig1').nextElementSibling;
+                        if (sig1Btn) sig1Btn.style.display = 'none';
+                        document.getElementById('attendee_name_bracket').value = data[29] || '';
+
+                        const oldMsg = document.getElementById('trainee-signed-msg');
+                        if (oldMsg) oldMsg.remove();
+                        const msg = document.createElement('div');
+                        msg.id = 'trainee-signed-msg';
+                        msg.className = 'text-green-600 font-bold p-4 bg-green-50 rounded-lg text-center border border-green-200';
+                        msg.innerHTML = '✅ ผู้เข้าอบรมเซ็นชื่อเรียบร้อยแล้ว<br><img src="' + data[28] + '" style="max-height:80px; margin:10px auto;">';
+                        document.getElementById('sig1').parentElement.prepend(msg);
+
+                        // Scroll to supervisor section
+                        setTimeout(() => {
+                            document.getElementById('sup_name_bracket').scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    title: 'โหลดข้อมูลสำเร็จ',
+                                    text: 'กรุณากรอกคะแนนประเมินในส่วนของหัวหน้างาน',
+                                    icon: 'info',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        }, 500);
+
+                    },
+                    function (error) {
+                        showLoadingOverlay(false);
+                        alert("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + error);
+                    });
+            }
+        }
+
+        function collectSupervisorData() {
+            return [
+                getRadioVal('sup_1'),                                         // 0
+                getRadioVal('sup_2'),                                         // 1
+                getRadioVal('sup_3'),                                         // 2
+                getRadioVal('sup_4'),                                         // 3
+                getRadioVal('sup_5'),                                         // 4
+                document.getElementById('total_score').value.trim(),           // 5
+                getCheckboxVal('follow_interview'),                           // 6
+                getCheckboxVal('follow_test'),                                // 7
+                getCheckboxVal('follow_observe'),                             // 8
+                getCheckboxVal('follow_other_check'),                         // 9
+                document.getElementById('follow_other_detail').value.trim(),   // 10
+                getRadioVal('sat'),                                           // 11
+                document.getElementById('sup_comment_1').value.trim(),         // 12
+                document.getElementById('sup_comment_2').value.trim(),         // 13
+                getCanvasBase64('sig2'),                                      // 14
+                document.getElementById('sup_name_bracket').value.trim()      // 15
+            ];
+        }
+
+        function collectFormData() {
+            return [
+                document.getElementById('course_name').value.trim(),
+                getDateValue('start'),
+                getDateValue('end'),
+                document.getElementById('speaker').value.trim(),
+                getFullName(),
+                document.getElementById('emp_id').value.trim(),
+                document.getElementById('department').value.trim(),
+                getRadioVal('p1_1'), getRadioVal('p1_2'), getRadioVal('p1_3'), getRadioVal('p1_4'), getRadioVal('p1_5'),
+                getRadioVal('p2_1'), getRadioVal('p2_2'), getRadioVal('p2_3'), getRadioVal('p2_4'),
+                getRadioVal('p3_1'), getRadioVal('p3_2'), getRadioVal('p3_3'), getRadioVal('p3_4'), getRadioVal('p3_5'),
+                document.getElementById('benefit_1').value.trim(),
+                document.getElementById('benefit_2').value.trim(),
+                document.getElementById('next_topic_1').value.trim(),
+                document.getElementById('next_topic_2').value.trim(),
+                document.getElementById('comment_1').value.trim(),
+                document.getElementById('comment_2').value.trim(),
+                getCanvasBase64('sig1'),
+                document.getElementById('attendee_name_bracket').value.trim()
+                // Not passing supervisor data in Trainee form
+            ];
+        }
+
+
+        function showLoadingOverlay(show) {
+            const overlay = document.getElementById('loadOverlay');
+            if (!overlay) return;
+            if (show) {
+                overlay.classList.remove('hidden');
+            } else {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function setButtonsLoading(isLoading) {
+            const b2 = document.getElementById('btnSaveBottom');
+            if (isLoading) {
+                if (b2) { b2.disabled = true; b2.innerText = 'กำลังประมวลผล...'; }
+            } else {
+                if (b2) {
+                    b2.disabled = false;
+                    const txt = IS_SUPERVISOR_MODE ? 'อนุมัติและสร้าง PDF' : 'ส่งแบบประเมิน (ให้หัวหน้างาน)';
+                    b2.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ${txt}`;
+                }
+            }
+        }
+
+        function submitForm() {
+            if (IS_SUPERVISOR_MODE) {
+                submitSupervisorForm();
+                return;
+            }
+
+            if (!validateAndHighlightFormTrainee()) {
+                return;
+            }
+
+            const rowData = collectFormData();
+            showLoadingOverlay(true);
+            setButtonsLoading(true);
+
+            if (WEB_APP_URL && WEB_APP_URL.indexOf('REPLACE_WITH') === -1) {
+                callServer('saveTraineeData', [rowData],
+                    function (response) {
+                        showLoadingOverlay(false);
+                        setButtonsLoading(false);
+                        const msg = (response && response.message) ? response.message : 'บันทึกสำเร็จ';
+
+                        if (response && response.success === false) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'ไม่สามารถบันทึกได้',
+                                    text: msg,
+                                    confirmButtonColor: '#d33',
+                                    confirmButtonText: 'ตกลง'
+                                });
+                            } else {
+                                alert('❌ ' + msg);
+                            }
+                            return;
+                        }
+
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'ส่งแบบประเมินสำเร็จ!',
+                                text: msg,
+                                confirmButtonColor: '#059669',
+                                confirmButtonText: 'ตกลง'
+                            }).then(() => {
+                                resetForm(true); window.scrollTo(0, 0);
+                                updatePendingCount();
+                            });
+                        } else {
+                            alert('✅ ' + msg);
+                            resetForm(true); window.scrollTo(0, 0);
+                            updatePendingCount();
+                        }
+                    },
+                    function (error) {
+                        showLoadingOverlay(false);
+                        setButtonsLoading(false);
+                        alert('❌ เกิดข้อผิดพลาด: ' + error);
+                    });
+            }
+        }
+
+        function submitSupervisorForm() {
+            // Validate Supervisor Fields
+            const supGroups = [
+                { name: 'sup_1', label: 'หัวหน้างานประเมิน ข้อ 1' },
+                { name: 'sup_2', label: 'หัวหน้างานประเมิน ข้อ 2' },
+                { name: 'sup_3', label: 'หัวหน้างานประเมิน ข้อ 3' },
+                { name: 'sup_4', label: 'หัวหน้างานประเมิน ข้อ 4' },
+                { name: 'sup_5', label: 'หัวหน้างานประเมิน ข้อ 5' }
+            ];
+            for (let s of supGroups) {
+                const checked = document.querySelector(`input[name="${s.name}"]:checked`);
+                if (!checked) {
+                    highlightElement(document.querySelector(`input[name="${s.name}"]`), `กรุณาประเมิน "${s.label}"`);
+                    return;
+                }
+            }
+            if (isCanvasBlank('sig2')) {
+                highlightElement(document.getElementById('sig2'), 'กรุณาลงลายเซ็นหัวหน้างาน');
+                return;
+            }
+
+            const supData = collectSupervisorData();
+            showLoadingOverlay(true);
+            setButtonsLoading(true);
+
+            if (WEB_APP_URL && WEB_APP_URL.indexOf('REPLACE_WITH') === -1) {
+                callServer('saveSupervisorData', [currentRecordId, supData],
+                    function (response) {
+                        showLoadingOverlay(false);
+                        setButtonsLoading(false);
+                        if (response.success) {
+                            if (typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'อนุมัติสำเร็จ!',
+                                    text: response.message,
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#059669',
+                                    cancelButtonColor: '#4b5563',
+                                    confirmButtonText: 'พิมพ์ / เปิดดู PDF',
+                                    cancelButtonText: 'กลับหน้า Dashboard'
+                                }).then((result) => {
+                                    if (result.isConfirmed && response.pdfUrl) {
+                                        window.open(response.pdfUrl, '_blank');
+                                    }
+                                    switchView('dashboard');
+                                });
+                            }
+                        } else {
+                            alert('❌ ' + response.message);
+                        }
+                    },
+                    function (error) {
+                        showLoadingOverlay(false);
+                        setButtonsLoading(false);
+                        alert('❌ เกิดข้อผิดพลาด: ' + error);
+                    });
+            }
+        }
+
+        function validateAndHighlightFormTrainee() {
+            // Trainee validation only (same as old validateAndHighlightForm but without supervisor part)
+            const textFields = [
+                { id: 'course_name', name: 'ชื่อหลักสูตร' },
+                { id: 'speaker', name: 'วิทยากร' },
+                { id: 'emp_name', name: 'ชื่อ - นามสกุล' },
+                { id: 'emp_id', name: 'รหัสพนักงาน' },
+            ];
+
+            for (let f of textFields) {
+                const input = document.getElementById(f.id);
+                if (!input || !input.value.toString().trim()) {
+                    highlightElement(input, `กรุณากรอก "${f.name}"`);
+                    return false;
+                }
+            }
+
+            // บังคับเลือกคำนำหน้าชื่อ
+            const titleEl = document.getElementById('emp_title');
+            if (!titleEl || !titleEl.value) {
+                highlightElement(titleEl, 'กรุณาเลือกคำนำหน้าชื่อ');
+                return false;
+            }
+
+            // ตรวจสอบการประเมินทั้ง 14 ข้อ (p1_1 .. p3_5) — ถ้ายังไม่ได้ประเมินจะบันทึกไม่ได้
+            const ratingGroups = [
+                { name: 'p1_1', label: '1.1 ก่อนการอบรมมีความรู้' },
+                { name: 'p1_2', label: '1.2 หลังการอบรมมีความรู้เพิ่มขึ้น' },
+                { name: 'p1_3', label: '1.3 เนื้อหาสามารถนำไปใช้ได้' },
+                { name: 'p1_4', label: '1.4 ระยะเวลาเหมาะสม' },
+                { name: 'p1_5', label: '1.5 เอกสารประกอบ' },
+                { name: 'p2_1', label: '2.1 วิธีการถ่ายทอดของวิทยากร' },
+                { name: 'p2_2', label: '2.2 การสร้างบรรยากาศ / การมีส่วนร่วม' },
+                { name: 'p2_3', label: '2.3 ภาษาและคำพูดที่ใช้' },
+                { name: 'p2_4', label: '2.4 การตรงต่อเวลา' },
+                { name: 'p3_1', label: '3.1 สถานที่และสภาพแวดล้อม' },
+                { name: 'p3_2', label: '3.2 ความพร้อมของอุปกรณ์' },
+                { name: 'p3_3', label: '3.3 อาหารและเครื่องดื่ม' },
+                { name: 'p3_4', label: '3.4 ความชัดเจนในการชี้แจง' },
+                { name: 'p3_5', label: '3.5 ความกระตือรือร้นในการให้บริการ' }
+            ];
+
+            for (let r of ratingGroups) {
+                const checked = document.querySelector(`input[name="${r.name}"]:checked`);
+                if (!checked) {
+                    const firstRadio = document.querySelector(`input[name="${r.name}"]`);
+                    highlightElement(firstRadio, `กรุณาเลือกประเมิน "${r.label}"`);
+                    return false;
+                }
+            }
+
+            if (isCanvasBlank('sig1')) {
+                highlightElement(document.getElementById('sig1'), 'กรุณาลงลายเซ็นผู้เข้าร่วมอบรม');
+                return false;
+            }
+            return true;
+        }
+
+        // --- Window OnLoad Extension ---
+
+        /**
+         * ออกจากระบบ: reset สถานะ supervisor และซ่อนปุ่ม logout
+         */
+        function logoutSupervisor() {
+            Swal.fire({
+                title: 'ออกจากระบบ',
+                text: 'คุณต้องการออกจากระบบใช่หรือไม่?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    currentSupervisorDept = null;
+                    IS_SUPERVISOR_MODE = false;
+                    currentRecordId = '';
+                    // ล้าง session
+                    sessionStorage.removeItem('supervisorDept');
+                    sessionStorage.removeItem('supervisorName');
+                    // ซ่อนปุ่ม logout
+                    const btnLogout = document.getElementById('btn-logout');
+                    if (btnLogout) btnLogout.style.display = 'none';
+                    // ซ่อนปุ่มรายงานสรุป (ออกจากระบบแล้ว)
+                    updateReportButtonVisibility();
+                    // กลับหน้า trainee
+                    switchView('trainee');
+                    updatePendingCount();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ออกจากระบบเรียบร้อย',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        /* ===== Bulk Delete helpers ===== */
+        function onRowCheckChange() {
+            const all = document.querySelectorAll('.row-check');
+            const checked = document.querySelectorAll('.row-check:checked');
+            const chkAll = document.getElementById('chk-select-all');
+            if (chkAll) {
+                chkAll.indeterminate = checked.length > 0 && checked.length < all.length;
+                chkAll.checked = all.length > 0 && checked.length === all.length;
+            }
+            updateBulkActionBar();
+        }
+
+        function toggleSelectAll(checked) {
+            document.querySelectorAll('.row-check').forEach(cb => { cb.checked = checked; });
+            updateBulkActionBar();
+        }
+
+        function clearBulkSelection() {
+            document.querySelectorAll('.row-check').forEach(cb => { cb.checked = false; });
+            const chkAll = document.getElementById('chk-select-all');
+            if (chkAll) { chkAll.checked = false; chkAll.indeterminate = false; }
+            updateBulkActionBar();
+        }
+
+        function updateBulkActionBar() {
+            const checked = document.querySelectorAll('.row-check:checked');
+            const bar = document.getElementById('bulk-action-bar');
+            const label = document.getElementById('bulk-count-label');
+            if (!bar) return;
+            if (checked.length > 0) {
+                bar.classList.remove('hidden');
+                bar.classList.add('flex');
+                if (label) label.textContent = `เลือก ${checked.length} รายการ`;
+            } else {
+                bar.classList.add('hidden');
+                bar.classList.remove('flex');
+            }
+        }
+
+        function confirmBulkDelete() {
+            const checked = document.querySelectorAll('.row-check:checked');
+            if (checked.length === 0) return;
+            const names = Array.from(checked).map(cb => cb.dataset.empName).join('<br>');
+            Swal.fire({
+                title: `ยืนยันลบ ${checked.length} รายการ?`,
+                html: `<p class="text-gray-700 text-sm mb-2">รายการที่จะถูกลบ:</p>
+                       <div class="text-left text-xs text-gray-600 max-h-36 overflow-y-auto border rounded p-2 bg-gray-50">${names}</div>
+                       <p class="text-red-600 text-xs mt-3 font-semibold"><i class='fa-solid fa-triangle-exclamation'></i> ไฟล์ลายเซ็นและ PDF ใน Google Drive จะถูกลบไปด้วยทั้งหมด และไม่สามารถกู้คืนได้!</p>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: `<i class="fa-solid fa-trash-can"></i> ยืนยัน ลบถาวร ${checked.length} รายการ`,
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'ยืนยันอีกครั้ง',
+                        text: `จะลบ ${checked.length} รายการถาวร ดำเนินการต่อ?`,
+                        icon: 'error',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc2626',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'ลบถาวร',
+                        cancelButtonText: 'ยกเลิก'
+                    }).then((res2) => {
+                        if (res2.isConfirmed) {
+                            executeBulkDelete(Array.from(checked).map(cb => cb.dataset.recordId));
+                        }
+                    });
+                }
+            });
+        }
+
+        function executeBulkDelete(recordIds) {
+            if (!WEB_APP_URL || WEB_APP_URL.indexOf('REPLACE_WITH') !== -1) {
+                Swal.fire('ข้อผิดพลาด', 'กรุณาตั้งค่า WEB_APP_URL (URL ของ Web App) ใน index.html', 'error');
+                return;
+            }
+            showLoadingOverlay(true);
+            // ลบทีละรายการแบบ sequential แล้วโหลดใหม่เมื่อครบ
+            let index = 0;
+            let errors = [];
+            function deleteNext() {
+                if (index >= recordIds.length) {
+                    showLoadingOverlay(false);
+                    const msg = errors.length > 0 ? `สำเร็จ ${recordIds.length - errors.length} รายการ, ผิดพลาด ${errors.length} รายการ` : `ลบ ${recordIds.length} รายการสำเร็จ`;
+                    Swal.fire({
+                        icon: errors.length > 0 ? 'warning' : 'success',
+                        title: 'ลบข้อมูลเสร็จสิ้น',
+                        text: msg,
+                        confirmButtonColor: '#059669',
+                        confirmButtonText: 'ตกลง'
+                    }).then(() => { clearBulkSelection(); loadDashboardData(); });
+                    return;
+                }
+                const id = recordIds[index++];
+                callServer('deleteRecord', [id],
+                    function (response) {
+                        if (!response || !response.success) errors.push(id);
+                        deleteNext();
+                    },
+                    function () {
+                        errors.push(id);
+                        deleteNext();
+                    });
+            }
+            deleteNext();
+        }
+
+        /**
+         * ยืนยันการลบข้อมูล Record (เฉพาะ Admin)
+         */
+        function confirmDeleteRecord(recordId, empName, courseName) {
+            Swal.fire({
+                title: 'ยืนยันการลบข้อมูล',
+                html: `<p class="text-gray-700 text-sm">คุณกำลังจะลบข้อมูลของ <strong>${empName}</strong><br>หลักสูตร: <strong>${courseName}</strong></p>
+                       <p class="text-red-600 text-xs mt-2 font-semibold"><i class='fa-solid fa-triangle-exclamation'></i> ไฟล์ลายเซ็นและ PDF ใน Google Drive จะถูกลบไปด้วย และไม่สามารถกู้คืนได้!</p>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fa-solid fa-trash-can"></i> ยืนยัน ลบถาวร',
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ยืนยันครั้งที่ 2
+                    Swal.fire({
+                        title: 'ยืนยันอีกครั้ง',
+                        text: 'ข้อมูลและไฟล์จะถูกลบถาวร ดำเนินการต่อ?',
+                        icon: 'error',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc2626',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'ลบถาวร',
+                        cancelButtonText: 'ยกเลิก'
+                    }).then((res2) => {
+                        if (res2.isConfirmed) {
+                            executeDeleteRecord(recordId);
+                        }
+                    });
+                }
+            });
+        }
+
+        /**
+         * เรียก API (callServer) เพื่อลบจริง
+         */
+        function executeDeleteRecord(recordId) {
+            if (!WEB_APP_URL || WEB_APP_URL.indexOf('REPLACE_WITH') !== -1) {
+                Swal.fire('ข้อผิดพลาด', 'กรุณาตั้งค่า WEB_APP_URL (URL ของ Web App) ใน index.html', 'error');
+                return;
+            }
+            showLoadingOverlay(true);
+            callServer('deleteRecord', [recordId],
+                function (response) {
+                    showLoadingOverlay(false);
+                    if (response && response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'ลบข้อมูลสำเร็จ',
+                            text: response.message,
+                            confirmButtonColor: '#059669',
+                            confirmButtonText: 'ตกลง'
+                        }).then(() => {
+                            loadDashboardData(); // โหลดข้อมูลใหม่
+                        });
+                    } else {
+                        Swal.fire('เกิดข้อผิดพลาด', (response && response.message) || 'ลบไม่สำเร็จ', 'error');
+                    }
+                },
+                function (err) {
+                    showLoadingOverlay(false);
+                    Swal.fire('เกิดข้อผิดพลาด', String(err), 'error');
+                });
+        }
+
+        window.addEventListener('resize', function () {
+            const modal = document.getElementById('signatureModal');
+            if (!modal || !modal.classList.contains('active') || !modalSignaturePadReady) return;
+            const modalCanvas = document.getElementById('signatureModalCanvas');
+            const snapshot = modalCanvas.toDataURL('image/png');
+            resizeSignatureModalCanvas();
+            const img = new Image();
+            img.onload = function () {
+                modalCanvas.getContext('2d').drawImage(img, 0, 0, modalCanvas.width, modalCanvas.height);
+            };
+            img.src = snapshot;
+        });
+        function buildDateDropdowns() {
+            const months = [
+                { val: '01', text: 'ม.ค.' },
+                { val: '02', text: 'ก.พ.' },
+                { val: '03', text: 'มี.ค.' },
+                { val: '04', text: 'เม.ย.' },
+                { val: '05', text: 'พ.ค.' },
+                { val: '06', text: 'มิ.ย.' },
+                { val: '07', text: 'ก.ค.' },
+                { val: '08', text: 'ส.ค.' },
+                { val: '09', text: 'ก.ย.' },
+                { val: '10', text: 'ต.ค.' },
+                { val: '11', text: 'พ.ย.' },
+                { val: '12', text: 'ธ.ค.' }
+            ];
+
+            function populate(prefix) {
+                const dEl = document.getElementById(prefix + '_day');
+                const mEl = document.getElementById(prefix + '_month');
+                const yEl = document.getElementById(prefix + '_year');
+
+                if (dEl) {
+                    dEl.innerHTML = '<option value="">วัน</option>';
+                    for (let i = 1; i <= 31; i++) {
+                        dEl.add(new Option(i, i));
+                    }
+                }
+                if (mEl) {
+                    mEl.innerHTML = '<option value="">เดือน</option>';
+                    months.forEach(m => {
+                        mEl.add(new Option(m.text, m.val));
+                    });
+                }
+                if (yEl) {
+                    yEl.innerHTML = '<option value="">ปี</option>';
+                    const currentYear = new Date().getFullYear();
+                    for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+                        yEl.add(new Option(i + 543, i + 543));
+                    }
+                }
+            }
+
+            populate('start');
+            populate('end');
+        }
+
+        function loadDepartments() {
+            const deptEl = document.getElementById('department');
+            if (!deptEl) return;
+
+            if (WEB_APP_URL && WEB_APP_URL.indexOf('REPLACE_WITH') === -1) {
+                callServer('getDepartments', [],
+                    function (depts) {
+                        globalDepts = depts || [];
+                        deptEl.innerHTML = '<option value="">-- เลือกแผนก --</option>';
+                        if (depts && depts.length > 0) {
+                            depts.forEach(d => {
+                                const opt = document.createElement('option');
+                                opt.value = d;
+                                opt.textContent = d;
+                                deptEl.appendChild(opt);
+                            });
+                        } else {
+                            deptEl.innerHTML = '<option value="">-- ไม่มีข้อมูลแผนก --</option>';
+                        }
+                    },
+                    function (err) {
+                        console.error('Error loading depts:', err);
+                        deptEl.innerHTML = '<option value="">-- โหลดแผนกไม่สำเร็จ --</option>';
+                    });
+            } else {
+                // local preview fallback
+                const mockDepts = ["IT", "HR", "Production", "QA", "QC", "Maintenance", "Store", "Logistics"];
+                deptEl.innerHTML = '<option value="">-- เลือกแผนก --</option>';
+                mockDepts.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    deptEl.appendChild(opt);
+                });
+            }
+        }
+
+        window.onload = function () {
+            // Existing init code
+            document.querySelectorAll('.evaluation-table tbody tr:not(.total-row) > td:first-child').forEach(function (cell) {
+                const match = cell.innerHTML.match(/^\s*(\d+(?:\.\d+)?\.?)\s*([\s\S]*)$/);
+                if (!match) return;
+                cell.innerHTML = '<div class="numbered-layout"><span class="order">' + formatOrderLabel(match[1]) +
+                    '</span><span class="description">' + match[2].trim() + '</span></div>';
+            });
+            setupSignaturePad('sig1');
+            setupSignaturePad('sig2');
+            buildDateDropdowns();
+            loadDepartments();
+            updatePendingCount();
+
+            // Restore session จาก sessionStorage (กัน login หลุดเมื่อรีเฟรช)
+            const savedDept = sessionStorage.getItem('supervisorDept');
+            const savedName = sessionStorage.getItem('supervisorName');
+            if (savedDept) {
+                currentSupervisorDept = savedDept;
+                if (savedName) {
+                    const nameInput = document.getElementById('sup_name_bracket');
+                    if (nameInput) nameInput.value = savedName;
+                    const displayDiv = document.getElementById('sup_name_display');
+                    if (displayDiv) displayDiv.textContent = savedName;
+                }
+                const btnLogout = document.getElementById('btn-logout');
+                if (btnLogout) btnLogout.style.display = 'flex';
+                // แสดงปุ่มรายงานสรุปเฉพาะ Admin (ตอน restore session)
+                updateReportButtonVisibility();
+                switchView('dashboard');
+            } else {
+                // Set initial view - ต้องเรียก switchView เพื่อให้จัดการ display ถูกต้อง
+                switchView('trainee');
+            }
+        };
+    </script>
+</body>
+
+</html>

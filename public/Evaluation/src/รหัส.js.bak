@@ -1,0 +1,380 @@
+/**
+ * ฟังก์ชันหลักในการเปิดใช้งาน Web App
+ */
+function doGet(e) {
+  return HtmlService.createTemplateFromFile('index')
+    .evaluate()
+    .setTitle('แบบประเมินผลการฝึกอบรม (F-HR-004/03)')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1.0')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/**
+ * ฟังก์ชันเสริมสำหรับดึงไฟล์แยก
+ */
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('แบบประเมิน')
+    .addItem('เริ่มฐานข้อมูล (สร้างหัวคอลัมน์)', 'initDatabase')
+    .addItem('เปิดฟอร์ม', 'showForm')
+    .addItem('🔑 อนุมัติสิทธิ์ & ตรวจสอบ Google Drive', 'checkFolderPermission')
+    .addToUi();
+}
+
+/** ID ของ Google Drive Folder สำหรับเก็บบันทึกลายเซ็นและไฟล์ PDF */
+//var DRIVE_FOLDER_ID = '1yLm9IlpmazPLSlTCbn6NuSrvTmC3KHTr';
+var DRIVE_FOLDER_ID = '153j28b_yVmdo-uRxqZVFS0VuqmXXcYtI';
+
+/**
+ * ดึงโฟลเดอร์เป้าหมายตาม ID หรือใช้/สร้างโฟลเดอร์สำรองให้อัตโนมัติหากเข้าถึง ID นั้นไม่ได้
+ */
+function getTargetFolder(folderId) {
+  if (folderId && folderId.trim() !== '') {
+    try {
+      var folder = DriveApp.getFolderById(folderId.trim());
+      return folder;
+    } catch (err) {
+      Logger.log("ไม่สามารถใช้ Folder ID (" + folderId + ") ได้: " + err.toString());
+      if (err.toString().indexOf('DriveApp') !== -1 || err.toString().indexOf('permission') !== -1) {
+        throw err;
+      }
+    }
+  }
+
+  // สำรอง: ใช้/สร้างโฟลเดอร์ "Evaluation_Signatures" ในไดรฟ์
+  try {
+    var rootFolders = DriveApp.getRootFolder().getFoldersByName("Evaluation_Signatures");
+    if (rootFolders.hasNext()) {
+      return rootFolders.next();
+    } else {
+      return DriveApp.createFolder("Evaluation_Signatures");
+    }
+  } catch (fallbackErr) {
+    Logger.log("Error creating fallback folder: " + fallbackErr.toString());
+    throw fallbackErr;
+  }
+}
+
+/**
+ * ฟังก์ชันสำหรับตรวจสอบและขออนุมัติสิทธิ์การเข้าถึง Google Drive
+ */
+function checkFolderPermission() {
+  var folderId = DRIVE_FOLDER_ID;
+  try {
+    var folder = DriveApp.getFolderById(folderId);
+    var folderName = folder.getName();
+    var msg = '✅ อนุมัติสิทธิ์เรียบร้อยแล้ว!\nสคริปต์มีสิทธิ์เข้าถึงโฟลเดอร์ Google Drive:\n"' + folderName + '" (ID: ' + folderId + ')';
+    Logger.log(msg);
+    if (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.getUi) {
+      try { SpreadsheetApp.getUi().alert(msg); } catch (e) { }
+    }
+    return { success: true, message: msg, folderName: folderName, isFallback: false };
+  } catch (err) {
+    var errStr = err.toString();
+    if (errStr.indexOf('DriveApp') !== -1 || errStr.indexOf('permission') !== -1) {
+      var permMsg = '⚠️ ยังไม่ได้อนุมัติสิทธิ์ใช้งาน Google Drive!\n\nกรุณากด Run ฟังก์ชันนี้ใน Apps Script Editor เพื่อกด "Allow" อนุมัติสิทธิ์ 1 ครั้งก่อนครับ';
+      if (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.getUi) {
+        try { SpreadsheetApp.getUi().alert(permMsg); } catch (e) { }
+      }
+      return { success: false, message: permMsg };
+    }
+
+    try {
+      var fallbackFolder = getTargetFolder(folderId);
+      var fallbackName = fallbackFolder.getName();
+      var warnMsg = '⚠️ ไม่สามารถเข้าถึง Folder ID (' + folderId + ') โดยตรงได้ (ติดสิทธิ์แชร์)\n\n💡 ระบบสลับไปใช้โฟลเดอร์สำรองใน Google Drive ให้อัตโนมัติ: "' + fallbackName + '"';
+      Logger.log(warnMsg);
+      if (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.getUi) {
+        try { SpreadsheetApp.getUi().alert(warnMsg); } catch (e) { }
+      }
+      return { success: true, message: warnMsg, folderName: fallbackName, isFallback: true };
+    } catch (e) {
+      return { success: false, message: "เกิดข้อผิดพลาด: " + e.toString() };
+    }
+  }
+}
+
+/**
+ * สร้างหัวคอลัมน์ลงในชีตที่ Active อยู่ (หรือชีต "data")
+ */
+function initDatabase() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('data') || ss.getActiveSheet();
+
+  var headers = [
+    "Timestamp",
+    "ชื่อหลักสูตร",
+    "วันที่เริ่ม",
+    "วันที่สิ้นสุด",
+    "วิทยากร",
+    "ชื่อ-นามสกุล",
+    "รหัสพนักงาน",
+    "แผนก",
+    "1.1 ก่อนอบรมมีความรู้",
+    "1.2 หลังอบรมมีความรู้เพิ่มขึ้น",
+    "1.3 เนื้อหานำไปใช้ได้",
+    "1.4 ระยะเวลาเหมาะสม",
+    "1.5 เอกสารประกอบ",
+    "2.1 การถ่ายทอดของวิทยากร",
+    "2.2 การสร้างบรรยากาศ / การมีส่วนร่วม",
+    "2.3 ภาษาและคำพูด",
+    "2.4 การตรงต่อเวลา",
+    "3.1 สถานที่และสภาพแวดล้อม",
+    "3.2 อุปกรณ์โสตทัศนูปกรณ์",
+    "3.3 อาหารและเครื่องดื่ม",
+    "3.4 ความชัดเจนในการชี้แจง",
+    "3.5 การให้บริการ / ช่วยเหลือ",
+    "4. ประโยชน์ที่ได้รับ 1",
+    "4. ประโยชน์ที่ได้รับ 2",
+    "5. หัวข้อสัมมนาครั้งหน้า 1",
+    "5. หัวข้อสัมมนาครั้งหน้า 2",
+    "5. ข้อเสนอแนะอื่นๆ 1",
+    "5. ข้อเสนอแนะอื่นๆ 2",
+    "ลายเซ็นผู้เข้าอบรม (URL/lh5)",
+    "ชื่อผู้เข้าอบรม (ในวงเล็บ)",
+    "หัวหน้างาน 1: ทัศนคติเชิงบวก",
+    "หัวหน้างาน 2: เพิ่มประสิทธิภาพ",
+    "หัวหน้างาน 3: ประสานงาน",
+    "หัวหน้างาน 4: นำความรู้ไปใช้",
+    "หัวหน้างาน 5: สร้างสรรค์แนวคิดใหม่",
+    "คะแนนรวม",
+    "ติดตามผล-สอบถามสัมภาษณ์",
+    "ติดตามผล-ทดสอบความรู้",
+    "ติดตามผล-สังเกต",
+    "ติดตามผล-อื่นๆ",
+    "รายละเอียดติดตามผลอื่นๆ",
+    "ความพึงพอใจหัวหน้างาน",
+    "ข้อคิดเห็นหัวหน้างาน 1",
+    "ข้อคิดเห็นหัวหน้างาน 2",
+    "ลายเซ็นหัวหน้างาน (URL/lh5)",
+    "ชื่อหัวหน้างาน (ในวงเล็บ)",
+    "PDF Report (URL/lh5)"
+  ];
+
+  if (sheet.getLastRow() === 0 || sheet.getRange(1, 1).getValue() === '') {
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.setFrozenRows(1);
+    SpreadsheetApp.getUi().alert('✅ สร้างหัวคอลัมน์เรียบร้อยแล้วในชีต: ' + sheet.getName());
+  } else {
+    SpreadsheetApp.getUi().alert('⚠️ ชีตนี้มีข้อมูลอยู่แล้ว ไม่ได้เพิ่มหัวคอลัมน์ซ้ำ');
+  }
+}
+
+/**
+ * เปิดฟอร์มเป็น Dialog ด้านข้าง
+ */
+function showForm() {
+  var html = HtmlService.createHtmlOutputFromFile('index')
+    .setWidth(800)
+    .setHeight(900);
+  SpreadsheetApp.getUi().showModalDialog(html, 'แบบประเมินผลการฝึกอบรม');
+}
+
+/**
+ * บันทึกรูปภาพ Base64 ลงใน Google Drive Folder และส่งคืนลิงก์แบบ lh3/lh5 (lh3.googleusercontent.com/d/FILE_ID)
+ */
+function saveBase64ToDrive(base64Data, fileName, folderId) {
+  if (!base64Data || typeof base64Data !== 'string' || base64Data.indexOf('base64,') === -1) {
+    return '';
+  }
+  try {
+    var folder = getTargetFolder(folderId);
+    var splitData = base64Data.split('base64,');
+    var contentType = splitData[0].split(':')[1].split(';')[0];
+    var decoded = Utilities.base64Decode(splitData[1]);
+    var blob = Utilities.newBlob(decoded, contentType, fileName);
+    var file = folder.createFile(blob);
+
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (shareErr) {
+      Logger.log("Notice: " + shareErr.toString());
+    }
+
+    var fileId = file.getId();
+    var lhUrl = 'https://lh3.googleusercontent.com/d/' + fileId;
+    return lhUrl;
+  } catch (err) {
+    Logger.log("Error saving signature to Drive: " + err.toString());
+    throw err;
+  }
+}
+
+/**
+ * สร้างไฟล์ PDF จาก HTML Template
+ */
+function createPdfFromHtml(d, timeStampClean, folderId) {
+  try {
+    var template = HtmlService.createTemplateFromFile('pdf_template');
+    template.d = d;
+    var htmlOutput = template.evaluate();
+
+    var empId = d.emp_id || 'EMP';
+    var pdfFileName = 'Evaluation_F-HR-004-03_' + empId + '_' + timeStampClean + '.pdf';
+    var pdfBlob = htmlOutput.getAs('application/pdf').setName(pdfFileName);
+
+    var folder = getTargetFolder(folderId);
+    var pdfFile = folder.createFile(pdfBlob);
+
+    try {
+      pdfFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (shareErr) { }
+
+    var fileId = pdfFile.getId();
+    return 'https://lh3.googleusercontent.com/d/' + fileId;
+  } catch (err) {
+    Logger.log("Error creating PDF: " + err.toString());
+    return '';
+  }
+}
+
+// Helper: map raw total score to level based on defined ranges
+function getScoreLevel(score) {
+  if (score <= 5) return 1;
+  if (score <= 10) return 2;
+  if (score <= 15) return 3;
+  if (score <= 20) return 4;
+  if (score <= 25) return 5;
+  return 5;
+}
+
+/**
+ * บันทึกข้อมูลลงชีตที่ Active อยู่ (หรือชีต "data")
+ */
+function saveData(rowData) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('data') || ss.getActiveSheet();
+
+    if (sheet.getLastRow() === 0) {
+      initDatabase();
+    }
+
+    var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Bangkok', 'yyyy-MM-dd HH:mm:ss');
+    var empId = (rowData && rowData[5]) ? rowData[5] : 'EMP';
+    var timeStampClean = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'Asia/Bangkok', 'yyyyMMdd_HHmmss');
+
+    // เก็บ Base64 ดั้งเดิมของลายเซ็นไว้สำหรับนำไปแสดงบน PDF
+    var sig1_base64 = (rowData && rowData[27]) ? rowData[27] : '';
+    var sig2_base64 = (rowData && rowData[43]) ? rowData[43] : '';
+
+    // Keep the supervisor total score passed from the form
+    var totalScoreVal = rowData[34] || '';
+
+    var d = {
+      course_name: rowData[0] || '',
+      start_date: rowData[1] || '',
+      end_date: rowData[2] || '',
+      speaker: rowData[3] || '',
+      emp_name: rowData[4] || '',
+      emp_id: rowData[5] || '',
+      department: rowData[6] || '',
+      p1_1: rowData[7] || '',
+      p1_2: rowData[8] || '',
+      p1_3: rowData[9] || '',
+      p1_4: rowData[10] || '',
+      p1_5: rowData[11] || '',
+      p2_1: rowData[12] || '',
+      p2_2: rowData[13] || '',
+      p2_3: rowData[14] || '',
+      p2_4: rowData[15] || '',
+      p3_1: rowData[16] || '',
+      p3_2: rowData[17] || '',
+      p3_3: rowData[18] || '',
+      p3_4: rowData[19] || '',
+      p3_5: rowData[20] || '',
+      benefit_1: rowData[21] || '',
+      benefit_2: rowData[22] || '',
+      next_topic_1: rowData[23] || '',
+      next_topic_2: rowData[24] || '',
+      comment_1: rowData[25] || '',
+      comment_2: rowData[26] || '',
+      sig1_raw: sig1_base64,
+      attendee_name_bracket: rowData[28] || '',
+      sup_1: rowData[29] || '',
+      sup_2: rowData[30] || '',
+      sup_3: rowData[31] || '',
+      sup_4: rowData[32] || '',
+      sup_5: rowData[33] || '',
+      total_score: rowData[34] || '',
+      follow_interview: rowData[35] || '',
+      follow_test: rowData[36] || '',
+      follow_observe: rowData[37] || '',
+      follow_other_check: rowData[38] || '',
+      follow_other_detail: rowData[39] || '',
+      sat: rowData[40] || '',
+      sup_comment_1: rowData[41] || '',
+      sup_comment_2: rowData[42] || '',
+      sig2_raw: sig2_base64,
+      sup_name_bracket: rowData[44] || ''
+    };
+
+    // 1. สร้างไฟล์ PDF (ขนาด A4 1 หน้าพอดีเป๊ะ) พร้อมฝังภาพลายเซ็น
+    var pdfUrl = createPdfFromHtml(d, timeStampClean, DRIVE_FOLDER_ID);
+
+    // 2. บันทึกลายเซ็นผู้เข้าอบรม (ตำแหน่งดัชนี 27) ลง Google Drive -> แปลงเป็น lh5 URL
+    if (rowData && rowData[27] && rowData[27].indexOf('base64,') !== -1) {
+      var fileName1 = 'Sig_Attendee_' + empId + '_' + timeStampClean + '.png';
+      rowData[27] = saveBase64ToDrive(rowData[27], fileName1, DRIVE_FOLDER_ID);
+    }
+
+    // 3. บันทึกลายเซ็นหัวหน้างาน (ตำแหน่งดัชนี 43) ลง Google Drive -> แปลงเป็น lh5 URL
+    if (rowData && rowData[43] && rowData[43].indexOf('base64,') !== -1) {
+      var fileName2 = 'Sig_Supervisor_' + empId + '_' + timeStampClean + '.png';
+      rowData[43] = saveBase64ToDrive(rowData[43], fileName2, DRIVE_FOLDER_ID);
+    }
+
+    // 4. เพิ่ม PDF URL ต่อท้ายในคอลัมน์ที่ 47
+    rowData.push(pdfUrl);
+
+    var fullRow = [timestamp].concat(rowData || []);
+    sheet.appendRow(fullRow);
+
+    return {
+      success: true,
+      message: "บันทึกข้อมูล ลายเซ็น และสร้างไฟล์ PDF เรียบร้อยแล้ว",
+      pdfUrl: pdfUrl
+    };
+  } catch (error) {
+    var errStr = error.toString();
+    Logger.log("Error in saveData: " + errStr);
+
+    if (errStr.indexOf('DriveApp') !== -1 || errStr.indexOf('permission') !== -1 || errStr.indexOf('Required permissions') !== -1) {
+      return {
+        success: false,
+        message: "🔒 สคริปต์ยังไม่ได้รับสิทธิ์เข้าถึง Google Drive!\n\nกรุณาทำตามขั้นตอน:\n1. เปิดหน้า Google Apps Script Editor\n2. เลือกฟังก์ชัน checkFolderPermission แล้วกดปุ่ม Run (เรียกใช้)\n3. กดปุ่ม 'Allow' (อนุญาต) สิทธิ์ Google Drive"
+      };
+    }
+
+    return { success: false, message: "เกิดข้อผิดพลาดในการบันทึกข้อมูล: " + errStr };
+  }
+}
+
+/**
+ * ดึงรายชื่อแผนกจาก Sheet ชื่อ "dept" (คอลัมน์แรก ตั้งแต่แถวที่ 2 เป็นต้นไป)
+ */
+function getDepartments() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName('dept');
+    if (!sheet) return [];
+
+    var lastRow = sheet.getLastRow();
+    if (lastRow < 2) return [];
+
+    var data = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    var depts = [];
+    data.forEach(function (row) {
+      var val = row[0] ? row[0].toString().trim() : '';
+      if (val !== '') depts.push(val);
+    });
+    return depts;
+  } catch (err) {
+    Logger.log("Error in getDepartments: " + err.toString());
+    return [];
+  }
+}

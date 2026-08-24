@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e17">
+<meta name="description" content="สร้างภาพโฆษณาสินค้าด้วย AI — แนบรูปสินค้า พิมพ์ Prompt แล้วให้ Google Gemini สร้างภาพโฆษณาสำเร็จรูป พร้อมดาวน์โหลดได้ทันที">
+<title>AdMagic AI — สร้างภาพโฆษณาสินค้าด้วย AI</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Prompt', 'system-ui', 'sans-serif'] },
+        colors: {
+          ink: { 950:'#0a0e17', 900:'#0f1522', 800:'#161d2e', 700:'#1e2740' },
+          accent: { 400:'#a78bfa', 500:'#8b5cf6', 600:'#7c3aed' },
+        },
+        boxShadow: {
+          glow: '0 0 40px -8px rgba(139,92,246,.45)',
+          'glow-amber': '0 0 30px -6px rgba(251,191,36,.4)',
+        },
+        keyframes: {
+          floaty: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
+          shimmer: { '0%': { backgroundPosition: '-400px 0' }, '100%': { backgroundPosition: '400px 0' } },
+          popin: { '0%': { opacity:'0', transform:'scale(.92) translateY(8px)' }, '100%': { opacity:'1', transform:'scale(1) translateY(0)' } },
+          fadeup: { '0%': { opacity:'0', transform:'translateY(16px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
+          spin3d: { '0%': { transform:'rotateY(0deg)' }, '100%': { transform:'rotateY(360deg)' } },
+          pulseglow: { '0%,100%': { opacity:'.5' }, '50%': { opacity:'1' } },
+        },
+        animation: {
+          floaty: 'floaty 6s ease-in-out infinite',
+          shimmer: 'shimmer 1.6s linear infinite',
+          popin: 'popin .35s cubic-bezier(.22,.61,.36,1) both',
+          fadeup: 'fadeup .5s cubic-bezier(.22,.61,.36,1) both',
+          pulseglow: 'pulseglow 2.4s ease-in-out infinite',
+        },
+      }
+    }
+  }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background:#0a0e17; color:#e2e8f0; }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-track { background:#0f1522; }
+  ::-webkit-scrollbar-thumb { background:#2a3654; border-radius:8px; border:2px solid #0f1522; }
+  ::-webkit-scrollbar-thumb:hover { background:#3b4a70; }
+  .glass { background:rgba(255,255,255,.04); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.08); }
+  .glass-strong { background:rgba(15,21,34,.8); backdrop-filter:blur(18px); border:1px solid rgba(255,255,255,.09); }
+  .grad-text { background:linear-gradient(120deg,#c4b5fd,#f0abfc 45%,#fbbf24); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .btn-primary {
+    background:linear-gradient(135deg,#7c3aed 0%,#c026d3 50%,#f59e0b 120%);
+    background-size:180% 180%; transition:all .3s cubic-bezier(.22,.61,.36,1);
+    box-shadow:0 8px 30px -8px rgba(192,38,211,.55);
+  }
+  .btn-primary:hover:not(:disabled) { background-position:90% 50%; transform:translateY(-2px); box-shadow:0 14px 40px -8px rgba(192,38,211,.7); }
+  .btn-primary:active:not(:disabled) { transform:translateY(0) scale(.98); }
+  .btn-primary:disabled { opacity:.45; cursor:not-allowed; }
+  .chip { transition:all .25s cubic-bezier(.22,.61,.36,1); }
+  .chip:hover { transform:translateY(-2px); }
+  .chip.active { background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(217,70,239,.2)); border-color:#a78bfa !important; color:#e9d5ff !important; }
+  .dropzone.dragover { border-color:#a78bfa !important; background:rgba(139,92,246,.1) !important; transform:scale(1.01); }
+  .skeleton {
+    background:linear-gradient(90deg,#161d2e 25%,#1f2a44 50%,#161d2e 75%);
+    background-size:800px 100%; animation:shimmer 1.6s linear infinite;
+  }
+  .card-hover { transition:transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s; }
+  .card-hover:hover { transform:translateY(-6px); box-shadow:0 20px 50px -12px rgba(139,92,246,.35); }
+  .toast { animation:fadeup .35s cubic-bezier(.22,.61,.36,1) both; }
+  .modal-backdrop { animation:fadeup .25s ease both; }
+  .modal-box { animation:popin .3s cubic-bezier(.22,.61,.36,1) both; }
+  .orb { filter:blur(80px); position:fixed; border-radius:50%; pointer-events:none; z-index:0; }
+  .grid-pattern {
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:44px 44px;
+  }
+  textarea { resize:vertical; }
+  .history-item { transition:all .25s; }
+  .history-item:hover { transform:scale(1.05); border-color:#a78bfa; z-index:2; }
+  input[type="file"] { display:none; }
+  @keyframes spin-border { to { transform:rotate(360deg); } }
+  .loading-ring { border:3px solid rgba(255,255,255,.1); border-top-color:#a78bfa; border-radius:50%; animation:spin-border 1s linear infinite; }
+  .step-dot.active { background:#a78bfa; box-shadow:0 0 12px rgba(167,139,250,.8); }
+</style>
+</head>
+
+<body class="font-sans antialiased min-h-screen overflow-x-hidden">
+
+<!-- background decorations -->
+<div class="orb w-[500px] h-[500px] bg-violet-700/25 -top-40 -left-40"></div>
+<div class="orb w-[420px] h-[420px] bg-fuchsia-600/15 top-1/3 -right-40"></div>
+<div class="orb w-[380px] h-[380px] bg-amber-500/10 bottom-0 left-1/4"></div>
+<div class="grid-pattern fixed inset-0 z-0 pointer-events-none"></div>
+
+<!-- ================= HEADER ================= -->
+<header class="sticky top-0 z-50 glass-strong border-x-0 border-t-0">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+    <a href="#top" class="flex items-center gap-3 group">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-amber-400 grid place-items-center shadow-glow text-xl group-hover:rotate-6 transition-transform duration-300">✨</div>
+      <div>
+        <div class="font-extrabold text-white leading-tight">AdMagic <span class="grad-text">AI</span></div>
+        <div class="text-[10px] text-slate-400 tracking-widest uppercase">ภาพโฆษณาสินค้า</div>
+      </div>
+    </a>
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400 glass rounded-full px-3 py-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulseglow"></span>
+        Gemini Flash Image
+      </div>
+      <div id="creditBadge" class="flex items-center gap-2 text-sm glass rounded-full px-4 py-2 text-amber-300 font-semibold shadow-glow-amber cursor-default select-none">
+        <span>⚡</span><span id="creditCount">0</span><span class="text-slate-400 font-normal">เครดิต</span>
+      </div>
+      <button id="btnSettings" aria-label="ตั้งค่า API Key" title="ตั้งค่า API Key"
+        class="w-10 h-10 rounded-full glass grid place-items-center text-lg hover:rotate-90 hover:border-violet-400 border border-slate-700 transition-all duration-300">⚙️</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section id="top" class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-8 text-center">
+  <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs text-violet-300 mb-5 animate-fadeup">
+    <span>🎨</span> ขับเคลื่อนด้วย Google Gemini AI
+  </div>
+  <h1 class="text-3xl sm:text-5xl font-extrabold text-white leading-tight animate-fadeup" style="animation-delay:.06s">
+    สร้างภาพโฆษณาสินค้า <span class="grad-text">ในไม่กี่วินาที</span>
+  </h1>
+  <p class="mt-4 max-w-2xl mx-auto text-slate-400 sm:text-lg animate-fadeup" style="animation-delay:.12s">
+    แนบรูปสินค้า พิมพ์ Prompt ที่ต้องการ แล้วปล่อยให้ AI จัดเต็ม — โลโก้ ข้อความโฆษณา พื้นหลังสวยๆ พร้อมดาวน์โหลดใช้ได้ทันที
+  </p>
+</section>
+
+<!-- ================= WORKSPACE ================= -->
+<main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-20">
+  <div class="grid lg:grid-cols-2 gap-6">
+
+    <!-- ============ LEFT: INPUT ============ -->
+    <div class="glass rounded-3xl p-5 sm:p-7 animate-fadeup" style="animation-delay:.18s">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-bold text-white flex items-center gap-2">
+          <span class="w-8 h-8 rounded-xl bg-violet-500/20 text-violet-300 grid place-items-center text-sm">📦</span>
+          รูปสินค้า
+        </h2>
+        <span id="fileState" class="text-[11px] text-slate-500">ยังไม่ได้แนบ</span>
+      </div>
+
+      <!-- upload zone -->
+      <label id="dropzone" for="fileInput"
+        class="dropzone block w-full rounded-2xl border-2 border-dashed border-slate-700 hover:border-violet-400/60 bg-slate-900/40 transition-all cursor-pointer p-6 text-center group">
+        <input type="file" id="fileInput" accept="image/*">
+        <div id="previewWrap" class="hidden mb-3">
+          <div class="relative inline-block mx-auto">
+            <img id="imgPreview" class="max-h-52 max-w-full rounded-xl shadow-lg ring-1 ring-white/10 object-contain" alt="ภาพสินค้า">
+            <button type="button" id="removeImg" class="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-red-500/90 hover:bg-red-500 text-white text-sm font-bold shadow-lg transition-transform hover:scale-110" title="ลบรูป">✕</button>
+          </div>
+        </div>
+        <div id="dropEmpty" class="text-center">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 text-2xl grid place-items-center mb-3 group-hover:scale-110 transition-transform">🖼️</div>
+          <div class="font-semibold text-slate-200 text-sm sm:text-base">ลากรูปสินค้ามาวางที่นี่ หรือ <span class="text-violet-400 underline underline-offset-4 decoration-dotted">เลือกไฟล์</span></div>
+          <div class="text-xs text-slate-500 mt-1">รองรับ JPG / PNG / WebP · คัดลอกวาง (Ctrl+V) ได้ด้วย</div>
+        </div>
+      </label>
+
+      <div class="mt-4 flex items-center gap-2 overflow-x-auto pb-1" id="sampleRow">
+        <span class="text-[11px] text-slate-500 shrink-0">หรือลองภาพตัวอย่าง:</span>
+      </div>
+
+      <!-- aspect ratio -->
+      <div class="mt-6">
+        <div class="text-xs font-semibold text-slate-400 mb-2.5 flex items-center gap-2">📐 สัดส่วนภาพ <span id="ratioLabel" class="text-violet-300"></span></div>
+        <div class="grid grid-cols-3 gap-2">
+          <button data-ratio="1:1" class="ratio-btn chip glass rounded-xl py-2.5 text-sm font-semibold text-slate-300 border border-slate-700 hover:border-violet-400 active">1:1 <span class="block text-[10px] font-normal text-slate-500">โพสต์ทั่วไป</span></button>
+          <button data-ratio="4:5" class="ratio-btn chip glass rounded-xl py-2.5 text-sm font-semibold text-slate-300 border border-slate-700 hover:border-violet-400">4:5 <span class="block text-[10px] font-normal text-slate-500">ฟีดโซเชียล</span></button>
+          <button data-ratio="16:9" class="ratio-btn chip glass rounded-xl py-2.5 text-sm font-semibold text-slate-300 border border-slate-700 hover:border-violet-400">16:9 <span class="block text-[10px] font-normal text-slate-500">แบนเนอร์</span></button>
+        </div>
+      </div>
+
+      <!-- prompt -->
+      <div class="mt-6">
+        <div class="flex items-center justify-between mb-2.5">
+          <label for="prompt" class="text-xs font-semibold text-slate-400 flex items-center gap-2">✏️ Prompt คำสั่ง (แก้ไขได้)</label>
+          <span id="charCount" class="text-[11px] text-slate-500">0 ตัวอักษร</span>
+        </div>
+        <textarea id="prompt" rows="4"
+          class="w-full rounded-2xl bg-slate-900/60 border border-slate-700 focus:border-violet-400 focus:ring-4 focus:ring-violet-500/15 outline-none p-4 text-sm text-slate-100 placeholder-slate-500 transition-all"
+          placeholder="เช่น: โฆษณาสินค้าสุดพรีเมียม พื้นหลังไล่สีทองดำ ตัวสินค้าเด่นอยู่ตรงกลาง มีข้อความ 'ลด 50% วันนี้เท่านั้น' โลโก้แบรนด์มุมขวาบน..."></textarea>
+        <div class="flex items-center gap-2 mt-2">
+          <button id="btnShuffle" class="chip glass rounded-full px-3 py-1.5 text-xs text-slate-300 hover:text-violet-300 border border-slate-700 hover:border-violet-400" title="สุ่ม Prompt ตัวอย่าง">🎲 สุ่มไอเดีย</button>
+          <button id="btnClear" class="chip glass rounded-full px-3 py-1.5 text-xs text-slate-300 hover:text-red-300 border border-slate-700 hover:border-red-400" title="ล้าง Prompt">🗑️ ล้าง</button>
+        </div>
+      </div>
+
+      <!-- style chips -->
+      <div class="mt-4">
+        <div class="text-xs font-semibold text-slate-400 mb-2.5">🎯 สไตล์โฆษณา (แตะเพื่อเพิ่ม)</div>
+        <div class="flex flex-wrap gap-2" id="styleChips">
+          <button class="chip glass rounded-full px-3.5 py-1.5 text-xs text-slate-300 border border-slate-700 hover:border-violet-400" data-style="โฆษณาสุดหรูพรีเมียม โทนสีทองดำ ดูแพง มีระดับ">👑 พรีเมียม</button>
+          <button class="chip glass rounded-full px-3.5 py-1.5 text-xs text-slate-300 border border-slate-700 hover:border-violet-400" data-style="โฆษณาโปรโมชันลดราคา พร้อมข้อความ 'ลด 50%' ตัวเลขใหญ่เด่นชัด สีแดง-เหลือง กระตุ้นการซื้อ">🏷️ โปรลด 50%</button>
+          <button class="chip glass rounded-full px-3.5 py-1.5 text-xs text-slate-300 border border-slate-700 hover:border-violet-400" data-style="โฆษณาสไตล์มินิมอล พื้นหลังสีขาวสะอาด ตัวสินค้าโดดเด่น เรียบง่าย สง่างาม">⚪ มินิมอล</button>
+          <button class="chip glass rounded-full px-3.5 py-1.5 text-xs text-slate-300 border border-slate-700 hover:border-violet-400" data-style="โฆษณาสีสันสดใส พลังงานสูง ดึงดูดสายตา เหมาะกับกลุ่มวัยรุ่น">🌈 สีสันสดใส</button>
+          <button class="chip glass rounded-full px-3.5 py-1.5 text-xs text-slate-300 border border-slate-700 hover:border-violet-400" data-style="โฆษณาไลฟ์สไตล์ ภาพถ่ายสินค้าในฉากธรรมชาติ แสงทองยามเย็น ให้ความรู้สึกอบอุ่นเป็นธรรมชาติ">🌿 ไลฟ์สไตล์</button>
+          <button class="chip glass rounded-full px-3.5 py-1.5 text-xs text-slate-300 border border-slate-700 hover:border-violet-400" data-style="โฆษณาสไตล์เทคโนโลยีล้ำสมัย นีออนสีม่วง-ฟ้า พื้นหลังดิจิทัล ดูทันสมัยไฮเทค">💠 เทคโนโลยี</button>
+        </div>
+      </div>
+
+      <!-- engine mode toggle -->
+      <div class="mt-6">
+        <div class="text-xs font-semibold text-slate-400 mb-2.5">⚙️ ตัวสร้างภาพ</div>
+        <div class="grid grid-cols-3 gap-2 p-1 glass rounded-2xl">
+          <button id="modeKie" class="mode-btn chip rounded-xl py-2.5 text-sm font-semibold border transition-all" data-mode="kie">
+            🟦 KIE.AI
+            <span class="block text-[10px] font-normal opacity-70">คีย์ฟรี · ไม่ต้องเปิด Billing</span>
+          </button>
+          <button id="modeGemini" class="mode-btn chip rounded-xl py-2.5 text-sm font-semibold border transition-all" data-mode="gemini">
+            💎 Gemini
+            <span class="block text-[10px] font-normal opacity-70">ต้องใช้ API Key · คุณภาพสูง</span>
+          </button>
+          <button id="modeFree" class="mode-btn chip rounded-xl py-2.5 text-sm font-semibold border transition-all" data-mode="free">
+            🆓 ฟรี
+            <span class="block text-[10px] font-normal opacity-70">Pollinations · ไม่ต้องใช้คีย์</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- free-mode limitation hint -->
+      <div id="freeModeHint" class="hidden mt-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 p-3.5 text-xs text-amber-200/90 leading-relaxed animate-fadeup">
+        <span id="freeModeHintText"></span>
+      </div>
+
+      <!-- generate -->
+      <button id="btnGenerate"
+        class="btn-primary w-full mt-5 rounded-2xl py-4 font-bold text-white text-lg flex items-center justify-center gap-2 disabled:opacity-50">
+        <span id="genIcon">✨</span> <span id="genText">สร้างภาพโฆษณา</span>
+      </button>
+      <p id="creditNote" class="text-center text-[11px] text-slate-500 mt-3">ใช้เครดิต <span class="text-amber-300 font-semibold">1</span> เครดิตต่อการสร้าง 1 ภาพ</p>
+    </div>
+
+    <!-- ============ RIGHT: OUTPUT ============ -->
+    <div class="glass rounded-3xl p-5 sm:p-7 animate-fadeup flex flex-col" style="animation-delay:.24s">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-bold text-white flex items-center gap-2">
+          <span class="w-8 h-8 rounded-xl bg-fuchsia-500/20 text-fuchsia-300 grid place-items-center text-sm">🖌️</span>
+          ผลลัพธ์
+        </h2>
+        <span id="resultState" class="text-[11px] text-slate-500">รอสร้างภาพ</span>
+      </div>
+
+      <!-- output area -->
+      <div id="outputArea" class="flex-1 min-h-[360px] sm:min-h-[420px] rounded-2xl border border-slate-800 bg-slate-950/50 grid place-items-center overflow-hidden relative p-2">
+
+        <!-- empty state -->
+        <div id="emptyState" class="text-center px-6">
+          <div class="text-6xl mb-4 animate-floaty inline-block">🎨</div>
+          <div class="font-semibold text-slate-300">ภาพโฆษณาของคุณจะปรากฏที่นี่</div>
+          <div class="text-sm text-slate-500 mt-1">แนบรูปสินค้า พิมพ์ Prompt แล้วกดสร้าง</div>
+        </div>
+
+        <!-- loading state -->
+        <div id="loadingState" class="hidden w-full flex-col items-center justify-center p-8">
+          <div class="relative w-24 h-24 mb-6">
+            <div class="absolute inset-0 rounded-full border-4 border-violet-500/20"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-violet-400 loading-ring"></div>
+            <div class="absolute inset-0 grid place-items-center text-3xl animate-pulseglow">🎨</div>
+          </div>
+          <div class="font-semibold text-slate-200 mb-4">กำลังสร้างภาพโฆษณาด้วย AI...</div>
+          <div class="flex items-center gap-3 text-xs text-slate-400" id="stepWrap">
+            <span class="step-dot w-2 h-2 rounded-full bg-slate-600 transition-all" data-s="0"></span> วิเคราะห์สินค้า
+            <span class="step-dot w-2 h-2 rounded-full bg-slate-600 transition-all" data-s="1"></span> ออกแบบโฆษณา
+            <span class="step-dot w-2 h-2 rounded-full bg-slate-600 transition-all" data-s="2"></span> กำลังวาดภาพ
+          </div>
+          <div id="loadingHint" class="text-[11px] text-slate-600 mt-4">ปกติใช้เวลาประมาณ 10–30 วินาที ⏱️</div>
+        </div>
+
+        <!-- result state -->
+        <div id="resultStateWrap" class="hidden w-full flex-col items-center gap-4">
+          <div id="resultCard" class="relative w-full rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+            <img id="resultImg" class="w-full h-auto block" alt="ภาพโฆษณาที่สร้าง">
+            <!-- credit badge overlay -->
+            <div id="resultBadge" class="absolute bottom-2 right-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2.5 py-1 rounded-full border border-white/15">
+              ✨ AI สร้างโดย Gemini Flash Image
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2 w-full">
+            <button id="btnDownload" aria-label="ดาวน์โหลดภาพ" class="chip glass rounded-xl py-3 text-sm font-semibold text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/10">⬇️ ดาวน์โหลด</button>
+            <button id="btnRegen" aria-label="สร้างภาพใหม่" class="chip glass rounded-xl py-3 text-sm font-semibold text-slate-300 border border-slate-700 hover:border-violet-400">🔄 สร้างใหม่</button>
+            <button id="btnCopyPrompt" aria-label="คัดลอก Prompt" class="chip glass rounded-xl py-3 text-sm font-semibold text-slate-300 border border-slate-700 hover:border-violet-400">📋 คัดลอก Prompt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- history -->
+      <div id="historySection" class="hidden mt-5">
+        <div class="text-xs font-semibold text-slate-400 mb-3 flex items-center gap-2">🕘 ประวัติที่สร้าง (รอบนี้) <span id="historyCount" class="text-violet-300"></span></div>
+        <div id="historyRow" class="flex gap-2.5 overflow-x-auto pb-2"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= EXAMPLES ================= -->
+<section class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-20">
+  <div class="text-center mb-10">
+    <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs text-fuchsia-300 mb-4">🖼️ แกลเลอรีตัวอย่าง</div>
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">ตัวอย่างภาพโฆษณาที่สร้างได้</h2>
+    <p class="text-slate-400 mt-2 text-sm sm:text-base">แตะ "ใช้เทมเพลตนี้" เพื่อโหลดตัวอย่างลงในช่องสร้าง แล้วกดปุ่มสร้างเพื่อให้ AI วาดเวอร์ชันของคุณเอง</p>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="exampleGrid"><!-- JS renders --></div>
+
+  <div class="mt-14 glass rounded-3xl p-6 sm:p-8 grid sm:grid-cols-3 gap-6 text-center sm:text-left">
+    <div class="flex flex-col sm:flex-row items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-violet-500/15 text-violet-300 grid place-items-center text-xl shrink-0">📤</div>
+      <div><div class="font-semibold text-white text-sm">1. แนบรูปสินค้า</div><div class="text-xs text-slate-500 mt-0.5">ลากวางหรือเลือกไฟล์จากเครื่อง</div></div>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-fuchsia-500/15 text-fuchsia-300 grid place-items-center text-xl shrink-0">✏️</div>
+      <div><div class="font-semibold text-white text-sm">2. พิมพ์ Prompt</div><div class="text-xs text-slate-500 mt-0.5">บรรยายสไตล์โฆษณาที่ต้องการ</div></div>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-300 grid place-items-center text-xl shrink-0">⬇️</div>
+      <div><div class="font-semibold text-white text-sm">3. ดาวน์โหลด</div><div class="text-xs text-slate-500 mt-0.5">บันทึกภาพสำเร็จใช้ได้ทันที</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="relative z-10 border-t border-white/5 mt-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="text-xs text-slate-500 text-center sm:text-left">
+      <span class="text-slate-300 font-semibold">✨ AdMagic AI</span> — เครื่องมือสร้างภาพโฆษณาสินค้าด้วย AI
+      <br>ภาพทุกภาพสร้างโดย <span class="text-violet-300">Google Gemini Flash Image</span> · มีลายน้ำ SynthID ตามนโยบายของ Google
+    </div>
+    <div class="text-[11px] text-slate-600">© 2026 · ใช้งานได้ฟรี ไม่ต้องสมัครสมาชิก</div>
+  </div>
+</footer>
+
+<!-- ================= TOAST ================= -->
+<div id="toastWrap" role="status" aria-live="polite" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 items-center w-full px-4 pointer-events-none"></div>
+
+<!-- ================= CREDIT MODAL ================= -->
+<div id="creditModal" role="dialog" aria-modal="true" aria-labelledby="creditModalTitle" class="modal-backdrop hidden fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm grid place-items-center p-4">
+  <div class="modal-box glass-strong max-w-md w-full rounded-3xl p-7 text-center">
+    <div class="text-5xl mb-4">⚡</div>
+    <h3 id="creditModalTitle" class="text-xl font-extrabold text-white mb-2">เครดิตหมดแล้ว!</h3>
+    <p class="text-sm text-slate-400 mb-6">เครดิตเริ่มต้น <b class="text-amber-300">10 เครดิต</b> ใช้สร้างภาพได้ 10 ครั้ง<br>คุณสามารถรีเซ็ตเครดิตกลับมาได้ทุกเมื่อ</p>
+    <button id="btnResetCredit" class="btn-primary w-full rounded-2xl py-3.5 font-bold text-white">🔄 รีเซ็ตเครดิตให้เต็ม 10</button>
+    <button id="btnCloseModal" class="mt-3 w-full rounded-2xl py-3 text-sm text-slate-400 hover:text-slate-200 transition-colors">ปิดหน้าต่าง</button>
+  </div>
+</div>
+
+<!-- ================= SETTINGS MODAL (API Key) ================= -->
+<div id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle" class="modal-backdrop hidden fixed inset-0 z-[95] bg-black/70 backdrop-blur-sm grid place-items-center p-4">
+  <div class="modal-box glass-strong max-w-lg w-full rounded-3xl p-7">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-11 h-11 rounded-2xl bg-violet-500/15 text-violet-300 grid place-items-center text-xl">🔑</div>
+      <div>
+        <h3 id="settingsModalTitle" class="text-lg font-extrabold text-white leading-tight">ตั้งค่า Gemini API Key</h3>
+        <p class="text-[11px] text-slate-500">คีย์จะถูกบันทึกไว้ในบราวเซอร์ของคุณเท่านั้น</p>
+      </div>
+    </div>
+
+    <label for="apiKeyInput" class="text-xs font-semibold text-slate-400 mb-2 block">Gemini API Key</label>
+    <div class="relative">
+      <input id="apiKeyInput" type="password" autocomplete="off" spellcheck="false"
+        placeholder="AIzaSy..."
+        class="w-full rounded-2xl bg-slate-900/60 border border-slate-700 focus:border-violet-400 focus:ring-4 focus:ring-violet-500/15 outline-none pl-4 pr-12 py-3.5 text-sm text-slate-100 placeholder-slate-500 transition-all">
+      <button id="btnToggleKey" type="button" aria-label="แสดง/ซ่อนคีย์"
+        class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg grid place-items-center text-slate-400 hover:text-violet-300 hover:bg-white/5 transition-colors">👁️</button>
+    </div>
+
+    <div class="flex items-center gap-2 mt-4">
+      <button id="btnCheckKey" class="chip glass rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-300 border border-slate-700 hover:border-violet-400">🛡️ ตรวจสอบคีย์</button>
+      <button id="btnUseDefault" class="chip glass rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-300 border border-slate-700 hover:border-violet-400">↩️ ใช้คีย์เริ่มต้น</button>
+      <div id="keyStatus" class="text-xs ml-auto text-slate-500"></div>
+    </div>
+
+    <div class="mt-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 p-4 text-xs text-amber-200/90 leading-relaxed">
+      <b>💡 วิธีรับคีย์ที่ใช้สร้างภาพได้:</b><br>
+      1. ไปที่ <span class="text-amber-300">aistudio.google.com</span> → ลงชื่อเข้าใช้<br>
+      2. เมนู <b>Get API key</b> → สร้างคีย์ใหม่<br>
+      3. ถ้าเจอ error "เกินโควตา" ให้เปิด <b>Billing</b> (การชำระเงิน) ในการตั้งค่า — โมเดลสร้างภาพต้องเปิด Billing ถึงจะใช้งานได้<br>
+      4. คัดลอกคีย์ (ขึ้นต้นด้วย AIza...) มาวางที่นี่ แล้วกด <b>ตรวจสอบคีย์</b>
+    </div>
+
+    <div class="mt-6 pt-5 border-t border-white/10">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-300 grid place-items-center text-base">🟦</div>
+        <div>
+          <h4 class="text-sm font-extrabold text-white leading-tight">KIE.AI API Key <span class="text-[10px] font-normal text-slate-500">(ทางเลือก — ฟรี ไม่ต้องเปิด Billing Google)</span></h4>
+        </div>
+      </div>
+      <label for="kieKeyInput" class="text-xs font-semibold text-slate-400 mt-3 block">KIE.AI API Key</label>
+      <div class="relative mt-1">
+        <input id="kieKeyInput" type="password" autocomplete="off" spellcheck="false"
+          placeholder="79ee..."
+          class="w-full rounded-2xl bg-slate-900/60 border border-slate-700 focus:border-sky-400 focus:ring-4 focus:ring-sky-500/15 outline-none pl-4 pr-12 py-3.5 text-sm text-slate-100 placeholder-slate-500 transition-all">
+        <button id="btnToggleKieKey" type="button" aria-label="แสดง/ซ่อนคีย์"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg grid place-items-center text-slate-400 hover:text-sky-300 hover:bg-white/5 transition-colors">👁️</button>
+      </div>
+      <div class="flex items-center gap-2 mt-3">
+        <button id="btnCheckKieKey" class="chip glass rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-300 border border-slate-700 hover:border-sky-400">🛡️ ตรวจสอบคีย์</button>
+        <div id="kieKeyStatus" class="text-xs ml-auto text-slate-500"></div>
+      </div>
+
+      <div class="mt-4">
+        <div class="text-xs font-semibold text-slate-400 mb-2">🖼️ ความละเอียดภาพ (GPT Image 2)</div>
+        <div class="grid grid-cols-3 gap-2" id="resRow">
+          <button data-res="1K" class="res-btn chip glass rounded-xl py-2 text-xs font-semibold text-slate-300 border border-slate-700 hover:border-sky-400">1K · เร็ว</button>
+          <button data-res="2K" class="res-btn chip glass rounded-xl py-2 text-xs font-semibold text-slate-300 border border-slate-700 hover:border-sky-400">2K</button>
+          <button data-res="4K" class="res-btn chip glass rounded-xl py-2 text-xs font-semibold text-slate-300 border border-slate-700 hover:border-sky-400">4K · ละเอียด</button>
+        </div>
+        <p class="mt-1.5 text-[10px] text-slate-500">💡 สัดส่วน 4:5 รองรับเฉพาะ 1K (ระบบจะสลับให้อัตโนมัติ) · ใช้เครดิตมากขึ้นเมื่อความละเอียดสูงขึ้น</p>
+      </div>
+      <p class="mt-3 text-[11px] text-slate-500 leading-relaxed">💡 รับคีย์ฟรีที่ <span class="text-sky-300">kie.ai/api-key</span> — มาพร้อมเครดิตทดลอง ใช้สร้างภาพได้ทันที ไม่ต้องเปิด Billing Google เหมาะใช้แทน Gemini ได้เลย</p>
+    </div>
+
+    <div class="flex gap-3 mt-6">
+      <button id="btnSaveKey" class="btn-primary flex-1 rounded-2xl py-3 font-bold text-white text-sm">💾 บันทึก</button>
+      <button id="btnCloseSettings" class="flex-1 rounded-2xl py-3 text-sm text-slate-400 hover:text-slate-200 border border-slate-700 hover:border-slate-500 transition-colors">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   AdMagic AI — สร้างภาพโฆษณาสินค้า ด้วย Gemini Flash Image
+
+   ตั้งค่าได้ที่นี่
+   - MODEL: โมเดลสร้างภาพของ Gemini
+   - API_KEY: คีย์ Gemini API ของคุณ
+   หมายเหตุ: ใช้ Interactions API (API ล่าสุดที่แนะนำโดย Google)
+   ================================================================ */
+const DEFAULT_API_KEY = 'AIzaSyDmbDmdEGBIqZ7oJh4Dcs91HJLc3PGi218'; // คีย์เริ่มต้น (ในโค้ด)
+const API_KEY_STORAGE = 'admagic_api_key';
+let API_KEY = localStorage.getItem(API_KEY_STORAGE) || DEFAULT_API_KEY; // ใช้คีย์ที่ผู้ใช้ตั้งไว้ก่อน
+const MODELS  = ['gemini-3.1-flash-image', 'gemini-2.5-flash-image']; // ลองตามลำดับ
+const INTERACTIONS_URL = 'https://generativelanguage.googleapis.com/v1beta/interactions';
+const MODELS_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+// KIE.AI (ฟรี — ใช้สร้างภาพได้โดยไม่ต้องเปิด Billing Google)
+const DEFAULT_KIE_KEY = '79ee180379a77a2f88a55b60b853ff3a'; // คีย์ที่ผู้ใช้ให้มา
+const KIE_KEY_STORAGE = 'admagic_kie_key';
+let KIE_KEY = localStorage.getItem(KIE_KEY_STORAGE) || DEFAULT_KIE_KEY;
+const KIE_BASE = 'https://api.kie.ai';
+const KIE_MODEL = 'gpt-image-2-text-to-image'; // GPT Image 2 — รองรับ 4:5/16:9 + 1K/2K/4K
+// สัดส่วนเว็บ -> aspect_ratio ของ KIE (รองรับตรงๆ ทุกแบบที่เว็บใช้)
+const KIE_RATIO_MAP = { '1:1':'1:1', '4:5':'4:5', '16:9':'16:9' };
+const KIE_RESOLUTION_STORAGE = 'admagic_kie_resolution';
+let KIE_RESOLUTION = localStorage.getItem(KIE_RESOLUTION_STORAGE) || '1K'; // 1K/2K/4K
+
+// สัดส่วนภาพ -> aspect_ratio สำหรับ Gemini
+const RATIO_MAP = { '1:1':'1:1', '4:5':'4:5', '16:9':'16:9' };
+
+const CREDITS_TOTAL = 10;
+const CREDITS_KEY = 'admagic_credits';
+let credits = parseInt(localStorage.getItem(CREDITS_KEY) || '') || CREDITS_TOTAL;
+
+let currentImage = null;       // { dataUrl, mime, base64 }
+let currentResult = null;      // { dataUrl, mime, prompt, ratio }
+let history = [];
+let generating = false;
+let genTimer = null, stepIdx = 0;
+
+/* ---------- utils ---------- */
+const $ = id => document.getElementById(id);
+function toast(msg, type='ok') {
+  const icons = { ok:'✅', err:'❌', warn:'⚠️' };
+  const el = document.createElement('div');
+  el.className = 'toast pointer-events-auto flex items-center gap-2.5 glass-strong rounded-2xl px-5 py-3 text-sm shadow-2xl max-w-md';
+  el.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span class="text-slate-200">${msg}</span>`;
+  $('toastWrap').appendChild(el);
+  setTimeout(() => { el.style.transition='all .4s'; el.style.opacity='0'; el.style.transform='translateY(8px)'; setTimeout(()=>el.remove(),400); }, 3200);
+}
+
+/* ---------- credits ---------- */
+function updateCreditsUI() {
+  $('creditCount').textContent = credits;
+  localStorage.setItem(CREDITS_KEY, credits);
+  if (credits <= 0) $('creditBadge').classList.add('text-red-300','animate-pulseglow');
+  else $('creditBadge').classList.remove('text-red-300','animate-pulseglow');
+}
+function useCredit() {
+  if (credits <= 0) { showCreditModal(); return false; }
+  credits--; updateCreditsUI(); return true;
+}
+function showCreditModal(){ $('creditModal').classList.remove('hidden'); }
+$('btnCloseModal').addEventListener('click', ()=> $('creditModal').classList.add('hidden'));
+$('creditModal').addEventListener('click', e=>{ if(e.target===e.currentTarget) $('creditModal').classList.add('hidden'); });
+$('btnResetCredit').addEventListener('click', ()=>{ credits = CREDITS_TOTAL; updateCreditsUI(); $('creditModal').classList.add('hidden'); toast('เครดิตรีเซ็ตแล้ว! เหลือ 10 เครดิต 🎉'); });
+
+/* ---------- settings / API key ---------- */
+const apiKeyInput = $('apiKeyInput');
+const kieKeyInput = $('kieKeyInput');
+
+function openSettings() {
+  apiKeyInput.value = API_KEY;
+  $('keyStatus').textContent = '';
+  kieKeyInput.value = KIE_KEY;
+  $('kieKeyStatus').textContent = '';
+  applyKieResUI();
+  $('settingsModal').classList.remove('hidden');
+}
+
+// ตัวเลือกความละเอียด KIE (1K/2K/4K)
+const RES_ON = ['bg-sky-500/20', 'border-sky-400', 'text-white'];
+const RES_OFF = ['border-slate-700', 'text-slate-300'];
+function applyKieResUI() {
+  document.querySelectorAll('.res-btn').forEach(b => {
+    const on = b.dataset.res === KIE_RESOLUTION;
+    b.classList.toggle('bg-sky-500/20', on);
+    if (on) { b.classList.add(...RES_ON); b.classList.remove(...RES_OFF); }
+    else { b.classList.remove(...RES_ON); b.classList.add(...RES_OFF); }
+  });
+}
+document.querySelectorAll('.res-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    KIE_RESOLUTION = b.dataset.res;
+    localStorage.setItem(KIE_RESOLUTION_STORAGE, KIE_RESOLUTION);
+    applyKieResUI();
+    toast('ความละเอียด: ' + KIE_RESOLUTION);
+  });
+});
+function closeSettings() { $('settingsModal').classList.add('hidden'); }
+
+$('btnSettings').addEventListener('click', openSettings);
+$('btnCloseSettings').addEventListener('click', closeSettings);
+$('settingsModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeSettings(); });
+
+$('btnToggleKey').addEventListener('click', () => {
+  const isPw = apiKeyInput.type === 'password';
+  apiKeyInput.type = isPw ? 'text' : 'password';
+  $('btnToggleKey').textContent = isPw ? '🙈' : '👁️';
+});
+
+$('btnToggleKieKey').addEventListener('click', () => {
+  const isPw = kieKeyInput.type === 'password';
+  kieKeyInput.type = isPw ? 'text' : 'password';
+  $('btnToggleKieKey').textContent = isPw ? '🙈' : '👁️';
+});
+
+$('btnUseDefault').addEventListener('click', () => {
+  apiKeyInput.value = DEFAULT_API_KEY;
+  $('keyStatus').textContent = 'โหลดคีย์เริ่มต้นแล้ว';
+  $('keyStatus').className = 'text-xs ml-auto text-violet-300';
+});
+
+$('btnSaveKey').addEventListener('click', () => {
+  const val = apiKeyInput.value.trim();
+  if (!val) { toast('กรุณากรอก API Key ก่อน', 'warn'); return; }
+  API_KEY = val;
+  localStorage.setItem(API_KEY_STORAGE, val);
+  // บันทึก KIE key พร้อมกันถ้ามี
+  const kv = kieKeyInput.value.trim();
+  if (kv) { KIE_KEY = kv; localStorage.setItem(KIE_KEY_STORAGE, kv); }
+  closeSettings();
+  toast('บันทึก API Key แล้ว 🔑');
+});
+
+// ตรวจสอบ KIE.AI key โดยเช็คเครดิต
+$('btnCheckKieKey').addEventListener('click', async () => {
+  const val = kieKeyInput.value.trim();
+  if (!val) { toast('กรุณากรอก KIE.AI API Key ก่อน', 'warn'); return; }
+  const status = $('kieKeyStatus');
+  status.textContent = 'กำลังตรวจสอบ...';
+  status.className = 'text-xs ml-auto text-slate-400';
+  try {
+    const res = await fetch(KIE_BASE + '/api/v1/chat/credit', {
+      headers: { 'Authorization': 'Bearer ' + val }
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.code === 200) {
+      status.textContent = '✅ คีย์ใช้ได้ · คงเหลือ ' + data.data + ' เครดิต';
+      status.className = 'text-xs ml-auto text-emerald-400';
+      toast('KIE.AI คีย์ถูกต้อง! เหลือ ' + data.data + ' เครดิต 🎉');
+    } else {
+      status.textContent = '❌ ' + (data.msg || 'HTTP ' + res.status);
+      status.className = 'text-xs ml-auto text-red-400';
+      toast('KIE.AI คีย์ไม่ถูกต้อง', 'err');
+    }
+  } catch (e) {
+    status.textContent = '❌ ตรวจสอบไม่ได้ (เน็ตเวิร์ก)';
+    status.className = 'text-xs ml-auto text-red-400';
+    toast('ตรวจสอบคีย์ไม่สำเร็จ ตรวจอินเทอร์เน็ต', 'err');
+  }
+});
+
+// ตรวจสอบคีย์โดยเรียก models endpoint (ไม่เปลืองโควตา) + ทดสอบสิทธิ์สร้างภาพแบบเบาๆ
+$('btnCheckKey').addEventListener('click', async () => {
+  const val = apiKeyInput.value.trim();
+  if (!val) { toast('กรุณากรอก API Key ก่อน', 'warn'); return; }
+  const status = $('keyStatus');
+  status.textContent = 'กำลังตรวจสอบ...';
+  status.className = 'text-xs ml-auto text-slate-400';
+  try {
+    const res = await fetch(MODELS_URL + '?key=' + encodeURIComponent(val));
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data.error?.message || 'HTTP ' + res.status;
+      if (/API key not valid|API_KEY_INVALID|permission/i.test(msg)) {
+        status.textContent = '❌ คีย์ไม่ถูกต้อง';
+        status.className = 'text-xs ml-auto text-red-400';
+        toast('คีย์ API ไม่ถูกต้อง กรุณาตรวจสอบใหม่', 'err');
+      } else {
+        status.textContent = '⚠️ ' + (msg.slice(0, 60));
+        status.className = 'text-xs ml-auto text-amber-400';
+      }
+      return;
+    }
+    const models = (data.models || []).filter(m => /image/i.test(m.name));
+    if (models.length) {
+      // ระวัง: คีย์ใช้ได้ + มีโมเดล ≠ มีโควตาสร้างภาพจริง (ต้องเปิด Billing) — บอกให้ทดสอบจริง
+      status.textContent = '✅ คีย์ถูกต้อง (พบ ' + models.length + ' โมเดลสร้างภาพ) — กดสร้างภาพเพื่อยืนยันสิทธิ์/โควตาจริง';
+      status.className = 'text-xs ml-auto text-emerald-400';
+      toast('คีย์ถูกต้อง! แต่สิทธิ์สร้างภาพต้องยืนยันด้วยการสร้างจริง', 'ok');
+    } else {
+      status.textContent = '✅ คีย์ใช้ได้ แต่ไม่พบโมเดลสร้างภาพ';
+      status.className = 'text-xs ml-auto text-amber-400';
+    }
+  } catch (e) {
+    status.textContent = '❌ ตรวจสอบไม่ได้ (เน็ตเวิร์ก)';
+    status.className = 'text-xs ml-auto text-red-400';
+    toast('ตรวจสอบคีย์ไม่สำเร็จ ตรวจอินเทอร์เน็ต', 'err');
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !$('settingsModal').classList.contains('hidden')) closeSettings();
+});
+
+/* ---------- image handling ---------- */
+const dropzone = $('dropzone'), fileInput = $('fileInput');
+
+function readFile(file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('กรุณาเลือกไฟล์รูปภาพเท่านั้น', 'err'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      // downscale to max 1024px to keep API payload small
+      const MAX = 1024;
+      let { width, height } = img;
+      const scale = Math.min(1, MAX / Math.max(width, height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      const mime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+      const dataUrl = canvas.toDataURL(mime, 0.92);
+      currentImage = {
+        dataUrl,
+        mime,
+        base64: dataUrl.split(',')[1],
+        name: file.name || 'สินค้า'
+      };
+      renderPreview();
+      toast('แนบรูปสินค้าแล้ว 📦');
+    };
+    img.onerror = () => toast('ไม่สามารถอ่านไฟล์รูปภาพได้', 'err');
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+dropzone.setAttribute('role', 'button');
+dropzone.setAttribute('tabindex', '0');
+dropzone.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+});
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.classList.remove('dragover');
+  readFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => readFile(e.target.files[0]));
+
+// paste from clipboard
+document.addEventListener('paste', e => {
+  const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith('image/'));
+  if (item) { readFile(item.getAsFile()); toast('วางรูปจากคลิปบอร์ดแล้ว 📋'); }
+});
+
+// remove image
+$('removeImg').addEventListener('click', e => {
+  e.preventDefault(); e.stopPropagation();
+  currentImage = null; renderPreview();
+});
+
+function renderPreview() {
+  const has = !!currentImage;
+  $('previewWrap').classList.toggle('hidden', !has);
+  $('dropEmpty').classList.toggle('hidden', has);
+  $('fileState').textContent = has ? `แนบแล้ว: ${currentImage.name}` : 'ยังไม่ได้แนบ';
+  if (has) $('imgPreview').src = currentImage.dataUrl;
+  if (engineMode === 'free' || engineMode === 'kie') updateFreeModeHint();
+}
+
+/* ---------- sample product images (SVG) ---------- */
+const SAMPLES = [
+  { label:'🍶 ชาเขียว', color:'#34d399', svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#065f46"/></linearGradient></defs><rect width="200" height="200" fill="#052e16"/><rect x="60" y="95" width="80" height="85" rx="14" fill="url(#g)"/><rect x="52" y="75" width="96" height="28" rx="8" fill="#10b981"/><rect x="96" y="20" width="8" height="60" fill="#34d399"/><rect x="84" y="12" width="32" height="14" rx="7" fill="#065f46"/><text x="100" y="148" text-anchor="middle" font-size="16" font-weight="bold" fill="#fff" font-family="Prompt">ชาเขียว</text></svg>` },
+  { label:'⌚ นาฬิกา', color:'#fbbf24', svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#1c1917"/><rect x="35" y="78" width="130" height="44" rx="22" fill="#111" stroke="#fbbf24" stroke-width="3"/><circle cx="100" cy="100" r="26" fill="#0a0a0a" stroke="#fbbf24" stroke-width="3"/><line x1="100" y1="100" x2="100" y2="84" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/><line x1="100" y1="100" x2="112" y2="104" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/><rect x="62" y="122" width="16" height="34" rx="6" fill="#fbbf24"/><rect x="122" y="122" width="16" height="34" rx="6" fill="#fbbf24"/><text x="100" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#fbbf24" font-family="Prompt">นาฬิกาสุดหรู</text></svg>` },
+  { label:'🧴 ครีม', color:'#f472b6', svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbcfe8"/><stop offset="1" stop-color="#db2777"/></linearGradient></defs><rect width="200" height="200" fill="#2e0a1f"/><rect x="62" y="70" width="76" height="100" rx="20" fill="url(#g)"/><rect x="70" y="52" width="60" height="26" rx="10" fill="#f9a8d4"/><ellipse cx="100" cy="96" rx="14" ry="8" fill="#fff" opacity=".7"/><text x="100" y="150" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff" font-family="Prompt">เซรั่มผิว</text></svg>` },
+  { label:'👟 รองเท้า', color:'#60a5fa', svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#0c1a2e"/><path d="M30 120 Q55 88 130 88 L170 92 Q178 96 178 106 L178 128 Q178 140 160 140 L55 140 Q38 140 30 128 Z" fill="#1e3a8a"/><path d="M60 110 L130 110 Q170 112 170 118 L170 122 Q160 128 90 128 L60 128 Q48 128 44 122 Z" fill="#60a5fa"/><rect x="40" y="112" width="120" height="6" rx="3" fill="#bfdbfe"/><rect x="30" y="132" width="140" height="10" rx="5" fill="#fff"/><text x="100" y="72" text-anchor="middle" font-size="15" font-weight="bold" fill="#93c5fd" font-family="Prompt">รองเท้าสปอร์ต</text></svg>` },
+  { label:'🎧 หูฟัง', color:'#a78bfa', svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#150b2e"/><path d="M48 110 Q48 58 100 58 Q152 58 152 110" fill="none" stroke="#8b5cf6" stroke-width="10" stroke-linecap="round"/><rect x="34" y="104" width="28" height="52" rx="13" fill="#6d28d9"/><rect x="138" y="104" width="28" height="52" rx="13" fill="#6d28d9"/><rect x="42" y="120" width="12" height="24" rx="6" fill="#c4b5fd"/><rect x="146" y="120" width="12" height="24" rx="6" fill="#c4b5fd"/><text x="100" y="34" text-anchor="middle" font-size="14" font-weight="bold" fill="#c4b5fd" font-family="Prompt">หูฟังไร้สาย</text></svg>` },
+  { label:'☕ กาแฟ', color:'#fb923c', svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#241207"/><path d="M62 78 L74 150 Q76 162 88 162 L112 162 Q124 162 126 150 L138 78 Z" fill="#78350f"/><path d="M66 84 Q82 108 100 108 Q118 108 134 84" fill="#7c2d12"/><path d="M138 92 Q158 96 158 110 Q158 124 138 128" fill="none" stroke="#d97706" stroke-width="7" stroke-linecap="round"/><ellipse cx="100" cy="74" rx="42" ry="8" fill="#a16207"/><text x="100" y="150" text-anchor="middle" font-size="14" font-weight="bold" fill="#fdba74" font-family="Prompt">กาแฟหอมกรุ่น</text></svg>` },
+];
+
+function loadSample(i) {
+  const s = SAMPLES[i];
+  // วาด SVG ลง canvas ให้เป็น PNG จริง (กันปัญหา mime_type ผิด)
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512; canvas.height = 512;
+    canvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+    const dataUrl = canvas.toDataURL('image/png');
+    currentImage = { dataUrl, mime:'image/png', base64: dataUrl.split(',')[1], name: s.label };
+    renderPreview();
+    toast(`โหลดภาพตัวอย่าง "${s.label}" แล้ว 🎯`);
+  };
+  img.onerror = () => { currentImage = null; renderPreview(); toast('โหลดภาพตัวอย่างไม่สำเร็จ', 'err'); };
+  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(s.svg)));
+}
+
+// build sample row
+SAMPLES.forEach((s, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'chip shrink-0 glass rounded-full px-3 py-1.5 text-[11px] text-slate-300 border border-slate-700 hover:border-violet-400';
+  btn.textContent = s.label;
+  btn.addEventListener('click', () => loadSample(i));
+  $('sampleRow').appendChild(btn);
+});
+
+/* ---------- prompt handling ---------- */
+const promptEl = $('prompt');
+promptEl.addEventListener('input', () => {
+  $('charCount').textContent = promptEl.value.length + ' ตัวอักษร';
+});
+
+const RANDOM_PROMPTS = [
+  'โฆษณาสินค้าสุดพรีเมียม พื้นหลังไล่สีทองดำ ตัวสินค้าเด่นกลางภาพ มีข้อความ "สุดยอดคุณภาพระดับพรีเมียม" ฟอนต์หรู',
+  'โฆษณาโปรโมชัน พื้นหลังสีแดงเร้าใจ มีข้อความ "SALE ลด 70%" ตัวเลขขนาดใหญ่ พร้อมสัญลักษณ์ % สีเหลือง ดูเร่งรีบ',
+  'โฆษณาสไตล์มินิมอล พื้นหลังสีขาวสะอาด แสงนุ่มนวล ตัวสินค้าลอยกลางภาพ มุมมอง 45 องศา ข้อความสั้นๆ "Less is More"',
+  'โฆษณาไลฟ์สไตล์บนโต๊ะไม้ ฉากหลังเป็นวิวทะเลตอนพระอาทิตย์ตก แสงทองอบอุ่น ตัวสินค้าวางข้างถ้วยกาแฟ สไตล์ Instagram',
+  'โฆษณาแบบนีออนในเมืองยามค่ำคืน พื้นหลังสีม่วง-ฟ้าเรืองแสง ตัวสินค้าโดดเด่นกลางแสงนีออน ดูไฮเทคล้ำสมัย',
+  'โฆษณาสไตล์การ์ตูนน่ารัก สีพาสเทล ตัวสินค้าถูกวาดเป็นตัวการ์ตูนน่ารัก ยิ้มแย้ม ข้อความ "น่ารักจนต้องมี!"',
+];
+$('btnShuffle').addEventListener('click', () => {
+  promptEl.value = RANDOM_PROMPTS[Math.floor(Math.random() * RANDOM_PROMPTS.length)];
+  promptEl.dispatchEvent(new Event('input'));
+  toast('สุ่ม Prompt แล้ว 🎲');
+});
+$('btnClear').addEventListener('click', () => {
+  promptEl.value = '';
+  promptEl.dispatchEvent(new Event('input'));
+});
+
+// style chips append
+document.querySelectorAll('#styleChips .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const style = chip.dataset.style;
+    if (!style) return;
+    if (promptEl.value.trim()) {
+      promptEl.value = promptEl.value.trim() + ' · ' + style;
+    } else {
+      promptEl.value = style;
+    }
+    promptEl.dispatchEvent(new Event('input'));
+    chip.classList.add('active');
+    setTimeout(() => chip.classList.remove('active'), 800);
+    toast('เพิ่มสไตล์ "' + chip.textContent.trim() + '" แล้ว 🎯');
+  });
+});
+
+/* ---------- aspect ratio ---------- */
+let ratio = '1:1';
+document.querySelectorAll('.ratio-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ratio-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    ratio = btn.dataset.ratio;
+    const labels = { '1:1':'โพสต์ทั่วไป', '4:5':'ฟีดโซเชียล', '16:9':'แบนเนอร์' };
+    $('ratioLabel').textContent = ratio + ' · ' + labels[ratio];
+  });
+});
+$('ratioLabel').textContent = '1:1 · โพสต์ทั่วไป';
+
+/* ---------- examples gallery ---------- */
+const EXAMPLES = [
+  {
+    title: 'โฆษณาชาเขียวพรีเมียม',
+    tag: '👑 พรีเมียม',
+    bg: 'from-emerald-500 via-teal-600 to-emerald-900',
+    prompt: 'โฆษณาเครื่องดื่มชาเขียวขวดสุดพรีเมียม พื้นหลังไล่สีเขียวมรกตกับน้ำตกไหล ฟองอากาศลอย ตัวสินค้าเด่นกลางภาพ มีข้อความ "ความสดชื่นจากธรรมชาติ 100%" โลโก้แบรนด์มุมขวาบน โทนสีเขียว-ทอง ดูหรูหรา',
+    sample: 0
+  },
+  {
+    title: 'โฆษณานาฬิกาสุดหรู',
+    tag: '💰 ลักชัวรี',
+    bg: 'from-amber-400 via-yellow-600 to-stone-900',
+    prompt: 'โฆษณานาฬิกาข้อมือสุดหรู สไตล์ลักชัวรี พื้นหลังกำมะหยี่สีดำ พร้อมแสงเรืองทอง ตัวนาฬิกาเด่นกลางภาพ ข้อความ "เวลาแห่งความสำเร็จ" ฟอนต์เซอริฟสีทอง ดูแพงมีระดับ',
+    sample: 1
+  },
+  {
+    title: 'โฆษณาเซรั่มมินิมอล',
+    tag: '🌸 งามสง่า',
+    bg: 'from-pink-300 via-rose-400 to-fuchsia-900',
+    prompt: 'โฆษณาเซรั่มบำรุงผิวสไตล์มินิมอล พื้นหลังสีชมพูพาสเทลสะอาดตา กลีบดอกไม้ลอยเบาๆ แสงนุ่มนวล ตัวผลิตภัณฑ์เด่นตรงกลาง ข้อความ "ความงามจากภายใน" ฟอนต์บางเรียบหรู',
+    sample: 2
+  },
+  {
+    title: 'โฆษณารองเท้าสปอร์ต',
+    tag: '⚡ พลังงานสูง',
+    bg: 'from-blue-500 via-cyan-500 to-indigo-900',
+    prompt: 'โฆษณารองเท้าผ้าใบสปอร์ต พื้นหลังเอฟเฟกต์สาดน้ำสีฟ้า-ม่วง แสงนีออน ตัวรองเท้าลอยกลางภาพ มุมไดนามิก มีข้อความ "วิ่งไปให้สุด!" ตัวหนังสือสไตล์กราฟิก พลังงานเต็ม',
+    sample: 3
+  },
+  {
+    title: 'โฆษณาหูฟังเทค',
+    tag: '💠 เทคโนโลยี',
+    bg: 'from-violet-500 via-purple-600 to-indigo-950',
+    prompt: 'โฆษณาหูฟังไร้สายสไตล์เทคโนโลยี พื้นหลังวงจรดิจิทัลเรืองแสงสีม่วง-ฟ้า ตัวหูฟังลอยกลางภาพพร้อมคลื่นเสียง มีข้อความ "เสียงที่คุณต้องสัมผัส" ดูทันสมัยล้ำอนาคต',
+    sample: 4
+  },
+  {
+    title: 'โฆษณากาแฟโปรโมชัน',
+    tag: '🏷️ โปรลด 50%',
+    bg: 'from-orange-500 via-amber-500 to-rose-900',
+    prompt: 'โฆษณากาแฟสดโปรโมชัน พื้นหลังสีส้มอบอุ่น เมล็ดกาแฟและไอควันลอย ตัวแก้วกาแฟเด่นกลางภาพ มีข้อความ "ลด 50% เปิดสาขาใหม่" ตัวเลขใหญ่สีแดง-เหลือง ดึงดูดสายตา',
+    sample: 5
+  },
+];
+
+EXAMPLES.forEach((ex, i) => {
+  const card = document.createElement('div');
+  card.className = 'card-hover glass rounded-3xl overflow-hidden animate-fadeup';
+  card.style.animationDelay = (i * 0.07) + 's';
+  card.innerHTML = `
+    <div class="relative h-56 bg-gradient-to-br ${ex.bg} overflow-hidden">
+      <div class="absolute inset-0 grid-pattern opacity-40"></div>
+      <div class="absolute inset-0 grid place-items-center p-4">
+        <img src="data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(SAMPLES[ex.sample].svg)))}" class="h-full max-w-full object-contain drop-shadow-2xl animate-floaty" alt="${ex.title}">
+      </div>
+      <span class="absolute top-3 left-3 glass-strong text-[11px] text-white px-3 py-1 rounded-full">${ex.tag}</span>
+      <span class="absolute bottom-3 left-3 text-[10px] text-white/70 bg-black/40 backdrop-blur px-2.5 py-1 rounded-full">✨ ตัวอย่างสไตล์โฆษณา</span>
+    </div>
+    <div class="p-5">
+      <h3 class="font-bold text-white mb-2">${ex.title}</h3>
+      <p class="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-4">${ex.prompt}</p>
+      <button class="use-example chip w-full rounded-xl py-2.5 text-sm font-semibold bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 border border-violet-400/40 text-violet-200 hover:from-violet-500/40 hover:to-fuchsia-500/40" data-i="${i}">🚀 ใช้เทมเพลตนี้</button>
+    </div>`;
+  card.querySelector('.use-example').addEventListener('click', () => {
+    promptEl.value = ex.prompt;
+    promptEl.dispatchEvent(new Event('input'));
+    loadSample(ex.sample);
+    document.getElementById('top').scrollIntoView({ behavior:'smooth' });
+    setTimeout(() => $('dropzone').scrollIntoView({ behavior:'smooth', block:'center' }), 350);
+    toast('โหลดเทมเพลต "' + ex.title + '" แล้ว — กดสร้างได้เลย 🚀');
+  });
+  $('exampleGrid').appendChild(card);
+});
+
+/* ---------- engine mode ---------- */
+let engineMode = 'kie'; // 'kie' = KIE.AI (ฟรี) | 'gemini' = Gemini API | 'free' = Pollinations
+
+function applyModeUI() {
+  const btns = { kie: $('modeKie'), gemini: $('modeGemini'), free: $('modeFree') };
+  const onCls = ['bg-gradient-to-r', 'from-violet-500/30', 'to-fuchsia-500/30', 'border-violet-400/60', 'text-white'];
+  const offCls = ['border-slate-700', 'text-slate-300'];
+  Object.keys(btns).forEach(k => {
+    if (k === engineMode) { btns[k].classList.add(...onCls); btns[k].classList.remove(...offCls); }
+    else { btns[k].classList.remove(...onCls); btns[k].classList.add(...offCls); }
+  });
+  const hint = $('freeModeHint');
+  if (engineMode === 'free') {
+    $('creditNote').innerHTML = '🆓 โหมดฟรี — ไม่ใช้เครดิต ไม่ต้องใช้คีย์ (Pollinations.ai)';
+    updateFreeModeHint();
+  } else if (engineMode === 'kie') {
+    $('creditNote').innerHTML = '🟦 KIE.AI — ใช้คีย์ฟรีจาก kie.ai ไม่ต้องเปิด Billing Google';
+    updateFreeModeHint(); // KIE ก็เป็น text-to-image — เตือนด้วยถ้ามีรูปแนบ
+  } else {
+    $('creditNote').innerHTML = 'ใช้เครดิต <span class="text-amber-300 font-semibold">1</span> เครดิตต่อการสร้าง 1 ภาพ · แตะ ⚙️ เพื่อตั้งคีย์';
+    if (hint) hint.classList.add('hidden');
+  }
+}
+
+// แจ้งเตือนข้อจำกัดโหมด text-to-image (ฟรี/KIE): มองไม่เห็นรูปสินค้าที่แนบ
+function updateFreeModeHint() {
+  const hint = $('freeModeHint');
+  if (!hint) return;
+  if (currentImage && (engineMode === 'free' || engineMode === 'kie')) {
+    hint.classList.remove('hidden');
+    $('freeModeHintText').innerHTML = '⚠️ โหมดนี้มอง<b>ไม่เห็นรูปสินค้า</b>ที่คุณแนบ (สร้างจากข้อความล้วนๆ) — ภาพที่ได้จึงอาจ<b>ไม่ใช่รูปสินค้าของคุณ</b>และมีคนโผล่ ถ้าต้องการให้ใช้รูปสินค้าจริง <button onclick="switchToGemini()" class="underline text-violet-300 hover:text-violet-200 font-semibold">สลับไปโหมด Gemini 💎</button>';
+  } else {
+    hint.classList.add('hidden');
+  }
+}
+
+function switchToGemini() {
+  const gemBtn = $('modeGemini');
+  if (gemBtn) gemBtn.click();
+}
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    engineMode = btn.dataset.mode;
+    applyModeUI();
+    if (engineMode === 'free') toast('สลับเป็นโหมดฟรี Pollinations 🆓');
+    else if (engineMode === 'kie') toast('สลับเป็นโหมด KIE.AI 🟦 (คีย์ฟรี ไม่ต้องเปิด Billing)');
+    else toast('สลับเป็นโหมด Gemini 💎');
+  });
+});
+
+/* ---------- generate ---------- */
+async function generate() {
+  if (generating) return;
+  // โหมดฟรี (Pollinations) และ KIE.AI สร้างจาก text-to-image — ไม่ต้องแนบรูปก็สร้างได้
+  // โหมด Gemini ใช้รูปสินค้าจริง จึงต้องแนบรูปก่อน
+  if (!currentImage && engineMode === 'gemini') {
+    toast('กรุณาแนบรูปสินค้าก่อน', 'warn'); $('dropzone').scrollIntoView({ behavior:'smooth', block:'center' }); return;
+  }
+  if (!promptEl.value.trim()) { toast('กรุณาพิมพ์ Prompt ก่อน', 'warn'); promptEl.focus(); return; }
+
+  if (engineMode === 'gemini') {
+    if (!useCredit()) return;
+  }
+
+  generating = true;
+  setLoading(true);
+
+  // fake step progression
+  stepIdx = 0;
+  const dots = document.querySelectorAll('.step-dot');
+  dots.forEach(d => d.classList.remove('active'));
+  genTimer = setInterval(() => {
+    stepIdx++;
+    if (stepIdx > 2) stepIdx = 2;
+    dots.forEach(d => d.classList.toggle('active', +d.dataset.s <= stepIdx));
+  }, 4500);
+
+  if (engineMode === 'free') {
+    await generateWithPollinations();
+    return;
+  }
+
+  if (engineMode === 'kie') {
+    await generateWithKie();
+    return;
+  }
+
+  // ใช้ Interactions API (API ล่าสุดที่แนะนำโดย Google)
+  const prompt = promptEl.value.trim() +
+    ' — สร้างภาพโฆษณาสินค้าให้ดูสวยงาม มืออาชีพ เหมาะกับการลงโฆษณา ' +
+    'โปรดทำให้ข้อความภาษาไทยในภาพอ่านง่าย ชัดเจน และคงรูปลักษณ์ของสินค้าจริงไว้';
+
+  let imageData = null, text = '';
+  let lastErr = null;
+
+  for (const model of MODELS) {
+    try {
+      const payload = {
+        model,
+        input: [
+          { type: 'text', text: prompt },
+          { type: 'image', mime_type: currentImage.mime, data: currentImage.base64 }
+        ],
+        response_format: { type: 'image', mime_type: 'image/jpeg', aspect_ratio: RATIO_MAP[ratio] || '1:1' },
+        store: false
+      };
+
+      const res = await fetch(INTERACTIONS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': API_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const errMsg = data.error?.message || `HTTP ${res.status}`;
+        lastErr = new Error(errMsg);
+        if (/no longer available|not found|404|does not exist|invalid model/i.test(errMsg)) continue; // ลองโมเดลถัดไป
+        throw lastErr;
+      }
+
+      // ค้นหาภาพใน response อย่างยืดหยุ่น (steps/content/parts/inlineData/image/output_image)
+      // เลือกภาพจาก model_output step สุดท้ายก่อน เพื่อไม่เผลอเอารูป thought ระหว่างคิด
+      const found = deepFindImage(data);
+      if (found) { imageData = found; break; }
+
+      // ถ้า API สำเร็จแต่ไม่เจอภาพ ให้ลองอ่าน text ที่ตอบกลับ
+      const t = deepFindText(data);
+      if (t) text = t;
+      lastErr = new Error('AI ไม่ได้ส่งภาพกลับมา ลองใหม่อีกครั้ง');
+    } catch (e) {
+      lastErr = e;
+      break; // โมเดลสร้างภาพใช้โควตาร่วมกัน — พอ error ครั้งแรกให้หยุด ไม่ลองซ้ำให้เสียเวลา
+    }
+  }
+
+  if (!imageData) {
+    const msg = lastErr?.message || 'เกิดข้อผิดพลาด';
+    let friendly = msg;
+    let isQuota = false, isKeyInvalid = false;
+    if (/API key not valid|invalid api key|API_KEY_INVALID/i.test(msg)) { friendly = 'คีย์ API ไม่ถูกต้อง — แตะปุ่ม ⚙️ เพื่อตรวจสอบ/เปลี่ยนคีย์'; isKeyInvalid = true; }
+    else if (/quota|429|rate limit/i.test(msg)) { friendly = 'คีย์นี้ยังไม่มีสิทธิ์สร้างภาพ (โควตา = 0) — โมเดลสร้างภาพต้องเปิด Billing ที่ aistudio.google.com หรือลองใช้คีย์อื่น แตะปุ่ม ⚙️ เพื่อเปลี่ยนคีย์'; isQuota = true; }
+    else if (/permission|403/i.test(msg)) friendly = 'คีย์นี้ไม่มีสิทธิ์ใช้งานโมเดลรูปภาพ — แตะ ⚙️ เพื่อเปลี่ยนคีย์';
+    else if (/no longer available|not found|404/i.test(msg)) friendly = 'โมเดลที่เลือกไม่มีสิทธิ์ใช้งาน — แตะ ⚙️ เพื่อเปลี่ยนคีย์';
+    toast(friendly, isKeyInvalid || isQuota ? 'warn' : 'err');
+    if (isKeyInvalid || isQuota) {
+      // คีย์ผิดหรือโควตา = 0 -> พาไปหน้าตั้งค่าคีย์ทันที (ทางเดียวที่จะแก้ได้)
+      setTimeout(() => { openSettings(); $('apiKeyInput').focus(); }, 600);
+      const gear = $('btnSettings');
+      gear.classList.add('ring-2', 'ring-amber-400/70');
+      setTimeout(() => gear.classList.remove('ring-2', 'ring-amber-400/70'), 5000);
+    }
+    credits++; updateCreditsUI(); // คืนเครดิต
+    generating = false;
+    setLoading(false);
+    clearInterval(genTimer);
+    return;
+  }
+
+  // ตรวจ mime ให้อยู่ในรายการที่ปลอดภัยก่อนสร้าง data URL
+  const SAFE_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
+  const mime = SAFE_MIMES.includes(imageData.mimeType) ? imageData.mimeType : 'image/jpeg';
+  const dataUrl = 'data:' + mime + ';base64,' + imageData.data;
+
+  currentResult = { dataUrl, mime, prompt: promptEl.value.trim(), ratio };
+  history.unshift(currentResult);
+  if (history.length > 12) history.pop();
+  renderResult();
+  renderHistory();
+
+  if (text && text.trim()) console.info('[Gemini text]', text.trim().slice(0, 200));
+  toast('สร้างภาพโฆษณาสำเร็จแล้ว! 🎉', 'ok');
+
+  generating = false;
+  setLoading(false);
+  clearInterval(genTimer);
+}
+
+/* ---------- โหมดฟรี: Pollinations.ai (ไม่ต้องใช้คีย์) ---------- */
+async function generateWithPollinations() {
+  const userText = promptEl.value.trim();
+  // ⚠️ สำคัญ: โมเดลฟรีของ Pollinations เป็น text-to-image ล้วนๆ — มองไม่เห็นรูปสินค้าที่แนบ
+  // จึงต้องเน้น prompt เป็นหลัก + บังคับ "ห้ามมีคน" เพื่อกันภาพคนโผล่
+  const prompt = userText +
+    ' — ภาพโฆษณาสินค้าแบบไม่มีคนเด็ดขาด ห้ามมีบุคคล ไม่มีใบหน้า ไม่มีมือ ไม่มีนางแบบ/นายแบบ' +
+    ' เน้นตัวสินค้าเป็นจุดเด่นใหญ่ตรงกลางภาพ มุมมองสวยงามโปรโมชันนัล พื้นหลังสวยงามเข้ากับธีมสินค้า' +
+    ' ถ้าผู้ใช้ระบุสินค้าไว้ ให้วาดสินค้าตามคำอธิบายนั้นให้สวยงาม';  // สัดส่วน -> ขนาดพิกเซล
+  const SIZE_MAP = { '1:1': {w:1024,h:1024}, '4:5': {w:1024,h:1280}, '16:9': {w:1280,h:720} };
+  const { w, h } = SIZE_MAP[ratio] || SIZE_MAP['1:1'];
+
+  try {
+    // สร้าง URL โมเดล flux ผ่าน Pollinations
+    // หมายเหตุ: โมเดลฟรีของ Pollinations เป็น text-to-image ล้วนๆ — ไม่รองรับพารามิเตอร์ image
+    // (ทดสอบแล้วทุกโมเดลฟรี: flux/klein/gptimage/zimage/turbo/sana ให้ผลลัพธ์เหมือนกันไม่สนใจรูป)
+    // จึงไม่ต้องส่งรูปสินค้า — กันปัญหา URL ยาวเกิน (431/414) และภาพคนโผล่
+    const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) +
+      '?width=' + w + '&height=' + h + '&model=flux&nologo=true&seed=' + Math.floor(Math.random()*1e9);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Pollinations ตอบกลับ HTTP ' + res.status);
+
+    const blob = await res.blob();
+    const dataUrl = await new Promise((ok, no) => {
+      const fr = new FileReader();
+      fr.onload = () => ok(fr.result);
+      fr.onerror = no;
+      fr.readAsDataURL(blob);
+    });
+
+    const mime = blob.type || 'image/jpeg';
+    currentResult = { dataUrl, mime, prompt, ratio };
+    history.unshift(currentResult);
+    if (history.length > 12) history.pop();
+    renderResult();
+    renderHistory();
+    toast('สร้างภาพสำเร็จแล้ว! (โหมดฟรี Pollinations) 🎉');
+  } catch (err) {
+    console.error('Pollinations error:', err);
+    toast('สร้างภาพด้วยโหมดฟรีไม่สำเร็จ: ' + (err.message || 'ลองใหม่'), 'err');
+  } finally {
+    generating = false;
+    setLoading(false);
+    clearInterval(genTimer);
+  }
+}
+
+/* ---------- โหมด KIE.AI (ฟรี — ไม่ต้องเปิด Billing Google) ---------- */
+async function generateWithKie() {
+  const userText = promptEl.value.trim();
+  // KIE GPT Image 2 รองรับภาษาไทย — เพิ่มคำสั่งกันคน + เน้นสินค้า
+  const prompt = userText +
+    ' — ภาพโฆษณาสินค้าแบบไม่มีคนเด็ดขาด ห้ามมีบุคคล ไม่มีใบหน้า ไม่มีมือ' +
+    ' เน้นตัวสินค้าเป็นจุดเด่นใหญ่ตรงกลางภาพ มุมมองสวยงามโปรโมชันนัล พื้นหลังสวยงามเข้ากับธีมสินค้า' +
+    ' ถ้าผู้ใช้ระบุสินค้าไว้ ให้วาดสินค้าตามคำอธิบายนั้นให้สวยงาม';
+  const aspectRatio = KIE_RATIO_MAP[ratio] || '1:1';
+  // 4:5 ไม่รองรับ 2K/4K — บังคับเป็น 1K อัตโนมัติ
+  const resolution = (aspectRatio === '4:5' && KIE_RESOLUTION !== '1K') ? '1K' : KIE_RESOLUTION;
+
+  try {
+    if (!KIE_KEY) { toast('กรุณาตั้งค่า KIE.AI API Key ก่อน (ปุ่ม ⚙️)', 'warn'); return; }
+
+    $('loadingHint').textContent = 'KIE.AI กำลังวาดภาพ (GPT Image 2) — อาจใช้เวลาถึง 5 นาที โปรดรอ ⏱️';
+
+    // 1) ส่งงานสร้างภาพ (jobs API)
+    const submitRes = await fetch(KIE_BASE + '/api/v1/jobs/createTask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + KIE_KEY },
+      body: JSON.stringify({
+        model: KIE_MODEL,
+        input: { prompt, aspect_ratio: aspectRatio, resolution }
+      })
+    });
+    const submitData = await submitRes.json().catch(() => ({}));
+    if (!submitRes.ok || submitData.code !== 200) {
+      throw new Error('KIE.AI: ' + (submitData.msg || 'HTTP ' + submitRes.status));
+    }
+    const taskId = submitData.data && submitData.data.taskId;
+    if (!taskId) throw new Error('KIE.AI: ไม่ได้รับ taskId');
+
+    // 2) poll สถานะจนเสร็จ (สูงสุด ~7 นาที — KIE บางคิวใช้เวลานาน)
+    let resultUrl = null;
+    let pollErrs = 0;
+    for (let i = 0; i < 84; i++) {
+      await new Promise(res => setTimeout(res, 5000));
+      let d = null;
+      try {
+        const stRes = await fetch(KIE_BASE + '/api/v1/jobs/recordInfo?taskId=' + encodeURIComponent(taskId), {
+          headers: { 'Authorization': 'Bearer ' + KIE_KEY }
+        });
+        const stData = await stRes.json().catch(() => ({}));
+        d = stData.data;
+      } catch (e) {
+        d = null;
+      }
+      if (!d) {
+        if (++pollErrs >= 5) throw new Error('KIE.AI ไม่สามารถติดตามสถานะงานได้ (เน็ตเวิร์ก/API) — ลองใหม่อีกครั้ง');
+        continue;
+      }
+      pollErrs = 0;
+      if (d.state === 'success') {
+        let urls = [];
+        try {
+          const parsed = JSON.parse(d.resultJson);
+          urls = parsed.resultUrls || [];
+        } catch (e) {
+          throw new Error('KIE.AI สร้างภาพเสร็จแต่ไม่พบไฟล์รูป — ลองใหม่อีกครั้ง');
+        }
+        resultUrl = urls[0] || null;
+        break;
+      } else if (d.state === 'fail') {
+        throw new Error('KIE.AI: ' + (d.failMsg || 'การสร้างภาพล้มเหลว'));
+      }
+      // state: waiting / generating — รอต่อไป
+    }
+    if (!resultUrl) throw new Error('KIE.AI ใช้เวลานานเกินไป (7 นาที) — ลองใหม่อีกครั้ง');
+
+    // 3) ดาวน์โหลดรูปมาแสดง
+    const imgRes = await fetch(resultUrl);
+    if (!imgRes.ok) throw new Error('ดาวน์โหลดภาพจาก KIE.AI ไม่สำเร็จ HTTP ' + imgRes.status);
+    const blob = await imgRes.blob();
+    const dataUrl = await new Promise((ok, no) => {
+      const fr = new FileReader();
+      fr.onload = () => ok(fr.result);
+      fr.onerror = no;
+      fr.readAsDataURL(blob);
+    });
+
+    currentResult = { dataUrl, mime: blob.type || 'image/png', prompt, ratio };
+    history.unshift(currentResult);
+    if (history.length > 12) history.pop();
+    renderResult();
+    renderHistory();
+    toast('สร้างภาพสำเร็จแล้ว! (KIE.AI GPT Image 2) 🎉');
+  } catch (err) {
+    console.error('KIE error:', err);
+    toast('สร้างภาพด้วย KIE.AI ไม่สำเร็จ: ' + (err.message || 'ลองใหม่'), 'err');
+  } finally {
+    generating = false;
+    setLoading(false);
+    clearInterval(genTimer);
+  }
+}
+
+$('btnGenerate').addEventListener('click', generate);
+$('btnRegen').addEventListener('click', generate);
+
+applyModeUI(); // ตั้งค่าเริ่มต้นโหมด KIE.AI
+
+function setLoading(on) {
+  $('emptyState').classList.toggle('hidden', on);
+  $('loadingState').classList.toggle('hidden', !on);
+  $('resultStateWrap').classList.add('hidden');
+  $('resultState').textContent = on ? 'กำลังสร้าง...' : 'รอสร้างภาพ';
+  $('btnGenerate').disabled = on;
+  $('genIcon').textContent = on ? '⏳' : '✨';
+  $('genText').textContent = on ? 'กำลังสร้างภาพ...' : 'สร้างภาพโฆษณา';
+  if (on) {
+    const hint = $('loadingHint');
+    if (engineMode === 'free') hint.textContent = 'โหมดฟรี (Pollinations) อาจใช้เวลา 30–90 วินาที โปรดรอ ⏱️';
+    else if (engineMode === 'kie') hint.textContent = 'KIE.AI กำลังวาดภาพ — อาจใช้เวลาถึง 5 นาที โปรดรอ ⏱️';
+    else hint.textContent = 'ปกติใช้เวลาประมาณ 10–30 วินาที ⏱️';
+  }
+  if (!on && currentResult) $('resultState').textContent = 'สร้างเสร็จแล้ว ✅';
+}
+
+function renderResult() {
+  if (!currentResult) return;
+  $('emptyState').classList.add('hidden');
+  $('loadingState').classList.add('hidden');
+  $('resultStateWrap').classList.remove('hidden');
+  $('resultImg').src = currentResult.dataUrl;
+  $('resultState').textContent = 'สร้างเสร็จแล้ว ✅';
+  // ป้ายบอกตัวสร้างภาพตามโหมดจริง
+  if (engineMode === 'free') $('resultBadge').textContent = '🆓 AI สร้างโดย Pollinations (ฟรี)';
+  else if (engineMode === 'kie') $('resultBadge').textContent = '🟦 AI สร้างโดย KIE.AI (GPT Image 2)';
+  else $('resultBadge').textContent = '✨ AI สร้างโดย Gemini Flash Image';
+}
+
+function renderHistory() {
+  $('historySection').classList.remove('hidden');
+  $('historyCount').textContent = '(' + history.length + ' ภาพ)';
+  const row = $('historyRow');
+  row.innerHTML = '';
+  history.forEach((h, i) => {
+    const el = document.createElement('div');
+    el.className = 'history-item shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-700 cursor-pointer relative';
+    el.innerHTML = `<img src="${h.dataUrl}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors grid place-items-center text-white text-lg opacity-0 hover:opacity-100">🔍</div>`;
+    el.title = 'ดูภาพนี้';
+    el.addEventListener('click', () => {
+      currentResult = h;
+      renderResult();
+      toast('แสดงภาพจากประวัติ');
+    });
+    row.appendChild(el);
+  });
+}
+
+/* ---------- download & copy ---------- */
+$('btnDownload').addEventListener('click', () => {
+  if (!currentResult) return;
+  const a = document.createElement('a');
+  a.href = currentResult.dataUrl;
+  a.download = 'admagic-ads-' + Date.now() + (currentResult.mime.includes('png') ? '.png' : '.jpg');
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  toast('กำลังดาวน์โหลดภาพ... ⬇️');
+});
+
+$('btnCopyPrompt').addEventListener('click', () => {
+  if (!currentResult) return;
+  navigator.clipboard.writeText(currentResult.prompt).then(
+    () => toast('คัดลอก Prompt แล้ว 📋'),
+    () => toast('คัดลอกไม่สำเร็จ', 'err')
+  );
+});
+
+/* ---------- deep search helpers (ยืดหยุ่นกับรูปแบบ response) ---------- */
+function deepFindImage(obj) {
+  if (!obj || typeof obj !== 'object') return null;
+  const last = { img: null };
+  walkImages(obj, 0, last);
+  return last.img;
+}
+
+// เก็บภาพ "ล่าสุด" ที่เจอใน tree (model_output อยู่ท้าย steps เสมอ)
+// เพื่อไม่เผลอเอารูป thought ระหว่างการคิดมาแสดงแทนภาพจริง
+function walkImages(obj, depth, last) {
+  if (!obj || typeof obj !== 'object' || depth > 8) return;
+  if (obj.inlineData && obj.inlineData.data) last.img = obj.inlineData;
+  else if (obj.inline_data && obj.inline_data.data) last.img = { mimeType: obj.inline_data.mime_type, data: obj.inline_data.data };
+  else if (obj.image && obj.image.data) last.img = { mimeType: obj.image.mime_type || 'image/jpeg', data: obj.image.data };
+  else if (obj.output_image && obj.output_image.data) last.img = { mimeType: obj.output_image.mime_type || 'image/jpeg', data: obj.output_image.data };
+  else {
+    if (Array.isArray(obj)) {
+      for (const x of obj) walkImages(x, depth + 1, last);
+    } else {
+      for (const k in obj) walkImages(obj[k], depth + 1, last);
+    }
+  }
+}
+
+function deepFindText(obj, depth) {
+  if (!obj || typeof obj !== 'object' || depth > 8) return '';
+  if (typeof obj.text === 'string') return obj.text;
+  if (Array.isArray(obj)) {
+    for (const x of obj) { const t = deepFindText(x, depth + 1); if (t) return t; }
+    return '';
+  }
+  for (const k in obj) {
+    if (k === 'inlineData' || k === 'inline_data' || k === 'image' || k === 'output_image') continue;
+    const t = deepFindText(obj[k], depth + 1);
+    if (t) return t;
+  }
+  return '';
+}
+
+/* ---------- init ---------- */
+updateCreditsUI();
+setLoading(false);
+</script>
+</body>
+</html>

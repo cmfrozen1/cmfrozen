@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <title>รายงานสรุปการประเมินผลฝึกอบรม</title>
+    <style>
+        /* ล็อกหน้ากระดาษ A4 แนวนอน (กว้าง 297mm × สูง 210mm) — ป้องกันการพิมพ์เป็นแนวตั้ง */
+        @page {
+            size: 297mm 210mm;
+            margin: 6mm 8mm;
+        }
+
+        @media print {
+            @page {
+                size: 297mm 210mm;
+                margin: 6mm 8mm;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: "TH Sarabun PSK", "Angsana New", "Cordia New", "Sarabun", sans-serif;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-size: 12px;
+            color: #000;
+            background-color: #fff;
+        }
+
+        /* แถบเครื่องมือ (ไม่แสดงเมื่อพิมพ์) */
+        .no-print {
+            display: none;
+        }
+
+        /* แถบกรองข้อมูล (ไม่แสดงเมื่อพิมพ์) */
+        .filter-bar {
+            display: none;
+        }
+
+        @media screen {
+            .filter-bar {
+                display: block;
+                max-width: 281mm;
+                margin: 0 auto 14px auto;
+                background: #fff;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                padding: 10px 14px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+                font-family: "TH Sarabun PSK", "Angsana New", "Cordia New", "Sarabun", sans-serif;
+                font-size: 13px;
+            }
+
+            .filter-bar .filters-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px 16px;
+                align-items: center;
+                margin: 0;
+            }
+
+            .filter-bar label {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-weight: bold;
+            }
+
+            .filter-bar select,
+            .filter-bar input[type="date"] {
+                border: 1px solid #9ca3af;
+                border-radius: 5px;
+                padding: 4px 8px;
+                font-size: 13px;
+                font-family: inherit;
+                background: #fff;
+                color: #111827;
+            }
+
+            .filter-bar button {
+                border: none;
+                background: #1e3a8a;
+                color: #fff;
+                padding: 5px 16px;
+                border-radius: 5px;
+                font-weight: bold;
+                font-size: 13px;
+                cursor: pointer;
+            }
+
+            .filter-bar button.reset-btn {
+                background: #e5e7eb;
+                color: #111827;
+                border: 1px solid #9ca3af;
+                padding: 5px 16px;
+                border-radius: 5px;
+                font-weight: bold;
+                font-size: 13px;
+                cursor: pointer;
+            }
+        }
+
+        @media print {
+            .filter-bar {
+                display: none !important;
+            }
+        }
+
+        @media screen {
+            .no-print {
+                display: flex;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 999;
+                background: #1e3a8a;
+                color: #fff;
+                padding: 8px 16px;
+                align-items: center;
+                justify-content: space-between;
+                font-family: "TH Sarabun PSK", "Angsana New", "Cordia New", "Sarabun", sans-serif;
+                font-size: 13px;
+            }
+
+            body {
+                padding-top: 46px;
+                background: #e5e7eb;
+            }
+
+            /* ให้แต่ละหน้าแสดงขนาดพอดีกับจอ (เท่ากับขนาดตอนพิมพ์) ไม่ยืดใหญ่เกินไป */
+            .page,
+            .page-flow {
+                max-width: 281mm;
+                margin: 0 auto 14px auto;
+                background: #fff;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+            }
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                padding-top: 0 !important;
+                background: #fff !important;
+            }
+
+            .page,
+            .page-flow {
+                max-width: none !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+        }
+
+        /* A4 landscape usable area: 297mm x 210mm minus 6mm/8mm margins = 281mm x 198mm */
+        .page {
+            width: 100%;
+            height: 198mm;
+            page-break-after: always;
+            position: relative;
+        }
+
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        /* คอนเทนเนอร์เนื้อหาภายในหน้า */
+        .page-content {
+            padding: 4px 12px;
+        }
+
+        /* Header elements */
+        .top-left-box {
+            border: 1px solid #000;
+            padding: 2px 10px;
+            display: inline-block;
+            font-size: 12px;
+        }
+
+        .top-right-box {
+            border: 1px solid #000;
+            padding: 2px 10px;
+            float: right;
+            font-size: 12px;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: -6px;
+            margin-bottom: 8px;
+        }
+
+        /* Info Form Rows */
+        .info-row {
+            margin-bottom: 6px;
+            clear: both;
+            line-height: 1.3;
+        }
+
+        .dots {
+            border-bottom: 1px dotted #000;
+            display: inline-block;
+            width: 120px;
+            text-align: center;
+        }
+
+        .note-text {
+            font-size: 11px;
+            margin-top: 6px;
+            margin-bottom: 4px;
+        }
+
+        /* Main Layout Grid */
+        .grid-container {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .left-col {
+            display: table-cell;
+            width: 38%;
+            vertical-align: top;
+            padding-right: 10px;
+        }
+
+        .right-col {
+            display: table-cell;
+            width: 62%;
+            vertical-align: top;
+        }
+
+        /* Tables */
+        table.eval-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+        }
+
+        table.eval-table th,
+        table.eval-table td {
+            border: 1px solid #000;
+            padding: 1.5px 5px;
+            font-size: 10.5px;
+            line-height: 1.25;
+        }
+
+        table.eval-table th {
+            background-color: #fff;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .red-text {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Section Header Rows */
+        .sec-header {
+            font-weight: bold;
+        }
+
+        /* Chart Box Styling */
+        .chart-box {
+            border: 1px solid #888;
+            background-color: #fcfcfc;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+            position: relative;
+        }
+
+        .chart-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12.5px;
+            text-decoration: underline;
+            margin-bottom: 4px;
+        }
+
+        .chart-flex {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .chart-flex .chart-svg-cell {
+            display: table-cell;
+            width: 68%;
+            vertical-align: middle;
+        }
+
+        .chart-flex .chart-legend-cell {
+            display: table-cell;
+            width: 32%;
+            vertical-align: middle;
+            padding-left: 6px;
+            font-size: 8px;
+            line-height: 1.25;
+        }
+
+        .chart-flex .chart-legend-cell .leg-item {
+            margin-bottom: 5px;
+        }
+
+        .chart-flex .chart-legend-cell .leg-dot {
+            color: #5b9bd5;
+            font-weight: bold;
+            font-size: 9px;
+        }
+
+        /* SVG Charts */
+        .chart-svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 34mm;
+            margin: 0 auto;
+        }
+
+        /* Page 2 Layout */
+        .feedback-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+            margin-bottom: 20mm;
+        }
+
+        .feedback-table th {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: left;
+            font-weight: normal;
+            font-size: 12px;
+            vertical-align: top;
+        }
+
+        .feedback-table td {
+            border: 1px solid #000;
+            padding: 4px 6px;
+            font-size: 11px;
+            height: 24px;
+        }
+
+        .signature-section {
+            width: 100%;
+            margin-top: 30mm;
+        }
+
+        .sig-cell {
+            display: table-cell;
+            width: 33.33%;
+            text-align: left;
+            padding-left: 20px;
+            font-size: 13px;
+        }
+
+        .footer-page-num {
+            text-align: center;
+            position: absolute;
+            bottom: 5px;
+            width: 100%;
+            font-size: 13px;
+        }
+
+        /* หน้า 3: ตารางคะแนนรายบุคคล (สูงได้ตามจำนวนคน) */
+        .page-flow {
+            width: 100%;
+            min-height: 198mm;
+            padding-top: 10px;
+            page-break-before: always;
+            position: relative;
+        }
+
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+        }
+
+        .score-table th,
+        .score-table td {
+            border: 1px solid #000;
+            padding: 2px 6px;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        .score-table th {
+            background-color: #fff;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .score-table tfoot td {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- แถบเครื่องมือ (ไม่แสดงตอนพิมพ์) -->
+    <div class="no-print">
+        <span><b>รายงานสรุปการประเมินผลฝึกอบรม</b> &nbsp;|&nbsp; สร้างเมื่อ
+            <?= r.generatedAt ?>
+        </span>
+        <button onclick="window.print()"
+            style="background: #fff; color: #1e3a8a; border: none; padding: 6px 18px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer;">
+            พิมพ์รายงาน
+        </button>
+    </div>
+
+    <!-- แถบกรองข้อมูล (ไม่แสดงตอนพิมพ์) -->
+    <div class="filter-bar">
+        <div class="filters-row">
+            <label>หลักสูตร
+                <select id="f-course">
+                    <option value="">ทั้งหมด</option>
+                    <? for (var ci = 0; ci < r.courseOptions.length; ci++) { ?>
+                    <option value="<?= r.courseOptions[ci] ?>" <?=r.filterCourse===r.courseOptions[ci] ? 'selected' : ''
+                        ?>>
+                        <?= r.courseOptions[ci] ?>
+                    </option>
+                    <? } ?>
+                </select>
+            </label>
+            <label>เพศ
+                <select id="f-gender">
+                    <option value="">ทั้งหมด</option>
+                    <option value="ชาย" <?=r.filterGender==='ชาย' ? 'selected' : '' ?>>ชาย</option>
+                    <option value="หญิง" <?=r.filterGender==='หญิง' ? 'selected' : '' ?>>หญิง</option>
+                </select>
+            </label>
+            <label>วันที่จาก
+                <input type="date" id="f-from" value="<?= r.filterFrom ?>">
+            </label>
+            <label>ถึง
+                <input type="date" id="f-to" value="<?= r.filterTo ?>">
+            </label>
+            <label>จำนวนผู้เข้าอบรม
+                <input type="number" id="f-attendees" min="0" style="width: 80px;" placeholder="ทั้งหมด"
+                    value="<?= r.filterAttendees ?>">
+            </label>
+            <label>
+                <input type="number" id="f-hours-days" min="0" style="width: 55px;" placeholder="วัน"
+                    value="<?= r.filterHoursDays ?>">
+                วัน
+                <input type="number" id="f-hours-hrs" min="0" style="width: 55px;" placeholder="ชม."
+                    value="<?= r.filterHoursHrs ?>">
+                ชม.
+            </label>
+            <label>แผนก
+                <select id="f-dept">
+                    <option value="">ทั้งหมด</option>
+                    <? for (var di = 0; di < r.deptOptions.length; di++) { ?>
+                    <option value="<?= r.deptOptions[di] ?>" <?=r.filterDept===r.deptOptions[di] ? 'selected' : '' ?>>
+                        <?= r.deptOptions[di] ?>
+                    </option>
+                    <? } ?>
+                </select>
+            </label>
+            <button type="button" onclick="applyReportFilter()">กรอง</button>
+            <button type="button" class="reset-btn" onclick="resetReportFilter()">แสดงทั้งหมด</button>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 1 ================= -->
+    <div class="page">
+        <div class="page-content">
+            <div style="margin-bottom: 10px;">
+                <div class="top-left-box">แผนกบุคคลธุรการ</div>
+                <div class="top-right-box">CM 2</div>
+                <div style="clear: both;"></div>
+            </div>
+
+            <div class="main-title">รายงานสรุปการประเมินผลฝึกอบรม</div>
+
+            <table style="width: 100%; margin-bottom: 10px; font-size: 12px;">
+                <tr style="white-space: nowrap;">
+                    <td style="width: 20%;">ชื่อหลักสูตร <span class="dots" style="width: auto; min-width: 40px;">
+                            <?= r.courseName ?>
+                        </span></td>
+                    <td style="width: 9%;">วันที่ <span class="dots" style="width: 42px;">
+                            <?= r.startDate ?>
+                        </span></td>
+                    <td style="width: 11%;">ถึงวันที่ <span class="dots" style="width: 42px;">
+                            <?= r.endDate ?>
+                        </span></td>
+                    <td style="width: 21%;">จำนวน <span class="dots" style="width: 24px;">
+                            <?= r.hoursDays ?>
+                        </span>&nbsp;วัน <span class="dots" style="width: 24px;">
+                            <?= r.hoursHrs ?>
+                        </span>&nbsp;ชั่วโมง</td>
+                    <td style="width: 39%;">สถานที่จัดอบรม <span style="text-decoration: underline;">บ.
+                            เชียงใหม่โฟรเซ่นฟู๊ดส์ จำกัด (มหาชน) โรงงาน 2</span></td>
+                </tr>
+            </table>
+
+            <table style="width: 100%; margin-bottom: 10px; font-size: 13px;">
+                <tr>
+                    <td style="width: 15%;">จำนวนผู้เข้าอบรม</td>
+                    <td style="width: 12%;"><span style="text-decoration: underline;">
+                            <?= r.totalAttendees ?>
+                            คน
+                        </span>
+                        <? if (r.totalAttendees !== '—') { ?>
+                        &nbsp;&nbsp;&ndash;&nbsp;&nbsp; <span style="text-decoration: underline;">100 %</span>
+                        <? } ?>
+                    </td>
+                    <td style="width: 12%;">เพศชาย <span class="dots" style="width: 50px;">
+                            <?= r.totalMale ?>
+                        </span> คน</td>
+                    <td style="width: 61%;" rowspan="3" valign="top">
+                        แผนก <span class="dots" style="width: auto; min-width: 150px; max-width: 100%;">
+                            <?= r.deptText ?>
+                        </span>
+                        คน / <span class="dots" style="width: auto; min-width: 90px;">รวม
+                            <?= r.deptCount ?> แผนก
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>ทำแบบประเมิน</td>
+                    <td><span style="text-decoration: underline;">
+                            <?= r.totalEvaluated ?>
+                            คน
+                        </span>
+                        <? if (r.evalPercent !== '—') { ?>
+                        &nbsp;&nbsp;&ndash;&nbsp;&nbsp; <span style="text-decoration: underline;">
+                            <?= r.evalPercent ?> %
+                        </span>
+                        <? } ?>
+                    </td>
+                    <td>เพศหญิง <span class="dots" style="width: 50px;">
+                            <?= r.totalFemale ?>
+                        </span> คน</td>
+                </tr>
+                <? if (r.totalAttendees !== '—') { ?>
+                <tr>
+                    <td>ไม่ทำแบบประเมิน</td>
+                    <td style="color: #b91c1c; font-weight: bold;"><span style="text-decoration: underline;">
+                            <?= r.notEvaluated ?>
+                            คน
+                        </span> &nbsp;&nbsp;&ndash;&nbsp;&nbsp; <span style="text-decoration: underline;">
+                            <?= r.notEvalPercent ?> %
+                        </span></td>
+                    <td></td>
+                </tr>
+                <? } ?>
+            </table>
+
+            <div style="margin-bottom: 5px;">
+                <div style="float: left; width: 40%;" class="note-text">
+                    <b>หมายเหตุ :</b> ผลการประเมิน 5 &ndash; มากที่สุด 4 &ndash; มาก 3 &ndash; ปานกลาง 2 &ndash; น้อย 1
+                    &ndash; น้อยที่สุด
+                </div>
+                <div style="float: left; width: 60%; font-size: 13px; padding-top: 10px;">
+                    วิทยากร &nbsp;&nbsp;คุณ <span class="dots" style="width: 250px;">
+                        <?= r.speaker ?>
+                    </span>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+
+            <div class="grid-container">
+                <!-- LEFT COLUMN: TABLES -->
+                <div class="left-col">
+                    <table class="eval-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 75%;">ข้อมูลการประเมินผล (ผู้เข้าอบรม)</th>
+                                <th style="width: 25%;">คะแนนเฉลี่ย</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="sec-header">
+                                <td><b>1 &nbsp;&nbsp;การประเมินผลเนื้อหาการสัมมนา</b></td>
+                                <td class="text-center red-text">
+                                    <?= r.sec1 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">1.1 &nbsp;&nbsp;ก่อนการอบรม / สัมมนา
+                                    ท่านมีความรู้ในเรื่องนี้</td>
+                                <td class="text-center">
+                                    <?= r.q1_1 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">1.2 &nbsp;&nbsp;หลังการอบรม / สัมมนา
+                                    ท่านมีความรู้เพิ่มขึ้น
+                                </td>
+                                <td class="text-center">
+                                    <?= r.q1_2 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">1.3 &nbsp;&nbsp;ท่านได้รับความเข้าใจ /
+                                    เนื้อหาวิชาที่ได้รับสามารถนำไปใช้ได้</td>
+                                <td class="text-center">
+                                    <?= r.q1_3 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">1.4 &nbsp;&nbsp;ระยะเวลาในการอบรม / สัมมนาเหมาะสม</td>
+                                <td class="text-center">
+                                    <?= r.q1_4 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">1.5 &nbsp;&nbsp;เอกสารประกอบการฝึกอบรมสัมมนา</td>
+                                <td class="text-center">
+                                    <?= r.q1_5 ?>
+                                </td>
+                            </tr>
+
+                            <tr class="sec-header">
+                                <td><b>2 &nbsp;&nbsp;การประเมินผลวิทยากร</b></td>
+                                <td class="text-center red-text">
+                                    <?= r.sec2 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">2.1 &nbsp;&nbsp;วิธีการถ่ายทอดความรู้ /
+                                    การยกตัวอย่างประกอบมีความชัดเจน</td>
+                                <td class="text-center">
+                                    <?= r.q2_1 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">2.2 &nbsp;&nbsp;การสร้างบรรยากาศ / การมีส่วนร่วม /
+                                    การกระตุ้นให้ผู้ฟังได้ใช้ความคิด</td>
+                                <td class="text-center">
+                                    <?= r.q2_2 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">2.3 &nbsp;&nbsp;ภาษาและคำพูดที่ใช้ในการบรรยาย /
+                                    การตอบคำถามชัดเจน</td>
+                                <td class="text-center">
+                                    <?= r.q2_3 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">2.4 &nbsp;&nbsp;การตรงต่อเวลา</td>
+                                <td class="text-center">
+                                    <?= r.q2_4 ?>
+                                </td>
+                            </tr>
+
+                            <tr class="sec-header">
+                                <td><b>3 &nbsp;&nbsp;การประเมินผลการดำเนินงานของผู้จัดอบรมสัมมนา</b></td>
+                                <td class="text-center red-text">
+                                    <?= r.sec3 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">3.1
+                                    &nbsp;&nbsp;สถานที่และสภาพแวดล้อมในการสัมมนามีความเหมาะสม</td>
+                                <td class="text-center">
+                                    <?= r.q3_1 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">3.2 &nbsp;&nbsp;ความพร้อมของอุปกรณ์โสตทัศนูปกรณ์ต่าง ๆ
+                                </td>
+                                <td class="text-center">
+                                    <?= r.q3_2 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">3.3 &nbsp;&nbsp;อาหาร และเครื่องดื่ม</td>
+                                <td class="text-center">
+                                    <?= r.q3_3 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">3.4 &nbsp;&nbsp;ความชัดเจนในการชี้แจงรายละเอียดต่าง ๆ
+                                </td>
+                                <td class="text-center">
+                                    <?= r.q3_4 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 20px;">3.5 &nbsp;&nbsp;ความกระตือรือร้นในการให้บริการ /
+                                    ช่วยเหลือ</td>
+                                <td class="text-center">
+                                    <?= r.q3_5 ?>
+                                </td>
+                            </tr>
+                            <tr style="border-top: 2px solid #000;">
+                                <td class="text-center bold">ภาพรวมของหลักสูตร</td>
+                                <td class="text-center red-text">
+                                    <?= r.overall ?>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="height: 15px;"></div>
+
+                    <!-- BOTTOM TABLE (HEAD OF DEPT EVALUATION) -->
+                    <table class="eval-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 75%;">การประเมินผลผู้เข้าอบรม ( หัวหน้างาน )</th>
+                                <th style="width: 25%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>มีทัศนคติในการทำงานเชิงบวก สามารถปรับเปลี่ยนพฤติกรรมในการทำงาน ในทางที่ดีขึ้น</td>
+                                <td class="text-center bold" style="font-size: 13px;">
+                                    <?= r.sup1 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>เพิ่มประสิทธิภาพการปฏิบัติงานในหน้าที่ที่ได้รับผิดชอบดีขึ้น</td>
+                                <td class="text-center bold" style="font-size: 13px;">
+                                    <?= r.sup2 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ประสานงานร่วมกับผู้อื่นหรือหน่วยงานที่เกี่ยวข้องได้อย่างมีประสิทธิภาพ</td>
+                                <td class="text-center bold" style="font-size: 13px;">
+                                    <?= r.sup3 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>สามารถนำความรู้ / ทักษะที่ได้รับจากการอบรมไปใช้ในการทำงานหรือแก้ไขปัญหาได้</td>
+                                <td class="text-center bold" style="font-size: 13px;">
+                                    <?= r.sup4 ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>สามารถสร้างสรรค์แนวคิดใหม่ๆ ในการทำงานและนำความรู้ไปเผยแพร่หรือถ่ายทอดได้</td>
+                                <td class="text-center bold" style="font-size: 13px;">
+                                    <?= r.sup5 ?>
+                                </td>
+                            </tr>
+                            <tr style="background-color: #f9f9f9;">
+                                <td class="text-center bold" style="color: #002060;">
+                                    มีความพึงพอใจกับการส่งพนักงานเข้าอบรมในหลักสูตรนี้</td>
+                                <td class="text-center bold red-text" style="font-size: 13px;">
+                                    <?= r.sat ?>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- RIGHT COLUMN: CHARTS -->
+                <div class="right-col">
+                    <!-- CHART 1 -->
+                    <div class="chart-box">
+                        <div class="chart-title">สรุปเปรียบเทียบผลฝึกอบรม</div>
+                        <?!= r.chart1Svg ?>
+
+                        <!-- Legend -->
+                        <div
+                            style="margin-top: 2px; font-size: 9.5px; display: table; margin-left: auto; margin-right: auto;">
+                            <div style="margin-bottom: 1px;">
+                                <span style="color:#ffc000; font-weight:bold;">&#9670;</span>
+                                &nbsp;การประเมินผลเนื้อหาการสัมมนา&nbsp;&nbsp;&nbsp;
+                                <span style="color:#5b9bd5; font-weight:bold;">&#9670;</span>
+                                &nbsp;การประเมินผลวิทยากร
+                            </div>
+                            <div>
+                                <span style="color:#70ad47; font-weight:bold;">&#9670;</span>
+                                &nbsp;การประเมินผลการดำเนินงานของผู้จัดอบรมสัมมนา&nbsp;&nbsp;&nbsp;
+                                <span style="color:#ff0000; font-weight:bold;">&#9670;</span>
+                                &nbsp;ภาพรวมของหลักสูตร
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHART 2 -->
+                    <div class="chart-box">
+                        <div class="chart-title">สรุปผลผู้เข้าอบรม (หัวหน้างาน)</div>
+                        <div class="chart-flex">
+                            <div class="chart-svg-cell">
+                                <?!= r.chart2Svg ?>
+                            </div>
+
+                            <!-- Legend list (in normal flow, beside chart) -->
+                            <div class="chart-legend-cell">
+                                <div class="leg-item"><span
+                                        class="leg-dot">&#9679;</span>&nbsp;มีทัศนคติในการทำงานเชิงบวก
+                                    สามารถปรับเปลี่ยนพฤติกรรมในการทำงาน ในทางที่ดีขึ้น</div>
+                                <div class="leg-item"><span
+                                        class="leg-dot">&#9679;</span>&nbsp;เพิ่มประสิทธิภาพการปฏิบัติงานในหน้าที่ที่ได้รับผิดชอบดีขึ้น
+                                </div>
+                                <div class="leg-item"><span
+                                        class="leg-dot">&#9679;</span>&nbsp;ประสานงานร่วมกับผู้อื่นหรือหน่วยงานที่เกี่ยวข้องได้อย่างมีประสิทธิภาพ
+                                </div>
+                                <div class="leg-item"><span class="leg-dot">&#9679;</span>&nbsp;สามารถนำความรู้ /
+                                    ทักษะที่ได้รับจากการอบรมไปใช้ในการทำงานหรือแก้ไขปัญหาได้</div>
+                                <div class="leg-item"><span
+                                        class="leg-dot">&#9679;</span>&nbsp;สามารถสร้างสรรค์แนวคิดใหม่ๆ
+                                    ในการทำงานและนำความรู้ไปเผยแพร่หรือถ่ายทอดได้</div>
+                                <div class="leg-item"><span
+                                        class="leg-dot">&#9679;</span>&nbsp;มีความพึงพอใจกับการส่งพนักงานเข้าอบรมในหลักสูตรนี้
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-page-num">หน้าที่ 1 จาก 3</div>
+        </div>
+    </div>
+
+
+    <!-- ================= PAGE 2 ================= -->
+    <div class="page" style="padding-top: 10px;">
+        <div class="page-content">
+            <table class="feedback-table">
+                <thead>
+                    <tr>
+                        <th style="width: 33.33%;">4 .ท่านคิดว่าประโยชน์ที่ได้รับจากการสัมมนาในครั้งนี้
+                            จะนำไปพัฒนาการทำงานของ ท่านในเรื่องใดบ้าง</th>
+                        <th style="width: 33.33%;">5.ท่านคิดว่าบริษัท / หน่วยงานควรจัดสัมมนาในหัวข้อเกี่ยวกับเรื่องใด
+                        </th>
+                        <th style="width: 33.33%;">6.ข้อคิดเห็นและข้อเสนอแนะอื่นๆ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <? for (var i = 0; i < r.feedbackRows.length; i++) { ?>
+                    <tr>
+                        <td>
+                            <?= r.feedbackRows[i].b ?>
+                        </td>
+                        <td>
+                            <?= r.feedbackRows[i].n ?>
+                        </td>
+                        <td>
+                            <?= r.feedbackRows[i].c ?>
+                        </td>
+                    </tr>
+                    <? } ?>
+                </tbody>
+            </table>
+
+            <div class="signature-section">
+                <div style="display: table; width: 100%;">
+                    <div class="sig-cell">
+                        <b>ผู้จัดทำ</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                            style="text-decoration: underline; font-weight: bold;">
+                            <?= r.preparedBy ?>
+                        </span>
+                    </div>
+                    <div class="sig-cell">
+                        <b>ผู้ตรวจสอบ</b> &nbsp;&nbsp;<span class="dots" style="width: 180px;"></span>
+                    </div>
+                    <div class="sig-cell">
+                        <b>หัวหน้าแผนก</b> &nbsp;<span class="dots" style="width: 180px;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-page-num">หน้าที่ 2 จาก 3</div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 3: คะแนนรายบุคคล ================= -->
+    <div class="page-flow">
+        <div class="page-content">
+            <div style="margin-bottom: 10px;">
+                <div class="top-left-box">แผนกบุคคลธุรการ</div>
+                <div class="top-right-box">CM 2</div>
+                <div style="clear: both;"></div>
+            </div>
+
+            <div class="main-title">สรุปคะแนนการประเมินผลฝึกอบรม</div>
+
+            <div style="text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 4px;">
+                สรุปค่าเฉลี่ยรายหลักสูตร</div>
+            <table class="score-table" style="margin-bottom: 10px;">
+                <thead>
+                    <tr>
+                        <th style="width: 7%;">ลำดับ</th>
+                        <th style="width: 44%;">หลักสูตร</th>
+                        <th style="width: 14%;">จำนวนคน</th>
+                        <th style="width: 17%;">คะแนนรวมเฉลี่ย</th>
+                        <th style="width: 18%;">คะแนนเฉลี่ย (เต็ม 5)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <? for (var ci2 = 0; ci2 < r.courseStats.length; ci2++) { ?>
+                    <tr>
+                        <td class="text-center">
+                            <?= ci2 + 1 ?>
+                        </td>
+                        <td>
+                            <?= r.courseStats[ci2].course ?>
+                        </td>
+                        <td class="text-center">
+                            <?= r.courseStats[ci2].count ?>
+                        </td>
+                        <td class="text-center">
+                            <?= r.courseStats[ci2].totalAvg ?>
+                        </td>
+                        <td class="text-center">
+                            <?= r.courseStats[ci2].avg ?>
+                        </td>
+                    </tr>
+                    <? } ?>
+                </tbody>
+            </table>
+
+            <div style="text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 4px;">คะแนนรายบุคคล</div>
+            <table class="score-table">
+                <thead>
+                    <tr>
+                        <th style="width: 7%;">ลำดับ</th>
+                        <th style="width: 33%;">ชื่อ-นามสกุล</th>
+                        <th style="width: 22%;">แผนก</th>
+                        <th style="width: 19%;">คะแนนรวม</th>
+                        <th style="width: 19%;">คะแนนเฉลี่ย</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <? for (var si = 0; si < r.scoreRows.length; si++) { ?>
+                    <tr>
+                        <td class="text-center">
+                            <?= si + 1 ?>
+                        </td>
+                        <td>
+                            <?= r.scoreRows[si].name ?>
+                        </td>
+                        <td>
+                            <?= r.scoreRows[si].dept ?>
+                        </td>
+                        <td class="text-center">
+                            <?= r.scoreRows[si].total === null ? '—' : r.scoreRows[si].total ?>
+                        </td>
+                        <td class="text-center">
+                            <?= r.scoreRows[si].avg ?>
+                        </td>
+                    </tr>
+                    <? } ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-center bold">ค่าเฉลี่ยของทุกคน (
+                            <?= r.scoreCount ?> คน)
+                        </td>
+                        <td class="text-center bold">
+                            <?= r.scoreAvgTotal ?>
+                        </td>
+                        <td class="text-center bold">
+                            <?= r.scoreAvg ?>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="note-text" style="margin-top: 6px;">
+                <b>หมายเหตุ :</b> คะแนนรวมเต็ม 70 คะแนน (14 ข้อ × 5) &nbsp;|&nbsp; คะแนนเฉลี่ยเต็ม 5
+            </div>
+
+            <div class="footer-page-num">หน้าที่ 3 จาก 3</div>
+        </div>
+    </div>
+
+    <script>
+        // ส่งค่ากรองกลับไปยังหน้าหลัก (opener) เพื่อให้ server คำนวณใหม่แล้วเขียนกลับมา
+        // ใช้ postMessage — ไม่มีการส่งพารามิเตอร์ผ่าน URL / ไม่มีการ submit ฟอร์ม
+        function sendFilter(filters) {
+            if (window.opener && window.opener.postMessage) {
+                window.opener.postMessage({ type: 'reportFilter', filters: filters }, '*');
+            }
+        }
+
+        function applyReportFilter() {
+            sendFilter({
+                course: document.getElementById('f-course').value || '',
+                gender: document.getElementById('f-gender').value || '',
+                dept: document.getElementById('f-dept').value || '',
+                from: document.getElementById('f-from').value || '',
+                to: document.getElementById('f-to').value || '',
+                attendees: document.getElementById('f-attendees').value || '',
+                hoursday: (document.getElementById('f-hours-days').value || '') + '|' + (document.getElementById('f-hours-hrs').value || '')
+            });
+        }
+
+        function resetReportFilter() {
+            sendFilter({ course: '', gender: '', dept: '', from: '', to: '', attendees: '', hoursday: '' });
+        }
+    </script>
+
+</body>
+
+</html>

@@ -69,6 +69,117 @@ async function getProfile(userId) {
   return await lineApiRequest('/v2/bot/profile/' + userId, 'GET');
 }
 
+// ฟังก์ชันดึงข้อมูลพนักงานจาก Google Sheet (CSV)
+const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/10Wm5nWoDe_mYSKMAZh8Db1jqLtcvap2mhfOdO1QDMdM/export?format=csv';
+
+function fetchEmployeeSheet() {
+  return new Promise((resolve, reject) => {
+    const https = require('https');
+    
+    const getUrl = (url) => {
+      https.get(url, (res) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          getUrl(res.headers.location);
+          return;
+        }
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const lines = data.split(/\r?\n/).filter(line => line.trim() !== '');
+            if (lines.length <= 1) {
+              resolve([]);
+              return;
+            }
+            // Header: แผนก,รหัสพนักงาน,ชื่อ สกุลพนักงาน,ที่อยู่ปัจจุบัน,เงินเดือน,รูปโปรไฟล์
+            const employees = [];
+            for (let i = 1; i < lines.length; i++) {
+              const cols = lines[i].split(',');
+              if (cols.length >= 5) {
+                employees.push({
+                  dept: cols[0] ? cols[0].trim() : '',
+                  id: cols[1] ? cols[1].trim() : '',
+                  name: cols[2] ? cols[2].trim() : '',
+                  address: cols[3] ? cols[3].trim() : '',
+                  salary: cols[4] ? cols[4].trim() : '0',
+                  avatar: cols[5] ? cols[5].trim() : 'https://i.pravatar.cc/150'
+                });
+              }
+            }
+            resolve(employees);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }).on('error', reject);
+    };
+
+    getUrl(GOOGLE_SHEET_CSV_URL);
+  });
+}
+
+async function searchEmployees(query) {
+  const employees = await fetchEmployeeSheet();
+  if (!query) return employees;
+  const q = query.toLowerCase().trim();
+  return employees.filter(emp => 
+    emp.name.toLowerCase().includes(q) ||
+    emp.id.toLowerCase().includes(q) ||
+    emp.dept.toLowerCase().includes(q) ||
+    emp.address.toLowerCase().includes(q)
+  );
+}
+
+async function sendEmployeeFlex(query, userId) {
+  try {
+    const matched = await searchEmployees(query);
+    if (matched.length === 0) {
+      return await sendMessage(userId, `❌ ไม่พบข้อมูลพนักงานที่ตรงกับคำค้นหา: "${query}"`);
+    }
+
+    // สร้าง Flex Carousel หากมีหลายคน หรือ Bubble หากมีคนเดียว
+    const bubbles = matched.slice(0, 5).map(emp => {
+      const salaryNum = parseInt(emp.salary.replace(/[^0-9]/g, '')) || 0;
+      return {
+        type: 'bubble',
+        size: 'micro',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: '#1775F1',
+          contents: [
+            { type: 'text', text: emp.dept, color: '#ffffff', weight: 'bold', size: 'xs' },
+            { type: 'text', text: emp.id, color: '#e6f7ff', size: 'xxs' }
+          ]
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            { type: 'text', text: emp.name, weight: 'bold', size: 'sm', wrap: true },
+            { type: 'text', text: `📍 ${emp.address}`, size: 'xxs', color: '#666666', wrap: true, margin: 'xs' },
+            { type: 'separator', margin: 'sm' },
+            { type: 'text', text: `💰 ${salaryNum.toLocaleString()} บาท`, size: 'xs', color: '#52c41a', weight: 'bold', margin: 'sm' }
+          ]
+        }
+      };
+    });
+
+    const flexPayload = {
+      type: 'flex',
+      altText: `ข้อมูลพนักงาน (${query}): ${matched.length} รายการ`,
+      contents: matched.length === 1 ? bubbles[0] : { type: 'carousel', contents: bubbles }
+    };
+
+    return await lineApiRequest('/v2/bot/message/push', 'POST', {
+      to: userId || MY_USER_ID,
+      messages: [flexPayload]
+    });
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลพนักงานหรือส่ง Flex ได้: ' + error.message);
+  }
+}
+
 // เช็คสถานะ
 function checkStatus() {
   return {
@@ -959,8 +1070,154 @@ const httpServer = http.createServer(async (req, res) => {
     req.on('data', (chunk) => { body += chunk; });
     req.on('end', async () => {
       try {
-        const request = JSON.parse(body);
-        const response = await handleMCPRequest(request);
+        const payload = JSON.parse(body);
+
+        // ตรวจว่าเป็น Webhook Event จาก LINE เข้ามาที่ /webhook หรือไม่
+        if (req.url === '/webhook' || (payload.events && Array.isArray(payload.events))) {
+          const events = payload.events || [];
+          for (const event of events) {
+            if (event.type === 'message' && event.message && event.message.type === 'text') {
+              const text = event.message.text.trim();
+              const replyToken = event.replyToken;
+              const userId = event.source ? event.source.userId : null;
+
+              // ดึงโปรไฟล์เพื่อดูชื่อผู้ใช้งาน LINE
+              let displayName = 'คุณธีรพงศ์';
+              if (userId) {
+                try {
+                  const prof = await getProfile(userId);
+                  if (prof && prof.displayName) displayName = prof.displayName;
+                } catch(e) {}
+              }
+
+              // สร้าง Flex Message สำหรับการตอบกลับทุกเคส
+              let flexMessagesPayload = [];
+
+              if (text.includes('ทอง') || text.includes('gold')) {
+                const data = await fetchGoldPrices();
+                if (data) {
+                  const diffNum = parseFloat((data.diff || '0').replace(/[^0-9.-]/g, '')) || 0;
+                  let diffColor = '#52c41a';
+                  if (diffNum < 0) diffColor = '#ff4d4f';
+                  flexMessagesPayload.push({
+                    type: 'flex',
+                    altText: `รายงานราคาทองคำวันนี้ (${data.date})`,
+                    contents: {
+                      type: 'bubble',
+                      header: {
+                        type: 'box',
+                        layout: 'vertical',
+                        backgroundColor: '#b78103',
+                        contents: [
+                          { type: 'text', text: `สวัสดีครับ ${displayName}! 🏆`, color: '#ffffff', size: 'xs', weight: 'bold' },
+                          { type: 'text', text: 'ราคาทองคำประจำวัน', weight: 'bold', color: '#ffffff', size: 'lg', margin: 'xs' },
+                          { type: 'text', text: `อัปเดต ${data.date} ${data.time}`, color: '#fff3cd', size: 'xs', margin: 'xs' }
+                        ]
+                      },
+                      body: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                          { type: 'text', text: 'ทองคำแท่ง 96.5%', weight: 'bold', size: 'sm', color: '#8c6d00' },
+                          { type: 'box', layout: 'horizontal', margin: 'xs', contents: [{ type: 'text', text: 'รับซื้อ', size: 'xs', color: '#777777', flex: 2 }, { type: 'text', text: `${data.goldBarBuy} บาท`, size: 'sm', color: '#111111', weight: 'bold', align: 'end', flex: 3 }] },
+                          { type: 'box', layout: 'horizontal', margin: 'xs', contents: [{ type: 'text', text: 'ขายออก', size: 'xs', color: '#777777', flex: 2 }, { type: 'text', text: `${data.goldBarSell} บาท`, size: 'sm', color: '#d97706', weight: 'bold', align: 'end', flex: 3 }] },
+                          { type: 'separator', margin: 'md' },
+                          { type: 'text', text: 'ทองรูปพรรณ 96.5%', weight: 'bold', size: 'sm', color: '#8c6d00', margin: 'md' },
+                          { type: 'box', layout: 'horizontal', margin: 'xs', contents: [{ type: 'text', text: 'ฐานภาษี/รับซื้อ', size: 'xs', color: '#777777', flex: 2 }, { type: 'text', text: `${data.goldOmBuy} บาท`, size: 'sm', color: '#111111', weight: 'bold', align: 'end', flex: 3 }] },
+                          { type: 'box', layout: 'horizontal', margin: 'xs', contents: [{ type: 'text', text: 'ขายออก', size: 'xs', color: '#777777', flex: 2 }, { type: 'text', text: `${data.goldOmSell} บาท`, size: 'sm', color: '#d97706', weight: 'bold', align: 'end', flex: 3 }] }
+                        ]
+                      }
+                    }
+                  });
+                }
+              } else {
+                // ค้นหาพนักงานจาก Google Sheet
+                const matched = await searchEmployees(text);
+                if (matched && matched.length > 0) {
+                  const bubbles = matched.slice(0, 10).map(emp => {
+                    const salaryNum = parseInt(emp.salary.replace(/[^0-9]/g, '')) || 0;
+                    return {
+                      type: 'bubble',
+                      size: 'micro',
+                      header: {
+                        type: 'box',
+                        layout: 'vertical',
+                        backgroundColor: '#1775F1',
+                        contents: [
+                          { type: 'text', text: emp.dept, color: '#ffffff', weight: 'bold', size: 'xs' },
+                          { type: 'text', text: emp.id, color: '#e6f7ff', size: 'xxs' }
+                        ]
+                      },
+                      body: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                          { type: 'text', text: emp.name, weight: 'bold', size: 'sm', wrap: true },
+                          { type: 'text', text: `📍 ${emp.address}`, size: 'xxs', color: '#666666', wrap: true, margin: 'xs' },
+                          { type: 'separator', margin: 'sm' },
+                          { type: 'text', text: `💰 ${salaryNum.toLocaleString()} บาท`, size: 'xs', color: '#52c41a', weight: 'bold', margin: 'sm' }
+                        ]
+                      }
+                    };
+                  });
+
+                  flexMessagesPayload.push({
+                    type: 'flex',
+                    altText: `ข้อมูลพนักงาน (${matched.length} รายการ)`,
+                    contents: matched.length === 1 ? bubbles[0] : { type: 'carousel', contents: bubbles }
+                  });
+                } else {
+                  // ถ้าทักทั่วไป หรือไม่พบพนักงาน ให้ส่ง Flex Card แนะนำภาพรวมจาก Google Sheet
+                  const allEmployees = await fetchEmployeeSheet();
+                  const depts = [...new Set(allEmployees.map(e => e.dept))];
+                  flexMessagesPayload.push({
+                    type: 'flex',
+                    altText: 'ข้อมูลพนักงานจาก Google Sheet',
+                    contents: {
+                      type: 'bubble',
+                      header: {
+                        type: 'box',
+                        layout: 'vertical',
+                        backgroundColor: '#102A43',
+                        contents: [
+                          { type: 'text', text: `สวัสดีครับ ${displayName}! 🤖`, color: '#38BEC9', size: 'xs', weight: 'bold' },
+                          { type: 'text', text: 'ระบบข้อมูลพนักงาน', weight: 'bold', color: '#ffffff', size: 'lg', margin: 'xs' },
+                          { type: 'text', text: 'อ้างอิงจาก Google Sheet', color: '#9FB3C8', size: 'xs', margin: 'xs' }
+                        ]
+                      },
+                      body: {
+                        type: 'box',
+                        layout: 'vertical',
+                        contents: [
+                          { type: 'text', text: `📊 พนักงานรวม: ${allEmployees.length} ท่าน`, size: 'sm', weight: 'bold', color: '#334E68' },
+                          { type: 'text', text: `🏢 แผนก: ${depts.join(', ')}`, size: 'xs', color: '#627D98', margin: 'xs', wrap: true },
+                          { type: 'separator', margin: 'md' },
+                          { type: 'text', text: '💡 ลองพิมพ์คำเหล่านี้เพื่อค้นหา:', size: 'xs', weight: 'bold', color: '#102A43', margin: 'md' },
+                          { type: 'text', text: '• ชื่อพนักงาน (เช่น "สมชาย")', size: 'xs', color: '#486581', margin: 'xs' },
+                          { type: 'text', text: '• รหัสพนักงาน (เช่น "EMP001")', size: 'xs', color: '#486581', margin: 'xs' },
+                          { type: 'text', text: '• แผนก (เช่น "IT", "Sales", "HR")', size: 'xs', color: '#486581', margin: 'xs' },
+                          { type: 'text', text: '• จังหวัด (เช่น "กรุงเทพฯ", "เชียงใหม่")', size: 'xs', color: '#486581', margin: 'xs' }
+                        ]
+                      }
+                    }
+                  });
+                }
+              }
+
+              if (flexMessagesPayload.length > 0 && replyToken) {
+                await lineApiRequest('/v2/bot/message/reply', 'POST', {
+                  replyToken: replyToken,
+                  messages: flexMessagesPayload
+                });
+              }
+            }
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+          return;
+        }
+
+        const response = await handleMCPRequest(payload);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(response));
       } catch (error) {
@@ -1095,6 +1352,38 @@ async function handleMCPRequest(request) {
                 }
               }
             }
+          },
+          {
+            name: 'search_employee_info',
+            description: 'ค้นหาข้อมูลพนักงานจาก Google Sheet (แผนก, รหัส, ชื่อ-สกุล, ที่อยู่, เงินเดือน)',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                query: {
+                  type: 'string',
+                  description: 'คำค้นหา เช่น ชื่อ รหัสพนักงาน แผนก หรือจังหวัด'
+                }
+              },
+              required: ['query']
+            }
+          },
+          {
+            name: 'send_employee_flex',
+            description: 'ค้นหาและส่งข้อมูลพนักงานเป็น Flex Message หรูหราผ่าน LINE',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                query: {
+                  type: 'string',
+                  description: 'คำค้นหา เช่น ชื่อ รหัสพนักงาน แผนก หรือจังหวัด'
+                },
+                userId: {
+                  type: 'string',
+                  description: 'LINE User ID (ไม่ต้องใส่ถ้าส่งให้ตัวเอง)'
+                }
+              },
+              required: ['query']
+            }
           }
         ]
       }
@@ -1138,6 +1427,14 @@ async function handleMCPRequest(request) {
 
         case 'send_gold_price_flex':
           result = await sendGoldPriceFlex(args.userId);
+          break;
+
+        case 'search_employee_info':
+          result = await searchEmployees(args.query);
+          break;
+
+        case 'send_employee_flex':
+          result = await sendEmployeeFlex(args.query, args.userId);
           break;
           
         default:
