@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>คู่มือการใช้งานระบบจองห้องประชุม</title>
+<style>
+    :root {
+        --green: #06c755;
+        --green-dark: #049c42;
+        --amber: #f59e0b;
+        --red: #ef4444;
+        --blue: #3b82f6;
+        --ink: #1f2937;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --bg-soft: #f6faf8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4; margin: 0; }
+
+    body {
+        font-family: 'Noto Sans Thai', 'Noto Sans Thai UI', sans-serif;
+        color: var(--ink);
+        font-size: 11.5pt;
+        line-height: 1.75;
+    }
+
+    /* ============ COVER ============ */
+    .cover {
+        page-break-after: always;
+        height: 100vh;
+        background: linear-gradient(150deg, #062b17 0%, #05391d 40%, #064e2b 70%, #06c755 160%);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 70px 64px;
+        position: relative;
+    }
+    .cover::before {
+        content: '';
+        position: absolute;
+        top: -120px; right: -120px;
+        width: 420px; height: 420px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.06);
+    }
+    .cover::after {
+        content: '';
+        position: absolute;
+        bottom: -80px; left: -60px;
+        width: 300px; height: 300px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+    }
+    .cover-badge {
+        display: inline-block;
+        width: fit-content;
+        border: 1.5px solid rgba(255,255,255,0.45);
+        border-radius: 999px;
+        padding: 6px 22px;
+        font-size: 10.5pt;
+        letter-spacing: 2px;
+        margin-bottom: 36px;
+    }
+    .cover h1 {
+        font-size: 34pt;
+        font-weight: 800;
+        line-height: 1.35;
+        margin-bottom: 10px;
+    }
+    .cover h2 {
+        font-size: 15pt;
+        font-weight: 400;
+        color: #a7f3c9;
+        margin-bottom: 48px;
+    }
+    .cover-meta {
+        border-left: 4px solid var(--green);
+        padding-left: 20px;
+        font-size: 11pt;
+        color: #e5f7ec;
+        line-height: 2;
+    }
+    .cover-version {
+        position: absolute;
+        bottom: 56px; right: 64px;
+        text-align: right;
+        font-size: 10pt;
+        color: #a7f3c9;
+    }
+
+    /* ============ PAGE ============ */
+    .page {
+        padding: 52px 58px;
+        page-break-after: always;
+    }
+    .page:last-child { page-break-after: auto; }
+
+    h2.chapter {
+        font-size: 19pt;
+        font-weight: 800;
+        color: var(--green-dark);
+        border-bottom: 3px solid var(--green);
+        padding-bottom: 8px;
+        margin-bottom: 24px;
+    }
+    h2.chapter span.num {
+        display: inline-block;
+        background: var(--green);
+        color: #fff;
+        border-radius: 10px;
+        padding: 2px 14px;
+        margin-right: 12px;
+        font-size: 15pt;
+        vertical-align: middle;
+    }
+    h3 {
+        font-size: 13.5pt;
+        color: #05391d;
+        margin: 26px 0 10px;
+    }
+    h3::before { content: '▸ '; color: var(--green); }
+    p { margin-bottom: 10px; }
+    ul, ol { margin: 6px 0 14px 28px; }
+    li { margin-bottom: 6px; }
+    b, strong { color: #05391d; }
+    code {
+        background: #eef7f2;
+        border: 1px solid #d3eade;
+        border-radius: 6px;
+        padding: 1px 8px;
+        font-family: 'Noto Sans Thai UI', sans-serif;
+        font-weight: 600;
+        color: #047032;
+        white-space: nowrap;
+    }
+
+    /* ============ TOC ============ */
+    .toc-item {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 16px;
+    }
+    .toc-num {
+        min-width: 46px;
+        height: 34px;
+        background: var(--bg-soft);
+        border: 1.5px solid var(--green);
+        color: var(--green-dark);
+        font-weight: 700;
+        border-radius: 10px;
+        text-align: center;
+        line-height: 32px;
+        margin-right: 16px;
+    }
+    .toc-title { font-weight: 700; font-size: 12.5pt; }
+    .toc-desc { color: var(--muted); font-size: 10pt; margin-left: 62px; margin-top: -12px; }
+
+    /* ============ TABLES ============ */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0 18px;
+        font-size: 10.5pt;
+    }
+    th {
+        background: var(--green);
+        color: #fff;
+        text-align: left;
+        padding: 9px 12px;
+    }
+    td {
+        border: 1px solid var(--line);
+        padding: 8px 12px;
+        vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #fafcfa; }
+    .td-center { text-align: center; }
+
+    /* ============ CARDS & BOXES ============ */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0 18px; }
+    .card {
+        background: var(--bg-soft);
+        border: 1.5px solid #dcefe5;
+        border-radius: 14px;
+        padding: 16px 18px;
+    }
+    .card .icon {
+        font-size: 22pt;
+        display: block;
+        margin-bottom: 6px;
+    }
+    .card h4 { font-size: 12pt; color: #05391d; margin-bottom: 6px; }
+    .card p { font-size: 10pt; color: #374151; margin: 0; }
+
+    .callout {
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 14px 0;
+        font-size: 10.5pt;
+        border-left: 5px solid;
+    }
+    .callout.info   { background: #eff6ff; border-color: var(--blue); }
+    .callout.warn   { background: #fffbeb; border-color: var(--amber); }
+    .callout.danger { background: #fef2f2; border-color: var(--red); }
+    .callout.tip    { background: #f0fdf4; border-color: var(--green); }
+    .callout b.tag  { display: block; margin-bottom: 4px; font-size: 11pt; }
+
+    .flow {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        align-items: stretch;
+        margin: 14px 0;
+    }
+    .flow-step {
+        background: #fff;
+        border: 2px solid var(--green);
+        border-radius: 12px;
+        padding: 12px 10px;
+        text-align: center;
+        font-size: 9.5pt;
+        position: relative;
+    }
+    .flow-step .fs-icon { font-size: 16pt; display: block; margin-bottom: 4px; }
+    .flow-step b { display: block; font-size: 10pt; color: #05391d; margin-bottom: 2px; }
+
+    /* status pills */
+    .pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 1px 12px;
+        font-size: 9.5pt;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+    }
+    .pill.pending   { background: var(--amber); }
+    .pill.confirmed { background: var(--green); }
+    .pill.cancelled { background: var(--red); }
+    .pill.completed { background: #6b7280; }
+    .dot-ok   { color: var(--green); font-weight: bold; }
+    .dot-no   { color: var(--red);   font-weight: bold; }
+
+    .cmd-table td:first-child { width: 130px; }
+    .cmd {
+        display: inline-block;
+        background: #05391d;
+        color: #a7f3c9;
+        border-radius: 8px;
+        padding: 2px 12px;
+        font-weight: 600;
+        font-size: 10pt;
+    }
+
+    .footer-note {
+        margin-top: 30px;
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+        color: var(--muted);
+        font-size: 9pt;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER ==================== -->
+<div class="cover">
+    <div class="cover-badge">USER MANUAL · LINE MINI APP</div>
+    <h1>คู่มือการใช้งาน<br>ระบบจองห้องประชุม</h1>
+    <h2>Meeting Room Booking System — LINE MiniApp &amp; LINE Bot</h2>
+    <div class="cover-meta">
+        <p><strong>พัฒนาโดย:</strong> นายธีรพงศ์ พรหมวัง — แผนกเทคโนโลยีสารสนเทศ</p>
+        <p><strong>หน่วยงาน:</strong> บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) · โรงงาน 1</p>
+    </div>
+    <div class="cover-version">
+        เอกสารฉบับที่ 1.0<br>
+        ระบบเวอร์ชัน 30.0 (Auto Trigger + Admin Reminder)
+    </div>
+</div>
+
+<!-- ==================== TOC ==================== -->
+<div class="page">
+    <h2 class="chapter">สารบัญเอกสาร</h2>
+
+    <div class="toc-item"><div class="toc-num">01</div><div class="toc-title">ภาพรวมของระบบ</div></div>
+    <div class="toc-desc">ระบบทำงานร่วมกันอย่างไร — LINE MiniApp, LINE Bot, Google Apps Script, Firebase</div>
+
+    <div class="toc-item"><div class="toc-num">02</div><div class="toc-title">การเริ่มต้นใช้งาน</div></div>
+    <div class="toc-desc">การเข้าใช้งานผ่าน LINE และการลงทะเบียนอัตโนมัติของผู้ใช้ใหม่</div>
+
+    <div class="toc-item"><div class="toc-num">03</div><div class="toc-title">การใช้งานผ่าน LINE Bot</div></div>
+    <div class="toc-desc">คำสั่งทางลัด, Flex Message และการอนุมัติการจองจากในแชท</div>
+
+    <div class="toc-item"><div class="toc-num">04</div><div class="toc-title">การใช้งาน MiniApp</div></div>
+    <div class="toc-desc">หน้าแรก, ปฏิทินจอง, ฟอร์มจองห้อง, การจองข้ามวัน และการแชร์รายการ</div>
+
+    <div class="toc-item"><div class="toc-num">05</div><div class="toc-title">วงจรชีวิตการจอง (Booking Lifecycle)</div></div>
+    <div class="toc-desc">สถานะของการจองทั้งหมดและเงื่อนไขการเปลี่ยนสถานะ</div>
+
+    <div class="toc-item"><div class="toc-num">06</div><div class="toc-title">สิทธิ์การใช้งานแต่ละระดับ (Roles)</div></div>
+    <div class="toc-desc">เปรียบเทียบสิทธิ์ ผู้ดูแลระบบ / ผู้ดำเนินการ / ผู้ใช้งาน / ผู้เยี่ยมชม</div>
+
+    <div class="toc-item"><div class="toc-num">07</div><div class="toc-title">ระบบอัตโนมัติ (Triggers)</div></div>
+    <div class="toc-desc">แจ้งเตือนก่อนประชุม, ยกเลิกอัตโนมัติ, สรุปรายเดือน, เก็บกวาดผู้ใช้ Inactive</div>
+
+    <div class="toc-item"><div class="toc-num">08</div><div class="toc-title">คำถามที่พบบ่อย (FAQ) และการแก้ปัญหา</div></div>
+    <div class="toc-desc">ไม่ได้รับแจ้งเตือน, การจองถูกยกเลิกอัตโนมัติ, ปัญหาการเชื่อมต่อ</div>
+</div>
+
+<!-- ==================== CH 1 ==================== -->
+<div class="page">
+    <h2 class="chapter"><span class="num">01</span>ภาพรวมของระบบ</h2>
+
+    <p>ระบบจองห้องประชุมนี้เป็นแอปพลิเคชันที่ทำงานบนแพลตฟอร์ม <strong>LINE</strong> ทั้งหมด ผู้ใช้ไม่ต้องติดตั้งแอปเพิ่ม
+    เพียงมีบัญชี LINE ก็สามารถจองห้องประชุม ติดตามสถานะ และรับการแจ้งเตือนได้ครบวงจร</p>
+
+    <h3>สถาปัตยกรรมการทำงาน</h3>
+    <div class="flow">
+        <div class="flow-step"><span class="fs-icon">📱</span><b>LINE MiniApp / LIFF</b>หน้าเว็บแอปสำหรับจองห้อง ดูปฏิทิน จัดการการจอง</div>
+        <div class="flow-step"><span class="fs-icon">💬</span><b>LINE Bot</b>รับคำสั่งทางลัด ส่ง Flex Message และปุ่มอนุมัติในแชท</div>
+        <div class="flow-step"><span class="fs-icon">⚙️</span><b>Google Apps Script</b>Backend ประมวลผล API ทั้งหมด + Triggers อัตโนมัติ</div>
+        <div class="flow-step"><span class="fs-icon">🔥</span><b>Firebase RTDB</b>ฐานข้อมูลกลางเก็บผู้ใช้ ห้องประชุม การจอง และการแจ้งเตือน</div>
+    </div>
+
+    <h3>องค์ประกอบหลักของระบบ</h3>
+    <div class="grid-2">
+        <div class="card"><span class="icon">📅</span><h4>ระบบจองห้อง</h4>
+            <p>จองล่วงหน้า ระบุวัน–เวลา หัวข้อประชุม รูปแบบประชุม (ออนไซต์/ออนไลน์) อุปกรณ์ที่ต้องการ และรองรับการจองข้ามวัน (Multi-day)</p></div>
+        <div class="card"><span class="icon">🗓️</span><h4>ปฏิทินการจอง</h4>
+            <p>แสดงวันที่มีการจองด้วยสีตามสถานะ (รออนุมัติ/อนุมัติแล้ว/ยกเลิก) พร้อมแถบเชื่อมการจองข้ามวันและ Modal สรุปรายการต่อวัน</p></div>
+        <div class="card"><span class="icon">🔔</span><h4>ระบบแจ้งเตือน</h4>
+            <p>แจ้งคำขอจองใหม่ไปยังผู้ดูแล, แจ้งผลอนุมัติกลับผู้จอง, แจ้งเตือนก่อนประชุม และสรุปการใช้ห้องรายวัน/รายเดือน</p></div>
+        <div class="card"><span class="icon">🛡️</span><h4>ระบบสิทธิ์การใช้งาน</h4>
+            <p>แบ่งสิทธิ์ 4 ระดับ — ผู้ดูแลระบบ, ผู้ดำเนินการ, ผู้ใช้งาน และผู้เยี่ยมชม โดยเมนูและข้อมูลจะแสดงตามสิทธิ์โดยอัตโนมัติ</p></div>
+    </div>
+
+    <div class="callout tip"><b class="tag">💡 หลักการสำคัญ</b>
+        ข้อมูลทั้งหมดถูกเก็บศูนย์กลางไว้ที่ Firebase Realtime Database ทำให้ไม่ว่าผู้ใช้จะดำเนินการผ่าน
+        LINE Bot หรือ MiniApp ก็จะเห็นข้อมูลล่าสุดเสมอและตรงกันทั้งสองช่องทาง</div>
+</div>
+
+<!-- ==================== CH 2 ==================== -->
+<div class="page">
+    <h2 class="chapter"><span class="num">02</span>การเริ่มต้นใช้งาน</h2>
+
+    <h3>การเข้าใช้งานครั้งแรก</h3>
+    <ol>
+        <li><strong>เพิ่มเพื่อน LINE Bot</strong> ของระบบจองห้องประชุม (QR Code / Link จากฝ่าย IT)</li>
+        <li>เมื่อทัก Bot ครั้งแรก ระบบจะ<strong>ลงทะเบียนผู้ใช้อัตโนมัติ</strong>จากโปรไฟล์ LINE ของคุณ และส่งข้อความต้อนรับพร้อมวิธีใช้งาน</li>
+        <li>แตะปุ่ม <code>เปิดแอปจองห้อง</code> เพื่อเข้าสู่ LINE MiniApp (LIFF) — ระบบจะยืนยันตัวตนผ่าน LINE โดยอัตโนมัติ ไม่ต้องกรอก Username/Password</li>
+    </ol>
+
+    <div class="callout info"><b class="tag">ℹ️ ผู้ใช้คนแรกของระบบ</b>
+        บัญชีแรกที่ลงทะเบียนจะได้รับสิทธิ์ <strong>ผู้ดูแลระบบ (Admin)</strong> โดยอัตโนมัติ
+        บัญชีถัดไนจะเป็น <strong>ผู้ใช้งาน (User)</strong> ซึ่ง Admin สามารถปรับระดับสิทธิ์ในภายหลังได้</div>
+
+    <h3>การเชื่อมโยงบัญชี (User Linking)</h3>
+    <p>หากคุณใช้งานผ่านหลายอุปกรณ์หรือหลายบัญชี LINE ระบบจะเชื่อมโยง User ID เข้าด้วยกันโดยอัตโนมัติ
+    ทำให้การจองและการแจ้งเตือนตามหาตัวคุณเจอเสมอ ไม่ว่าจะทักจากทางไหน</p>
+
+    <h3>ข้อมูลโปรไฟล์ของคุณ</h3>
+    <ul>
+        <li>ระบบดึง <strong>ชื่อแสดงและรูปโปรไฟล์</strong> จาก LINE อัตโนมัติ</li>
+        <li>ควรเพิ่ม <strong>อีเมล, เบอร์โทร และแผนก</strong> ในหน้าโปรไฟล์ของ MiniApp เพื่อให้ผู้ดูแลติดต่อสอบถามได้ง่าย</li>
+        <li>สามารถเปิด/ปิด <strong>การแจ้งเตือนส่วนตัว</strong> ได้จากหน้าโปรไฟล์ (ค่าเริ่มต้นคือเปิด)</li>
+    </ul>
+
+    <h3>หน้าจอหลักของ MiniApp</h3>
+    <table>
+        <tr><th style="width:30%">เมนูล่าง (Bottom Nav)</th><th>สิ่งที่ทำได้</th></tr>
+        <tr><td>🏠 <strong>หน้าแรก</strong></td><td>ปฏิทินจองรายเดือน, สถิติ (ห้องทั้งหมด/จองวันนี้), ปุ่มลัด จองด่วน–วันนี้–ห้องว่าง และค้นหารายชื่อห้อง</td></tr>
+        <tr><td>📅 <strong>การจองของฉัน</strong></td><td>รายการจองของตัวเอง กรองตามสถานะ พร้อมปุ่มแชร์และยกเลิก</td></tr>
+        <tr><td>➕ <strong>จองห้อง</strong></td><td>เปิดฟอร์มสร้างคำขอจองใหม่</td></tr>
+        <tr><td>🔔 <strong>แจ้งเตือน</strong></td><td>ประวัติการแจ้งเตือนของคุณ (อ่านแล้ว/ยังไม่ได้อ่าน)</td></tr>
+        <tr><td>🛠️ <strong>จัดการระบบ</strong> <span class="pill confirmed" style="font-size:8.5pt">Admin / Operator</span></td><td>อนุมัติคำขอ, จัดการผู้ใช้, จัดการห้อง, ตั้งค่าระบบ (แสดงตามสิทธิ์)</td></tr>
+    </table>
+</div>
+
+<!-- ==================== CH 3 ==================== -->
+<div class="page">
+    <h2 class="chapter"><span class="num">03</span>การใช้งานผ่าน LINE Bot</h2>
+
+    <h3>คำสั่งทางลัดในแชท</h3>
+    <table class="cmd-table">
+        <tr><th>คำสั่ง</th><th>ผลลัพธ์</th></tr>
+        <tr><td><span class="cmd">เมนู</span></td><td>แสดงเมนูหลักพร้อมปุ่มกดไปยังทุกฟีเจอร์</td></tr>
+        <tr><td><span class="cmd">การจอง</span></td><td>ดูรายการจองของตัวเองทั้งหมด</td></tr>
+        <tr><td><span class="cmd">ห้องว่าง</span></td><td>ดูห้องประชุมว่างในวันนี้</td></tr>
+        <tr><td><span class="cmd">สรุป</span></td><td>สรุปการใช้ห้องประจำวัน (รายการจอง, สถิติ) — Admin/Manager จะเห็นปุ่มอนุมัติฝังในรายการที่รออนุมัติด้วย</td></tr>
+        <tr><td><span class="cmd">รออนุมัติ</span></td><td>รายการที่ยังรอการอนุมัติ (สำหรับผู้มีสิทธิ์อนุมัติ)</td></tr>
+        <tr><td><span class="cmd">help</span></td><td>ข้อความช่วยเหลือการใช้งาน</td></tr>
+    </table>
+
+    <h3>Flex Message แจ้งเตือนอัตโนมัติ</h3>
+    <p>Bot จะส่งการ์ดข้อความ (Flex Message) ที่มีข้อมูลครบ ห้อง / วันที่ / เวลา / ผู้จอง / สถานะ ในแต่ละเหตุการณ์:</p>
+    <ul>
+        <li>🟢 <strong>คำขอจองใหม่</strong> → ส่งถึง Admin พร้อมปุ่ม <code>อนุมัติ</code>/<code>ยกเลิก</code> กดตัดสินใจได้ทันทีในแชท</li>
+        <li>✅ <strong>ยืนยันการจองแล้ว</strong> → แจ้งผู้จองเมื่อคำขอได้รับอนุมัติ</li>
+        <li>🔴 <strong>ไม่อนุมัติ / ถูกยกเลิก</strong> → แจ้งผู้จองพร้อมปุ่ม "จองใหม่"</li>
+        <li>🔵 <strong>แจ้งเตือนก่อนประชุม</strong> → แจ้งล่วงหน้าตามระยะเวลาที่ตั้งค่า พร้อมปุ่มเข้าลิงก์ประชุม (ถ้ามี)</li>
+        <li>🟡 <strong>ระบบยกเลิกอัตโนมัติ</strong> → แจ้งเมื่อรายการเลยเวลาและยังไม่ได้รับอนุมัติ</li>
+    </ul>
+
+    <div class="callout tip"><b class="tag">💡 การแชร์รายการจอง</b>
+        จากการ์ดรายละเอียดใน MiniApp มีปุ่ม "แชร์ไปยังกลุ่ม" เพื่อส่งต่อข้อมูลการประชุมให้ผู้เข้าร่วมทราบผ่าน LINE ได้โดยตรง</div>
+
+    <div class="callout warn"><b class="tag">⚠️ การปิดรับแจ้งเตือนส่วนตัว</b>
+        หากคุณปิดการแจ้งเตือนในหน้าโปรไฟล์ ระบบจะไม่ส่งการแจ้งเตือนส่วนตัว แต่การบันทึกการจองยังทำงานปกติ
+        (หากบันทึกสำเร็จแต่ส่งแชทไม่สำเร็จ ระบบจะแจ้งเตือนบนหน้าจอให้ทราบ)</div>
+</div>
+
+<!-- ==================== CH 4 ==================== -->
+<div class="page">
+    <h2 class="chapter"><span class="num">04</span>การใช้งาน MiniApp</h2>
+
+    <h3>ปฏิทินการจอง (หน้าแรก)</h3>
+    <ul>
+        <li><strong>สีของวันที่</strong> บอกสถานะการจอง: 🟡 รออนุมัติ · 🟢 อนุมัติแล้ว · 🔴 ยกเลิก/ปฏิเสธ</li>
+        <li><strong>แถบเชื่อมสี</strong> (Multi-day bar) ลากต่อเนื่องคลุมช่วงวันที่จองข้ามวัน มุมโค้งที่วันเริ่ม–วันสุดท้าย</li>
+        <li><strong>แตะวันที่ที่มีการจอง</strong> → เปิด Modal สรุปรายการจองทั้งหมดของวันนั้น พร้อมแตะเข้ารายละเอียด หรือกดปุ่ม <code>จองวันที่นี้</code> เพื่อสร้างคำขอจองใหม่ทันที</li>
+        <li>ปุ่มลูกศร ◀ ▶ เปลี่ยนเดือน · ปุ่ม <code>วันนี้</code> กลับมาที่วันปัจจุบัน</li>
+    </ul>
+
+    <h3>สร้างคำขอจองใหม่</h3>
+    <ol>
+        <li>เลือก<strong>ห้องประชุม</strong>จากรายการ (หรือกด "จองด่วน")</li>
+        <li>เลือก<strong>วันที่เริ่ม–สิ้นสุด</strong> (จองหลายวันต่อเนื่องได้) และ<strong>เวลาเริ่ม–เวลาสิ้นสุด</strong> — ระบบจะตรวจความพร้อมใช้งานแบบเรียลไทม์และแจ้งทันทีหากชนกับรายการอื่น</li>
+        <li>กรอก<strong>หัวข้อการประชุม</strong> (ไม่เกิน 100 ตัวอักษร) และ<strong>รายละเอียด</strong> (ไม่เกิน 500 ตัวอักษร)</li>
+        <li>เลือก<strong>รูปแบบประชุม:</strong>
+            <ul>
+                <li><em>ออนไซต์</em> — เลือกใช้คอมพิวเตอร์/โปรเจคเตอร์ได้</li>
+                <li><em>ออนไลน์</em> — เลือกอุปกรณ์ กล้อง/ไมค์/คอมพิวเตอร์ และใส่ลิงก์ประชุม (Zoom, Teams ฯลฯ) ได้</li>
+            </ul>
+        </li>
+        <li>กดบันทึก — คำขอจะเข้าสู่สถานะ <span class="pill pending">รออนุมัติ</span> และแจ้งผู้ดูแลระบบทันที</li>
+    </ol>
+
+    <h3>การจองของฉัน</h3>
+    <p>ดูรายการจองทั้งหมดของตัวเอง กรองตามสถานะ (ทั้งหมด / อนุมัติแล้ว / รออนุมัติ / ยกเลิก / ปฏิเสธ / ระบบยกเลิก)
+    สามารถ<strong>ยกเลิกการจองของตัวเอง</strong>ได้จากรายละเอียดรายการนั้น</p>
+
+    <div class="callout info"><b class="tag">ℹ️ การตรวจสอบเวลาว่าง</b>
+        ระบบตรวจสอบทั้งการจองปกติและการจองข้ามวัน (Multi-day) ก่อนอนุญาตให้บันทึกเสมอ
+        จึงมั่นใจได้ว่าห้องจะไม่ถูกจองซ้ำในช่วงเวลาเดียวกัน</div>
+</div>
+
+<!-- ==================== CH 5 ==================== -->
+<div class="page">
+    <h2 class="chapter"><span class="num">05</span>วงจรชีวิตการจอง (Booking Lifecycle)</h2>
+
+    <div class="flow" style="grid-template-columns: repeat(5, 1fr);">
+        <div class="flow-step"><span class="fs-icon">📝</span><b>สร้างคำขอ</b>ผู้ใช้กรอกฟอร์มจอง</div>
+        <div class="flow-step" style="border-color:#f59e0b"><span class="fs-icon">⏳</span><b>รออนุมัติ</b>Pending</div>
+        <div class="flow-step"><span class="fs-icon">👨‍💼</span><b>พิจารณา</b>โดย Admin/Manager</div>
+        <div class="flow-step" style="border-color:#06c755"><span class="fs-icon">✅</span><b>อนุมัติ</b>Confirmed</div>
+        <div class="flow-step" style="border-color:#6b7280"><span class="fs-icon">🏁</span><b>เสร็จสิ้น</b>Completed</div>
+    </div>
+
+    <h3>สถานะทั้งหมดของรายการจอง</h3>
+    <table>
+        <tr><th style="width:22%">สถานะ</th><th>ความหมาย / สาเหตุ</th></tr>
+        <tr><td><span class="pill pending">รออนุมัติ</span></td><td>คำขอถูกสร้างแล้ว รอผู้ดูแลพิจารณา</td></tr>
+        <tr><td><span class="pill confirmed">อนุมัติแล้ว</span></td><td>Admin/Manager อนุมัติ — ผู้จองได้รับแจ้งทันที</td></tr>
+        <tr><td><span class="pill cancelled">ปฏิเสธ</span></td><td>ผู้ดูแลไม่อนุมัติ (เช่น ชนเวลากิจกรรมสำคัญ) — แนะนำให้จองช่วงใหม่</td></tr>
+        <tr><td><span class="pill cancelled">ยกเลิก</span></td><td>ผู้จองยกเลิกเอง หรือถูกยกเลิกโดยผู้ดูแล</td></tr>
+        <tr><td><span class="pill cancelled">ระบบยกเลิก</span></td><td>รายการ<strong>ยังไม่ได้รับอนุมัติ</strong>และเลยเวลานัดหมายไปแล้ว — ระบบยกเลิกอัตโนมัติทุก 30 นาที</td></tr>
+        <tr><td><span class="pill completed">เสร็จสิ้น</span></td><td>การจองที่อนุมัติแล้วและเวลาผ่านไปเรียบร้อย</td></tr>
+    </table>
+
+    <h3>เงื่อนไขการอนุมัติ</h3>
+    <ul>
+        <li>หาก Settings ของระบบเปิดใช้ <strong>"ต้องอนุมัติก่อนใช้งาน"</strong> ทุกคำขอต้องรอ Admin อนุมัติก่อนถึงจะถือว่าจองสำเร็จ</li>
+        <li>การอนุมัติ/ปฏิเสธทำได้ 2 ช่องทาง: ปุ่มใน<strong>การ์ด LINE</strong> หรือผ่านแท็บ<strong>"รออนุมัติ"</strong>ใน MiniApp</li>
+        <li>ทุกการเปลี่ยนสถานะจะบันทึก <strong>Notification log</strong> ให้ผู้จองเสมอ ตรวจสอบย้อนหลังได้ในเมนูแจ้งเตือน</li>
+    </ul>
+
+    <div class="callout danger"><b class="tag">⚠️ ข้อควรระวัง — Auto Cancel</b>
+        ระบบยกเลิกอัตโนมัติเฉพาะรายการที่ <strong>"ยังไม่ได้รับอนุมัติ"</strong> เมื่อถึง/เลยเวลาเริ่มประชุม
+        รายการที่อนุมัติแล้วจะ<strong>ไม่ถูกยกเลิก</strong>โดยระบบ ดังนั้น Admin ควรตรวจคิว "รออนุมัติ" สม่ำเสมอ</div>
+</div>
+
+<!-- ==================== CH 6 ==================== -->
+<div class="page">
+    <h2 class="chapter"><span class="num">06</span>สิทธิ์การใช้งานแต่ละระดับ (Roles)</h2>
+
+    <p>ระบบแบ่งผู้ใช้เป็น 4 ระดับ เมนูและข้อมูลใน MiniApp จะแสดง/ซ่อนโดยอัตโนมัติตามสิทธิ์ของผู้ใช้ที่ล็อกอินอยู่</p>
+
+    <table>
+        <tr>
+            <th style="width:34%">ความสามารถ</th>
+            <th class="td-center">👑 ผู้ดูแลระบบ<br>(Admin)</th>
+            <th class="td-center">🧰 ผู้ดำเนินการ<br>(Manager/Operator)</th>
+            <th class="td-center">👤 ผู้ใช้งาน<br>(User)</th>
+            <th class="td-center">👀 ผู้เยี่ยมชม<br>(Guest)</th>
+        </tr>
+        <tr><td>จองห้อง / ยกเลิกรายการของตัวเอง</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>ดูปฏิทิน / ค้นหาห้อง / รับแจ้งเตือน</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>แก้ไขโปรไฟล์ / เปิด-ปิดแจ้งเตือนส่วนตัว</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>จัดการห้องประชุม (เพิ่ม/แก้ไข/ลบ/รูปห้อง)</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>ดูรายการจองทั้งหมดของทุกคน</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>อนุมัติ / ปฏิเสธ / ยกเลิกรายการของผู้อื่น</td><td class="td-center dot-ok">✓</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>แท็บ "รออนุมัติ" + Badge จำนวนค้าง</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>จัดการผู้ใช้ (เปลี่ยนสิทธิ์ / ลบผู้ใช้พร้อมการจอง)</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>ตั้งค่าระบบ (บังคับอนุมัติ, เวลาแจ้งเตือนล่วงหน้า)</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td></tr>
+        <tr><td>ตั้งค่า Triggers / ส่งสรุปรายเดือน Broadcast</td><td class="td-center dot-ok">✓</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td><td class="td-center dot-no">—</td></tr>
+    </table>
+
+    <h3>รายละเอียดสำคัญของแต่ละสิทธิ์</h3>
+    <ul>
+        <li><strong>👑 ผู้ดูแลระบบ (Admin):</strong> มีสิทธิ์ทุกอย่าง รวมถึงการลบผู้ใช้ — การลบจะนำการจอง การแจ้งเตือน และข้อมูลเชื่อมโยงทั้งหมดออก พร้อมเก็บสำเนาไว้ตรวจสอบย้อนหลัง (DeletedUsers)</li>
+        <li><strong>🧰 ผู้ดำเนินการ (Manager/Operator):</strong> ดูแลการจองและห้องประชุมได้ครบ รวมถึงอนุมัติรายการผ่าน LINE Bot / สรุปรายวัน แต่จะไม่เห็นแท็บ รออนุมัติ, จัดการผู้ใช้ และการตั้งค่าระบบ</li>
+        <li><strong>👤 ผู้ใช้งาน (User):</strong> ใช้งานส่วนตัวได้ครบ — จอง ติดตาม ยกเลิกของตัวเอง</li>
+        <li><strong>👀 ผู้เยี่ยมชม (Guest):</strong> ยังไม่ได้ลงทะเบียนในระบบ ต้องทัก Bot ก่อนจึงจะใช้งานได้</li>
+    </ul>
+
+    <div class="callout info"><b class="tag">ℹ️ การเปลี่ยนระดับสิทธิ์</b>
+        เฉพาะ Admin เท่านั้นที่เปลี่ยนสิทธิ์ผู้ใช้ได้ จากแท็บ <strong>จัดการผู้ใช้</strong> ใน MiniApp
+        (หรือคำสั่ง admin ผ่าน Backend) — การเปลี่ยนมีผลทันทีเมื่อผู้ใช้รีโหลดแอป</div>
+</div>
+
+<!-- ==================== CH 7 ==================== -->
+<div class="page">
+    <h2 class="chapter"><span class="num">07</span>ระบบอัตโนมัติ (Triggers)</h2>
+
+    <p>Google Apps Script ทำงานเบื้องหลังตามตารางเวลาอัตโนมัติ 4 งาน โดยไม่ต้องมีคนกดสั่ง</p>
+
+    <table>
+        <tr><th style="width:26%">Trigger</th><th style="width:16%">ความถี่</th><th>หน้าที่</th></tr>
+        <tr>
+            <td>🔔 <strong>Meeting Reminders</strong></td>
+            <td>ทุก 10 นาที</td>
+            <td>ตรวจการจองที่ใกล้ถึงเวลาและส่งแจ้งเตือนล่วงหน้าตามค่าที่ตั้งในระบบ (เช่น 30 นาที / 1 ชม. / 1 วันก่อนประชุม) ให้ผู้จองและผู้ดูแล</td>
+        </tr>
+        <tr>
+            <td>🤖 <strong>Auto Cancel Overdue</strong></td>
+            <td>ทุก 30 นาที</td>
+            <td>ยกเลิกเฉพาะรายการที่ <strong>ยังไม่ได้รับอนุมัติ</strong> เมื่อเลยเวลา แล้วแจ้งผู้จองพร้อมปุ่ม "จองใหม่"</td>
+        </tr>
+        <tr>
+            <td>📊 <strong>Monthly Summary</strong></td>
+            <td>ทุกวัน เวลา 20:00 น.<br>(ส่งจริงเมื่อสิ้นเดือน)</td>
+            <td>รวบรวมสถิติการจองรายเดือนและส่งสรุปให้ผู้ใช้ทุกคน / Broadcast ให้ Admin ส่งเองได้</td>
+        </tr>
+        <tr>
+            <td>🧹 <strong>Cleanup Inactive Users</strong></td>
+            <td>ทุกวัน เวลา 03:00 น.</td>
+            <td>ลบ/ปรับสถานะผู้ใช้ที่ไม่มีการใช้งานหรือเลิกติดตาม Bot เพื่อคงความสะอาดของฐานข้อมูล</td>
+        </tr>
+    </table>
+
+    <h3>การตรวจสอบสถานะ Triggers</h3>
+    <p>Admin สามารถกดปุ่ม <strong>"ตั้งค่า Triggers"</strong> ในแท็บการตั้งค่าเพื่อสร้าง/สร้างใหม่ทั้ง 4 งาน
+    ระบบจะบันทึกสถานะการตั้งค่าลง Firebase และแสดงผลในกล่อง Trigger Status ให้ตรวจสอบได้ทันที</p>
+
+    <div class="callout warn"><b class="tag">⚠️ หมายเหตุ</b>
+        หาก Deploy Script ใหม่ ควรกด "ตั้งค่า Triggers" อีกครั้ง เพราะการ Redeploy อาจล้าง Trigger เดิมทิ้ง</div>
+</div>
+
+<!-- ==================== CH 8 ==================== -->
+<div class="page">
+    <h2 class="chapter"><span class="num">08</span>คำถามที่พบบ่อย (FAQ) และการแก้ปัญหา</h2>
+
+    <table>
+        <tr><th style="width:44%">ปัญหา</th><th>วิธีแก้ไข</th></tr>
+        <tr><td><strong>ไม่ได้รับการแจ้งเตือนจาก LINE</strong></td>
+            <td>ตรวจว่ายังเป็นเพื่อนกับ Bot อยู่ และเปิด "การแจ้งเตือน" ในหน้าโปรไฟล์ของ MiniApp</td></tr>
+        <tr><td><strong>การจองหายไป / ถูกยกเลิกเอง</strong></td>
+            <td>รายการที่ยังไม่ได้อนุมัติจะถูก Auto Cancel เมื่อเลยเวลา — ติดต่อผู้ดูแลให้เร่งอนุมัติ หรือจองใหม่จากปุ่มในการ์ดแจ้งเตือน</td></tr>
+        <tr><td><strong>จองไม่ได้ ขึ้นว่าชนเวลา</strong></td>
+            <td>ช่วงเวลานั้นมีรายการอื่น (รวมการจองข้ามวัน) — เลือกห้องอื่นหรือเลื่อนเวลา ระบบจะแนะนำสถานะว่างแบบเรียลไทม์</td></tr>
+        <tr><td><strong>เมนู Admin ไม่แสดง</strong></td>
+            <td>เมนูจัดการแสดงเฉพาะ Admin — ตรวจสิทธิ์ของคุณที่หน้าโปรไฟล์ หรือขอให้ Admin เปลี่ยนสิทธิ์</td></tr>
+        <tr><td><strong>โหลดข้อมูลไม่ขึ้น / Connection error</strong></td>
+            <td>ระบบจะ retry อัตโนมัติ 3 ครั้ง หากยังล้มเหลว ให้ออกจากแอปแล้วเปิดใหม่ หรือตรวจอินเทอร์เน็ต</td></tr>
+        <tr><td><strong>ลืมกดปุ่มอนุมัติในการ์ด LINE แล้วการ์ดหาย</strong></td>
+            <td>อนุมัติได้เสมอจากแท็บ <strong>"รออนุมัติ"</strong> ใน MiniApp หรือพิมพ์ <span class="cmd" style="background:#05391d;color:#a7f3c9;border-radius:6px;padding:1px 10px;font-size:9.5pt">รออนุมัติ</span> ในแชท</td></tr>
+    </table>
+
+    <h3>ช่องทางติดต่อขอความช่วยเหลือ</h3>
+    <div class="callout info" style="margin-top:8px">
+        ติดต่อ <strong>แผนกเทคโนโลยีสารสนเทศ</strong> — บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) · โรงงาน 1<br>
+        ผู้พัฒนา: <strong>นายธีรพงศ์ พรหมวัง</strong>
+    </div>
+
+    <div class="footer-note">
+        เอกสารคู่มือการใช้งานระบบจองห้องประชุม · LINE MiniApp &amp; LINE Bot · เวอร์ชัน 30.0<br>
+        Generated with Codebuff 🤖
+    </div>
+</div>
+
+</body>
+</html>

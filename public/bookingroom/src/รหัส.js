@@ -1558,23 +1558,8 @@ function doGet(e) {
 function handleRequest(e) {
   console.log('Request received');
   
-  const rawParams = e.parameter || {};
-  const path = rawParams.path || '';
-  
-  // Parse JSON strings ที่ส่งมาจาก FormData (callGAS จะ JSON.stringify array/object ก่อนส่ง)
-  const params = {};
-  Object.keys(rawParams).forEach(key => {
-    const val = rawParams[key];
-    if (typeof val === 'string' && (val.startsWith('[') || val.startsWith('{'))) {
-      try { params[key] = JSON.parse(val); return; } catch(e) {}
-    }
-    // แปลง boolean strings
-    if (val === 'true') { params[key] = true; return; }
-    if (val === 'false') { params[key] = false; return; }
-    // แปลง number strings
-    if (val !== '' && !isNaN(val) && key !== 'roomId' && key !== 'path') { params[key] = Number(val); return; }
-    params[key] = val;
-  });
+  const params = e.parameter || {};
+  const path = params.path || '';
   
   try {
     if (path === 'webhook' || (e.postData && e.postData.contents && e.postData.contents.includes('events'))) {
@@ -1649,7 +1634,7 @@ function routeRequest(path, params) {
     case 'booking/approve': return approveBooking(params);
     case 'booking/reject': return rejectBooking(params);
     case 'booking/admin-cancel': return adminCancelBooking(params);
-    case 'booking/check-availability': return (params.isMultiDay || (params.multiDayDates && params.multiDayDates.length > 0)) ? checkMultiDayAvailability({ ...params, dates: params.multiDayDates || [], excludeBookingId: params.bookingId || params.excludeBookingId }) : checkAvailability({ ...params, excludeBookingId: params.bookingId || params.excludeBookingId });
+    case 'booking/check-availability': return checkAvailability(params);
     case 'booking/check-multi-day-availability': return checkMultiDayAvailability(params);
     
     // Admin
@@ -2395,24 +2380,15 @@ function checkMultiDayAvailability(params) {
   
   if (firstDate < today) {
     return { success: false, message: 'ไม่สามารถจองย้อนหลังได้' };
-  }  // รองรับทั้ง ISO string (2026-08-31T09:00:00.000Z) และ time string (09:00)
-  let startHour, startMinute, endHour, endMinute;
-  if (startTimeStr.includes('T')) {
-    const sDate = new Date(startTimeStr);
-    startHour = sDate.getHours();
-    startMinute = sDate.getMinutes();
-    const eDate = new Date(endTimeStr);
-    endHour = eDate.getHours();
-    endMinute = eDate.getMinutes();
-  } else {
-    [startHour, startMinute] = startTimeStr.split(':').map(Number);
-    [endHour, endMinute] = endTimeStr.split(':').map(Number);
   }
-
+  
+  const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+  const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+  
   if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
     return { success: false, message: 'รูปแบบเวลาไม่ถูกต้อง' };
   }
-
+  
   const startMinutes = startHour * 60 + startMinute;
   const endMinutes = endHour * 60 + endMinute;
   
@@ -2534,8 +2510,8 @@ function createBooking(params) {
     validationResult = checkMultiDayAvailability({
       roomId: params.roomId,
       dates: multiDayDates,
-      startTime: params.startTime,
-      endTime: params.endTime
+      startTime: new Date(params.startTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      endTime: new Date(params.endTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false })
     });
     
     if (!validationResult.success) return validationResult;
@@ -2548,8 +2524,8 @@ function createBooking(params) {
       };
     }
     
-    startTime = new Date(`${multiDayDates[0]}T${params.startTime}:00`);
-    endTime = new Date(`${multiDayDates[multiDayDates.length - 1]}T${params.endTime}:00`);
+    startTime = new Date(params.startTime);
+    endTime = new Date(params.endTime);
     
   } else {
     if (!params.startTime || !params.endTime) {
@@ -2608,7 +2584,7 @@ function createBooking(params) {
     endTime: endTime.toISOString(),
     attendees: params.attendees || '1',
     meetingLink: params.meetingLink || '',
-    status: isAdminRole ? 'approved' : 'pending',
+    status: isAdminRole ? 'confirmed' : 'pending',
     createdAt: now,
     updatedAt: now,
     reminderSent: false,
@@ -2692,8 +2668,8 @@ function updateBooking(params) {
           const checkResult = checkMultiDayAvailability({
             roomId: params.roomId || booking.roomId,
             dates: dates,
-            startTime: params.startTime || new Date(booking.startTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
-            endTime: params.endTime || new Date(booking.endTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            startTime: params.startTime ? new Date(params.startTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }) : new Date(booking.startTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            endTime: params.endTime ? new Date(params.endTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }) : new Date(booking.endTime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false }),
             excludeBookingId: bookingId
           });
           
@@ -2971,7 +2947,7 @@ function adminCancelBooking(params) {
     if (bookings[key].bookingId === bookingId) {
       const booking = bookings[key];
       
-      if (booking.status !== 'confirmed' && booking.status !== 'pending') {
+      if (booking.status !== 'confirmed' && booking.status !== 'pending' && booking.status !== 'approved') {
         return { success: false, message: 'ไม่สามารถยกเลิกการจองนี้ได้' };
       }
 
@@ -3021,23 +2997,42 @@ function autoCancelOverdueBookings(params) {
   const now = new Date();
   const bookings = firebaseGet(CONFIG.DB.BOOKINGS) || {};
   let cancelledCount = 0;
+  let restoredCount = 0;
   const cancelledBookings = [];
 
   Object.keys(bookings).forEach(key => {
     const booking = bookings[key];
+
+    // กู้ข้อมูลเดิมที่ถูก auto-cancel โดยโค้ดเวอร์ชันก่อนหน้า ทั้งที่มี
+    // หลักฐานการอนุมัติอยู่แล้ว ให้กลับมาเป็นสถานะอนุมัติในครั้งถัดไปที่ Trigger ทำงาน
+    const hasApproval = Boolean(booking.approvedAt || booking.approvedBy);
+    if (booking.status === 'auto_cancelled' && (hasApproval || !booking.autoCancelReason)) {
+      const restoredAt = new Date().toISOString();
+      if (firebasePatch(`${CONFIG.DB.BOOKINGS}/${key}`, {
+        status: 'confirmed',
+        autoCancelRevertedAt: restoredAt,
+        updatedAt: restoredAt
+      })) {
+        restoredCount++;
+        console.log(`↩️ กู้สถานะการจองที่อนุมัติแล้ว: ${booking.bookingId}`);
+      }
+      return;
+    }
     
-    if (booking.status === 'confirmed') {
+    // ยกเลิกเฉพาะการจองที่ "ยังไม่ได้รับอนุมัติ" (pending) ที่เลยเวลาแล้ว
+    // การจองที่อนุมัติแล้ว (confirmed) จะคงสถานะเดิมไว้ตลอดไป
+    if (booking.status === 'pending' && !hasApproval) {
       const endTime = new Date(booking.endTime);
       
       if (booking.isMultiDay && booking.multiDayDates && booking.multiDayDates.length > 0) {
         const lastDate = new Date(booking.multiDayDates[booking.multiDayDates.length - 1] + 'T23:59:59');
         if (lastDate < now) {
-          console.log(`🤖 ยกเลิกการจอง multi-day ที่เลยเวลา: ${booking.bookingId}`);
+          console.log(`🤖 ยกเลิกการจอง multi-day ที่ไม่ได้รับอนุมัติและเลยเวลา: ${booking.bookingId}`);
           performAutoCancel(key, booking, cancelledBookings, silentMode);
           cancelledCount++;
         }
       } else if (endTime < now) {
-        console.log(`🤖 ยกเลิกการจองที่เลยเวลา: ${booking.bookingId} - ${booking.title}`);
+        console.log(`🤖 ยกเลิกการจองที่ไม่ได้รับอนุมัติและเลยเวลา: ${booking.bookingId} - ${booking.title}`);
         performAutoCancel(key, booking, cancelledBookings, silentMode);
         cancelledCount++;
       }
@@ -3047,6 +3042,7 @@ function autoCancelOverdueBookings(params) {
   function performAutoCancel(key, booking, cancelledBookings, silentMode) {
     const updates = {
       status: 'auto_cancelled',
+      autoCancelReason: 'pending_overdue',
       autoCancelledAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -3069,15 +3065,16 @@ function autoCancelOverdueBookings(params) {
     }
   }
 
-  console.log(`✅ ยกเลิกการจองที่เลยเวลาแล้ว ${cancelledCount} รายการ`);
+  console.log(`✅ ยกเลิกการจองที่ไม่ได้รับอนุมัติและเลยเวลา ${cancelledCount} รายการ; กู้สถานะอนุมัติ ${restoredCount} รายการ`);
 
   return {
     success: true,
     data: {
       cancelledCount,
+      restoredCount,
       cancelledBookings
     },
-    message: `ยกเลิกการจองที่เลยเวลาแล้ว ${cancelledCount} รายการ`
+    message: `ยกเลิกการจองที่ไม่ได้รับอนุมัติและเลยเวลา ${cancelledCount} รายการ; กู้สถานะอนุมัติ ${restoredCount} รายการ`
   };
 }
 
@@ -3095,31 +3092,41 @@ function getBookings(params) {
   const now = new Date();
   
   Object.keys(bookings).forEach(key => {
-    const b = bookings[key];
+    let b = bookings[key];
+
+    // รายการ auto-cancel จากเวอร์ชันก่อนหน้าไม่มีเหตุผลกำกับ และเกิดจากการ
+    // ยกเลิกรายการที่อนุมัติแล้ว จึงกู้ทันทีเมื่อต้องนำไปแสดงในปฏิทิน
+    if (b.status === 'auto_cancelled' && !b.autoCancelReason) {
+      const restoredAt = new Date().toISOString();
+      const restoredBooking = { ...b, status: 'confirmed', autoCancelRevertedAt: restoredAt, updatedAt: restoredAt };
+      if (firebasePatch(`${CONFIG.DB.BOOKINGS}/${key}`, {
+        status: restoredBooking.status,
+        autoCancelRevertedAt: restoredBooking.autoCancelRevertedAt,
+        updatedAt: restoredBooking.updatedAt
+      })) {
+        b = restoredBooking;
+      }
+    }
     
     if (roomId && b.roomId !== roomId) return;
     
     if (date) {
-      const bookingDate = new Date(b.startTime).toISOString().split('T')[0];
-      if (bookingDate !== date) {
-        if (includeMultiDay && b.isMultiDay && b.multiDayDates && b.multiDayDates.includes(date)) {
-          // ผ่าน
-        } else {
-          return;
-        }
+      const bStartStr = new Date(b.startTime).toISOString().split('T')[0];
+      const bEndStr = new Date(b.endTime).toISOString().split('T')[0];
+      if (includeMultiDay) {
+        if (date < bStartStr || date > bEndStr) return;
+      } else {
+        if (bStartStr !== date) return;
       }
     }
-    
     if (startDate && endDate) {
       const bStart = new Date(b.startTime);
       const bEnd = new Date(b.endTime);
-      const sDate = new Date(startDate);
-      const eDate = new Date(endDate);
+      const sDate = new Date(`${startDate}T00:00:00`);
+      const eDate = new Date(`${endDate}T23:59:59`);
       
-      if (bStart < sDate || bStart > eDate) {
-        if (!(b.isMultiDay && b.multiDayDates && b.multiDayDates.some(d => d >= startDate && d <= endDate))) {
-          return;
-        }
+      if (bStart > eDate || bEnd < sDate) {
+        return; // Skip if it doesn't overlap the requested date range
       }
     }
     
@@ -3765,7 +3772,7 @@ function handleLineWebhook(e) {
                   },
                   body: {
                     type: 'box', layout: 'vertical',
-                    contents: [{ type: 'text', text: 'เฉพาะผู้ดูแลระบบ (Admin/Manager) เท่านั้น', wrap: true, color: '#666666' }]
+                    contents: [{ type: 'text', text: 'คุณไม่มีสิทธิ์ใช้งานเมนูนี้ได้ จะใช้งานได้เฉพาะผู้ดูแลระบบเท่านั้น', wrap: true, color: '#666666' }]
                   }
                 }
               }]);
@@ -4393,7 +4400,7 @@ function sendMyBookings(userId, replyToken = null) {
 
 function sendPendingBookings(userId, replyToken = null) {
   const primaryId = getPrimaryUserId(userId);
-  if (!isManager(primaryId)) {
+  if (!isAdmin(primaryId)) {
     const errorFlex = {
       type: 'flex', altText: '⛔ ไม่มีสิทธิ์',
       contents: {
@@ -4404,7 +4411,7 @@ function sendPendingBookings(userId, replyToken = null) {
         },
         body: {
           type: 'box', layout: 'vertical',
-          contents: [{ type: 'text', text: 'เฉพาะผู้ดูแลระบบ (Admin/Manager) เท่านั้น', wrap: true, color: '#666666' }]
+          contents: [{ type: 'text', text: 'คุณไม่มีสิทธิ์ใช้งานเมนูนี้ได้ จะใช้งานได้เฉพาะผู้ดูแลระบบเท่านั้น', wrap: true, color: '#666666' }]
         }
       }
     };

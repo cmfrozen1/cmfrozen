@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+    <meta charset="UTF-8">
+    <title>สรุปยอดขายอุปกรณ์เครื่องแต่งกายประจำวัน</title>
+
+    <!-- Google Fonts: Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .swal2-popup {
+            font-family: 'Sarabun', 'TH Sarabun New', Tahoma, sans-serif !important;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 15mm 15mm 15mm 15mm;
+        }
+
+        body {
+            font-family: 'Sarabun', 'TH Sarabun New', 'Angsana New', sans-serif;
+            font-size: 14px;
+            color: #000;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .a4-page {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            box-sizing: border-box;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        /* Removed handwritten note CSS */
+
+        .title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 3px 5px;
+            height: 22px;
+            box-sizing: border-box;
+        }
+
+        th {
+            text-align: center;
+            font-weight: bold;
+            background-color: #fff;
+        }
+
+        /* Alignment */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* ตัวเลขเบิกในตารางที่เป็นสีแดง/น้ำตาลตามภาพ */
+        .red-text {
+            color: #a83232;
+            font-weight: normal;
+        }
+
+
+
+        /* โซนลายเซ็นด้านล่าง */
+        .footer-signatures {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            padding: 0 10px;
+        }
+
+        .dots {
+            border-bottom: 1px dotted #000;
+            display: inline-block;
+            width: 170px;
+        }
+
+        .summary-cards {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .summary-card {
+            flex: 1;
+            min-width: 150px;
+            border: 1px solid #000;
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        .summary-card small {
+            display: block;
+            font-size: 13px;
+        }
+
+        .summary-card strong {
+            font-size: 18px;
+        }
+
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+
+            .a4-page {
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                min-height: auto;
+            }
+
+            .fab-print {
+                display: none !important;
+            }
+        }
+
+        /* ปุ่มพิมพ์ fix ขวาล่าง */
+        .fab-print {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4338ca, #7c3aed);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 16px rgba(99,60,200,.4);
+            cursor: pointer;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s;
+        }
+
+        .fab-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99,60,200,.5);
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <div class="a4-page">
+
+        <div class="title" id="report-title">
+            สรุปยอดขายอุปกรณ์เครื่องแต่งกายประจำวันที่...
+        </div>
+
+        <div class="summary-cards" id="summary-cards">
+            <div class="summary-card"><small>จำนวนรายการที่ขาย</small><strong id="sum-items">-</strong></div>
+            <div class="summary-card"><small>จำนวนชิ้นที่ขายรวม</small><strong id="sum-qty">-</strong></div>
+            <div class="summary-card"><small>รวมเป็นเงินทั้งสิ้น</small><strong id="sum-money">-</strong></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 18%;">Code</th>
+                    <th style="width: 32%;">รายการ</th>
+                    <th style="width: 7%;">ราคา</th>
+                    <th style="width: 7%;">ยกมา</th>
+                    <th style="width: 9%;" id="receive-header">เบิก</th>
+                    <th style="width: 7%;">รวม</th>
+                    <th style="width: 7%;">ขาย</th>
+                    <th style="width: 7%;">คงเหลือ</th>
+                    <th style="width: 11%;">จำนวนเงิน</th>
+                </tr>
+            </thead>
+            <tbody id="report-body">
+                <tr><td colspan="9" class="text-center">กำลังโหลดข้อมูล...</td></tr>
+            </tbody>
+        </table>
+
+        <div class="footer-signatures">
+            <div>ผู้ส่งเงิน<span class="dots"></span></div>
+            <div>ผู้ตรวจ<span class="dots"></span></div>
+            <div>ผู้รับเงิน<span class="dots"></span></div>
+        </div>
+    </div>
+
+    <script>
+        const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        
+        // GAS Template injection
+        let reportDate = "<?= typeof date !== 'undefined' ? date : '' ?>";
+        if (reportDate.indexOf('?=') === 0 || reportDate === '') {
+            const params = new URLSearchParams(window.location.search);
+            reportDate = params.get('date') || new Date().toISOString().split('T')[0];
+        }
+        let autoPrintVal = "<?= typeof autoPrint !== 'undefined' ? autoPrint : 'false' ?>";
+
+        // ตรวจสอบ ?form= parameter (เปิดผ่าน Netlify wrapper)
+        function getFormUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('form') || '';
+        }
+
+        function isFromForm() {
+            return !!getFormUrl();
+        }
+
+        function formatThaiDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return `${d.getDate()} เดือน ${months[d.getMonth()]} พ.ศ ${d.getFullYear() + 543}`;
+        }
+
+        function money(v) {
+            if (!v || v === 0) return '-';
+            return Number(v).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function num(v) {
+            return (!v || v === 0) ? '' : Number(v).toLocaleString();
+        }
+
+        /* แปลง yyyy-MM-dd → dd/mm/yyyy */
+        function toDisplayDate(iso) {
+            if (!iso) return '';
+            const [y, m, d] = iso.split('-');
+            return d + '/' + m + '/' + y;
+        }
+
+        /* แปลง dd/mm/yyyy → yyyy-MM-dd */
+        function fromDisplayDate(dmy) {
+            if (!dmy) return '';
+            const parts = dmy.split('/');
+            if (parts.length !== 3) return '';
+            const [d, m, y] = parts;
+            return y + '-' + m.padStart(2, '0') + '-' + d.padStart(2, '0');
+        }
+
+        let cachedData = null; // เก็บข้อมูลล่าสุดไว้ re-render ตอนเปลี่ยนวันที่
+
+        /* เปิดกล่องเลือกวันที่ด้วย SweetAlert2 (native datepicker แสดง dd/mm/yyyy) */
+        function showDatePicker() {
+            Swal.fire({
+                title: 'เลือกวันที่รายงาน',
+                html:
+                    '<div style="position:relative;width:220px;margin:0 auto">'
+                    + '<input type="date" id="swal-report-date" '
+                    + 'style="width:100%;font-family:\'Sarabun\',sans-serif;font-size:16px;padding:10px;border:2px solid #c4b5fd;border-radius:8px;cursor:pointer">'
+                    + '</div>'
+                    + '<div id="swal-report-display" style="text-align:center;margin-top:8px;font-size:18px;font-weight:700;color:#5b5bd6">' + toDisplayDate(reportDate) + '</div>',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'แสดงรายงาน',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#5b5bd6',
+                focusConfirm: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    const input = document.getElementById('swal-report-date');
+                    if (input) {
+                        input.value = reportDate;
+                        input.addEventListener('change', function() {
+                            const display = document.getElementById('swal-report-display');
+                            if (display && this.value) {
+                                display.textContent = toDisplayDate(this.value);
+                            }
+                        });
+                        input.showPicker();
+                    }
+                },
+                preConfirm: () => {
+                    const val = document.getElementById('swal-report-date').value;
+                    if (!val || !/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+                        Swal.showValidationMessage('กรุณาเลือกวันที่ให้ถูกต้อง');
+                        return false;
+                    }
+                    return val;
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    onDateChange(result.value);
+                }
+            });
+        }
+
+        function init() {
+            updateTitle();
+
+            const isGas = typeof google !== 'undefined' && google.script && google.script.run;
+            const formUrl = getFormUrl();
+            const isForm = isFromForm();
+
+            // ซ่อนปุ่มพิมพ์เมื่อเปิดจาก GAS หรือ ?form=
+            if (isGas || isForm) {
+                const fab = document.querySelector('.fab-print');
+                if (fab) fab.style.display = 'none';
+            }
+
+            if (isGas) {
+                document.getElementById('report-body').innerHTML = '<tr><td colspan="9" class="text-center">กำลังโหลดข้อมูล...</td></tr>';
+                google.script.run.withSuccessHandler(function (data) {
+                    cachedData = data;
+                    renderData(data);
+                }).withFailureHandler(function (err) {
+                    renderData({ success: false, error: err && err.message });
+                }).getInitialData();
+            } else {
+                // Local fallback for testing
+                const prods = JSON.parse(localStorage.getItem('products') || '[]');
+                const sales = JSON.parse(localStorage.getItem('sales') || '[]');
+                const recs = JSON.parse(localStorage.getItem('receives') || '[]');
+                cachedData = { success: true, products: prods, sales: sales, receives: recs };
+                renderData(cachedData);
+            }
+        }
+
+        /* เมื่อผู้ใช้เลือกวันที่ใหม่ ให้อัปเดตรายงานทันทีโดยไม่ต้อง reload */
+        function onDateChange(newDate) {
+            if (!newDate) return;
+            reportDate = newDate;
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.set('date', newDate);
+                window.history.replaceState(null, '', url);
+            } catch (e) { /* ignore */ }
+
+            updateTitle();
+
+            if (cachedData) {
+                renderData(cachedData);
+            } else {
+                init();
+            }
+        }
+
+        function updateTitle() {
+            document.getElementById('report-title').textContent =
+                `สรุปยอดขายอุปกรณ์เครื่องแต่งกายประจำวันที่ ${formatThaiDate(reportDate)}`;
+        }
+
+        function renderData(data) {
+            if (!data || !data.success) {
+                document.getElementById('report-body').innerHTML = `<tr><td colspan="9" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>`;
+                return;
+            }
+
+            const products = data.products || [];
+            const sales = data.sales || [];
+            const receives = data.receives || [];
+
+            const d = new Date(reportDate);
+            const yesterdayDate = new Date(d);
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+            
+            const [y, m, day] = reportDate.split('-');
+            const shortDateStr = `${Number(day)}/${Number(m)}`;
+            document.getElementById('receive-header').textContent = `เบิก ${shortDateStr}`;
+
+            let html = '';
+            let totalAmount = 0;
+            let totalSoldQty = 0;
+            let soldItemCount = 0;
+
+            // รวมยอดขายของวันที่เลือกจาก Sheet Sales
+            const salesOfDate = sales.filter(s => s.date === reportDate);
+
+            products.forEach(p => {
+                // คำนวณเบิกสะสม และ ขายสะสม จนถึงเมื่อวาน
+                const receivedUntilYest = receives.reduce((sum, r) => sum + (r.date <= yesterdayStr ? Number((r.items||{})[p.id] || 0) : 0), 0);
+                const soldUntilYest = sales.reduce((sum, s) => sum + (s.date <= yesterdayStr ? Number((s.items||{})[p.id] || 0) : 0), 0);
+                const carryForward = receivedUntilYest - soldUntilYest; // ยกมา
+
+                // รายการของวันนี้
+                const recToday = receives.reduce((sum, r) => sum + (r.date === reportDate ? Number((r.items||{})[p.id] || 0) : 0), 0);
+                const totalBeforeSale = carryForward + recToday; // รวม
+
+                const soldToday = sales.reduce((sum, s) => sum + (s.date === reportDate ? Number((s.items||{})[p.id] || 0) : 0), 0);
+                const balance = totalBeforeSale - soldToday; // คงเหลือ
+
+                const amount = soldToday * Number(p.price);
+
+                // ข้ามสินค้าที่ไม่มียอดใดๆ เลย
+                if (carryForward === 0 && recToday === 0 && soldToday === 0) return;
+
+                totalAmount += amount;
+                totalSoldQty += soldToday;
+                if (soldToday > 0) soldItemCount++;
+
+                let code = p.id.toString().padStart(3, '0');
+
+                html += `
+                    <tr>
+                        <td class="text-left">${code}</td>
+                        <td class="text-left">${p.name}</td>
+                        <td class="text-right">${p.price}</td>
+                        <td class="text-right">${carryForward !== 0 ? carryForward : ''}</td>
+                        <td class="text-right ${recToday ? 'red-text' : ''}">${recToday || ''}</td>
+                        <td class="text-right">${totalBeforeSale !== 0 ? totalBeforeSale : ''}</td>
+                        <td class="text-right ${soldToday ? 'red-text' : ''}">${soldToday || ''}</td>
+                        <td class="text-right">${balance !== 0 ? balance : ''}</td>
+                        <td class="text-right">${amount > 0 ? money(amount) : ''}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                <tr>
+                    <td colspan="8" class="text-right" style="font-weight:bold">รวมเป็นเงิน</td>
+                    <td class="text-right" style="font-weight:bold">${money(totalAmount)}</td>
+                </tr>
+            `;
+            document.getElementById('report-body').innerHTML = html;
+
+            /* การ์ดสรุปยอดขายของวันที่เลือก */
+            document.getElementById('sum-items').textContent = soldItemCount + ' รายการ';
+            document.getElementById('sum-qty').textContent = Number(totalSoldQty).toLocaleString() + ' ชิ้น';
+            document.getElementById('sum-money').textContent = money(totalAmount) + ' บาท';
+
+
+
+            if (!salesOfDate.length) {
+                const notice = document.createElement('div');
+                notice.className = 'text-center';
+                notice.style.margin = '10px 0';
+                notice.textContent = 'ไม่พบข้อมูลยอดขายของวันที่เลือก';
+                document.getElementById('report-title').after(notice);
+                setTimeout(() => notice.remove(), 5000);
+            }
+
+            // ตรวจสอบพารามิเตอร์สั่งพิมพ์อัตโนมัติเมื่อข้อมูลโหลดเรียบร้อยแล้ว
+            const params = new URLSearchParams(window.location.search);
+            const shouldAutoPrint = (autoPrintVal === 'true' || params.get('autoPrint') === 'true');
+            if (shouldAutoPrint) {
+                setTimeout(() => {
+                    window.focus();
+                    window.print();
+                }, 300);
+            }
+        }
+
+        // รับคำสั่ง print จาก parent (iframe mode)
+        window.addEventListener('message', function(e) {
+            if (e.data && e.data.action === 'print') {
+                window.focus();
+                window.print();
+            }
+        });
+
+        window.onload = init;
+    </script>
+    <button class="fab-print" onclick="window.print()" title="พิมพ์รายงาน"><i class="fa-solid fa-print"></i></button>
+</body>
+</html>

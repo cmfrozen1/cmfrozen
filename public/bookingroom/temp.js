@@ -1,2213 +1,3 @@
-<!DOCTYPE html>
-<html lang="th">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title id="page-title">Meeting Room · LINE</title>
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/1040/1040244.png">
-
-    <!-- Preconnect -->
-    <link rel="preconnect" href="https://static.line-scdn.net">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-
-    <!-- Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- LINE LIFF (v2.28.0) -->
-    <script src="https://static.line-scdn.net/liff/edge/versions/2.28.0/sdk.js"></script>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <style>
-        /* Base Styles */
-        * {
-            font-family: 'IBM Plex Sans Thai', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #06c755;
-            --primary-dark: #05b34a;
-            --primary-light: rgba(6, 199, 85, 0.1);
-            --bg: #0a0a0f;
-            --bg-card: #1a1d24;
-            --border: #2a2e36;
-            --text: #ffffff;
-            --text-secondary: #9ca3af;
-            --navbar-bg: rgba(10, 10, 15, 0.95);
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --success: #06c755;
-            --cancelled: #ef4444;
-            --pending: #f59e0b;
-            --rejected: #ef4444;
-            --auto-cancelled: #f59e0b;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding-bottom: 70px;
-        }
-
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            background: var(--navbar-bg);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 16px;
-        }
-
-        .navbar-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .navbar-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .navbar-logo i {
-            color: var(--primary);
-            font-size: 24px;
-        }
-
-        .navbar-logo span {
-            font-size: 18px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .app-footer {
-            max-width: 1200px;
-            margin: 32px auto 88px;
-            padding: 20px 16px 0;
-            border-top: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 12px;
-            line-height: 1.7;
-            text-align: center;
-        }
-
-        .app-footer strong {
-            color: #d1d5db;
-            font-weight: 500;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-card);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            z-index: 50;
-            backdrop-filter: blur(10px);
-            background: rgba(26, 29, 36, 0.95);
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-secondary);
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .nav-item i {
-            font-size: 20px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @media (min-width: 1024px) {
-            .rooms-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 16px;
-            }
-
-            .my-bookings-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
-
-            .bottom-nav {
-                max-width: 400px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-radius: 50px;
-                margin-bottom: 10px;
-            }
-        }
-
-        @media (max-width: 1023px) {
-
-            .rooms-grid,
-            .my-bookings-grid {
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-                padding: 0 16px;
-            }
-        }
-
-        .room-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .room-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .room-image {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            background: linear-gradient(135deg, #2a2e36, #1a1d24);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .room-content {
-            padding: 16px;
-        }
-
-        .badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-            display: inline-block;
-        }
-
-        .badge-available {
-            background: rgba(6, 199, 85, 0.15);
-            color: var(--primary);
-            border: 1px solid rgba(6, 199, 85, 0.3);
-        }
-
-        .badge-full {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .badge-pending {
-            background: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .badge-confirmed {
-            background: rgba(6, 199, 85, 0.15);
-            color: #06c755;
-            border: 1px solid rgba(6, 199, 85, 0.3);
-        }
-
-        .badge-cancelled {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .badge-rejected {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .badge-auto-cancelled {
-            background: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: scale(1.02);
-        }
-
-        .btn-primary:active {
-            opacity: 0.8;
-            transform: scale(0.98);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-primary.loading {
-            color: transparent !important;
-            pointer-events: none;
-            position: relative;
-        }
-
-        .btn-primary.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px 24px;
-            border-radius: 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--primary);
-        }
-
-        .btn-outline.loading {
-            color: transparent !important;
-            pointer-events: none;
-            position: relative;
-        }
-
-        .btn-outline.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid var(--text);
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-
-        .btn-danger.loading {
-            color: transparent !important;
-            pointer-events: none;
-            position: relative;
-        }
-
-        .btn-danger.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .btn-success.loading {
-            color: transparent !important;
-            pointer-events: none;
-            position: relative;
-        }
-
-        .btn-success.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-        }
-
-        .profile-header {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 16px;
-            margin: 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-            transition: all 0.2s;
-        }
-
-        .profile-header:hover {
-            border-color: var(--primary);
-        }
-
-        .profile-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            border: 3px solid var(--primary);
-            object-fit: cover;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        .search-box {
-            position: relative;
-            max-width: 1200px;
-            margin: 0 auto 16px;
-            padding: 0 16px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 12px 12px 44px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            color: var(--text);
-            transition: all 0.2s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(6, 199, 85, 0.2);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 28px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.98);
-            z-index: 1000;
-            display: none;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            width: 100%;
-            height: 100vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        @media (min-width: 768px) {
-            .modal-content {
-                width: 90%;
-                max-width: 800px;
-                height: 90vh;
-                margin: 20px auto;
-                border-radius: 24px;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            line-clamp: 2;
-            padding-right: 16px;
-        }
-
-        .modal-close {
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            transition: all 0.2s;
-        }
-
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--primary);
-        }
-
-        .modal-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-
-        .modal-body::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .modal-body::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
-        .modal-footer {
-            display: flex;
-            gap: 8px;
-            padding: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        .modal-footer button {
-            flex: 1;
-        }
-
-        .input-field {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 12px;
-            padding: 12px;
-            width: 100%;
-            margin-bottom: 12px;
-            transition: all 0.2s;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(6, 199, 85, 0.2);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            background: var(--bg-card);
-            border-radius: 20px;
-            border: 1px solid var(--border);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .initial-loading {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.3s;
-        }
-
-        .initial-loading.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .floating-book-btn {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(6, 199, 85, 0.3);
-            cursor: pointer;
-            z-index: 100;
-            transition: all 0.2s;
-        }
-
-        .floating-book-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(6, 199, 85, 0.4);
-        }
-
-        .time-slot {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .time-slot.unavailable {
-            opacity: 0.5;
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        .admin-section {
-            background: linear-gradient(135deg, rgba(6, 199, 85, 0.1), transparent);
-            border: 1px solid var(--primary);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .admin-stat {
-            background: var(--bg-card);
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .user-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.2s;
-        }
-
-        .user-row:hover {
-            border-color: var(--primary);
-        }
-
-        .user-avatar-sm {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            object-fit: cover;
-        }
-
-        .role-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-
-        .role-admin {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-
-        .role-manager {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-
-        .role-user {
-            background: rgba(107, 114, 128, 0.2);
-            color: #9ca3af;
-        }
-
-        .admin-tab-btn {
-            padding: 12px;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .admin-tab-btn.active {
-            border-bottom-color: var(--primary);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .admin-tab-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: rgba(6, 199, 85, 0.05);
-        }
-
-        .image-preview {
-            width: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-top: 12px;
-            display: none;
-        }
-
-        #navbar-app-name {
-            background: linear-gradient(135deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .skeleton-card {
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 20px;
-            height: 200px;
-        }
-
-        @keyframes loading {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
-        }
-
-        .calendar-container {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 20px;
-            margin: 16px;
-            border: 1px solid var(--border);
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-month {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .calendar-nav-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 36px;
-            height: 36px;
-            border-radius: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .calendar-nav-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            margin-bottom: 10px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg);
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            position: relative;
-            z-index: 1;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .calendar-day:hover {
-            border-color: var(--primary);
-            transform: scale(1.02);
-            z-index: 2;
-        }
-
-        .calendar-day.today {
-            border: 2px solid var(--primary);
-            font-weight: bold;
-        }
-
-        .calendar-day.selected {
-            background: var(--primary);
-            color: white;
-        }
-
-        .calendar-day.other-month {
-            opacity: 0.3;
-        }
-
-        .calendar-day.has-booking {
-            background: rgba(6, 199, 85, 0.1);
-            border: 1px solid var(--primary);
-            cursor: pointer;
-        }
-
-        .calendar-day.has-booking::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--primary);
-        }
-
-        /* Status Colors for Calendar Days */
-        .calendar-day.status-pending {
-            background: rgba(245, 158, 11, 0.1);
-            border-color: #f59e0b;
-        }
-
-        .calendar-day.status-pending::after {
-            background: #f59e0b;
-        }
-
-        .calendar-day.status-confirmed {
-            background: rgba(6, 199, 85, 0.1);
-            border-color: #06c755;
-        }
-
-        .calendar-day.status-confirmed::after {
-            background: #06c755;
-        }
-
-        .calendar-day.status-cancelled {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: #ef4444;
-        }
-
-        .calendar-day.status-cancelled::after {
-            background: #ef4444;
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 4px;
-            border-radius: 2px;
-            background: var(--primary);
-            margin-top: 4px;
-        }
-
-        .status-pending .status-indicator {
-            background: #f59e0b;
-        }
-
-        .status-confirmed .status-indicator {
-            background: #06c755;
-        }
-
-        .status-cancelled .status-indicator {
-            background: #ef4444;
-        }
-
-        /* Multi-day Connecting Bar Styles */
-        .multi-day-bar {
-            position: absolute;
-            left: -2px;
-            right: -2px;
-            top: 0;
-            bottom: 0;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .multi-day-bar.bar-start {
-            /* Start: rounded left edge, extend right into gap */
-            left: 4px;
-            right: -2px;
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
-        }
-
-        .multi-day-bar.bar-end {
-            /* End: rounded right edge, extend left into gap */
-            left: -2px;
-            right: 4px;
-            border-top-right-radius: 12px;
-            border-bottom-right-radius: 12px;
-        }
-
-        .multi-day-bar.bar-middle {
-            /* Middle: stretch across both gaps to connect seamlessly */
-            left: -2px;
-            right: -2px;
-            border-radius: 0;
-        }
-
-        .multi-day-bar.bar-single {
-            left: 4px;
-            right: 4px;
-            border-radius: 12px;
-        }
-
-        .multi-day-bar.status-pending {
-            background: rgba(245, 158, 11, 0.25);
-            border-top: 1px dashed #f59e0b;
-            border-bottom: 1px dashed #f59e0b;
-        }
-
-        .multi-day-bar.status-pending.bar-start {
-            border-left: 1px dashed #f59e0b;
-        }
-
-        .multi-day-bar.status-pending.bar-end {
-            border-right: 1px dashed #f59e0b;
-        }
-
-        .multi-day-bar.status-pending.bar-single {
-            border: 1px dashed #f59e0b;
-        }
-
-        .multi-day-bar.status-confirmed {
-            background: rgba(6, 199, 85, 0.25);
-            border-top: 1px solid #06c755;
-            border-bottom: 1px solid #06c755;
-        }
-
-        .multi-day-bar.status-confirmed.bar-start {
-            border-left: 1px solid #06c755;
-        }
-
-        .multi-day-bar.status-confirmed.bar-end {
-            border-right: 1px solid #06c755;
-        }
-
-        .multi-day-bar.status-confirmed.bar-single {
-            border: 1px solid #06c755;
-        }
-
-        .multi-day-bar.status-cancelled,
-        .multi-day-bar.status-rejected,
-        .multi-day-bar.status-auto_cancelled {
-            background: rgba(239, 68, 68, 0.25);
-            border-top: 1px solid #ef4444;
-            border-bottom: 1px solid #ef4444;
-        }
-
-        .multi-day-bar.status-cancelled.bar-start {
-            border-left: 1px solid #ef4444;
-        }
-
-        .multi-day-bar.status-cancelled.bar-end {
-            border-right: 1px solid #ef4444;
-        }
-
-        .multi-day-bar.status-cancelled.bar-single {
-            border: 1px solid #ef4444;
-        }
-
-        .date-bookings-list {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .date-booking-item {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-left: 4px solid var(--primary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .date-booking-item:hover {
-            background: #252930;
-            transform: translateX(4px);
-        }
-
-        .date-booking-item.pending {
-            border-left-color: #f59e0b;
-        }
-
-        .date-booking-item.confirmed {
-            border-left-color: #06c755;
-        }
-
-        .date-booking-item.cancelled {
-            border-left-color: #ef4444;
-            opacity: 0.8;
-        }
-
-        .date-booking-item.rejected {
-            border-left-color: #ef4444;
-            opacity: 0.8;
-        }
-
-        .date-booking-item.auto-cancelled {
-            border-left-color: #f59e0b;
-            opacity: 0.8;
-        }
-
-        .date-booking-time {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .date-booking-title {
-            font-weight: 600;
-            margin: 4px 0;
-        }
-
-        .date-booking-room {
-            font-size: 12px;
-            color: var(--primary);
-        }
-
-        .capacity-badge {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-        .facility-tag {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 11px;
-            color: var(--text-secondary);
-            display: inline-block;
-            margin-right: 6px;
-            margin-bottom: 6px;
-        }
-
-        .quick-actions {
-            display: flex;
-            gap: 8px;
-            padding: 0 16px;
-            margin-bottom: 16px;
-        }
-
-        .quick-action-btn {
-            flex: 1;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quick-action-btn:hover {
-            border-color: var(--primary);
-            background: rgba(6, 199, 85, 0.05);
-        }
-
-        .quick-action-icon {
-            font-size: 20px;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-
-        .quick-action-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .room-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .room-image i {
-            font-size: 48px;
-            color: var(--primary);
-        }
-
-        .room-management-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .room-management-item:hover {
-            border-color: var(--primary);
-        }
-
-        .room-management-info {
-            flex: 1;
-        }
-
-        .room-management-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                transform: translateY(0);
-                opacity: 1;
-            }
-
-            to {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-        }
-
-        .permission-badge {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 500;
-            background: rgba(6, 199, 85, 0.1);
-            color: var(--primary);
-            border: 1px solid rgba(6, 199, 85, 0.2);
-        }
-
-        .line-button {
-            background: #06c755;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .line-button:hover {
-            background: #05b34a;
-            transform: translateY(-2px);
-        }
-
-        .line-button i {
-            font-size: 16px;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 52px;
-            height: 28px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #4a4e57;
-            transition: .3s;
-            border-radius: 34px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked+.toggle-slider {
-            background-color: var(--primary);
-        }
-
-        input:checked+.toggle-slider:before {
-            transform: translateX(24px);
-        }
-
-        .notification-badge {
-            background: var(--primary);
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            margin-left: 8px;
-        }
-
-        .settings-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .settings-item:hover {
-            border-color: var(--primary);
-        }
-
-        .settings-item-label {
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        .settings-item-desc {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
-
-        .quick-datetime-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .quick-datetime-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .quick-datetime-btn i {
-            font-size: 12px;
-            color: var(--primary);
-        }
-
-        .datetime-presets {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 8px 0 12px;
-            margin-bottom: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .datetime-presets::-webkit-scrollbar {
-            display: none;
-        }
-
-        .datetime-preset {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 8px 16px;
-            font-size: 13px;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .datetime-preset:hover,
-        .datetime-preset.active {
-            border-color: var(--primary);
-            background: rgba(6, 199, 85, 0.1);
-            color: var(--primary);
-        }
-
-        .skeleton-room {
-            background: linear-gradient(90deg, var(--bg-card) 25%, #252930 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.2s infinite ease-in-out;
-            border-radius: 20px;
-            height: 200px;
-        }
-
-        .multi-day-badge {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            font-size: 9px;
-            padding: 2px 4px;
-            border-radius: 4px;
-            margin-left: 4px;
-        }
-
-        .filter-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 12px;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .filter-btn:hover,
-        .filter-btn.active {
-            border-color: var(--primary);
-            background: rgba(6, 199, 85, 0.1);
-            color: var(--primary);
-        }
-
-        .book-date-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .book-date-btn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.02);
-        }
-
-        .book-date-btn i {
-            font-size: 16px;
-        }
-
-        .date-bookings-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        /* Trigger status styles */
-        .trigger-status-box {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
-            margin-bottom: 12px;
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
-
-        .trigger-status-box.success {
-            border-color: var(--primary);
-            color: var(--text);
-        }
-
-        .trigger-status-box .status-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 0;
-        }
-
-        .trigger-status-box .status-item .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .trigger-status-box .status-item .dot.active {
-            background: var(--primary);
-        }
-
-        .trigger-status-box .status-item .dot.inactive {
-            background: var(--danger);
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Initial Loading -->
-    <div class="initial-loading" id="initial-loading">
-        <div class="loading-spinner"></div>
-        <div class="loading-text mt-4 text-[#06c755]">กำลังโหลด...</div>
-    </div>
-
-    <!-- Floating Book Button -->
-    <div id="floating-book-btn" class="floating-book-btn hidden" onclick="showBookingModal()">
-        <i class="fas fa-calendar-plus text-2xl"></i>
-    </div>
-
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-content">
-            <div class="navbar-logo" onclick="goHome()">
-                <i class="fas fa-door-open"></i>
-                <span id="navbar-app-name">Meeting Room</span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="min-h-screen">
-        <!-- Tab: Home -->
-        <div id="tab-home" class="tab-content active">
-            <!-- Profile Header -->
-            <div class="profile-header" id="profile-header">
-                <img id="profile-avatar" src="https://via.placeholder.com/60/2a2e36/06c755?text=..." alt="avatar"
-                    class="profile-avatar">
-                <div class="flex-1">
-                    <h2 id="profile-name" class="text-lg font-bold">กำลังโหลด...</h2>
-                    <p id="profile-email" class="text-sm text-gray-400"></p>
-                    <p id="profile-role" class="text-xs text-[#06c755] mt-1"></p>
-                </div>
-                <i class="fas fa-chevron-down text-gray-400"></i>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <div class="quick-action-btn" onclick="showBookingModal()">
-                    <div class="quick-action-icon"><i class="fas fa-calendar-plus"></i></div>
-                    <div class="quick-action-label">จองด่วน</div>
-                </div>
-                <div class="quick-action-btn" onclick="goToToday()">
-                    <div class="quick-action-icon"><i class="fas fa-calendar-day"></i></div>
-                    <div class="quick-action-label">วันนี้</div>
-                </div>
-                <div class="quick-action-btn" onclick="showAllRooms()">
-                    <div class="quick-action-icon"><i class="fas fa-door-open"></i></div>
-                    <div class="quick-action-label">ห้องว่าง</div>
-                </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-2 max-w-7xl mx-auto px-4 mb-4">
-                <div class="stat-card">
-                    <p class="text-xs text-gray-400">ห้องทั้งหมด</p>
-                    <p id="stat-rooms" class="text-xl font-bold text-[#06c755]">0</p>
-                </div>
-                <div class="stat-card">
-                    <p class="text-xs text-gray-400">จองวันนี้</p>
-                    <p id="stat-today" class="text-xl font-bold text-[#06c755]">0</p>
-                </div>
-                <div class="stat-card admin-only-pending">
-                    <p class="text-xs text-gray-400">รออนุมัติ</p>
-                    <p id="stat-pending" class="text-xl font-bold text-[#06c755]">0</p>
-                </div>
-            </div>
-
-            <!-- Calendar Section -->
-            <div class="calendar-container">
-                <div class="calendar-header">
-                    <button class="calendar-nav-btn" onclick="changeMonth(-1)">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <span class="calendar-month" id="current-month">กำลังโหลด...</span>
-                    <button class="calendar-nav-btn" onclick="changeMonth(1)">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-
-                <div class="calendar-weekdays">
-                    <div>อา</div>
-                    <div>จ</div>
-                    <div>อ</div>
-                    <div>พ</div>
-                    <div>พฤ</div>
-                    <div>ศ</div>
-                    <div>ส</div>
-                </div>
-
-                <div class="calendar-days" id="calendar-days"></div>
-
-                <div id="selected-date-bookings" class="date-bookings-list hidden">
-                    <div class="date-bookings-header">
-                        <h3 class="text-sm font-semibold" id="selected-date-title"></h3>
-                        <button class="book-date-btn" onclick="bookOnSelectedDate()">
-                            <i class="fas fa-calendar-plus"></i> จองวันนี้
-                        </button>
-                    </div>
-                    <div id="selected-date-bookings-list"></div>
-                </div>
-            </div>
-
-            <!-- Search -->
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="ค้นหาห้องประชุม..." autocomplete="off">
-            </div>
-
-            <!-- Rooms List -->
-            <div id="rooms-list" class="rooms-grid">
-                <div class="skeleton-room"></div>
-                <div class="skeleton-room"></div>
-                <div class="skeleton-room"></div>
-            </div>
-        </div>
-
-        <!-- Tab: My Bookings -->
-        <div id="tab-my" class="tab-content">
-            <div class="flex justify-between items-center max-w-7xl mx-auto px-4 mb-4">
-                <h2 class="text-xl font-bold text-[#06c755]">การจองของฉัน</h2>
-                <button id="quick-book-btn" class="bg-[#06c755] text-white px-4 py-2 rounded-xl text-sm hidden"
-                    onclick="showBookingModal()">
-                    <i class="fas fa-plus mr-1"></i>จองด่วน
-                </button>
-            </div>
-
-            <div class="flex gap-2 overflow-x-auto px-4 mb-4">
-                <button class="filter-btn active" data-booking-filter="all">ทั้งหมด</button>
-                <button class="filter-btn" data-booking-filter="confirmed">อนุมัติแล้ว</button>
-                <button class="filter-btn" data-booking-filter="pending">รออนุมัติ</button>
-                <button class="filter-btn" data-booking-filter="cancelled">ยกเลิก</button>
-                <button class="filter-btn" data-booking-filter="rejected">ปฏิเสธ</button>
-                <button class="filter-btn" data-booking-filter="auto_cancelled">ระบบยกเลิก</button>
-            </div>
-
-            <div id="my-bookings-list" class="my-bookings-grid"></div>
-        </div>
-
-        <!-- Tab: Admin -->
-        <div id="tab-admin" class="tab-content">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-[#06c755]">จัดการระบบ</h2>
-                    <div class="flex items-center gap-2">
-                        <span id="user-role-badge" class="permission-badge hidden"></span>
-                        <button id="refresh-admin" class="text-[#06c755] text-sm">
-                            <i class="fas fa-sync-alt mr-1"></i>รีเฟรช
-                        </button>
-                    </div>
-                </div>
-
-                <div class="admin-section">
-                    <h3 class="font-semibold mb-3">สถิติ</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="admin-stat">
-                            <p class="text-xs text-gray-400">ผู้ใช้</p>
-                            <p id="admin-users" class="text-xl font-bold text-[#06c755]">0</p>
-                        </div>
-                        <div class="admin-stat">
-                            <p class="text-xs text-gray-400">ห้อง</p>
-                            <p id="admin-rooms" class="text-xl font-bold text-[#06c755]">0</p>
-                        </div>
-                        <div class="admin-stat">
-                            <p class="text-xs text-gray-400">การจอง</p>
-                            <p id="admin-bookings" class="text-xl font-bold text-[#06c755]">0</p>
-                        </div>
-                        <div class="admin-stat admin-only-pending">
-                            <p class="text-xs text-gray-400">รออนุมัติ</p>
-                            <p id="admin-pending" class="text-xl font-bold text-[#06c755]">0</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex border-b border-[#2a2e36] mb-4 overflow-x-auto">
-                    <button class="admin-tab-btn flex-1 py-2 text-center active admin-only-pending"
-                        data-admin-tab="pending">
-                        รออนุมัติ <span id="pending-badge"
-                            class="ml-1 bg-[#06c755] text-white text-xs rounded-full px-1.5 py-0.5 hidden">0</span>
-                    </button>
-                    <button class="admin-tab-btn flex-1 py-2 text-center"
-                        data-admin-tab="bookings">การจองทั้งหมด</button>
-                    <button class="admin-tab-btn flex-1 py-2 text-center" data-admin-tab="rooms">จัดการห้อง</button>
-                    <button class="admin-tab-btn flex-1 py-2 text-center admin-only-users" data-admin-tab="users"
-                        style="display: none;">จัดการผู้ใช้</button>
-                    <button class="admin-tab-btn flex-1 py-2 text-center admin-only-settings" data-admin-tab="settings"
-                        style="display: none;">ตั้งค่า</button>
-                </div>
-
-                <div id="admin-pending-tab" class="admin-tab admin-only-pending">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="font-semibold">รายการรออนุมัติ</h3>
-                        <button onclick="setupSystemTriggers()" class="text-[#06c755] text-sm">
-                            <i class="fas fa-cog mr-1"></i>ตั้งค่า Auto
-                        </button>
-                    </div>
-                    <div id="pending-bookings-list" class="space-y-3"></div>
-                </div>
-
-                <div id="admin-bookings-tab" class="admin-tab hidden">
-                    <div class="search-box px-0 mb-4">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="admin-booking-search" placeholder="ค้นหาการจอง...">
-                    </div>
-                    <div id="all-bookings-list" class="space-y-3"></div>
-                </div>
-
-                <div id="admin-rooms-tab" class="admin-tab hidden">
-                    <button class="btn-primary mb-4" onclick="showCreateRoomModal()">
-                        <i class="fas fa-plus mr-2"></i>เพิ่มห้องใหม่
-                    </button>
-                    <div id="rooms-management-list" class="space-y-3"></div>
-                </div>
-
-                <div id="admin-users-tab" class="admin-tab hidden">
-                    <div class="search-box px-0 mb-4">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="user-search" placeholder="ค้นหาผู้ใช้...">
-                    </div>
-                    <div id="users-list" class="space-y-2"></div>
-                </div>
-
-                <div id="admin-settings-tab" class="admin-tab hidden">
-                    <div class="admin-section">
-                        <h3 class="font-semibold mb-3">ตั้งค่าระบบ</h3>
-                        <form id="settings-form" onsubmit="saveSettings(event)">
-                            <label class="block text-sm text-gray-400 mb-1">ชื่อระบบ</label>
-                            <input type="text" id="setting-app-name" class="input-field" value="Meeting Room" required>
-
-                            <div class="mb-4">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" id="setting-require-approval"
-                                        class="w-4 h-4 text-[#06c755] rounded border-gray-600 focus:ring-[#06c755] focus:ring-2">
-                                    <span class="text-sm text-gray-400 select-none">ต้องอนุมัติการจองก่อน</span>
-                                </label>
-                            </div>
-
-                            <label class="block text-sm text-gray-400 mb-1">แจ้งเตือนล่วงหน้า</label>
-                            <select id="setting-reminder-minutes" class="input-field">
-                                <option value="none">ไม่แจ้งเตือน</option>
-                                <option value="15">15 นาที</option>
-                                <option value="30">30 นาที</option>
-                                <option value="60">1 ชั่วโมง</option>
-                                <option value="120">2 ชั่วโมง</option>
-                                <option value="1440">1 วัน</option>
-                            </select>
-
-                            <button type="submit" class="btn-primary w-full"
-                                id="settings-save-btn">บันทึกการตั้งค่า</button>
-                        </form>
-                    </div>
-
-                    <!-- ====== TRIGGER MANAGEMENT SECTION ====== -->
-                    <div class="admin-section mt-4 border-[#3b82f6] border-opacity-50">
-                        <h3 class="font-semibold mb-3 text-[#3b82f6]">⏰ ระบบแจ้งเตือนอัตโนมัติ (Triggers)</h3>
-
-                        <div id="trigger-status-box" class="trigger-status-box hidden"></div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="setupSystemTriggers()" class="btn-primary text-sm py-2">
-                                <i class="fas fa-play mr-2"></i>ตั้งค่า Triggers
-                            </button>
-                            <button onclick="checkTriggerStatus()" class="btn-outline text-sm py-2">
-                                <i class="fas fa-sync-alt mr-2"></i>ตรวจสอบสถานะ
-                            </button>
-                        </div>
-
-                        <div class="mt-3 grid grid-cols-2 gap-2">
-                            <button onclick="runTriggerNow('sendMeetingReminders')" class="btn-outline text-xs py-1.5">
-                                <i class="fas fa-bell mr-1"></i>ทดสอบ Reminder
-                            </button>
-                            <button onclick="runTriggerNow('autoCancelOverdueBookings')"
-                                class="btn-outline text-xs py-1.5">
-                                <i class="fas fa-clock mr-1"></i>ทดสอบ Auto Cancel
-                            </button>
-                        </div>
-
-                        <p class="text-xs text-gray-500 mt-3 leading-relaxed">
-                            💡 <strong>Triggers จะทำงานอัตโนมัติ:</strong><br>
-                            • <span class="text-[#3b82f6]">Reminder</span> ส่งแจ้งเตือน Admin/Manager ทุก 10 นาที<br>
-                            • <span class="text-[#f59e0b]">Auto Cancel</span>
-                            ยกเลิกเฉพาะการจองที่<b>ยังไม่ได้รับอนุมัติ</b>เมื่อเลยเวลา ทุก 30 นาที<br>
-                            • <span class="text-[#06c755]">สรุปรายเดือน</span> ส่งสรุปให้ผู้ใช้ทุกวันเวลา 20:00 น.<br>
-                            • <span class="text-[#ef4444]">Cleanup</span> ลบผู้ใช้ inactive ทุกวันเวลา 03:00 น.
-                        </p>
-                    </div>
-
-                    <div class="admin-section border-red-500/30">
-                        <h3 class="font-semibold mb-3 text-red-500">เครื่องมือสำหรับผู้ดูแล</h3>
-                        <button onclick="resetDatabase()" class="btn-danger w-full">
-                            <i class="fas fa-database mr-2"></i>รีเซ็ตฐานข้อมูล (ล้างข้อมูลทั้งหมด)
-                        </button>
-                        <p class="text-xs text-gray-400 mt-2">คำเตือน:
-                            การกดปุ่มนี้จะล้างข้อมูลทั้งหมดและตั้งค่าเริ่มต้นใหม่</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Room Detail Modal -->
-        <div class="modal" id="room-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="modal-title">กำลังโหลด...</h3>
-                    <button class="modal-close" onclick="closeModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body" id="modal-body">
-                    <div class="flex justify-center items-center py-10">
-                        <div class="loading-spinner w-10 h-10"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-primary" onclick="showBookingModal(state.currentRoom?.roomId)"
-                        id="modal-book-btn">
-                        <i class="fas fa-calendar-check"></i> จองห้อง
-                    </button>
-                    <button class="btn-outline" onclick="closeModal()">ปิด</button>
-                </div>
-                <div id="modal-admin-controls" class="px-4 pb-4 hidden">
-                    <p class="text-sm text-gray-400 mb-2">จัดการห้อง</p>
-                    <div class="flex gap-2">
-                        <button id="modal-edit-btn" class="btn-outline flex-1 text-sm" onclick="editCurrentRoom()"
-                            disabled>
-                            <i class="fas fa-edit mr-2"></i>แก้ไข
-                        </button>
-                        <button id="modal-delete-btn" class="btn-danger flex-1 text-sm" onclick="deleteCurrentRoom()"
-                            disabled>
-                            <i class="fas fa-trash mr-2"></i>ลบ
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Booking Detail Modal -->
-        <div class="modal" id="booking-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">รายละเอียดการจอง</h3>
-                    <button class="modal-close" onclick="closeBookingDetailModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body" id="booking-modal-body">
-                    <div class="flex justify-center items-center py-10">
-                        <div class="loading-spinner w-10 h-10"></div>
-                    </div>
-                </div>
-                <div class="modal-footer" id="booking-modal-footer">
-                    <button class="btn-outline" onclick="closeBookingDetailModal()">ปิด</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Create/Edit Booking Modal -->
-        <div class="modal" id="booking-create-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="booking-modal-title">จองห้องประชุม</h3>
-                    <button class="modal-close" onclick="closeBookingCreateModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="datetime-presets" id="datetime-presets">
-                        <button class="datetime-preset active" onclick="setQuickDateTime('now')">
-                            <i class="fas fa-clock mr-1"></i>เดี๋ยวนี้
-                        </button>
-                        <button class="datetime-preset" onclick="setQuickDateTime('1hour')">
-                            <i class="fas fa-hourglass-start mr-1"></i>+1 ชม.
-                        </button>
-                        <button class="datetime-preset" onclick="setQuickDateTime('2hour')">
-                            <i class="fas fa-hourglass-half mr-1"></i>+2 ชม.
-                        </button>
-                        <button class="datetime-preset" onclick="setQuickDateTime('today')">
-                            <i class="fas fa-sun mr-1"></i>วันนี้
-                        </button>
-                        <button class="datetime-preset" onclick="setQuickDateTime('tomorrow')">
-                            <i class="fas fa-calendar-day mr-1"></i>พรุ่งนี้
-                        </button>
-                    </div>
-
-                    <form id="booking-form" onsubmit="saveBooking(event)">
-                        <input type="hidden" id="edit-booking-id">
-                        <select id="booking-room" class="input-field" required>
-                            <option value="">เลือกห้องประชุม</option>
-                        </select>
-                        <input type="text" id="booking-title" placeholder="หัวข้อการประชุม" class="input-field" required
-                            maxlength="100">
-                        <textarea id="booking-description" placeholder="รายละเอียด" class="input-field" rows="3"
-                            maxlength="500" required></textarea>
-
-                        <select id="booking-format" class="input-field" onchange="toggleZoomLink()">
-                            <option value="onsite">ประชุมออนไซต์ (Onsite)</option>
-                            <option value="online">ประชุมออนไลน์ (Online)</option>
-                        </select>
-
-                        <input type="url" id="booking-meeting-link" placeholder="ลิงค์ประชุม (Zoom, Teams, etc.)"
-                            class="input-field hidden" pattern="https?://.*">
-
-                        <div id="equipment-onsite-section" class="flex flex-col gap-2 mb-3 px-2">
-                            <span class="text-sm text-gray-400 block">อุปกรณ์เพิ่มเติม</span>
-                            <div class="flex flex-wrap gap-4">
-                                <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                                    <input type="radio" name="booking-computer" id="booking-use-computer" value="use"
-                                        class="text-primary focus:ring-primary bg-gray-800 border-gray-600"
-                                        onchange="toggleProjector()">
-                                    ใช้คอมพิวเตอร์
-                                </label>
-                                <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                                    <input type="radio" name="booking-computer" id="booking-no-computer" value="no"
-                                        class="text-primary focus:ring-primary bg-gray-800 border-gray-600" checked
-                                        onchange="toggleProjector()">
-                                    ไม่ใช้คอมพิวเตอร์
-                                </label>
-                            </div>
-                            <div class="flex gap-4 mt-1 hidden" id="projector-container">
-                                <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                                    <input type="checkbox" id="booking-use-projector"
-                                        class="rounded text-primary focus:ring-primary bg-gray-800 border-gray-600">
-                                    ใช้โปรเจคเตอร์
-                                </label>
-                            </div>
-                        </div>
-
-                        <div id="equipment-online-section" class="flex flex-col gap-2 mb-3 px-2 hidden">
-                            <span class="text-sm text-gray-400 block">อุปกรณ์สำหรับออนไลน์</span>
-                            <div class="flex flex-wrap gap-4">
-                                <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                                    <input type="checkbox" id="booking-online-camera"
-                                        class="rounded text-primary focus:ring-primary bg-gray-800 border-gray-600">
-                                    กล้อง
-                                </label>
-                                <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                                    <input type="checkbox" id="booking-online-mic"
-                                        class="rounded text-primary focus:ring-primary bg-gray-800 border-gray-600">
-                                    ไมค์
-                                </label>
-                                <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                                    <input type="checkbox" id="booking-online-computer"
-                                        class="rounded text-primary focus:ring-primary bg-gray-800 border-gray-600">
-                                    คอมพิวเตอร์
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-xs text-gray-400 mb-1 block">วันที่เริ่ม</label>
-                                <input type="date" id="booking-date" class="input-field" required min=""
-                                    onchange="validateBookingForm(); checkAvailability();">
-                            </div>
-                            <div>
-                                <label class="text-xs text-gray-400 mb-1 block">วันที่สิ้นสุด</label>
-                                <input type="date" id="booking-end-date" class="input-field" required min=""
-                                    onchange="validateBookingForm(); checkAvailability();">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-xs text-gray-400 mb-1 block">เวลาเริ่ม</label>
-                                <select id="booking-start" class="input-field" required
-                                    onchange="validateBookingForm(); checkAvailability();"></select>
-                                <div class="flex gap-1 mt-1">
-                                    <button type="button" class="quick-datetime-btn" onclick="adjustTime('start', -30)">
-                                        <i class="fas fa-minus"></i>-30น.
-                                    </button>
-                                    <button type="button" class="quick-datetime-btn" onclick="adjustTime('start', 30)">
-                                        <i class="fas fa-plus"></i>+30น.
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-xs text-gray-400 mb-1 block">เวลาสิ้นสุด</label>
-                                <select id="booking-end" class="input-field" required
-                                    onchange="validateBookingForm(); checkAvailability();"></select>
-                                <div class="flex gap-1 mt-1">
-                                    <button type="button" class="quick-datetime-btn" onclick="adjustTime('end', -30)">
-                                        <i class="fas fa-minus"></i>-30น.
-                                    </button>
-                                    <button type="button" class="quick-datetime-btn" onclick="adjustTime('end', 30)">
-                                        <i class="fas fa-plus"></i>+30น.
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-xs text-gray-400 mb-1 block">จำนวนผู้เข้าร่วม</label>
-                                <input type="number" id="booking-attendees" class="input-field" placeholder="จำนวน"
-                                    min="1" required oninput="validateBookingForm(); checkAvailability();">
-                            </div>
-                        </div>
-
-                        <div id="availability-status" class="text-sm mb-3 hidden"></div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="booking-form" class="btn-primary flex-1" id="save-booking-btn"
-                        disabled>จอง</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeBookingCreateModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Create/Edit Room Modal -->
-        <div class="modal" id="room-create-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="room-modal-title">เพิ่มห้องใหม่</h3>
-                    <button class="modal-close" onclick="closeRoomModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="room-form" onsubmit="saveRoom(event)">
-                        <input type="hidden" id="edit-room-id">
-                        <input type="text" id="room-name" placeholder="ชื่อห้อง" class="input-field" required
-                            maxlength="50">
-                        <input type="number" id="room-capacity" placeholder="ความจุ (คน)" class="input-field" required
-                            min="1">
-                        <input type="text" id="room-location" placeholder="สถานที่/ชั้น" class="input-field" required>
-                        <textarea id="room-description" placeholder="รายละเอียดห้อง" class="input-field"
-                            rows="3"></textarea>
-                        <input type="text" id="room-facilities"
-                            placeholder="สิ่งอำนวยความสะดวก (คั่นด้วย , เช่น โปรเจคเตอร์, จอ, ไวท์บอร์ด)"
-                            class="input-field">
-
-                        <div class="upload-area" onclick="document.getElementById('room-image-file').click()">
-                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                            <p class="text-sm text-gray-400">คลิกเพื่ออัปโหลดรูปภาพห้อง</p>
-                        </div>
-                        <input type="file" id="room-image-file" accept="image/*" style="display: none"
-                            onchange="previewRoomImage(this)">
-                        <img id="room-image-preview" class="image-preview">
-                        <input type="hidden" id="room-image">
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="room-form" class="btn-primary flex-1" id="save-room-btn">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeRoomModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Profile Settings Modal -->
-        <div class="modal" id="profile-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">แก้ไขโปรไฟล์</h3>
-                    <button class="modal-close" onclick="closeProfileModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="profile-form" onsubmit="saveProfile(event)">
-                        <div class="mb-4">
-                            <label class="text-sm text-gray-400 mb-1 block">เบอร์โทรศัพท์</label>
-                            <input type="text" id="profile-phone" placeholder="เช่น 0812345678" class="input-field"
-                                maxlength="10">
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="text-sm text-gray-400 mb-1 block">แผนก/หน่วยงาน</label>
-                            <input type="text" id="profile-department" placeholder="เช่น ไอที, ฝ่ายขาย"
-                                class="input-field" maxlength="50">
-                        </div>
-
-                        <div class="settings-item">
-                            <div>
-                                <div class="settings-item-label">การแจ้งเตือน LINE</div>
-                                <div class="settings-item-desc">รับข้อความแจ้งเตือนเมื่อมีการจอง อนุมัติ หรือเปลี่ยนแปลง
-                                </div>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="profile-notifications-enabled" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="profile-form" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeProfileModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Role Modal -->
-        <div class="modal" id="role-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">จัดการสิทธิ์ผู้ใช้</h3>
-                    <button class="modal-close" onclick="closeRoleModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="role-form" onsubmit="saveUserRole(event)">
-                        <input type="hidden" id="role-user-id">
-                        <p id="role-user-name" class="text-white mb-4"></p>
-                        <select id="user-role" class="input-field">
-                            <option value="user">👤 ผู้ใช้ทั่วไป</option>
-                            <option value="manager">👥 ผู้ดำเนินการ</option>
-                            <option value="admin">👑 ผู้ดูแลระบบ</option>
-                        </select>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" form="role-form" class="btn-primary flex-1">บันทึก</button>
-                    <button type="button" class="btn-outline flex-1" onclick="closeRoleModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Delete User Confirmation Modal -->
-        <div class="modal" id="delete-user-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">ยืนยันการลบผู้ใช้</h3>
-                    <button class="modal-close" onclick="closeDeleteUserModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="delete-user-name" class="text-white mb-4"></p>
-                    <p class="text-sm text-gray-400">การลบผู้ใช้จะส่งผลต่อการจองที่เกี่ยวข้องทั้งหมด
-                        การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
-                </div>
-                <div class="modal-footer">
-                    <button onclick="confirmDeleteUser()" class="btn-danger flex-1">
-                        <i class="fas fa-trash mr-2"></i>ลบผู้ใช้
-                    </button>
-                    <button class="btn-outline flex-1" onclick="closeDeleteUserModal()">ยกเลิก</button>
-                </div>
-            </div>
-        </div>
-
-        <footer class="app-footer">
-            <p>พัฒนาโดย: <strong>นายธีรพงศ์ พรหมวัง</strong></p>
-            <p>แผนกเทคโนโลยีสารสนเทศ</p>
-            <p>บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) · โรงงาน 1</p>
-        </footer>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item active" data-tab="home">
-            <i class="fas fa-door-open"></i>
-            <span>ห้องประชุม</span>
-        </div>
-        <div class="nav-item" data-tab="my">
-            <i class="fas fa-calendar-check"></i>
-            <span>การจองของฉัน</span>
-        </div>
-        <div class="nav-item hidden manager-admin" data-tab="admin">
-            <i class="fas fa-cog"></i>
-            <span>จัดการ</span>
-        </div>
-    </div>
-
-    <script>
         // ========== CONFIG ==========
         const CONFIG = {
             GAS_URL: 'https://script.google.com/macros/s/AKfycbwEkTSINEvnyBdapUWbJ8djVpdLt6rN7NlaXn5cKMow7RJtY3gI19-RSMyFHsWBxII-vA/exec',
@@ -2390,6 +180,7 @@
         function formatDateThai(dateStr) {
             if (!dateStr) return '';
             const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '';
             return date.toLocaleDateString('th-TH', {
                 day: 'numeric',
                 month: 'long',
@@ -2401,6 +192,7 @@
         function formatDateShort(dateStr) {
             if (!dateStr) return '';
             const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '';
             return date.toLocaleDateString('th-TH', {
                 day: 'numeric',
                 month: 'short',
@@ -2410,7 +202,9 @@
 
         function formatTime(dateStr) {
             if (!dateStr) return '';
-            return new Date(dateStr).toLocaleTimeString('th-TH', {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '';
+            return date.toLocaleTimeString('th-TH', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
@@ -2418,7 +212,9 @@
 
         function formatDateTime(dateStr) {
             if (!dateStr) return '';
-            return new Date(dateStr).toLocaleString('th-TH', {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '';
+            return date.toLocaleString('th-TH', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
@@ -2429,6 +225,7 @@
 
         function formatDateForInput(date) {
             const d = new Date(date);
+            if (isNaN(d.getTime())) return '';
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
@@ -2437,12 +234,14 @@
 
         function formatTimeForInput(date) {
             const d = new Date(date);
+            if (isNaN(d.getTime())) return '';
             const hours = String(d.getHours()).padStart(2, '0');
             const minutes = String(d.getMinutes()).padStart(2, '0');
             return `${hours}:${minutes}`;
         }
 
         function formatMonthThai(date) {
+            if (!(date instanceof Date) || isNaN(date.getTime())) return '';
             return date.toLocaleDateString('th-TH', {
                 month: 'long',
                 year: 'numeric'
@@ -2496,7 +295,9 @@
 
                 Object.keys(data).forEach(key => {
                     if (data[key] !== undefined && data[key] !== null) {
-                        formData.append(key, data[key]);
+                        // Array/Object ต้อง JSON.stringify ก่อนส่ง เพราะ FormData แปลงทุกอย่างเป็น string
+                        const val = data[key];
+                        formData.append(key, typeof val === 'object' ? JSON.stringify(val) : String(val));
                     }
                 });
 
@@ -2509,7 +310,9 @@
                 clearTimeout(timeoutId);
 
                 const text = await res.text();
-                return JSON.parse(text);
+                // GAS Web App จะใส่ prefix {}&& หน้า JSON เพื่อกัน XSS
+                const jsonStr = text.replace(/^\{\}\&\&/, '');
+                return JSON.parse(jsonStr);
             } catch (error) {
                 console.error('API Error:', error);
 
@@ -3309,28 +1112,6 @@
                 });
             }
 
-            if (bookingId) {
-                flexMessage.contents.footer.contents.push({
-                    type: 'text',
-                    text: 'แชร์ให้ผู้มีส่วนร่วมประชุมทราบ',
-                    size: 'xs',
-                    color: '#6b7280',
-                    align: 'center',
-                    wrap: true
-                });
-                flexMessage.contents.footer.contents.push({
-                    type: 'button',
-                    action: {
-                        type: 'uri',
-                        label: '↗️ แชร์ไปยังกลุ่ม',
-                        uri: 'https://liff.line.me/' + CONFIG.LIFF_ID + '?bookingId=' + encodeURIComponent(bookingId) + '&action=share'
-                    },
-                    style: 'primary',
-                    color: '#3b82f6',
-                    margin: 'sm'
-                });
-            }
-
             if (bookingId && liff.isInClient()) {
                 flexMessage.contents.footer.contents.push({
                     type: 'button',
@@ -3343,9 +1124,9 @@
             return flexMessage;
         }
 
-        async function sendBookingToChat(bookingData, { force = false } = {}) {
+        async function sendBookingToChat(bookingData) {
             try {
-                if (!force && !areNotificationsEnabled()) {
+                if (!areNotificationsEnabled()) {
                     console.log('Notifications disabled');
                     return false;
                 }
@@ -3362,7 +1143,6 @@
                 return true;
             } catch (error) {
                 console.error('Error sending flex message:', error);
-                showToast('บันทึกการจองสำเร็จ แต่ส่งข้อความไปยังแชทไม่สำเร็จ', 'error');
                 return false;
             }
         }
@@ -3427,9 +1207,16 @@
                         const startDateObj = new Date(booking.startTime);
                         const endDateObj = new Date(booking.endTime);
 
+                        // ข้าม booking ที่ startTime/endTime เป็น Invalid Date
+                        if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
+                            console.warn('⚠️ loadMonthBookings: Invalid date in booking', booking.bookingId, booking.startTime, booking.endTime);
+                            return;
+                        }
+
                         let currentDate = new Date(startDateObj);
                         while (currentDate <= endDateObj) {
                             const dateStr = formatDateForInput(currentDate);
+                            if (!dateStr) break; // ป้องกัน infinite loop
 
                             if (!state.dateBookings[dateStr]) {
                                 state.dateBookings[dateStr] = [];
@@ -3452,68 +1239,35 @@
                     renderCalendar();
                 }
             } catch (error) {
-                console.error('Error loading month bookings:', error);
+                console.error('Load month bookings error:', error);
                 renderCalendar();
             }
         }
 
-        // Show booking details modal for a specific date
-        // Show booking details modal for a specific date
-        window.showBookingDetails = function (dateStr) {
+        // คำนวณตำแหน่งแถบ multi-day สำหรับวันที่กำหนด
+        function getMultiDayBarInfo(dateStr) {
             const bookings = state.dateBookings[dateStr] || [];
-            if (bookings.length === 0) return;
-            const modal = document.getElementById('booking-modal');
-            const body = document.getElementById('booking-modal-body');
-            const footer = document.getElementById('booking-modal-footer');
-            const titleEl = document.querySelector('#booking-modal .modal-title');
+            const multiDayBookings = bookings.filter(b => b.isPartOfMultiDay);
+            if (multiDayBookings.length === 0) return null;
 
-            const dateObj = new Date(dateStr);
-            const dateThai = dateObj.toLocaleDateString('th-TH', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
+            // ใช้ booking ตัวแรกที่เป็น multi-day
+            const b = multiDayBookings[0];
+            const [y, m, d] = dateStr.split('-');
+            const prevDate = new Date(y, m - 1, d - 1);
+            const nextDate = new Date(y, m - 1, Number(d) + 1);
+            const prevStr = formatDateForInput(prevDate);
+            const nextStr = formatDateForInput(nextDate);
 
-            if (titleEl) titleEl.textContent = `รายการจองวันที่ ${dateThai}`;
+            const prevBookings = state.dateBookings[prevStr] || [];
+            const nextBookings = state.dateBookings[nextStr] || [];
 
-            // Build list of bookings in card format
-            let html = `
-                <p class="text-xs text-gray-400 mb-3">แตะรายการเพื่อดูรายละเอียด หรือกดแชร์เพื่อส่งต่อใน LINE</p>
-                <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">`;
-            bookings.forEach(b => {
-                let statusClass = '';
-                let statusText = b.status;
-                if (b.status === 'confirmed') { statusClass = 'text-green-500'; statusText = 'อนุมัติแล้ว'; }
-                else if (b.status === 'pending') { statusClass = 'text-yellow-500'; statusText = 'รออนุมัติ'; }
-                else if (b.status === 'cancelled') { statusClass = 'text-red-500'; statusText = 'ยกเลิก'; }
-                else if (b.status === 'rejected') { statusClass = 'text-red-500'; statusText = 'ปฏิเสธ'; }
-                else if (b.status === 'auto_cancelled') { statusClass = 'text-red-500'; statusText = 'ระบบยกเลิกอัตโนมัติ'; }
+            const hasPrev = prevBookings.some(pb => pb.bookingId === b.bookingId && pb.isPartOfMultiDay);
+            const hasNext = nextBookings.some(nb => nb.bookingId === b.bookingId && nb.isPartOfMultiDay);
 
-                html += `
-                    <div class="p-3 bg-[#1a1d24] border border-[#2a2e36] rounded-lg cursor-pointer hover:border-[#06c755] transition" onclick="showBookingDetail('${b.bookingId}')">
-                        <div class="font-semibold text-[#06c755]">${b.title || 'ไม่มีหัวข้อ'}</div>
-                        <div class="text-sm text-gray-300 mt-1">ห้อง: ${b.roomName || '–'} | ผู้จอง: ${b.userName || '–'}</div>
-                        <div class="text-xs text-gray-400 mt-1">เวลา: ${formatTime(b.startTime)} - ${formatTime(b.endTime)}</div>
-                        <div class="text-xs mt-1">สถานะ: <span class="${statusClass}">${statusText}</span></div>
-                        <div class="mt-3 pt-2 border-t border-[#2a2e36] flex items-center justify-between text-xs">
-                            <span class="text-[#06c755]"><i class="fas fa-info-circle mr-1"></i>แตะเพื่อดูรายละเอียด</span>
-                            <button type="button" class="text-blue-400 hover:text-blue-300" onclick="event.stopPropagation(); shareBookingViaPicker('${b.bookingId}')">
-                                <i class="fas fa-share-alt mr-1"></i>แชร์
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-
-            body.innerHTML = html;
-            footer.innerHTML = `
-                <button class="btn-primary flex-1" onclick="closeBookingDetailModal(); openBookingForCalendarDate('${dateStr}')">
-                    <i class="fas fa-calendar-plus mr-2"></i>จองวันที่นี้
-                </button>
-                <button class="btn-outline flex-1" onclick="closeBookingDetailModal()">ปิด</button>
-            `;
-            modal.classList.add('active');
+            if (hasPrev && hasNext) return 'middle';
+            if (!hasPrev && hasNext) return 'start';
+            if (hasPrev && !hasNext) return 'end';
+            return 'single';
         }
 
         function renderCalendar() {
@@ -3540,8 +1294,9 @@
                 const hasBooking = bookings.length > 0;
                 const hasMultiDayBooking = bookings.some(b => b.isPartOfMultiDay);
                 const isToday = isSameDay(date, new Date());
+                const barInfo = getMultiDayBarInfo(dateStr);
 
-                html += renderCalendarDay(day, true, hasBooking, isToday, dateStr, bookings.length, false, hasMultiDayBooking, bookings);
+                html += renderCalendarDay(day, true, hasBooking, isToday, dateStr, bookings.length, false, hasMultiDayBooking, barInfo);
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -3552,8 +1307,9 @@
                 const hasMultiDayBooking = bookings.some(b => b.isPartOfMultiDay);
                 const isToday = isSameDay(date, new Date());
                 const isSelected = isSameDay(date, state.selectedDate);
+                const barInfo = getMultiDayBarInfo(dateStr);
 
-                html += renderCalendarDay(day, false, hasBooking, isToday, dateStr, bookings.length, isSelected, hasMultiDayBooking, bookings);
+                html += renderCalendarDay(day, false, hasBooking, isToday, dateStr, bookings.length, isSelected, hasMultiDayBooking, barInfo);
             }
 
             const totalCells = 42;
@@ -3564,92 +1320,48 @@
                 const bookings = state.dateBookings[dateStr] || [];
                 const hasBooking = bookings.length > 0;
                 const hasMultiDayBooking = bookings.some(b => b.isPartOfMultiDay);
+                const barInfo = getMultiDayBarInfo(dateStr);
 
-                html += renderCalendarDay(day, true, hasBooking, false, dateStr, bookings.length, false, hasMultiDayBooking, bookings);
+                html += renderCalendarDay(day, true, hasBooking, false, dateStr, bookings.length, false, hasMultiDayBooking, barInfo);
             }
 
             $.calendarDays.innerHTML = html;
         }
 
-        function renderCalendarDay(day, isOtherMonth, hasBooking, isToday, dateStr, bookingCount = 0, isSelected = false, hasMultiDayBooking = false, bookings = []) {
+        function renderCalendarDay(day, isOtherMonth, hasBooking, isToday, dateStr, bookingCount = 0, isSelected = false, hasMultiDayBooking = false, barInfo = null) {
             let classes = 'calendar-day';
             if (isOtherMonth) classes += ' other-month';
             if (isToday) classes += ' today';
             if (isSelected) classes += ' selected';
-            let titleAttr = '';
-            let dataAttr = '';
-            let clickHandler = `openBookingForCalendarDate('${dateStr}')`;
-            let barInfo = null;
             if (hasBooking) {
                 classes += ' has-booking';
                 if (bookingCount > 1 || hasMultiDayBooking) {
                     classes += ' multiple';
                 }
-                // Status classes
-                let statusClass = '';
-                if (bookings.some(b => b.status === 'pending')) statusClass = ' status-pending';
-                else if (bookings.some(b => b.status === 'confirmed')) statusClass = ' status-confirmed';
-                else if (bookings.some(b => b.status === 'cancelled' || b.status === 'rejected' || b.status === 'auto_cancelled')) statusClass = ' status-cancelled';
-                if (statusClass) classes += statusClass;
-                // Determine multi-day bar info
-                barInfo = getMultiDayBarInfo(dateStr);
-                // Tooltip
-                const tooltipLines = bookings.map(b => `ID: ${b.bookingId || '–'} (${b.status})`);
-                titleAttr = `title="${tooltipLines.join(' | ')}"`;
-                const safeJson = JSON.stringify(bookings).replace(/"/g, '&quot;');
-                dataAttr = `data-bookings='${safeJson}'`;
-                clickHandler = `showBookingDetails('${dateStr}')`;
+                if (hasMultiDayBooking) {
+                    classes += ' has-multi-day';
+                }
             }
+
+            // สร้างแถบเชื่อม multi-day
+            let barHtml = '';
+            if (barInfo) {
+                barHtml = `<span class="multi-day-bar bar-${barInfo}"></span>`;
+            }
+
             return `
-                <div class="${classes}" onclick="${clickHandler}" ${titleAttr} ${dataAttr}>
-                    ${day}
-                    ${hasBooking ? '<span class="status-indicator"></span>' : ''}
-                    ${barInfo ? `<span class="multi-day-bar bar-${barInfo.type} status-${barInfo.status}"></span>` : ''}
+                <div class="${classes}" onclick="selectDate('${dateStr}')">
+                    ${barHtml}
+                    <span style="position:relative;z-index:1;">${day}</span>
+                    ${hasMultiDayBooking && barInfo === 'start' ? '<span class="multi-day-badge" style="position:relative;z-index:1;">📅</span>' : ''}
                 </div>
             `;
         }
-
 
         function isSameDay(date1, date2) {
             return date1.getFullYear() === date2.getFullYear() &&
                 date1.getMonth() === date2.getMonth() &&
                 date1.getDate() === date2.getDate();
-        }
-
-        // Calculate multi-day bar segment type and status for a given date
-        function getMultiDayBarInfo(dateStr) {
-            const bookings = state.dateBookings[dateStr] || [];
-            const multiDayBookings = bookings.filter(b => b.isPartOfMultiDay);
-            if (multiDayBookings.length === 0) return null;
-
-            // Use the first multi-day booking — determine segment using original date range directly
-            const b = multiDayBookings[0];
-            const startStr = formatDateForInput(new Date(b.originalStartDate || b.startTime));
-            const endStr = formatDateForInput(new Date(b.originalEndDate || b.endTime));
-
-            const isStart = dateStr === startStr;
-            const isEnd = dateStr === endStr;
-
-            let type;
-            if (isStart && isEnd) type = 'single';
-            else if (isStart) type = 'start';
-            else if (isEnd) type = 'end';
-            else type = 'middle';
-
-            return {
-                type: type,
-                status: b.status || 'pending'
-            };
-        }
-
-        async function checkUrlForShareAction() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const bookingId = urlParams.get('bookingId');
-
-            if (urlParams.get('action') !== 'share' || !bookingId) return false;
-
-            await shareBookingViaPicker(bookingId);
-            return true;
         }
 
         // ========== URL BOOKING POPUP ==========
@@ -3676,17 +1388,6 @@
 
             attemptShowDetail();
         }
-
-        window.openBookingForCalendarDate = function (dateStr) {
-            const todayStr = formatDateForInput(new Date());
-            if (dateStr < todayStr) {
-                showToast('ไม่สามารถจองย้อนหลังได้', 'warning');
-                return;
-            }
-
-            state.selectedDate = new Date(dateStr + 'T00:00:00');
-            showBookingModal(null, dateStr);
-        };
 
         // ===== BOOK ON SELECTED DATE =====
         window.bookOnSelectedDate = function () {
@@ -3770,12 +1471,9 @@
 
                     const startDate = new Date(b.startTime);
                     const endDate = new Date(b.endTime);
-
-                    let isMultiDay = b.isMultiDay;
-                    if (isMultiDay === undefined) {
-                        isMultiDay = !isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) &&
-                            formatDateForInput(startDate) !== formatDateForInput(endDate);
-                    }
+                    const startDateStr = (!isNaN(startDate.getTime())) ? formatDateForInput(startDate) : '';
+                    const endDateStr = (!isNaN(endDate.getTime())) ? formatDateForInput(endDate) : '';
+                    const isMultiDay = startDateStr !== '' && endDateStr !== '' && startDateStr !== endDateStr;
 
                     let statusClass = '';
                     if (b.status === 'confirmed') statusClass = 'confirmed';
@@ -3788,8 +1486,7 @@
                         ...b,
                         approvedByName,
                         isMultiDay,
-                        multiDayInfo: isMultiDay && !isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) ?
-                            `${formatDateShort(b.startTime)} - ${formatDateShort(b.endTime)}` : null,
+                        multiDayInfo: isMultiDay ? `${formatDateShort(b.startTime)} - ${formatDateShort(b.endTime)}` : null,
                         statusClass
                     };
                 }));
@@ -3910,7 +1607,6 @@
                         scope: 'openid email profile',
                         prompt: 'consent'
                     });
-                    $.initLoading?.classList.add('hide'); // hide spinner before returning
                     return;
                 }
 
@@ -3969,7 +1665,7 @@
                     loadManagerData();
                 }
 
-                if (!await checkUrlForShareAction()) checkUrlForBookingId();
+                checkUrlForBookingId();
 
                 setTimeout(async () => {
                     if (liff.isInClient() && typeof liff.requestFriendship === 'function') {
@@ -4346,7 +2042,7 @@
         };
 
         // ========== BOOKINGS ==========
-        window.showBookingModal = function (roomId = null, defaultDate = null) {
+        window.showBookingModal = function (roomId = null) {
             document.getElementById('booking-modal-title').textContent = 'จองห้องประชุม';
             document.getElementById('edit-booking-id').value = '';
             document.getElementById('booking-title').value = '';
@@ -4354,13 +2050,13 @@
             document.getElementById('booking-meeting-link').value = '';
             document.getElementById('booking-format').value = 'onsite';
             document.getElementById('booking-use-computer').checked = false;
-            if (document.getElementById('booking-no-computer')) document.getElementById('booking-no-computer').checked = true;
+            if(document.getElementById('booking-no-computer')) document.getElementById('booking-no-computer').checked = true;
             document.getElementById('booking-use-projector').checked = false;
-            if (document.getElementById('booking-online-camera')) document.getElementById('booking-online-camera').checked = false;
-            if (document.getElementById('booking-online-mic')) document.getElementById('booking-online-mic').checked = false;
-            if (document.getElementById('booking-online-computer')) document.getElementById('booking-online-computer').checked = false;
+            if(document.getElementById('booking-online-camera')) document.getElementById('booking-online-camera').checked = false;
+            if(document.getElementById('booking-online-mic')) document.getElementById('booking-online-mic').checked = false;
+            if(document.getElementById('booking-online-computer')) document.getElementById('booking-online-computer').checked = false;
             toggleZoomLink();
-            if (typeof toggleProjector === 'function') toggleProjector();
+            if(typeof toggleProjector === 'function') toggleProjector();
             document.getElementById('booking-attendees').value = '';
             document.getElementById('availability-status').classList.add('hidden');
             document.getElementById('save-booking-btn').disabled = true;
@@ -4377,17 +2073,14 @@
                 roomSelect.appendChild(option);
             });
 
-            if (defaultDate) {
-                const d = new Date(defaultDate);
-                const dateStr = formatDateForInput(d);
-                $.bookingDate.value = dateStr;
-                $.bookingEndDate.value = dateStr;
+            setQuickDateTime('now');
 
-                // Remove active class from quick presets
-                $.datetimePresets.forEach(btn => btn.classList.remove('active'));
-            } else {
-                setQuickDateTime('now');
-            }
+            $.datetimePresets.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick')?.includes('now')) {
+                    btn.classList.add('active');
+                }
+            });
 
             document.getElementById('booking-create-modal').classList.add('active');
         };
@@ -4421,8 +2114,13 @@
                 return;
             }
 
-            const startDateTime = new Date(`${startDate}T${start}:00`);
-            const endDateTime = new Date(`${endDate}T${end}:00`);
+            const [sY, sM, sD] = startDate.split('-');
+            const [sH, sMin] = start.split(':');
+            const startDateTime = new Date(sY, sM - 1, sD, sH, sMin, 0);
+
+            const [eY, eM, eD] = endDate.split('-');
+            const [eH, eMin] = end.split(':');
+            const endDateTime = new Date(eY, eM - 1, eD, eH, eMin, 0);
 
             if (startDateTime >= endDateTime) {
                 $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม</span>';
@@ -4438,28 +2136,38 @@
                 return;
             }
 
+            // สร้างรายการวันที่ทั้งหมดระหว่าง startDate ถึง endDate
+            const multiDayDates = [];
+            const tmpDate = new Date(sY, sM - 1, sD);
+            const endDateObj = new Date(eY, eM - 1, eD);
+            while (tmpDate <= endDateObj) {
+                multiDayDates.push(formatDateForInput(tmpDate));
+                tmpDate.setDate(tmpDate.getDate() + 1);
+            }
+            const isMultiDay = multiDayDates.length > 1;
+
+            // ตรวจสอบ max 7 วัน
+            if (multiDayDates.length > 7) {
+                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ จองได้สูงสุด 7 วันต่อเนื่อง</span>';
+                $.availabilityStatus.classList.remove('hidden');
+                $.saveBookingBtn.disabled = true;
+                return;
+            }
+
+            // ตรวจสอบเวลาทำการ: วันแรกต้องเริ่ม 08:00-20:00, วันสุดท้ายต้องสิ้นสุด 08:00-20:00
             const startHour = startDateTime.getHours();
             const endHour = endDateTime.getHours();
             const endMinutes = endDateTime.getMinutes();
 
             if (startHour < 8 || startHour > 20 || (startHour === 20 && startDateTime.getMinutes() > 0)) {
-                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาทำการ 08:00 - 20:00 น.</span>';
+                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาเริ่มต้องอยู่ในช่วง 08:00 - 20:00 น.</span>';
                 $.availabilityStatus.classList.remove('hidden');
                 $.saveBookingBtn.disabled = true;
                 return;
             }
 
             if (endHour < 8 || endHour > 20 || (endHour === 20 && endMinutes > 0)) {
-                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาทำการ 08:00 - 20:00 น.</span>';
-                $.availabilityStatus.classList.remove('hidden');
-                $.saveBookingBtn.disabled = true;
-                return;
-            }
-
-            const durationHours = (endDateTime - startDateTime) / (1000 * 60 * 60);
-            // Allow bookings up to 168 hours (7 days)
-            if (durationHours > 168) {
-                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ จองได้ครั้งละไม่เกิน 7 วัน (168 ชั่วโมง)</span>';
+                $.availabilityStatus.innerHTML = '<span class="text-red-500">⚠️ เวลาสิ้นสุดต้องอยู่ในช่วง 08:00 - 20:00 น.</span>';
                 $.availabilityStatus.classList.remove('hidden');
                 $.saveBookingBtn.disabled = true;
                 return;
@@ -4481,7 +2189,9 @@
                     roomId,
                     startTime: startDateTime.toISOString(),
                     endTime: endDateTime.toISOString(),
-                    bookingId: editBookingId || undefined
+                    bookingId: editBookingId || undefined,
+                    isMultiDay: isMultiDay,
+                    multiDayDates: isMultiDay ? multiDayDates : []
                 });
 
                 if (result.success) {
@@ -4629,7 +2339,7 @@
             }
         };
 
-        window.toggleProjector = function () {
+        window.toggleProjector = function() {
             const useComp = document.getElementById('booking-use-computer')?.checked;
             const projectorContainer = document.getElementById('projector-container');
             if (projectorContainer) {
@@ -4638,20 +2348,20 @@
                 } else {
                     projectorContainer.classList.add('hidden');
                     const projCheckbox = document.getElementById('booking-use-projector');
-                    if (projCheckbox) projCheckbox.checked = false;
+                    if(projCheckbox) projCheckbox.checked = false;
                 }
             }
         };
 
-        window.toggleZoomLink = function () {
+        window.toggleZoomLink = function() {
             const format = document.getElementById('booking-format').value;
             const linkInput = document.getElementById('booking-meeting-link');
             const onsiteSection = document.getElementById('equipment-onsite-section');
             const onlineSection = document.getElementById('equipment-online-section');
-
+            
             if (format === 'online') {
                 linkInput.classList.remove('hidden');
-                linkInput.required = true;
+                linkInput.required = false;
                 if (onsiteSection) onsiteSection.classList.add('hidden');
                 if (onlineSection) onlineSection.classList.remove('hidden');
             } else {
@@ -4686,14 +2396,31 @@
                     return;
                 }
 
-                const startDateTime = new Date(`${startDate}T${start}:00`);
-                const endDateTime = new Date(`${endDate}T${end}:00`);
+                const [sY, sM, sD] = startDate.split('-');
+                const [sH, sMin] = start.split(':');
+                const startDateTime = new Date(sY, sM - 1, sD, sH, sMin, 0);
+
+                const [eY, eM, eD] = endDate.split('-');
+                const [eH, eMin] = end.split(':');
+                const endDateTime = new Date(eY, eM - 1, eD, eH, eMin, 0);
 
                 if (startDate > endDate) {
                     showToast('วันที่สิ้นสุดต้องไม่ก่อนวันที่เริ่ม', 'error');
                     setButtonLoading(btn, false);
                     return;
                 }
+
+                // สร้างรายการวันที่ทั้งหมดสำหรับจองข้ามวัน
+                const saveMultiDayDates = [];
+                const [ssY, ssM, ssD] = startDate.split('-');
+                const [seY, seM, seD] = endDate.split('-');
+                const tmpSaveDate = new Date(ssY, ssM - 1, ssD);
+                const saveEndDateObj = new Date(seY, seM - 1, seD);
+                while (tmpSaveDate <= saveEndDateObj) {
+                    saveMultiDayDates.push(formatDateForInput(tmpSaveDate));
+                    tmpSaveDate.setDate(tmpSaveDate.getDate() + 1);
+                }
+                const saveIsMultiDay = saveMultiDayDates.length > 1;
 
                 const selectedRoom = state.rooms.find(r => r.roomId === roomId);
                 if (selectedRoom && attendees > selectedRoom.capacity) {
@@ -4708,7 +2435,9 @@
                     roomId,
                     startTime: startDateTime.toISOString(),
                     endTime: endDateTime.toISOString(),
-                    bookingId: id || undefined
+                    bookingId: id || undefined,
+                    isMultiDay: saveIsMultiDay,
+                    multiDayDates: saveIsMultiDay ? saveMultiDayDates : []
                 });
 
                 if (!checkResult.success || !checkResult.data.available) {
@@ -4721,7 +2450,7 @@
                 let desc = document.getElementById('booking-description').value;
                 const format = document.getElementById('booking-format').value;
                 let extras = [];
-
+                
                 if (format === 'onsite') {
                     const useComp = document.getElementById('booking-use-computer')?.checked;
                     const useProj = document.getElementById('booking-use-projector')?.checked;
@@ -4745,22 +2474,10 @@
                     endTime: endDateTime.toISOString(),
                     attendees: attendees,
                     userName: state.user.displayName,
-                    lineUserId: state.user.lineUserId
+                    lineUserId: state.user.lineUserId,
+                    isMultiDay: saveIsMultiDay,
+                    multiDayDates: saveIsMultiDay ? saveMultiDayDates : []
                 };
-
-                const isMultiDayBooking = startDate !== endDate;
-                if (isMultiDayBooking) {
-                    data.isMultiDay = true;
-                    const datesArr = [];
-                    let d = new Date(startDateTime);
-                    while (d <= endDateTime) {
-                        datesArr.push(formatDateForInput(d));
-                        d.setDate(d.getDate() + 1);
-                    }
-                    data.multiDayDates = JSON.stringify(datesArr);
-                } else {
-                    data.isMultiDay = false;
-                }
 
                 if (id) data.bookingId = id;
 
@@ -4769,8 +2486,7 @@
                 if (result.success) {
                     showToast(result.message || (id ? 'แก้ไขการจองสำเร็จ' : 'จองห้องสำเร็จ'));
 
-                    // ส่งรายละเอียดการจองเข้าช่องแชทผ่าน liff.sendMessages (Flex Message)
-                    if (!id && result.data?.bookingData) {
+                    if (!id && result.data?.bookingData && !state.isAdmin) {
                         const bookingData = {
                             ...result.data.bookingData,
                             action: 'created',
@@ -4780,9 +2496,7 @@
                             rejectedBy: result.data.bookingData.rejectedBy,
                             cancelledBy: result.data.bookingData.cancelledBy
                         };
-                        // การส่งหลังจองสำเร็จเป็นส่วนหนึ่งของขั้นตอนการจองเสมอ
-                        // (ไม่ขึ้นกับสวิตช์แจ้งเตือนทั่วไปของผู้ใช้)
-                        await sendBookingToChat(bookingData, { force: true });
+                        await sendBookingToChat(bookingData).catch(e => console.warn('Send booking to chat warning:', e));
                     }
 
                     closeBookingCreateModal();
@@ -5048,7 +2762,7 @@
                     <div class="flex justify-between items-center text-xs">
                         <span class="text-gray-500"><i class="fas fa-users mr-1"></i> ${b.attendees || 0} คน</span>
                         ${b.meetingLink ? '<span class="text-blue-500"><i class="fas fa-video mr-1"></i> มีลิงค์</span>' : ''}
-                        ${(b.status === 'confirmed' || b.status === 'pending') && !isPastBooking ? `
+                        ${b.status === 'confirmed' && !isPastBooking ? `
                             <button class="text-red-500" onclick="cancelBooking('${b.bookingId}'); event.stopPropagation();">
                                 <i class="fas fa-times mr-1"></i>ยกเลิก
                             </button>
@@ -5064,8 +2778,6 @@
         }
 
         window.showBookingDetail = async function (bookingId) {
-            const titleEl = document.querySelector('#booking-modal .modal-title');
-            if (titleEl) titleEl.textContent = 'รายละเอียดการจอง';
             document.getElementById('booking-modal').classList.add('active');
             document.getElementById('booking-modal-body').innerHTML = '<div class="flex justify-center py-10"><div class="loading-spinner w-10 h-10"></div></div>';
 
@@ -5124,22 +2836,22 @@
                     <div class="grid grid-cols-2 gap-3 mb-4">
                         <div>
                             <p class="text-sm text-gray-400 mb-1">วันที่เริ่ม</p>
-                            <p>${!isNaN(new Date(b.startTime).getTime()) ? formatDateShort(b.startTime) : 'ไม่ระบุ'}</p>
+                            <p>${formatDateShort(b.startTime)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-400 mb-1">วันที่สิ้นสุด</p>
-                            <p>${!isNaN(new Date(b.endTime).getTime()) ? formatDateShort(b.endTime) : 'ไม่ระบุ'}</p>
+                            <p>${formatDateShort(b.endTime)}</p>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3 mb-4">
                         <div>
                             <p class="text-sm text-gray-400 mb-1">เวลาเริ่ม</p>
-                            <p>${!isNaN(new Date(b.startTime).getTime()) ? formatTime(b.startTime) : 'ไม่ระบุ'}</p>
+                            <p>${formatTime(b.startTime)}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-400 mb-1">เวลาสิ้นสุด</p>
-                            <p>${!isNaN(new Date(b.endTime).getTime()) ? formatTime(b.endTime) : 'ไม่ระบุ'}</p>
+                            <p>${formatTime(b.endTime)}</p>
                         </div>
                     </div>
                     
@@ -5195,25 +2907,9 @@
                 const footer = document.getElementById('booking-modal-footer');
                 const now = new Date();
                 const endTime = new Date(b.endTime);
-
-                // Allow cancellation if: booking is active (pending/confirmed), hasn't ended,
-                // and belongs to current user (check multiple identity fields)
-                const isOwner = b.userId === state.user.lineUserId ||
-                    b.userId === state.user.userId ||
-                    b.userName === state.user.displayName;
-                const isActive = (b.status === 'pending' || b.status === 'confirmed') && endTime > now;
-                const canCancel = isActive && isOwner;
-                const canEdit = b.status === 'pending' && endTime > now && isOwner;
+                const canCancel = b.status === 'confirmed' && endTime > now && b.userId === state.user.lineUserId;
 
                 let footerButtons = '';
-
-                if (canEdit) {
-                    footerButtons += `
-                        <button class="btn-outline flex-1" onclick="closeBookingDetailModal(); showBookingModal('${b.bookingId}')">
-                            <i class="fas fa-edit mr-2"></i>แก้ไข
-                        </button>
-                    `;
-                }
 
                 if (canCancel) {
                     footerButtons += `
@@ -5223,7 +2919,7 @@
                     `;
                 }
 
-                if (state.isManager && (b.status === 'pending' || b.status === 'confirmed') && endTime > now) {
+                if (state.isManager && b.status === 'confirmed' && endTime > now) {
                     footerButtons += `
                         <button class="btn-danger flex-1" onclick="adminCancelBooking('${b.bookingId}', this)">
                             <i class="fas fa-ban mr-2"></i>ยกเลิก (แจ้งเตือน)
@@ -6095,7 +3791,3 @@
         } else {
             initLIFF();
         }
-    </script>
-</body>
-
-</html>
