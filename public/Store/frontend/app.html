@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบสต๊อกสินค้า - ร้านชายของชา</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div class="app">
+     <header>
+      <div class="brand">
+        <h1><i class="fa-solid fa-leaf"></i> ระบบสต๊อกสินค้า</h1>
+        <small>ร้านชายของชา</small>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+        <div id="userBadge" style="display:none;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:6px 12px;border-radius:999px;font-size:12px;line-height:1.2;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+        <button class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
+      </div>
+    </header>
+
+    <nav class="top-nav">
+      <a href="#products" data-page="products" class="active"><i class="fa-solid fa-tags"></i> จัดการสินค้า</a>
+      <a href="#receive" data-page="receive"><i class="fa-solid fa-box-arrow-down"></i> รับเข้าสินค้า</a>
+      <a href="#issue" data-page="issue"><i class="fa-solid fa-box-arrow-up"></i> จ่ายสินค้าออก</a>
+      <a href="#moves" data-page="moves"><i class="fa-solid fa-arrows-rotate"></i> การเคลื่อนไหว</a>
+      <a href="#report" data-page="report"><i class="fa-solid fa-chart-simple"></i> รายงานคงเหลือ</a>
+    </nav>
+
+    <main>
+      <!-- ============ จัดการสินค้า ============ -->
+      <section id="page-products" class="page active">
+        <h1 class="page-title">จัดการสินค้า</h1>
+
+        <div class="card">
+          <h2>เพิ่มสินค้าใหม่</h2>
+          <div class="move-form-row" style="grid-template-columns: 2fr 1fr 100px;">
+            <div class="field" style="margin:0">
+              <label>ชื่อสินค้า</label>
+              <input type="text" id="newProductName" placeholder="เช่น ชาเขียว, ชาเย็น">
+            </div>
+            <div class="field" style="margin:0">
+              <label>ราคา (บาท)</label>
+              <input type="number" id="newProductPrice" placeholder="เช่น 25" min="0" step="0.5">
+            </div>
+            <button class="btn btn-primary" onclick="addProduct()"><i class="fa-solid fa-plus"></i> เพิ่ม</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>รายการสินค้าทั้งหมด</h2>
+          <div class="searchbox">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="productSearch" placeholder="ค้นหาสินค้า..." oninput="renderProducts()">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>สินค้า</th>
+                  <th>ราคา/หน่วย</th>
+                  <th>สถานะ</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="productBody"><tr><td colspan="4" class="empty">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ รับเข้าสินค้า ============ -->
+      <section id="page-receive" class="page">
+        <h1 class="page-title">รับเข้าสินค้า</h1>
+
+        <div class="card">
+          <h2>บันทึกสินค้าเข้า</h2>
+          <div class="move-form-row">
+            <div class="field" style="margin:0">
+              <label>สินค้า</label>
+              <select id="recProduct"></select>
+            </div>
+            <div class="field" style="margin:0">
+              <label>จำนวน</label>
+              <input type="number" id="recQty" min="1" value="1" placeholder="จำนวน">
+            </div>
+            <button class="btn btn-green" onclick="doReceive()"><i class="fa-solid fa-box-arrow-down"></i> รับเข้า</button>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>หมายเหตุ (ไม่บังคับ)</label>
+            <input type="text" id="recNote" placeholder="เช่น จากร้านค้าส่ง">
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>ประวัติการรับเข้า</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>วันที่</th>
+                  <th>สินค้า</th>
+                  <th>จำนวน</th>
+                  <th>หมายเหตุ</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="recBody"><tr><td colspan="5" class="empty">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ จ่ายสินค้าออก ============ -->
+      <section id="page-issue" class="page">
+        <h1 class="page-title">จ่ายสินค้าออก (ขาย)</h1>
+
+        <div class="card">
+          <h2>บันทึกการขาย / จ่ายออก</h2>
+          <div class="move-form-row">
+            <div class="field" style="margin:0">
+              <label>สินค้า</label>
+              <select id="outProduct"></select>
+            </div>
+            <div class="field" style="margin:0">
+              <label>จำนวน</label>
+              <input type="number" id="outQty" min="1" value="1" placeholder="จำนวน">
+            </div>
+            <button class="btn btn-orange" onclick="doIssue()"><i class="fa-solid fa-box-arrow-up"></i> จ่ายออก</button>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>หมายเหตุ (ไม่บังคับ)</label>
+            <input type="text" id="outNote" placeholder="เช่น ขายหน้าร้าน">
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>ประวัติการจ่ายออก</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>วันที่</th>
+                  <th>สินค้า</th>
+                  <th>จำนวน</th>
+                  <th>ยอดเงิน</th>
+                  <th>หมายเหตุ</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="outBody"><tr><td colspan="6" class="empty">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ รายงานการเคลื่อนไหวรายวัน ============ -->
+      <section id="page-moves" class="page">
+        <h1 class="page-title">รายงานการเคลื่อนไหวรายวัน</h1>
+
+        <div class="card">
+          <h2>เลือกวันที่</h2>
+          <div class="toolbar">
+            <div class="field" style="margin:0">
+              <label>วันที่</label>
+              <input type="date" id="moveDate" onchange="renderDailyMoves()">
+            </div>
+            <button class="btn btn-gray" onclick="setMoveDateToday()"><i class="fa-solid fa-calendar-day"></i> วันนี้</button>
+            <button class="btn btn-green" onclick="exportMovesPDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+            <button class="btn btn-green" onclick="exportMovesExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
+          </div>
+        </div>
+
+        <div class="summary-grid" id="moveSummary"></div>
+
+        <div class="card">
+          <h2>รายการรับเข้าประจำวัน</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>เวลา</th>
+                  <th>สินค้า</th>
+                  <th>รับเข้า</th>
+                  <th>หมายเหตุ</th>
+                </tr>
+              </thead>
+              <tbody id="moveInBody"><tr><td colspan="4" class="empty">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>รายการจ่ายออกประจำวัน</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>เวลา</th>
+                  <th>สินค้า</th>
+                  <th>จ่ายออก</th>
+                  <th>ยอดเงิน</th>
+                  <th>หมายเหตุ</th>
+                </tr>
+              </thead>
+              <tbody id="moveOutBody"><tr><td colspan="5" class="empty">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ รายงานคงเหลือ ============ -->
+      <section id="page-report" class="page">
+        <h1 class="page-title">รายงานสินค้าคงเหลือ</h1>
+
+        <div class="summary-grid" id="reportSummary"></div>
+
+        <div class="card">
+          <h2>สินค้าคงเหลือทั้งหมด</h2>
+          <div class="searchbox">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="reportSearch" placeholder="ค้นหาสินค้า..." oninput="renderReport()">
+          </div>
+          <div class="toolbar" style="margin-top:0">
+            <button class="btn btn-green" onclick="exportReportPDF()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+            <button class="btn btn-green" onclick="exportReportExcel()"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>สินค้า</th>
+                  <th>ราคา/หน่วย</th>
+                  <th>รับเข้า</th>
+                  <th>จ่ายออก</th>
+                  <th>คงเหลือ</th>
+                  <th>มูลค่าคงเหลือ</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+              <tbody id="reportBody"><tr><td colspan="7" class="empty">กำลังโหลด...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">พัฒนาโดย <strong>ครบเครื่องเรื่องไอที</strong> (สำหรับทดสอบระบบ)</footer>
+
+    <nav class="bottom-nav">
+      <a href="#products" data-page="products" class="active"><i class="fa-solid fa-tags"></i> สินค้า</a>
+      <a href="#receive" data-page="receive"><i class="fa-solid fa-box-arrow-down"></i> รับเข้า</a>
+      <a href="#issue" data-page="issue"><i class="fa-solid fa-box-arrow-up"></i> จ่ายออก</a>
+      <a href="#moves" data-page="moves"><i class="fa-solid fa-arrows-rotate"></i> เคลื่อนไหว</a>
+      <a href="#report" data-page="report"><i class="fa-solid fa-chart-simple"></i> รายงาน</a>
+    </nav>
+  </div>
+
+  <script src="js/app.js"></script>
+
+  <div class="loading-overlay hidden" id="loadingOverlay" aria-hidden="true">
+    <div class="loader-box">
+      <div class="bx-lid"></div>
+      <div class="bx-body"><i class="fa-solid fa-box-open"></i></div>
+      <div class="loader-text">กำลังโหลดข้อมูล...</div>
+    </div>
+  </div>
+
+  <script>
+    (function animateFavicon() {
+      var icons = ['favicon-box.svg', 'favicon-open.svg'];
+      var idx = 0;
+      setInterval(function () {
+        idx = (idx + 1) % icons.length;
+        var link = document.querySelector('link[rel="icon"]');
+        if (link) link.href = icons[idx];
+      }, 450);
+    })();
+  </script>
+</body>
+</html>

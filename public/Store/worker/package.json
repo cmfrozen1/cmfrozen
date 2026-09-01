@@ -1,0 +1,14 @@
+{
+  "name": "store-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute store --local --file=./schema.sql",
+    "db:migrate:local": "wrangler d1 migrations apply store --local",
+    "db:migrate:remote": "wrangler d1 migrations apply store --remote"
+  },
+  "devDependencies": {
+    "wrangler": "^3.60.0"
+  }
+}

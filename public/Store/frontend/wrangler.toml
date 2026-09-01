@@ -1,0 +1,16 @@
+name = "store-chaishop"
+compatibility_date = "2025-01-01"
+
+# โฟลเดอร์ที่เก็บ static files (สำหรับ Pages)
+pages_build_output_dir = "."
+
+# D1 binding สำหรับ Pages Functions
+[[d1_databases]]
+binding = "DB"
+database_name = "store"
+database_id = "53991b7b-eb8a-4c62-905c-fc7b5dae16bb"
+
+[vars]
+PASSWORD = "1234"
+GOOGLE_CLIENT_ID = "326468727847-v2fpjo7880ugd32lnq6p1rsc3e4dfv6l.apps.googleusercontent.com"
+ADMIN_EMAIL = "teesoftwareai@gmail.com"

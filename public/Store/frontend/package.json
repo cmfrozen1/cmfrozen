@@ -1,0 +1,9 @@
+{
+  "name": "store-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend static files for Cloudflare Pages",
+  "scripts": {
+    "build": "echo 'Static site - no build step required'"
+  }
+}

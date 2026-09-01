@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<defs><style>
+@keyframes lid{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.14)}}
+@keyframes lidRot{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg)}}
+@keyframes pop{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
+</style></defs>
+<rect width="32" height="32" rx="7" fill="#15803d"/>
+<g transform="translate(16,19)">
+  <rect x="-6.5" y="2" width="13" height="9" rx="1.5" fill="#dcfce7" stroke="#166534" stroke-width="1.2" style="transform-origin:0 0;animation:pop 1.1s ease-in-out infinite"/>
+  <rect x="-7.6" y="-1.2" width="15.2" height="3.2" rx="1.4" fill="#22c55e" style="transform-origin:0 0;animation:lid 1.1s ease-in-out infinite,lidRot 1.1s ease-in-out infinite"/>
+</g>
+</svg>
