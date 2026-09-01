@@ -26,7 +26,7 @@
       try {
         showLoading(true);
         const idToken = response && response.credential;
-        if (!idToken) throw new Error('ไม่ได้รับ credential จาก Google');
+        if (!idToken) throw new Error('ไม่ได้รับ credential จาก Google (อาจถูกบล็อกโดย AdBlock หรือยังไม่ได้ตั้ง Authorized origin)');
         const data = await StoreAPI.loginWithToken(idToken);
         // เก็บ role/email ไว้แสดงใน app.html
         try {
@@ -37,7 +37,10 @@
         // สำเร็จ -> ไปหน้าหลัก
         window.location.href = 'app.html';
       } catch (err) {
-        Swal.fire({ icon: 'error', title: 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ', text: err.message || 'token ไม่ถูกต้องหรือหมดอายุ', confirmButtonColor: '#15803D' });
+        const msg = err.message || 'token ไม่ถูกต้องหรือหมดอายุ';
+        const help = document.getElementById('googleHelp');
+        if (help) help.style.display = 'block';
+        Swal.fire({ icon: 'error', title: 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ', html: '<div style="text-align:left;font-size:13px">' + escapeHtml(msg) + '<br><br><b>วิธีแก้ "การเข้าถึงถูกบล็อก"</b>: เพิ่ม <code>http://localhost:8080</code> และ <code>https://store-chaishop.pages.dev</code> ใน <b>Authorized JavaScript origins</b> ที่ Google Cloud Console</div>', confirmButtonColor: '#15803D' });
       } finally {
         showLoading(false);
       }
@@ -76,8 +79,27 @@
         const fallback = document.getElementById('googleFallbackBtn');
         if (fallback) fallback.style.display = 'none';
 
-        // พยายามแสดง One Tap (ถ้า browser อนุญาต)
-        try { google.accounts.id.prompt(); } catch(e) {}
+        // พยายามแสดง One Tap พร้อมดัก error "blocked"
+        try {
+          google.accounts.id.prompt(function(notification){
+            try {
+              if (notification.isNotDisplayed && notification.isNotDisplayed()) {
+                const reason = notification.getNotDisplayedReason ? notification.getNotDisplayedReason() : 'unknown';
+                console.warn('One Tap not displayed:', reason);
+                if (String(reason).indexOf('opt_out_or_no_session') === -1) {
+                  // ไม่ต้องโชว์ help ถ้าแค่ไม่มี session
+                }
+              }
+              if (notification.isSkippedMoment && notification.isSkippedMoment()) {
+                const reason = notification.getSkippedReason ? notification.getSkippedReason() : 'unknown';
+                console.warn('One Tap skipped:', reason);
+                if (String(reason).indexOf('tap_outside') === -1 && String(reason).indexOf('user_cancel') === -1) {
+                  // เก็บไว้ debug
+                }
+              }
+            } catch(e) {}
+          });
+        } catch(e) {}
 
         gsiReady = true;
         const hint = document.getElementById('gsiHint');
@@ -86,20 +108,42 @@
         console.error('GSI init fail', e);
         const hint = document.getElementById('gsiHint');
         if (hint) hint.textContent = 'Google Login โหลดไม่สำเร็จ กรุณารีเฟรช';
+        const help = document.getElementById('googleHelp');
+        if (help) help.style.display = 'block';
       }
     }
 
     /* ปุ่ม fallback: ถ้า GSI ไม่พร้อมให้ลอง prompt อีกครั้ง */
     window.googleLoginFallback = function () {
+      const help = document.getElementById('googleHelp');
       if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
-        Swal.fire({ icon: 'error', title: 'Google Login ยังไม่พร้อม', text: 'กรุณารอ Google โหลด หรือรีเฟรชหน้า', confirmButtonColor: '#15803D' });
+        if (help) help.style.display = 'block';
+        Swal.fire({ icon: 'error', title: 'Google Login ยังไม่พร้อม', html: '<div style="text-align:left;font-size:13px">GIS ยังโหลดไม่เสร็จ<br>กรุณารีเฟรชหน้า หรือเช็คว่าไม่ได้บล็อก <code>accounts.google.com</code></div>', confirmButtonColor: '#15803D' });
         return;
       }
       if (!gsiReady) initGsi();
-      try { google.accounts.id.prompt(); } catch(e) {
-        Swal.fire({ icon: 'info', title: 'กรุณาใช้ปุ่ม Google ด้านบน', text: 'หากปุ่มไม่แสดง ให้ปิด AdBlock หรือลองใช้ Chrome', confirmButtonColor: '#15803D' });
+      try {
+        google.accounts.id.prompt(function(n){
+          if (n && n.isNotDisplayed && n.isNotDisplayed()) {
+            if (help) help.style.display = 'block';
+          }
+        });
+      } catch(e) {
+        if (help) help.style.display = 'block';
+        Swal.fire({ icon: 'info', title: 'กรุณาใช้ปุ่ม Google ด้านบน', html: '<div style="text-align:left;font-size:13px">หากปุ่มไม่แสดง:<br>• ปิด AdBlock/Brave Shield<br>• ใช้ Chrome ปกติ (ไม่ใช่ Incognito ที่บล็อก 3rd-party)<br>• เช็ค Authorized origins ใน Cloud Console</div>', confirmButtonColor: '#15803D' });
       }
     };
+
+    // Auto-show help ถ้าเจอ error จาก GIS (postMessage จาก popup)
+    window.addEventListener('message', function(e){
+      try {
+        const d = typeof e.data === 'string' ? e.data : JSON.stringify(e.data||'');
+        if (d.indexOf('access_blocked') !== -1 || d.indexOf('การเข้าถึงถูกบล็อก') !== -1 || d.indexOf('blocked') !== -1) {
+          const h = document.getElementById('googleHelp');
+          if (h) h.style.display = 'block';
+        }
+      } catch(err){}
+    });
 
     window.addEventListener('load', function () { setTimeout(initGsi, 300); });
     // ลอง init ทันที เผื่อ GIS โหลดไว
@@ -144,27 +188,37 @@
       <h1>ระบบสต๊อกสินค้า</h1>
       <p class="sub">ร้านชายของชา</p>
 
-      <!-- Google login (GIS renderButton จะมาแทนที่ปุ่มนี้) -->
-      <div id="gsiBtnWrap">
-        <div id="gsiBtn"></div>
-        <div id="gsiHint">กำลังโหลด Google...</div>
-      </div>
-
-      <!-- Fallback ปุ่ม Google แบบ custom (จะซ่อนเมื่อ GSI พร้อม) -->
-      <button type="button" class="btn-google-fallback" id="googleFallbackBtn" onclick="googleLoginFallback()">
-        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        เข้าสู่ระบบด้วย Google
-      </button>
-
-      <div class="login-divider"><span>หรือ</span></div>
-
-      <!-- Password login (fallback สำหรับ admin) -->
+      <!-- Password login (ย้าย Google มาไว้บนปุ่มรหัสผ่านตามคำขอ) -->
       <form id="loginForm">
         <input type="password" id="password" placeholder="รหัสผ่าน" autocomplete="current-password" autofocus>
         <div class="login-error" id="loginError"></div>
+
+        <!-- Google login (GIS renderButton) - อยู่บนปุ่มรหัสผ่าน -->
+        <div id="gsiBtnWrap" style="margin-bottom:12px">
+          <div id="gsiBtn"></div>
+          <div id="gsiHint">กำลังโหลด Google...</div>
+        </div>
+
+        <!-- Fallback ปุ่ม Google แบบ custom (จะซ่อนเมื่อ GSI พร้อม) -->
+        <button type="button" class="btn-google-fallback" id="googleFallbackBtn" onclick="googleLoginFallback()" style="margin-bottom:12px">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          เข้าสู่ระบบด้วย Google
+        </button>
+
+        <div class="login-divider" style="margin:12px 0"><span>แล้วกดปุ่มด้านล่าง</span></div>
+
         <button type="submit"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบด้วยรหัสผ่าน</button>
       </form>
-      <div style="margin-top:14px;font-size:13px;color:var(--muted)">รหัสผ่านเริ่มต้น: 1234 &middot; Google Login สำหรับทุกคน</div>
+      <div style="margin-top:14px;font-size:13px;color:var(--muted)">รหัสผ่านเริ่มต้น: 1234 &middot; Google Login สำหรับทุกคน<br><span style="font-size:11px;opacity:.8">หาก Google ขึ้น "การเข้าถึงถูกบล็อก" ให้ดูวิธีแก้ด้านล่าง</span></div>
+      <div id="googleHelp" style="display:none;margin-top:12px;text-align:left;background:#FEF3C7;border:1px solid #F59E0B;padding:10px 12px;border-radius:12px;font-size:12px;color:#92400E;line-height:1.5">
+        <strong><i class="fa-solid fa-triangle-exclamation"></i> แก้ "การเข้าถึงถูกบล็อก"</strong><br>
+        1. ไป <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#92400E;text-decoration:underline">Google Cloud Console → Credentials</a><br>
+        2. คลิก Client ID: <code style="background:#fff;padding:1px 4px;border-radius:4px">326468727847-v2...googleusercontent.com</code><br>
+        3. เพิ่ม <strong>Authorized JavaScript origins</strong>:<br>
+        <code style="background:#fff;padding:2px 6px;border-radius:6px;display:block;margin:4px 0;word-break:break-all">https://store-chaishop.pages.dev<br>http://localhost:8080<br>http://127.0.0.1:8080</code>
+        4. ที่ <strong>OAuth consent screen</strong> → เพิ่มอีเมลทดสอบ (Test users) หรือกด <strong>Publish App</strong> หากต้องการให้ทุกคนเข้าได้<br>
+        5. รอ 2-5 นาทีแล้วรีเฟรช
+      </div>
     </div>
   </div>
 
