@@ -129,9 +129,6 @@ function pdfOpenOrDownload(def, filename){
     });
   }catch(e){ console.error(e); swToast('error','สร้าง PDF ไม่สำเร็จ', e.message||String(e)); }
 }
-    });
-  }catch(e){ console.error(e); swToast('error','สร้าง PDF ไม่สำเร็จ', e.message||String(e)); }
-}
 function showPdfPreviewModal(blobUrl, filename){
   // Modal Preview PDF ในแอป — ไม่ต้องดาวน์โหลด
   const id='pdfPreviewModal';
