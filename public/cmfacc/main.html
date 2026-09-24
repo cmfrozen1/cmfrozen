@@ -107,24 +107,48 @@ function pdfOpenOrDownload(def, filename){
   try{
     if(typeof pdfMake==='undefined'){ swToast('error','ไม่พบ pdfMake','ตรวจสอบ CDN'); return; }
     ensureThaiFont();
-    // ใช้ getBlob + สร้าง <a> download เอง — เสถียรกว่า .download() ที่บางเบราว์เซอร์บล็อก
+    // Preview ก่อน — ใช้ getBlob + window.open(blobUrl) และ modal iframe fallback เลี่ยง about:blank
     pdfMake.createPdf(def).getBlob(function(blob){
       try{
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename||'document.pdf';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1000);
-        swToast('success','ดาวน์โหลด PDF แล้ว', filename||'');
+        // ลองเปิดแท็บใหม่สำหรับ Preview
+        const win = window.open(url, '_blank');
+        if(!win || win.closed || typeof win.closed==='undefined'){
+          // Popup ถูกบล็อก → แสดง Preview ใน modal แทน
+          showPdfPreviewModal(url, filename||'document.pdf');
+          swToast('info','Preview ในหน้าต่างนี้', filename||'');
+        } else {
+          // กัน about:blank หลัง 500ms
+          setTimeout(()=>{ try{ if(win.location.href==='about:blank'){ win.close(); showPdfPreviewModal(url, filename||'document.pdf'); } }catch(e){} }, 600);
+          swToast('success','เปิด Preview แล้ว', filename||'');
+        }
+        // revoke ช้าลงให้ Preview โหลดเสร็จ
+        setTimeout(()=> URL.revokeObjectURL(url), 60000);
       }catch(e){
         console.error(e);
-        // fallback ใช้ download ของ pdfMake
-        try{ pdfMake.createPdf(def).download(filename||'document.pdf'); swToast('success','ดาวน์โหลด PDF แล้ว (fallback)', filename||''); }catch(e2){ swToast('error','สร้าง PDF ไม่สำเร็จ', e2.message); }
+        showPdfPreviewModal(URL.createObjectURL(blob), filename||'document.pdf');
       }
     });
   }catch(e){ console.error(e); swToast('error','สร้าง PDF ไม่สำเร็จ', e.message||String(e)); }
+}
+function showPdfPreviewModal(blobUrl, filename){
+  // Modal Preview PDF ในแอป — ไม่ต้องดาวน์โหลด
+  const id='pdfPreviewModal';
+  let m=document.getElementById(id);
+  if(m) m.remove();
+  m=document.createElement('div');
+  m.id=id;
+  m.className='fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4';
+  m.innerHTML=`<div class="bg-white rounded-xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl">
+    <div class="px-4 py-3 border-b flex items-center gap-2 bg-slate-50 rounded-t-xl">
+      <span class="font-bold text-sm flex-1">Preview PDF — ${filename}</span>
+      <a href="${blobUrl}" download="${filename}" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-xs hover:bg-emerald-700">ดาวน์โหลด</a>
+      <button onclick="document.getElementById('${id}').remove()" class="px-3 py-1.5 bg-gray-100 rounded text-xs">ปิด</button>
+    </div>
+    <iframe src="${blobUrl}" class="flex-1 w-full border-0 rounded-b-xl" title="PDF Preview"></iframe>
+  </div>`;
+  m.addEventListener('click', (e)=>{ if(e.target===m) m.remove(); });
+  document.body.appendChild(m);
 }
 function pdfOpenTry(def, filename){
   // ลอง open ก่อน ถ้าโดนบล็อกให้ download (เลี่ยง about:blank)
