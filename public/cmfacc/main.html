@@ -2274,16 +2274,11 @@ function getLegacyFields(code, title){
   // 2.1.1 กำหนดข้อมูลรายได้ — รายได้* + สถานะ + ตาราง สาขา|รหัสบัญชี
   if(t.includes("รายได้") && !t.includes("ลูกหนี้")) return [
     {key:'name', label:'รายได้ *', type:'text', required:true, ph:'เช่น ค่าขายสินค้า, ค่าบริการ'},
-    {key:'status', label:'สถานะ', type:'select', options:['ปกติ','ยกเลิก']},
-    {key:'branch_CM2', label:'สาขา CM2 - รหัสบัญชี', type:'text', ph:'เช่น 410100'},
-    {key:'branch_1', label:'สาขา 1 - รหัสบัญชี', type:'text', ph:'เช่น 410101'},
-    {key:'branch_HQ', label:'สำนักงานใหญ่ - รหัสบัญชี', type:'text', ph:'เช่น 410102'},
-    {key:'detail', label:'หมายเหตุ', type:'textarea'}
+    {key:'status', label:'สถานะ', type:'select', options:['ปกติ','ยกเลิก']}
   ];
   if(t.includes("ประเภทลูกหนี้")) return [
-    {key:'code', label:'รหัสประเภทลูกหนี้', type:'text', required:true},
-    {key:'name', label:'ชื่อประเภท', type:'text', required:true},
-    {key:'detail', label:'เงื่อนไขเครดิต', type:'textarea'}
+    {key:'name', label:'ประเภทลูกหนี้ *', type:'text', required:true, ph:'เช่น ลูกหนี้ - ผู้รับเหมา'},
+    {key:'status', label:'สถานะ', type:'select', options:['ปกติ','ยกเลิก']}
   ];
   if(t.includes("ช่วงอายุ") || t.includes("Aging")) return [
     {key:'code', label:'รหัสช่วงอายุ', type:'text', required:true},
