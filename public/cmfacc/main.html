@@ -107,17 +107,28 @@ function pdfOpenOrDownload(def, filename){
   try{
     if(typeof pdfMake==='undefined'){ swToast('error','ไม่พบ pdfMake','ตรวจสอบ CDN'); return; }
     ensureThaiFont();
-    // Preview ก่อน — สร้าง modal iframe ทันที ไม่พึ่ง window.open เลี่ยง about:blank/popup blocker
+    // Preview แบบ newtab ปกติ — ใช้ getBlob + window.open(blobUrl) เลี่ยง about:blank
     pdfMake.createPdf(def).getBlob(function(blob){
       try{
         const url = URL.createObjectURL(blob);
-        showPdfPreviewModal(url, filename||'document.pdf');
-        swToast('success','เปิด Preview แล้ว', filename||'');
+        const win = window.open(url, '_blank');
+        if(!win || win.closed || typeof win.closed==='undefined'){
+          // Popup ถูกบล็อก — fallback เปิด modal ในแอป
+          showPdfPreviewModal(url, filename||'document.pdf');
+          swToast('info','Popup ถูกบล็อก — Preview ในหน้านี้', filename||'');
+        } else {
+          swToast('success','เปิด Preview แล้ว', filename||'');
+          // ตรวจ about:blank หลัง 600ms
+          setTimeout(()=>{ try{ if(win.location.href==='about:blank'){ win.close(); showPdfPreviewModal(url, filename||'document.pdf'); } }catch(e){} }, 700);
+        }
         setTimeout(()=> URL.revokeObjectURL(url), 60000);
       }catch(e){
         console.error(e);
-        try{ pdfMake.createPdf(def).download(filename||'document.pdf'); swToast('success','ดาวน์โหลด PDF แล้ว', filename||''); }catch(e2){ swToast('error','สร้าง PDF ไม่สำเร็จ', e2.message); }
+        showPdfPreviewModal(URL.createObjectURL(blob), filename||'document.pdf');
       }
+    });
+  }catch(e){ console.error(e); swToast('error','สร้าง PDF ไม่สำเร็จ', e.message||String(e)); }
+}
     });
   }catch(e){ console.error(e); swToast('error','สร้าง PDF ไม่สำเร็จ', e.message||String(e)); }
 }
