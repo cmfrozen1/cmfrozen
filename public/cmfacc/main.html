@@ -2163,6 +2163,39 @@ function getLegacySpec(code){
 
 function getLegacyFields(code, title){
   const t = title || "";
+  // Fix for ข้อ 2 ทั้งหมด — ใช้ฟิลด์ตามไฟล์ต้นฉบับ ไม่เกิน
+  const fix2 = {
+    "2.1.1": [{key:'name', label:'รายได้ *', type:'text', required:true}, {key:'status', label:'สถานะ', type:'select', options:['ปกติ','ยกเลิก']}],
+    "2.1.2": [{key:'name', label:'ประเภทลูกหนี้ *', type:'text', required:true}, {key:'status', label:'สถานะ', type:'select', options:['ปกติ','ยกเลิก']}],
+    "2.1.3": [{key:'code', label:'รหัสช่วงอายุ', type:'text', required:true}, {key:'name', label:'ชื่อช่วงอายุ', type:'text', required:true}],
+    "2.1.4": [{key:'code', label:'รหัสลูกหนี้', type:'text', required:true}, {key:'name', label:'ชื่อลูกหนี้', type:'text', required:true}, {key:'status', label:'สถานะ', type:'select', options:['ปกติ','ยกเลิก']}],
+    "2.2.1": [{key:'docNo', label:'เลขที่ใบส่งเงิน', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.2.2": [{key:'docNo', label:'เลขที่ใบรับเงินมัดจำ', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.2.3": [{key:'docNo', label:'เลขที่ใบแจ้งหนี้', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.2.4": [{key:'docNo', label:'เลขที่ใบโอนหนี้', type:'text'}, {key:'docDate', label:'วันที่โอน', type:'date'}],
+    "2.2.5": [{key:'docNo', label:'เลขที่ใบวางบิล', type:'text'}, {key:'docDate', label:'วันที่วางบิล', type:'date'}],
+    "2.2.6": [{key:'docNo', label:'เลขที่ใบรับชำระ', type:'text'}, {key:'docDate', label:'วันที่รับชำระ', type:'date'}],
+    "2.2.7": [{key:'docNo', label:'เลขที่ตัดหนี้สูญ', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.2.8": [{key:'docNo', label:'เลขที่ตัดยอด', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.2.9": [{key:'docNo', label:'เลขที่โอน', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.3.1": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.3.2": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.3.3": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.3.4": [{key:'docDate', label:'วันที่', type:'date'}],
+    "2.3.5": [{key:'year', label:'ปีบัญชี', type:'text'}],
+    "2.4.1": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.4.2": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.4.3": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.4.4": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.4.5": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.4.6": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.4.7": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.4.8": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.4.9": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.5.1": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+    "2.5.10": [{key:'docNo', label:'เลขที่', type:'text'}, {key:'docDate', label:'วันที่', type:'date'}],
+  };
+  if(fix2[code]) return fix2[code];
   if(code==="1.1.1" || t.includes("วันที่เกิดรายการ")) return [
     {key:'doc_date', label:'วันที่ *', type:'date', required:true, ph:'24/09/2569'}
   ];
