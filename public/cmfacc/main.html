@@ -107,9 +107,23 @@ function pdfOpenOrDownload(def, filename){
   try{
     if(typeof pdfMake==='undefined'){ swToast('error','ไม่พบ pdfMake','ตรวจสอบ CDN'); return; }
     ensureThaiFont();
-    // ใช้ download แทน open เพื่อเลี่ยง about:blank จาก popup blocker
-    pdfMake.createPdf(def).download(filename||'document.pdf');
-    swToast('success','ดาวน์โหลด PDF แล้ว', filename||'');
+    // ใช้ getBlob + สร้าง <a> download เอง — เสถียรกว่า .download() ที่บางเบราว์เซอร์บล็อก
+    pdfMake.createPdf(def).getBlob(function(blob){
+      try{
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename||'document.pdf';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1000);
+        swToast('success','ดาวน์โหลด PDF แล้ว', filename||'');
+      }catch(e){
+        console.error(e);
+        // fallback ใช้ download ของ pdfMake
+        try{ pdfMake.createPdf(def).download(filename||'document.pdf'); swToast('success','ดาวน์โหลด PDF แล้ว (fallback)', filename||''); }catch(e2){ swToast('error','สร้าง PDF ไม่สำเร็จ', e2.message); }
+      }
+    });
   }catch(e){ console.error(e); swToast('error','สร้าง PDF ไม่สำเร็จ', e.message||String(e)); }
 }
 function pdfOpenTry(def, filename){
