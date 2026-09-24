@@ -45,13 +45,55 @@ function headerWithLogo(titleOpts){
 function fmtMoney(n){ return Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:2, maximumFractionDigits:2});}
 function fmtDateTH(d){ if(!d) return ''; const x=new Date(d); if(isNaN(x)) return d; const m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']; return `${x.getDate()} ${m[x.getMonth()]} ${x.getFullYear()+543}`; }
 function toThaiBaht(num){
-  num = Number(num||0).toFixed(2).replace('.','');
-  // simplified Thai baht text
+  // แปลงจำนวนเงินเป็นข้อความไทย — ถูกต้องตามหลักบัญชี
+  num = Number(num||0);
+  if(isNaN(num)) return '';
+  const neg = num<0; if(neg) num=-num;
   const txtNum=['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
-  const txtPos=['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];
-  let s='', n = String(Math.floor(Number(num)/100));
-  // very simplified - full implementation would handle all rules; use formatted string fallback
-  return fmtMoney(Number(num)/100) + ' บาทถ้วน';
+  function readNumber(n){
+    n=String(Math.floor(n));
+    if(n==='0') return txtNum[0];
+    let s='', len=n.length;
+    for(let i=0;i<len;i++){
+      const d=Number(n[i]);
+      const pos=len-i-1;
+      const p=pos%6;
+      if(d===0) {
+        if(p===0 && pos!==0) s+='ล้าน';
+        continue;
+      }
+      if(p===1){
+        if(d===1) s+='สิบ';
+        else if(d===2) s+='ยี่สิบ';
+        else s+=txtNum[d]+'สิบ';
+      } else if(p===0){
+        if(d===1 && len>1 && n[len-2]!=='0') s+='เอ็ด';
+        else s+=txtNum[d];
+        if(pos!==0 && pos%6===0) s+='ล้าน';
+      } else {
+        s+=txtNum[d]+['','สิบ','ร้อย','พัน','หมื่น','แสน'][p];
+      }
+    }
+    return s;
+  }
+  const baht=Math.floor(num);
+  const satang=Math.round((num-baht)*100);
+  let t=readNumber(baht)+'บาท';
+  if(satang===0) t+='ถ้วน';
+  else {
+    if(satang<10) t+=txtNum[satang]+'สตางค์';
+    else {
+      let s2='';
+      const ten=Math.floor(satang/10), unit=satang%10;
+      if(ten===1) s2+='สิบ';
+      else if(ten===2) s2+='ยี่สิบ';
+      else if(ten>2) s2+=txtNum[ten]+'สิบ';
+      if(unit===1 && ten!==0) s2+='เอ็ด';
+      else if(unit!==0) s2+=txtNum[unit];
+      t+=s2+'สตางค์';
+    }
+  }
+  return (neg?'ลบ':'')+t;
 }
 function ensureThaiFont(){
   if(typeof pdfMake!=='undefined'){
