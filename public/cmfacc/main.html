@@ -2338,22 +2338,46 @@ const VIEWPDF_MOCK = [
 let viewPDFState = {perPage:10, page:1, filtered:[]};
 function windowOpenMaximize(url, name){ window.open(url, name||'_blank', 'width=1024,height=768,scrollbars=yes,resizable=yes'); return false; }
 function viewPDFWin(code){
-  const row = VIEWPDF_MOCK.find(r=> String(r.code)===String(code));
-  if(!row) return;
-  // ลองเปิด PDF จริงถ้ามี, ถ้าไม่มีให้ toast + สร้าง PDF ตัวอย่างด้วย pdfMake (WHT/ใบสำคัญจ่าย)
-  if(row.report_code==="DOC_TX0001"){
-    // หา WHT mock แล้ว gen
-    genWHTPDFMock(row);
-    return;
-  }
-  // ทั่วไป: เปิด pdf path แบบ legacy (ถ้าไม่มีไฟล์จริงจะ 404, แต่ให้ preview ด้วย toast)
-  const ok = windowOpenMaximize(row.pdf, 'viewpdf'+code);
-  if(!ok) swToast('info','เปิด PDF: '+row.pdf, row.report_name);
+  try{
+    const row = VIEWPDF_MOCK.find(r=> String(r.code)===String(code));
+    if(!row) { swToast('warning','ไม่พบรายงาน '+code); return; }
+    ensureThaiFont();
+    if(typeof pdfMake==='undefined'){ swToast('error','ไม่พบ pdfMake'); return; }
+    if(row.report_code==="DOC_TX0001"){
+      genWHTPDFMock(row);
+      return;
+    }
+    // สำหรับรายงานทั่วไป สร้าง PDF ตัวอย่างด้วย pdfMake แทนการเปิดไฟล์ 404
+    // ลองเปิดไฟล์ก่อน ถ้าไม่มีให้สร้าง PDF
+    try{
+      // สร้าง PDF สาธิตจากข้อมูลแถว
+      const def = {
+        pageSize:'A4', pageMargins:[20,20,20,28], defaultStyle:{font:'THSarabun',fontSize:9},
+        footer: pdfFooter,
+        content:[
+          logoImg(36) ? {columns:[logoImg(36), {stack:[{text:COMPANY.name,fontSize:11,bold:true,alignment:'center'},{text:row.report_name,fontSize:13,bold:true,alignment:'center',color:'#0f766e'},{text:'รหัสรายงาน '+row.code+' • '+row.datetime,fontSize:8,alignment:'center',color:'#666'}],width:'*'}],columnGap:8,margin:[0,0,0,8]} : {stack:[{text:COMPANY.name,fontSize:11,bold:true,alignment:'center'},{text:row.report_name,fontSize:13,bold:true,alignment:'center',color:'#0f766e'}]},
+          {text:'เอกสารตัวอย่างจากระบบ CMFrozen • '+row.pdf,fontSize:8,color:'#999',alignment:'center',margin:[0,10,0,10]},
+          {table:{widths:['*','*'], body:[[ {text:'รหัสรายงาน',bold:true,fillColor:'#0f766e',color:'#fff'}, {text:row.code, fontSize:9} ],[ {text:'ชื่อรายงาน',bold:true,fillColor:'#0f766e',color:'#fff'}, {text:row.report_name} ],[ {text:'วัน/เวลา',bold:true,fillColor:'#0f766e',color:'#fff'}, {text:row.datetime} ] ]}, layout:{hLineWidth:()=>0.3,vLineWidth:()=>0.3}},
+          {text:'PDF นี้สร้างจากปุ่ม PDF ในระบบใหม่ — แทนการเปิดไฟล์ '+row.pdf+' ที่ไม่มีใน hosting',fontSize:7,color:'#999',alignment:'center',margin:[0,20,0,0]}
+        ]
+      };
+      try{ pdfMake.createPdf(def).open(); }catch(e){ pdfMake.createPdf(def).download('Report_'+row.code+'.pdf'); }
+      swToast('success','สร้าง PDF สำเร็จ', row.report_name);
+    }catch(e){
+      // fallback เปิดไฟล์เดิม
+      const ok = windowOpenMaximize(row.pdf, 'viewpdf'+code);
+      if(!ok) swToast('info','เปิด PDF: '+row.pdf, row.report_name);
+    }
+  }catch(e){ console.error(e); swToast('error','เปิด PDF ไม่สำเร็จ', e.message); }
 }
 function genWHTPDFMock(row){
-  // สร้าง cert จำลองแล้วเรียก buildWHTDef เดิม
-  const cert={cert_no:row.code, cert_date:row.date_iso, vendor_name:'บริษัท ตัวอย่าง จำกัด', vendor_tax_id:'0105536000000', vendor_address:'99/9 ม.8', income_type:'3', income_desc:row.report_name, amount:10000, wht_rate:3, wht_amount:300, form_type:'53'};
-  const def=buildWHTDef(cert); ensureThaiFont(); pdfMake.createPdf(def).open();
+  try{
+    const cert={cert_no:row.code, cert_date:row.date_iso, vendor_name:'บริษัท ตัวอย่าง จำกัด', vendor_tax_id:'0105536000000', vendor_address:'99/9 ม.8', income_type:'3', income_desc:row.report_name, amount:10000, wht_rate:3, wht_amount:300, form_type:'53'};
+    const def=buildWHTDef(cert); ensureThaiFont();
+    if(typeof pdfMake==='undefined'){ swToast('error','ไม่พบ pdfMake'); return; }
+    try{ pdfMake.createPdf(def).open(); }catch(e){ pdfMake.createPdf(def).download('WHT_'+row.code+'.pdf'); }
+    swToast('success','สร้าง PDF WHT สำเร็จ', row.code);
+  }catch(e){ swToast('error','สร้าง WHT ไม่สำเร็จ', e.message); }
 }
 function parseTHDate(s){ // dd/mm/yyyy -> yyyy-mm-dd
   if(!s) return "";
@@ -2922,32 +2946,38 @@ async function loadLegacy(view){
   }catch(e){ el.innerHTML=`<div class="text-red-500 text-sm p-4">โหลดไม่สำเร็จ: ${e.message}</div>`; }
 }
 async function genLegacyPDF(view){
-  const title = legacyTitles[view]||view;
-  const code = view.replace('legacy-','').replace(/-/g,'.');
-  const fields = getLegacyFields(code, title);
-  const cols = fields.slice(0,5);
-  const j = await apiFetch("/api/legacy?code="+encodeURIComponent(view)).then(r=>r.data).catch(()=>[]);
-  ensureThaiFont();
-  const _lg = logoImg(36);
-  const header = _lg ? {columns:[_lg, {stack:[{text: COMPANY.name,fontSize:11,bold:true, alignment:'center'}, {text: title,fontSize:13,bold:true,alignment:'center',color:'#0f766e',margin:[0,2,0,2]}, {text: 'รหัสเมนู '+code+' • พิมพ์ '+fmtDateTH(new Date().toISOString().slice(0,10))+' • '+j.length+' รายการ • '+getLegacySpec(code).std,fontSize:6,alignment:'center',color:'#666'}], width:'*'}], columnGap:8, margin:[0,0,0,8]} : {stack:[{text: COMPANY.name,fontSize:11,bold:true,alignment:'center'},{text: title,fontSize:13,bold:true,alignment:'center',color:'#0f766e',margin:[0,2,0,2]},{text: 'รหัสเมนู '+code+' • '+j.length+' รายการ',fontSize:7,alignment:'center',color:'#666',margin:[0,0,0,8]}]};
-  const widths = cols.map(()=> '*').concat(['40']);
-  const headerRow = cols.map(f=>({text:f.label, bold:true, fillColor:'#0f766e', color:'#fff', fontSize:7, alignment:'center'})).concat([{text:'จัดการ', bold:true, fillColor:'#0f766e', color:'#fff', fontSize:7}]);
-  const body=[headerRow];
-  (j||[]).forEach(r=>{
-    let vals={...r}; try{ const p=JSON.parse(r.payload||'{}'); Object.assign(vals,p);}catch{}
-    let row = cols.map(f=>{
-      let v = vals[f.key];
-      if(f.type==='number') v = Number(v||0).toLocaleString();
-      else v = v!==undefined&&v!==null?String(v):'-';
-      return {text: String(v).slice(0,30), fontSize:6, alignment: f.type==='number'?'right':'left'};
+  try{
+    const title = legacyTitles[view]||view;
+    const code = view.replace('legacy-','').replace(/-/g,'.');
+    const fields = getLegacyFields(code, title);
+    const cols = fields.slice(0,5);
+    let j=[];
+    try{ const r=await apiFetch("/api/legacy?code="+encodeURIComponent(view)); j=r.data||[]; }catch(e){ j=[]; swToast('warning','โหลดข้อมูลไม่สำเร็จ จะสร้าง PDF ว่าง', e.message); }
+    ensureThaiFont();
+    if(typeof pdfMake==='undefined'){ swToast('error','ไม่พบ pdfMake','ตรวจสอบการโหลด CDN'); return; }
+    const _lg = logoImg(36);
+    const header = _lg ? {columns:[_lg, {stack:[{text: COMPANY.name,fontSize:11,bold:true, alignment:'center'}, {text: title,fontSize:13,bold:true,alignment:'center',color:'#0f766e',margin:[0,2,0,2]}, {text: 'รหัสเมนู '+code+' • พิมพ์ '+fmtDateTH(new Date().toISOString().slice(0,10))+' • '+j.length+' รายการ • '+getLegacySpec(code).std,fontSize:6,alignment:'center',color:'#666'}], width:'*'}], columnGap:8, margin:[0,0,0,8]} : {stack:[{text: COMPANY.name,fontSize:11,bold:true,alignment:'center'},{text: title,fontSize:13,bold:true,alignment:'center',color:'#0f766e',margin:[0,2,0,2]},{text: 'รหัสเมนู '+code+' • '+j.length+' รายการ',fontSize:7,alignment:'center',color:'#666',margin:[0,0,0,8]}]};
+    const widths = cols.map(()=> '*').concat(['40']);
+    const headerRow = cols.map(f=>({text:f.label, bold:true, fillColor:'#0f766e', color:'#fff', fontSize:7, alignment:'center'})).concat([{text:'จัดการ', bold:true, fillColor:'#0f766e', color:'#fff', fontSize:7}]);
+    const body=[headerRow];
+    (j||[]).forEach(r=>{
+      let vals={...r}; try{ const p=JSON.parse(r.payload||'{}'); Object.assign(vals,p);}catch{}
+      let row = cols.map(f=>{
+        let v = vals[f.key];
+        if(f.type==='number') v = Number(v||0).toLocaleString();
+        else v = v!==undefined&&v!==null?String(v):'-';
+        return {text: String(v).slice(0,30), fontSize:6, alignment: f.type==='number'?'right':'left'};
+      });
+      row.push({text:'', fontSize:6});
+      body.push(row);
     });
-    row.push({text:'', fontSize:6});
-    body.push(row);
-  });
-  if(!j.length) body.push([{text:'— ยังไม่มีข้อมูล —', colSpan: cols.length+1, alignment:'center', fontSize:8, color:'#999'}, ...Array(cols.length).fill({})]);
-  const spec = getLegacySpec(code);
-  const def={pageSize:'A4',pageMargins:[20,20,20,28],defaultStyle:{font:'THSarabun',fontSize:8}, footer: pdfFooter, content:[header, {table:{headerRows:1,widths,body},layout:{hLineWidth:()=>0.3,vLineWidth:()=>0.3}}, {text:'เอกสารพิมพ์จากเมนู '+title+' • รหัส '+code+' • มาตรฐาน '+spec.std+' • มีโลโก้บริษัทครบถ้วน',fontSize:6,color:'#999',alignment:'center',margin:[0,8,0,0]}]};
-  pdfMake.createPdf(def).open();
+    if(!j.length) body.push([{text:'— ยังไม่มีข้อมูล —', colSpan: cols.length+1, alignment:'center', fontSize:8, color:'#999'}, ...Array(cols.length).fill({})]);
+    const spec = getLegacySpec(code);
+    const def={pageSize:'A4',pageMargins:[20,20,20,28],defaultStyle:{font:'THSarabun',fontSize:8}, footer: pdfFooter, content:[header, {table:{headerRows:1,widths,body},layout:{hLineWidth:()=>0.3,vLineWidth:()=>0.3}}, {text:'เอกสารพิมพ์จากเมนู '+title+' • รหัส '+code+' • มาตรฐาน '+spec.std+' • มีโลโก้บริษัทครบถ้วน',fontSize:6,color:'#999',alignment:'center',margin:[0,8,0,0]}]};
+    // ลอง open ก่อน ถ้า popup ถูกบล็อกให้ download แทน
+    try{ pdfMake.createPdf(def).open(); }catch(e){ pdfMake.createPdf(def).download(title+'_'+code+'.pdf'); }
+    swToast('success','สร้าง PDF สำเร็จ', j.length+' รายการ');
+  }catch(e){ console.error(e); swToast('error','สร้าง PDF ไม่สำเร็จ', e.message||String(e)); }
 }
 
 
