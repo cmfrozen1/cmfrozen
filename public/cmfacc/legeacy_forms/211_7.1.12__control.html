@@ -1,0 +1,255 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<HTML>
+	<HEAD>
+		<title>เพิ่ม, แก้ไข หรือ แสดงบัญชีกลุ่มสินค้าและแผนกที่สั่งซื้อ</title>
+		<meta content="Microsoft Visual Studio .NET 7.1" name="GENERATOR">
+		<meta content="C#" name="CODE_LANGUAGE">
+		<meta content="JavaScript" name="vs_defaultClientScript">
+		<meta content="http://schemas.microsoft.com/intellisense/ie5" name="vs_targetSchema">
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-874">
+		<LINK media="all" href="../../styles/style1.css" type="text/css" rel="stylesheet">
+		<script src="../../scripts/form.js" type="text/javascript"></script>
+		<script src="../../scripts/OptionTransfer.js" type="text/javascript"></script>
+		<script src="../../scripts/selectbox.js" type="text/javascript"></script>
+		<script language="vbscript" src="../../scripts/tnt_vbscripts.vbs"></script>
+		<script language="javascript">
+			var opt = new OptionTransfer("lstDepartmentLeft","lstDepartmentRight");
+			opt.setAutoSort(true);
+			opt.setDelimiter("|");
+			opt.setStaticOptionRegex("");
+			opt.saveNewRightOptions("txthDepartmentRight");
+		function listItemNo(){
+		
+			var dF = document.forms[0];
+			windowOpen("../../LOV/List/ListItem.aspx?code=" + dF.txtItemNo.value + "&itemgroup=" + dF.ddlItemGroup.value + "&itemtype=" + dF.ddlItemType.value + "&ctrl1=txtItemNo&ctrl2=txtItemName", "list", 650, 500);
+			return false;
+		}
+		function clearItemNo(){
+			var dF = document.forms[0];
+			dF.txtItemNo.value = "";
+			dF.txtItemName.value = "";
+			return false;
+		}
+			function listAccountCode(){
+			var dF = document.forms[0];
+				windowOpen("../../LOV/List/ListAccountCode.aspx?code=" + dF.txtUseAccountId.value + "&name=" + dF.txtUseAccountName.value + "&ctrl1=txtUseAccountId&ctrl2=txtUseAccountName&ctrl3=txthUseAccountId", "list", 620, 500);
+				return false;
+			}
+			function clearAccountCode(){
+			var dF = document.forms[0];
+				dF.txtUseAccountId.value = "";
+				dF.txtUseAccountName.value = "";
+				dF.txthUseAccountId.value = "";
+				return false;
+			}
+			function listExpAccountCode(){
+			var dF = document.forms[0];
+				windowOpen("../../LOV/List/ListAccountCode.aspx?code=" + dF.txtExpAccountId.value + "&name=" + dF.txtExpAccountName.value + "&ctrl1=txtExpAccountId&ctrl2=txtExpAccountName&ctrl3=txthExpAccountId", "list", 620, 500);
+				return false;
+			}
+			function clearExpAccountCode(){
+			var dF = document.forms[0];
+				dF.txtExpAccountId.value = "";
+				dF.txtExpAccountName.value = "";
+				dF.txthExpAccountId.value = "";
+				return false;
+			}
+			
+			function changeAccountCode(objName){
+				var el1 = document.getElementById(objName);
+				el1.value = "";
+				return false;
+			}
+		</script>
+	</HEAD>
+	<body bottomMargin="0" leftMargin="0" topMargin="0" onload="on_load();opt.init(document.forms[0]);"
+		MS_POSITIONING="GridLayout">
+		<table cellSpacing="1" cellPadding="0" width="100%" border="0">
+			<tr>
+				<td width="1" bgColor="#6e2c00"></td>
+				<td vAlign="top">
+					<form name="Form1" method="post" action="b_ItemGroupAccControl.aspx?mode=add&amp;page=0" id="Form1" autocomplete="off">
+<input type="hidden" name="__VIEWSTATE" value="dDwzNzkyNDIxNTQ7dDxwPGw8c29ydDE7ZGlyZWN0aW9uMTttb2RlO2l0ZW1ncm91cGlkO3BhZ2U7PjtsPE5PO0FTQzthZGQ7aTwwPjswOz4+O2w8aTwxPjs+O2w8dDw7bDxpPDE+Oz47bDx0PDtsPGk8OT47aTwxMz47aTwyMz47aTwzNT47aTwzNz47aTwzOT47aTw0Nz47aTw0OT47aTw1MT47aTw1NT47aTw1Nz47aTw1OT47aTw2OT47aTw3MT47aTw3Mz47aTw3NT47aTw3Nz47aTw3OT47aTw4MT47PjtsPHQ8cDxwPGw8VGV4dDs+O2w8T1JBLTEyNTQxOiBUTlM6bm8gbGlzdGVuZXIKT1JBLTA2NTEyOiBhdCAiQVBQQUNDLkJfSUFfSVRFTV9HUk9VUF9BQ0NfRF9QSyIsIGxpbmUgOTIKT1JBLTA2NTEyOiBhdCBsaW5lIDEKOz4+Oz47Oz47dDx0PHA8O3A8bDxvbmtleXByZXNzOz47bDxyZXR1cm4ga2V5U29ydCh0aGlzKVw7Oz4+Pjs7Pjs7Pjt0PHQ8cDw7cDxsPG9ua2V5cHJlc3M7PjtsPHJldHVybiBrZXlTb3J0KHRoaXMpXDs7Pj4+Ozs+Ozs+O3Q8cDw7cDxsPG9uY2hhbmdlOz47bDxjaGFuZ2VBY2NvdW50Q29kZSgndHh0aFVzZUFjY291bnRJZCcpXDs7Pj4+Ozs+O3Q8cDxwPGw8SW1hZ2VVcmw7PjtsPC4uLy4uL2ltYWdlcy9jb250cm9scy92aWV3Mi5naWY7Pj47cDxsPHRpdGxlO29uY2xpY2s7PjtsPOC5geC4quC4lOC4h+C4o+C4suC4ouC4geC4suC4o+C4guC5ieC4reC4oeC4ueC4pTtyZXR1cm4gbGlzdEFjY291bnRDb2RlKClcOzs+Pj47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL2NvbnRyb2xzL2VyYXNlLmdpZjs+PjtwPGw8dGl0bGU7b25jbGljazs+O2w84Lil4LmJ4Liy4LiH4LiC4LmJ4Lit4Lih4Li54Lil4Lib4Lix4LiI4LiI4Li44Lia4Lix4LiZO3JldHVybiBjbGVhckFjY291bnRDb2RlKClcOzs+Pj47Oz47dDxwPDtwPGw8b25jaGFuZ2U7PjtsPGNoYW5nZUFjY291bnRDb2RlKCd0eHRoRXhwQWNjb3VudElkJylcOzs+Pj47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL2NvbnRyb2xzL3ZpZXcyLmdpZjs+PjtwPGw8dGl0bGU7b25jbGljazs+O2w84LmB4Liq4LiU4LiH4Lij4Liy4Lii4LiB4Liy4Lij4LiC4LmJ4Lit4Lih4Li54LilO3JldHVybiBsaXN0RXhwQWNjb3VudENvZGUoKVw7Oz4+Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDwuLi8uLi9pbWFnZXMvY29udHJvbHMvZXJhc2UuZ2lmOz4+O3A8bDx0aXRsZTtvbmNsaWNrOz47bDzguKXguYnguLLguIfguILguYnguK3guKHguLnguKXguJvguLHguIjguIjguLjguJrguLHguJk7cmV0dXJuIGNsZWFyRXhwQWNjb3VudENvZGUoKVw7Oz4+Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDwuLi8uLi9pbWFnZXMvY29udHJvbHMvc2F2ZS5naWY7Pj47cDxsPHRpdGxlOz47bDzguJrguLHguJnguJfguLbguIHguILguYnguK3guKHguLnguKU7Pj4+Ozs+O3Q8cDxwPGw8SW1hZ2VVcmw7PjtsPC4uLy4uL2ltYWdlcy9jb250cm9scy9zYXZlX2Nsb3NlLmdpZjs+PjtwPGw8dGl0bGU7PjtsPOC4muC4seC4meC4l+C4tuC4geC4guC5ieC4reC4oeC4ueC4peC5geC4peC5ieC4p+C4m+C4tOC4lOC4q+C4meC5ieC4suC4iOC4rTs+Pj47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL2NvbnRyb2xzL2Nsb3NlLmdpZjs+PjtwPGw8dGl0bGU7b25jbGljazs+O2w84Lib4Li04LiU4Lir4LiZ4LmJ4Liy4LiI4LitL+C4ouC4geC5gOC4peC4tOC4gTtyZXR1cm4gd2luZG93LmNsb3NlKClcOzs+Pj47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL21lbnVfZV9uLmdpZjs+PjtwPGw8dGl0bGU7b25jbGljazs+O2w8XGU7dHJlZSh0aGlzLCAndGJsTGlzdDEnKVw7IHJldHVybiBmYWxzZVw7Oz4+Pjs7Pjt0PHQ8cDw7cDxsPG9uRGJsQ2xpY2s7PjtsPG9wdC50cmFuc2ZlclJpZ2h0KClcOzs+Pj47Oz47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL2NvbnRyb2xzLzFyaWdodGFycm93LmdpZjs+PjtwPGw8dGl0bGU7b25jbGljazs+O2w84Lii4LmJ4Liy4Lii4LiC4LmJ4Lit4Lih4Li54Lil4LmE4Lib4LiU4LmJ4Liy4LiZ4LiC4Lin4LiyO29wdC50cmFuc2ZlclJpZ2h0KClcOyByZXR1cm4gZmFsc2VcOzs+Pj47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL2NvbnRyb2xzLzFsZWZ0YXJyb3cuZ2lmOz4+O3A8bDx0aXRsZTtvbmNsaWNrOz47bDzguKLguYnguLLguKLguILguYnguK3guKHguLnguKXguYTguJvguJTguYnguLLguJnguIvguYnguLLguKI7b3B0LnRyYW5zZmVyTGVmdCgpXDsgcmV0dXJuIGZhbHNlXDs7Pj4+Ozs+O3Q8cDxwPGw8SW1hZ2VVcmw7PjtsPC4uLy4uL2ltYWdlcy9jb250cm9scy8ycmlnaHRhcnJvdy5naWY7Pj47cDxsPHRpdGxlO29uY2xpY2s7PjtsPOC4ouC5ieC4suC4ouC4guC5ieC4reC4oeC4ueC4peC5hOC4m+C4lOC5ieC4suC4meC4guC4p+C4suC4l+C4seC5ieC4h+C4q+C4oeC4lDtvcHQudHJhbnNmZXJBbGxSaWdodCgpXDsgcmV0dXJuIGZhbHNlXDs7Pj4+Ozs+O3Q8cDxwPGw8SW1hZ2VVcmw7PjtsPC4uLy4uL2ltYWdlcy9jb250cm9scy8ybGVmdGFycm93LmdpZjs+PjtwPGw8dGl0bGU7b25jbGljazs+O2w84Lii4LmJ4Liy4Lii4LiC4LmJ4Lit4Lih4Li54Lil4LmE4Lib4LiU4LmJ4Liy4LiZ4LiL4LmJ4Liy4Lii4LiX4Lix4LmJ4LiH4Lir4Lih4LiUO29wdC50cmFuc2ZlckFsbExlZnQoKVw7IHJldHVybiBmYWxzZVw7Oz4+Pjs7Pjt0PHQ8cDw7cDxsPG9uRGJsQ2xpY2s7PjtsPG9wdC50cmFuc2ZlckxlZnQoKVw7Oz4+Pjs7Pjs7Pjs+Pjs+Pjs+PjtsPGltZ1VzZUFjY291bnQ7aW1nQ2xlYXJVc2VBY2NvdW50O2ltZ0V4cEFjY291bnQ7aW1nQ2xlYXJFeHBBY2NvdW50O2ltZ1NhdmVPbmx5O2ltZ1NhdmU7aW1nQ2xvc2U7cmFkQWN0aXZlO3JhZEluYWN0aXZlO3JhZEluYWN0aXZlO2ltZ0NvbGxhcHNpYmxlMTtsc3REZXBhcnRtZW50TGVmdDtpbWcxRGVmZWN0UmlnaHQ7aW1nMURlZmVjdExlZnQ7aW1nMkRlZmVjdFJpZ2h0O2ltZzJEZWZlY3RMZWZ0O2xzdERlcGFydG1lbnRSaWdodDs+Pqb+EPodoz16V/DSAlAS4iD4Er5+" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" value="6FF4F411" />
+
+						<table id="Panel1" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td>
+
+							<TABLE cellSpacing="15" cellPadding="0" width="100%" border="0">
+								<TR>
+									<TD class="bgblack"><IMG height="32" src="../../images/home.gif" width="32"> <SPAN class="title_h">
+											เพิ่ม, แก้ไข แสดงบัญชีกลุ่มสินค้าและแผนกที่สั่งซื้อ</SPAN></TD>
+								</TR>
+								<TR>
+									<TD class="tblborder">
+										<TABLE id="Table2" cellSpacing="5" cellPadding="0" width="100%" border="0">
+											<TR>
+												<TD align="left" colSpan="2">&nbsp;</TD>
+												<TD align="right">
+														<span id="lblUpDateByTitle" class="label_hbk">ผู้ที่แก้ไขข้อมูลล่าสุด:</span></TD>
+												<TD width="5%">
+													<input name="txtUpDateByValue" type="text" maxlength="255" readonly="readonly" id="txtUpDateByValue" class="textdisable" /></TD>
+											</TR>
+											<TR>
+												<TD colSpan="2">&nbsp;</TD>
+												<TD align="right">
+													<span id="lblUpDateDateTitle" class="label_hbk">วันที่แก้ไขข้อมูลล่าสุด:</span></TD>
+												<TD>
+													<input name="txtUpDateDateValue" type="text" maxlength="255" readonly="readonly" id="txtUpDateDateValue" class="textdisable" /></TD>
+											</TR>
+										</TABLE>
+										<TABLE cellSpacing="5" cellPadding="0" width="100%">
+											<TR vAlign="top">
+												<TD noWrap colSpan="7">
+													<span id="lblError"><font color="Red">ORA-12541: TNS:no listener
+ORA-06512: at "APPACC.B_IA_ITEM_GROUP_ACC_D_PK", line 92
+ORA-06512: at line 1
+</font></span></TD>
+											</TR>
+											<TR vAlign="top">
+												<TD noWrap align="right"><SPAN class="label_r">*</SPAN>&nbsp;
+													<span id="lblEffectiveDate" class="label_hbk">กลุ่มสินค้า:</span></TD>
+												<TD noWrap>
+													<select name="ddlItemGroup" id="ddlItemGroup" tabindex="9" class="text1" onkeypress="return keySort(this);">
+
+	</select>
+													
+													
+													</TD>
+												<TD noWrap></TD>
+												<TD noWrap></TD>
+											</TR>
+											<TR>
+												<TD noWrap align="right"><SPAN class="label_r">*</SPAN>&nbsp;
+													<span id="lblRmCriteria" class="label_hbk">ประเภทสินค้า:</span></TD>
+												<TD noWrap>
+													<select name="ddlItemType" id="ddlItemType" tabindex="9" class="text1" onkeypress="return keySort(this);">
+
+	</select>
+													
+													</TD>
+												<TD noWrap>
+													<input name="txthUseAccountId" type="text" id="txthUseAccountId" />
+													<input name="txthExpAccountId" type="text" id="txthExpAccountId" /></TD>
+												<TD noWrap></TD>
+											</TR>
+											<TR>
+												<TD noWrap align="right">&nbsp;<SPAN class="label_r">*</SPAN>
+													<span id="Label2" class="label_hbk">บัญชีสินค้า/ค.ช.จ.เมื่อซื้อ/รายได้เมื่อขาย:</span></TD>
+												<TD noWrap>
+													<input name="txtUseAccountId" type="text" maxlength="30" id="txtUseAccountId" class="text1" onchange="changeAccountCode('txthUseAccountId');" />&nbsp;
+													<input type="image" name="imgUseAccount" onclick="return listAccountCode();if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgUseAccount" title="แสดงรายการข้อมูล" src="../../images/controls/view2.gif" alt="" align="AbsBottom" border="0" />&nbsp;
+													<input type="image" name="imgClearUseAccount" onclick="return clearAccountCode();if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgClearUseAccount" title="ล้างข้อมูลปัจจุบัน" src="../../images/controls/erase.gif" alt="" align="AbsBottom" border="0" />&nbsp;
+													<input name="txtUseAccountName" type="text" maxlength="20" id="txtUseAccountName" tabindex="8" class="text1" /></TD>
+												<TD noWrap></TD>
+												<TD noWrap>&nbsp;
+													</TD>
+											</TR>
+											<TR>
+												<TD noWrap align="right"><SPAN class="label_r"></SPAN><STRONG><FONT color="#ff0000">&nbsp;<SPAN class="label_r">*
+															</SPAN></FONT></STRONG>
+													<span id="Label3" class="label_hbk">บัญชีค่าใช้จ่ายเมื่อเบิกสินค้า:</span></TD>
+												<TD noWrap>
+													<input name="txtExpAccountId" type="text" maxlength="30" id="txtExpAccountId" class="text1" onchange="changeAccountCode('txthExpAccountId');" />&nbsp;
+													<input type="image" name="imgExpAccount" onclick="return listExpAccountCode();if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgExpAccount" title="แสดงรายการข้อมูล" src="../../images/controls/view2.gif" alt="" align="AbsBottom" border="0" />&nbsp;
+													<input type="image" name="imgClearExpAccount" onclick="return clearExpAccountCode();if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgClearExpAccount" title="ล้างข้อมูลปัจจุบัน" src="../../images/controls/erase.gif" alt="" align="AbsBottom" border="0" />&nbsp;
+													<input name="txtExpAccountName" type="text" maxlength="20" id="txtExpAccountName" tabindex="8" class="text1" /></TD>
+												<TD noWrap align="right"></TD>
+												<TD vAlign="top" noWrap rowSpan="3">
+													<input type="image" name="imgSaveOnly" onclick="if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgSaveOnly" title="บันทึกข้อมูล" src="../../images/controls/save.gif" alt="" border="0" />
+													<input type="image" name="imgSave" onclick="if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgSave" title="บันทึกข้อมูลแล้วปิดหน้าจอ" src="../../images/controls/save_close.gif" alt="" border="0" />
+													<input type="image" name="imgClose" onclick="return window.close();if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgClose" title="ปิดหน้าจอ/ยกเลิก" src="../../images/controls/close.gif" alt="" border="0" /></TD>
+											</TR>
+											<TR>
+												<TD noWrap align="right">
+													<span id="Label4" class="label_hbk">สถานะ:</span></TD>
+												<TD noWrap>
+													<span class="label_hb"><input id="radActive" type="radio" name="Status" value="radActive" checked="checked" /><label for="radActive">ปกติ</label></span>
+													<span class="label_hb"><input id="radInactive" type="radio" name="Status" value="radInactive" /><label for="radInactive">ยกเลิก</label></span></TD>
+												<TD noWrap align="right"></TD>
+											</TR>
+											<TR vAlign="top">
+												<TD noWrap align="right"><STRONG></STRONG><STRONG></STRONG><SPAN class="label_hbk"></SPAN></TD>
+												<TD noWrap colSpan="2">
+													</TD>
+											</TR>
+										</TABLE>
+									</TD>
+								</TR>
+								<TR>
+									<TD width="100%" background="../../images/ml-sep6photo.gif" height="15"></TD>
+								</TR>
+								<TR>
+									<TD><SPAN class="title_h">
+											<input type="image" name="imgCollapsible1" onclick="tree(this, 'tblList1'); return false;if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgCollapsible1" title="" src="../../images/menu_e_n.gif" alt="" border="0" />&nbsp;รายการแผนก</SPAN></TD>
+								</TR>
+								<TR id="tblList1">
+									<TD class="tblborder">
+										<TABLE cellSpacing="2" cellPadding="0" width="100%">
+											<TR vAlign="top">
+												<TD noWrap align="right" width="10%"></TD>
+												<TD noWrap align="center" width="30%">
+													<select name="lstDepartmentLeft" size="12" multiple="multiple" id="lstDepartmentLeft" class="text1" onDblClick="opt.transferRight();">
+
+	</select></TD>
+												<TD vAlign="middle" noWrap align="center" width="20%">
+													<input type="image" name="img1DefectRight" id="img1DefectRight" title="ย้ายข้อมูลไปด้านขวา" onclick="opt.transferRight(); return false;" src="../../images/controls/1rightarrow.gif" alt="" border="0" /><BR>
+													<BR>
+													<input type="image" name="img1DefectLeft" id="img1DefectLeft" title="ย้ายข้อมูลไปด้านซ้าย" onclick="opt.transferLeft(); return false;" src="../../images/controls/1leftarrow.gif" alt="" border="0" /><BR>
+													<BR>
+													<input type="image" name="img2DefectRight" id="img2DefectRight" title="ย้ายข้อมูลไปด้านขวาทั้งหมด" onclick="opt.transferAllRight(); return false;" src="../../images/controls/2rightarrow.gif" alt="" border="0" /><BR>
+													<BR>
+													<input type="image" name="img2DefectLeft" id="img2DefectLeft" title="ย้ายข้อมูลไปด้านซ้ายทั้งหมด" onclick="opt.transferAllLeft(); return false;" src="../../images/controls/2leftarrow.gif" alt="" border="0" /></TD>
+												<TD noWrap align="center" width="30%">
+													<select name="lstDepartmentRight" size="12" multiple="multiple" id="lstDepartmentRight" class="text1" onDblClick="opt.transferLeft();">
+
+	</select></TD>
+												<TD noWrap align="right" width="10%"><input name="txthDepartmentRight" id="txthDepartmentRight" type="hidden" style="WIDTH: 54px; HEIGHT: 22px" size="3" /></TD>
+											</TR>
+										</TABLE>
+									</TD>
+								</TR>
+							</TABLE>
+						
+</td></tr></table><script language="JavaScript" type="text/javascript"> 
+function keySort(dropdownlist,caseSensitive) { 
+  // check the keypressBuffer attribute is defined on the dropdownlist  
+  var undefined;  
+  if (dropdownlist.keypressBuffer == undefined) {  
+    dropdownlist.keypressBuffer = '';  
+  }  
+  // get the key that was pressed  
+  var key = String.fromCharCode(window.event.keyCode);  
+  dropdownlist.keypressBuffer += key; 
+  if (!caseSensitive) { 
+    // convert buffer to lowercase 
+    dropdownlist.keypressBuffer = dropdownlist.keypressBuffer.toLowerCase(); 
+  } 
+  // find if it is the start of any of the options  
+  var optionsLength = dropdownlist.options.length;  
+  for (var n=0; n < optionsLength; n++) {  
+    var optionText = dropdownlist.options[n].text;  
+    if (!caseSensitive) { 
+      optionText = optionText.toLowerCase(); 
+    } 
+    if (optionText.indexOf(dropdownlist.keypressBuffer,0) == 0) {  
+      dropdownlist.selectedIndex = n;  
+      return false; // cancel the default behavior since  
+                    // we have selected our own value  
+    }  
+  }  
+  // reset initial key to be inline with default behavior  
+  dropdownlist.keypressBuffer = key;  
+  return true; // give default behavior  
+}  
+</script> 
+
+
+</form>
+				</td>
+				<td width="1" bgColor="#6e2c00"></td>
+			</tr>
+		</table>
+	</body>
+</HTML>

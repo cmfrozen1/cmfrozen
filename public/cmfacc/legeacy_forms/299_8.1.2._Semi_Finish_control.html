@@ -1,0 +1,138 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
+<HTML>
+	<HEAD>
+		<title>กำหนดอัตราค่าใช้จ่าย Semi-Finish</title>
+		<meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1">
+		<meta name="CODE_LANGUAGE" Content="C#">
+		<meta name="vs_defaultClientScript" content="JavaScript">
+		<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+		<LINK href="../../styles/style1.css" type="text/css" rel="stylesheet">
+		<script src="../../scripts/form.js" type="text/javascript"></script>
+		<script language="vbscript" src="../../scripts/tnt_vbscripts.vbs"></script>
+		<script language="javascript">
+			function newAccount4CT(){
+				return windowOpen("b_Account4CTControl.aspx?mode=add&page=0", "new", 800, 380);
+			}
+			function listAccountCode(){
+				var dF = document.forms[0];
+				windowOpen("../../LOV/List/ListAccountCode.aspx?code=" + dF.txtAccCode.value + "&name=" + dF.txtAccName.value +"&ctrl1=txtAccCode&ctrl2=txtAccName&ctrl3=txtAccId&ctrl4=txthAccCode", "list", 650, 500);
+				return false;	
+			}
+			function clearAccountCode(){
+				var dF = document.forms[0];
+				dF.txtAccCode.value ="";
+				dF.txtAccName.value ="";
+				dF.txtAccId.value="";
+				dF.txthAccCode.value ="";
+				return false;
+			}
+			function checkPercentRemind(obj1,obj2,obj3){
+				var nObj1 = parseFloat(obj1.value.replace(/,/g, ""));
+				var nObj2 = parseFloat(obj2.value.replace(/,/g, ""));
+				var nObj3 = parseFloat(obj3.value.replace(/,/g, ""));
+				var nPercent = nObj1+nObj2+nObj3;
+				
+				if(nPercent != 100){
+					alertvb("ไม่สามารถบันทึกข้อมูลได้ เนื่องจากผลรวมของ % ไม่ครบ 100%", 48);
+					
+					return false;
+				}
+				return true;
+			}
+		</script>
+	</HEAD>
+	<body bottomMargin="0" leftMargin="0" topMargin="0" onload="on_load();" MS_POSITIONING="GridLayout">
+		<TABLE id="Table1" cellSpacing="15" cellPadding="0" width="100%" border="0">
+			<form name="Form1" method="post" action="b_Account4CTControl.aspx?mode=add&amp;page=0" id="Form1" autocomplete="off">
+<input type="hidden" name="__VIEWSTATE" value="dDwtMTY1MTczODE1NTt0PHA8bDxtb2RlO2RvY2lkO3BhZ2U7PjtsPGFkZDtcZTswOz4+O2w8aTwxPjs+O2w8dDw7bDxpPDE+Oz47bDx0PDtsPGk8MTU+O2k8MjM+O2k8MjU+O2k8Mjc+O2k8NDA+O2k8NDY+O2k8NTA+O2k8NTE+O2k8NTU+Oz47bDx0PHA8cDxsPFRleHQ7PjtsPFxlOz4+Oz47Oz47dDxwPDtwPGw8b25rZXl1cDtvbmNoYW5nZTtjbGFzczs+O2w8VGV4dFRvVXBwZXIodGhpcylcO3JldHVybiBmYWxzZVw7O2lmKGRvY3VtZW50LmZvcm1zWzBdLnR4dEFjY0NvZGUudmFsdWUhPScnKXtkb2N1bWVudC5mb3Jtc1swXS50eHRoQWNjQ29kZS52YWx1ZT0nJ1w7fTt0ZXh0MTs+Pj47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL2NvbnRyb2xzL3ZpZXcyLmdpZjs+PjtwPGw8dGl0bGU7b25jbGljazs+O2w84LmB4Liq4LiU4LiH4Lij4Liy4Lii4LiB4Liy4Lij4LiC4LmJ4Lit4Lih4Li54LilO3JldHVybiBsaXN0QWNjb3VudENvZGUoKVw7Oz4+Pjs7Pjt0PHA8cDxsPEltYWdlVXJsOz47bDwuLi8uLi9pbWFnZXMvY29udHJvbHMvZXJhc2UuZ2lmOz4+O3A8bDx0aXRsZTtvbmNsaWNrOz47bDzguKXguYnguLLguIfguILguYnguK3guKHguLnguKXguJvguLHguIjguIjguLjguJrguLHguJk7cmV0dXJuIGNsZWFyQWNjb3VudENvZGUoKVw7Oz4+Pjs7Pjt0PHA8O3A8bDxvbmtleXByZXNzO29ua2V5dXA7b25ibHVyOz47bDxyZXR1cm4gYmxvY2tOb25OdW1iZXJzKHRoaXMsIGV2ZW50LCB0cnVlLCB0cnVlKVw7O2V4dHJhY3ROdW1iZXIodGhpcywsZmFsc2UpXDs7Y2hrRGVjaW1hbCh0aGlzLCwnLCcpXDs7Pj4+Ozs+O3Q8cDw7cDxsPG9ua2V5cHJlc3M7b25rZXl1cDtvbmJsdXI7PjtsPHJldHVybiBibG9ja05vbk51bWJlcnModGhpcywgZXZlbnQsIHRydWUsIHRydWUpXDs7ZXh0cmFjdE51bWJlcih0aGlzLCxmYWxzZSlcOztjaGtEZWNpbWFsKHRoaXMsLCcsJylcOzs+Pj47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL2NvbnRyb2xzL3NhdmVfY2xvc2UuZ2lmOz4+O3A8bDx0aXRsZTtvbmNsaWNrOz47bDzguJrguLHguJnguJfguLbguIHguILguYnguK3guKHguLnguKXguYHguKXguYnguKfguJvguLTguJTguKvguJnguYnguLLguIjguK07aWYodHlwZW9mKFBhZ2VfQ2xpZW50VmFsaWRhdGUpID09ICdmdW5jdGlvbicpIGlmKCFQYWdlX0NsaWVudFZhbGlkYXRlKCkpIHJldHVybiBmYWxzZVw7IHJldHVybiBjaGVja1BlcmNlbnRSZW1pbmQodHh0U2VtaVByb2RSYXRlLHR4dFNlbWlTZWxSYXRlLHR4dEZpbmlzaGVkUmF0ZSlcO2lmKCFkaXNhYmxlU2F2ZSgpKSByZXR1cm4gZmFsc2VcOzs+Pj47Oz47dDxwPHA8bDxJbWFnZVVybDs+O2w8Li4vLi4vaW1hZ2VzL2NvbnRyb2xzL2Nsb3NlLmdpZjs+PjtwPGw8dGl0bGU7b25jbGljazs+O2w84Lib4Li04LiU4Lir4LiZ4LmJ4Liy4LiI4LitL+C4ouC4geC5gOC4peC4tOC4gTtyZXR1cm4gd2luZG93LmNsb3NlKClcOzs+Pj47Oz47dDxwPDtwPGw8b25rZXlwcmVzcztvbmtleXVwO29uYmx1cjs+O2w8cmV0dXJuIGJsb2NrTm9uTnVtYmVycyh0aGlzLCBldmVudCwgdHJ1ZSwgdHJ1ZSlcOztleHRyYWN0TnVtYmVyKHRoaXMsLGZhbHNlKVw7O2Noa0RlY2ltYWwodGhpcywsJywnKVw7Oz4+Pjs7Pjs+Pjs+Pjs+PjtsPHJhZE5vcm1hbDtyYWRDYW5jZWw7cmFkQ2FuY2VsO2ltZ0FjY0NvZGU7aW1nQ2xlYXJBY2NDb2RlO2ltZ1NhdmU7aW1nQ2xvc2U7Pj76yW0EECuYS0w6icrUFnp9FmbfmA==" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" value="178BD20E" />
+
+				<table id="Panel1" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td>
+
+					<TR>
+						<TD class="title_h"><IMG height="32" src="../../images/home.gif" width="32">&nbsp; <SPAN class="title_h">
+								กำหนดอัตราค่าใช้จ่าย Semi-Finish</SPAN>
+							<br>
+							<br>
+							<TABLE class="tblborder" id="forBorder" cellSpacing="10" cellPadding="0" width="100%" border="0">
+								<TR>
+									<TD>
+										<TABLE id="Table2" cellSpacing="5" cellPadding="0" width="100%" border="0">
+											<TR>
+												<TD align="left" colSpan="2">&nbsp;</TD>
+												<TD align="right">	<span id="lblUpDateByTitle" class="label_hbk">ผู้ที่แก้ไขข้อมูลล่าสุด:</span></TD>
+												<TD width="5%"><input name="txtUpDateByValue" type="text" maxlength="255" readonly="readonly" id="txtUpDateByValue" class="textdisable" /></TD>
+											</TR>
+											<TR>
+												<TD colSpan="2">&nbsp;</TD>
+												<TD align="right"><span id="lblUpDateDateTitle" class="label_hbk">วันที่แก้ไขข้อมูลล่าสุด:</span></TD>
+												<TD><input name="txtUpDateDateValue" type="text" maxlength="255" readonly="readonly" id="txtUpDateDateValue" class="textdisable" /></TD>
+											</TR>
+											<TR>
+												<TD colSpan="2"></TD>
+												<TD align="right">
+													<span id="Label4" class="label_hbk">สถานะ:</span></TD>
+												<TD>
+													<span class="label_hbk"><input id="radNormal" type="radio" name="Status" value="radNormal" checked="checked" /><label for="radNormal">ปกติ</label></span>
+													<span class="label_hbk"><input id="radCancel" type="radio" name="Status" value="radCancel" /><label for="radCancel">ยกเลิก</label></span></TD>
+											</TR>
+										</TABLE>
+										<TABLE cellSpacing="5" cellPadding="0" width="100%" border="0">
+											<TR>
+												<TD style="WIDTH: 160px; HEIGHT: 13px" align="left" width="160"><span id="lblError"><font color="Red"></font></span></TD>
+												<TD style="WIDTH: 241px; HEIGHT: 13px">
+													
+													</TD>
+												<TD style="WIDTH: 108px; HEIGHT: 13px" align="right" width="108"></TD>
+												<TD align="right" style="WIDTH: 1px; HEIGHT: 13px"></TD>
+											</TR>
+											<TR>
+												<TD align="right" style="WIDTH: 160px" vAlign="top"><SPAN class="label_h"><STRONG><FONT color="#495e88" size="2"><SPAN class="label_h"><STRONG><FONT color="#495e88" size="2"><SPAN class="label_r">*</SPAN></FONT></STRONG></SPAN></FONT></STRONG></SPAN><span id="Label1" class="label_hbk">เลขที่บัญชี:</span></TD>
+												<TD style="WIDTH: 241px" vAlign="top"><input name="txtAccCode" type="text" maxlength="20" id="txtAccCode" onkeyup="TextToUpper(this);return false;" onchange="if(document.forms[0].txtAccCode.value!=''){document.forms[0].txthAccCode.value='';}" class="text1" />&nbsp;
+													<input type="image" name="imgAccCode" onclick="return listAccountCode();if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgAccCode" title="แสดงรายการข้อมูล" src="../../images/controls/view2.gif" alt="" align="AbsBottom" border="0" />&nbsp;
+													<input type="image" name="imgClearAccCode" onclick="return clearAccountCode();if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgClearAccCode" title="ล้างข้อมูลปัจจุบัน" src="../../images/controls/erase.gif" alt="" align="AbsBottom" border="0" />
+													<input name="txthAccCode" type="text" maxlength="20" id="txthAccCode" class="text1" /></TD>
+												<TD align="right" style="WIDTH: 108px">
+													<input name="txtAccId" type="text" maxlength="20" id="txtAccId" class="text1" /></TD>
+												<TD align="left" colSpan="2"></TD>
+											</TR>
+											<TR>
+												<TD align="right" style="WIDTH: 160px; HEIGHT: 18px"><span id="Label3" class="label_hbk">ชื่อบัญชี:</span></SPAN></TD>
+												<TD style="WIDTH: 381px; HEIGHT: 18px" colSpan="4"><input name="txtStatus" type="text" maxlength="100" readonly="readonly" id="txtStatus" class="textdisable" /><input name="txtAccName" type="text" maxlength="10" readonly="readonly" id="txtAccName" class="textdisable" />&nbsp;&nbsp;&nbsp;</TD>
+											</TR>
+											<TR>
+												<TD align="right" style="WIDTH: 160px"><span id="Label6" class="label_hbk">อัตรา Semi Product (%):</span></TD>
+												<TD colSpan="4">
+													<input name="txtSemiProdRate" type="text" maxlength="8" id="txtSemiProdRate" tabindex="1" class="text_d" onkeypress="return blockNonNumbers(this, event, true, true);" onkeyup="extractNumber(this,,false);" onblur="chkDecimal(this,,',');" />
+													</TD>
+											</TR>
+											<TR>
+												<TD align="right" style="WIDTH: 160px">
+													<span id="Label8" class="label_hbk">อัตรา Semi Selected (%):</span></TD>
+												<TD colSpan="3" style="WIDTH: 381px">
+													<input name="txtSemiSelRate" type="text" maxlength="8" id="txtSemiSelRate" tabindex="2" class="text_d" onkeypress="return blockNonNumbers(this, event, true, true);" onkeyup="extractNumber(this,,false);" onblur="chkDecimal(this,,',');" />
+													</TD>
+												<TD vAlign="top" noWrap align="right" rowSpan="2"><input type="image" name="imgSave" onclick="if(typeof(Page_ClientValidate) == 'function') if(!Page_ClientValidate()) return false; return checkPercentRemind(txtSemiProdRate,txtSemiSelRate,txtFinishedRate);if(!disableSave()) return false;if (typeof(Page_ClientValidate) == 'function') Page_ClientValidate(); " language="javascript" id="imgSave" tabindex="4" title="บันทึกข้อมูลแล้วปิดหน้าจอ" src="../../images/controls/save_close.gif" alt="" border="0" /><input type="image" name="imgClose" id="imgClose" tabindex="5" title="ปิดหน้าจอ/ยกเลิก" onclick="return window.close();" src="../../images/controls/close.gif" alt="" border="0" /></TD>
+											</TR>
+											<TR>
+												<TD vAlign="top" align="right" style="WIDTH: 160px"><span id="Label2" class="label_hbk">อัตรา Finished Goods (%):</span></TD>
+												<TD vAlign="top" noWrap colSpan="3" style="WIDTH: 381px">
+													<input name="txtFinishedRate" type="text" maxlength="8" id="txtFinishedRate" tabindex="3" class="text_d" onkeypress="return blockNonNumbers(this, event, true, true);" onkeyup="extractNumber(this,,false);" onblur="chkDecimal(this,,',');" />
+													</TD>
+											</TR>
+											<TR>
+												<TD style="WIDTH: 125px" noWrap align="right" colSpan="5"></TD>
+											</TR>
+										</TABLE>
+									</TD>
+								</TR>
+							</TABLE>
+						</TD>
+					</TR>
+		</TABLE>
+		</TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TR></TBODY>
+</td></tr></table></form></TABLE>
+	</body>
+</HTML>
