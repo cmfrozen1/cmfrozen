@@ -107,26 +107,16 @@ function pdfOpenOrDownload(def, filename){
   try{
     if(typeof pdfMake==='undefined'){ swToast('error','ไม่พบ pdfMake','ตรวจสอบ CDN'); return; }
     ensureThaiFont();
-    // Preview ก่อน — ใช้ getBlob + window.open(blobUrl) และ modal iframe fallback เลี่ยง about:blank
+    // Preview ก่อน — สร้าง modal iframe ทันที ไม่พึ่ง window.open เลี่ยง about:blank/popup blocker
     pdfMake.createPdf(def).getBlob(function(blob){
       try{
         const url = URL.createObjectURL(blob);
-        // ลองเปิดแท็บใหม่สำหรับ Preview
-        const win = window.open(url, '_blank');
-        if(!win || win.closed || typeof win.closed==='undefined'){
-          // Popup ถูกบล็อก → แสดง Preview ใน modal แทน
-          showPdfPreviewModal(url, filename||'document.pdf');
-          swToast('info','Preview ในหน้าต่างนี้', filename||'');
-        } else {
-          // กัน about:blank หลัง 500ms
-          setTimeout(()=>{ try{ if(win.location.href==='about:blank'){ win.close(); showPdfPreviewModal(url, filename||'document.pdf'); } }catch(e){} }, 600);
-          swToast('success','เปิด Preview แล้ว', filename||'');
-        }
-        // revoke ช้าลงให้ Preview โหลดเสร็จ
+        showPdfPreviewModal(url, filename||'document.pdf');
+        swToast('success','เปิด Preview แล้ว', filename||'');
         setTimeout(()=> URL.revokeObjectURL(url), 60000);
       }catch(e){
         console.error(e);
-        showPdfPreviewModal(URL.createObjectURL(blob), filename||'document.pdf');
+        try{ pdfMake.createPdf(def).download(filename||'document.pdf'); swToast('success','ดาวน์โหลด PDF แล้ว', filename||''); }catch(e2){ swToast('error','สร้าง PDF ไม่สำเร็จ', e2.message); }
       }
     });
   }catch(e){ console.error(e); swToast('error','สร้าง PDF ไม่สำเร็จ', e.message||String(e)); }
