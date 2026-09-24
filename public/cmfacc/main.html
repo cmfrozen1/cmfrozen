@@ -2573,8 +2573,33 @@ function parseLegacyHtml(html){
     const filterInputs=[];
     const table2 = doc.querySelector('#Table2') || doc.querySelector('table.tblborder');
     if(table2){
+      // จัดกลุ่ม radio ตาม name เพื่อไม่ให้ซ้ำ — rbtAll/rbtActive/rbtInactive คือสถานะ ทั้งหมด/ปกติ/ยกเลิก
+      const radioGroups = new Map();
+      table2.querySelectorAll('input[type="radio"]').forEach(el=>{
+        const name = el.name||el.id;
+        if(!name) return;
+        if(!radioGroups.has(name)){
+          const tr = el.closest('tr');
+          let lbl = tr ? (tr.querySelector('.label_h')?.textContent?.trim()||'') : '';
+          if(!lbl) lbl = 'สถานะ';
+          lbl = lbl.replace(/[:：]/g,'').trim() || 'สถานะ';
+          radioGroups.set(name, {name, label:lbl, options:[], value:''});
+        }
+        const g = radioGroups.get(name);
+        const lab = el.nextElementSibling?.textContent?.trim() || el.value;
+        // label ไทย: ทั้งหมด/ปกติ/ยกเลิก
+        const txt = lab.replace(/\s+/g,' ').trim();
+        g.options.push({value:el.value, text:txt || el.value});
+        if(el.checked) g.value = el.value;
+      });
+      // ถ้าไม่มี checked ให้เลือกตัวแรก (ปกติจะเป็น rbtAll)
+      for(const g of radioGroups.values()){
+        if(!g.value && g.options.length) g.value = g.options[0].value;
+        filterInputs.push({id:g.name, name:g.name, type:'radio', label:g.label, value:g.value, options:g.options});
+      }
+      // inputs อื่นๆ (ไม่ใช่ radio)
       table2.querySelectorAll('input, select, textarea').forEach(el=>{
-        if(el.type==='hidden' || (el.name&&el.name.startsWith('__'))) return;
+        if(el.type==='hidden' || el.type==='radio' || (el.name&&el.name.startsWith('__'))) return;
         const tr = el.closest('tr');
         let lbl = '';
         if(tr) lbl = tr.querySelector('.label_h')?.textContent?.trim()||'';
@@ -2582,7 +2607,10 @@ function parseLegacyHtml(html){
         lbl = lbl.replace(/[:：]/g,'').trim();
         if(!lbl) lbl = el.name||el.id;
         const opts = el.tagName.toLowerCase()==='select' ? Array.from(el.options).map(o=>({value:o.value.trim(), text:o.textContent.trim().replace(/\s+/g,' ')})) : null;
-        filterInputs.push({id:el.id||el.name, name:el.name||el.id, type:el.tagName.toLowerCase()==='select'?'select':(el.type||'text'), label:lbl, value:el.value||'', options:opts, maxlen:el.getAttribute('maxlength')||''});
+        // สำหรับ checkbox ให้ใช้ checked เป็น value
+        let val = el.value||'';
+        if(el.type==='checkbox') val = el.checked ? el.value : '';
+        filterInputs.push({id:el.id||el.name, name:el.name||el.id, type:el.tagName.toLowerCase()==='select'?'select':(el.type||'text'), label:lbl, value:val, options:opts, maxlen:el.getAttribute('maxlength')||''});
       });
     }
     const gridHeaders=[];
@@ -2633,6 +2661,15 @@ function renderLegacyFileView(app, view, parsed, html){
   if(flds.length){
     filterHtml = `<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">${flds.map(f=>{
       const rawVal = (f.value!==undefined && f.value!==null) ? String(f.value).trim() : '';
+      if(f.type==='radio'){
+        // rbtAll/rbtActive/rbtInactive → แสดงเป็น radio group พร้อมคำอธิบาย ทั้งหมด/ปกติ/ยกเลิก
+        const radios = (f.options||[]).map(o=>{
+          const chk = String(o.value)===String(rawVal) ? ' checked' : '';
+          const lab = o.text || (o.value==='rbtAll'?'ทั้งหมด':o.value==='rbtActive'?'ปกติ':o.value==='rbtInactive'?'ยกเลิก':o.value);
+          return `<label class="inline-flex items-center gap-1 mr-3 cursor-pointer"><input type="radio" name="${f.name}" value="${o.value}"${chk} class="accent-[#AA0000]"><span class="text-xs">${lab}</span></label>`;
+        }).join('');
+        return `<div class="block"><span class="text-xs font-medium">${f.label} <span class="text-[10px] text-gray-400">(${f.name}: ${rawVal})</span></span><div class="mt-1 flex flex-wrap gap-2 p-2 border rounded bg-white">${radios}</div></div>`;
+      }
       if(f.type==='select'){
         const opts = (f.options||[]).map(o=>{
           const sel = String(o.value)===String(rawVal) ? ' selected' : '';
