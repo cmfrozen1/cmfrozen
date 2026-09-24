@@ -2627,17 +2627,45 @@ function renderLegacyFileView(app, view, parsed, html){
   const spec = getLegacySpec(code);
   const file = LEGACY_FILE_MAP[view]||'';
   // สร้าง filter UI จาก parsed.filterInputs ถ้ามี, ไม่เช่นนั้น fallback ใช้ getLegacyFields
+  // ใช้ค่าจริงจากไฟล์ต้นฉบับเป็นค่าเริ่มต้นทุกฟิลด์ (ครบทุกหน้า)
   let filterHtml='';
-  const flds = parsed.filterInputs && parsed.filterInputs.length ? parsed.filterInputs : getLegacyFields(code, title).map(f=>({id:'lf_'+f.key, name:f.key, type:f.type, label:f.label, options:f.options?f.options.map(o=>({value:o, text:o})):null}));
+  const flds = parsed.filterInputs && parsed.filterInputs.length ? parsed.filterInputs : getLegacyFields(code, title).map(f=>({id:'lf_'+f.key, name:f.key, type:f.type, label:f.label, value:f.value||'', options:f.options?f.options.map(o=>({value:o, text:o})):null, maxlen:f.maxlen||''}));
   if(flds.length){
     filterHtml = `<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">${flds.map(f=>{
+      const rawVal = (f.value!==undefined && f.value!==null) ? String(f.value).trim() : '';
       if(f.type==='select'){
-        const opts = (f.options||[]).map(o=>`<option value="${o.value}">${o.text||o.value}</option>`).join('');
+        const opts = (f.options||[]).map(o=>{
+          const sel = String(o.value)===String(rawVal) ? ' selected' : '';
+          return `<option value="${o.value}"${sel}>${o.text||o.value}</option>`;
+        }).join('');
         return `<label class="block"><span class="text-xs font-medium">${f.label}</span><select id="${f.id}" name="${f.name}" class="w-full mt-1 px-3 py-1.5 border rounded text-sm bg-white">${opts}</select></label>`;
       }
-      if(f.type==='textarea') return `<label class="block md:col-span-2"><span class="text-xs font-medium">${f.label}</span><textarea id="${f.id}" name="${f.name}" rows="2" class="w-full mt-1 px-3 py-1.5 border rounded text-sm"></textarea></label>`;
-      const tp = f.type==='date'?'date':(f.type==='number'?'number':'text');
-      const val = tp==='date' ? new Date().toISOString().slice(0,10) : (f.value||'');
+      if(f.type==='textarea'){
+        return `<label class="block md:col-span-2"><span class="text-xs font-medium">${f.label}</span><textarea id="${f.id}" name="${f.name}" rows="2" class="w-full mt-1 px-3 py-1.5 border rounded text-sm">${rawVal}</textarea></label>`;
+      }
+      // แปลงวันที่ พ.ศ. DD/MM/YYYY → YYYY-MM-DD สำหรับ input type=date
+      let tp = f.type==='date'?'date':(f.type==='number'?'number':'text');
+      let val = rawVal;
+      // ถ้าเป็น date และค่าว่าง ให้ลองใช้ค่าจากไฟล์ (เช่น 24/09/2569) หรือวันนี้
+      if(tp==='date'){
+        if(rawVal && rawVal.includes('/')){
+          const iso = parseTHDate(rawVal);
+          val = iso || new Date().toISOString().slice(0,10);
+        } else if(!rawVal){
+          // ถ้าไฟล์ไม่มีค่า ให้ใช้วันนี้
+          val = new Date().toISOString().slice(0,10);
+        }
+        // ตรวจจับ type date จาก label ที่มีคำว่า วันที่
+        if(!rawVal && /วันที่/.test(f.label)) tp='date';
+      }
+      // ถ้า label บ่งบอกว่าเป็นวันที่แต่ type เดิมเป็น text ให้เปลี่ยนเป็น date
+      if(f.type==='text' && /วันที่/.test(f.label) && rawVal.includes('/')){
+        tp='date';
+        val = parseTHDate(rawVal) || val;
+      }
+      if(tp==='number'){
+        return `<label class="block"><span class="text-xs font-medium">${f.label}</span><input id="${f.id}" name="${f.name}" type="number" value="${val||0}" ${f.maxlen?'maxlength="'+f.maxlen+'"':''} class="w-full mt-1 px-3 py-1.5 border rounded text-sm"></label>`;
+      }
       return `<label class="block"><span class="text-xs font-medium">${f.label}</span><input id="${f.id}" name="${f.name}" type="${tp}" value="${val}" ${f.maxlen?'maxlength="'+f.maxlen+'"':''} class="w-full mt-1 px-3 py-1.5 border rounded text-sm"></label>`;
     }).join('')}</div>`;
   }
@@ -2672,10 +2700,8 @@ function renderLegacyFileView(app, view, parsed, html){
           <button onclick="doLegacyFileSearch('${view}')" class="px-3 py-1.5 bg-gray-100 rounded text-sm">ค้นหา</button>
         </div>
         <div id="legacyTable" class="overflow-x-auto border rounded"><div class="py-6 text-center text-gray-400 text-sm">กำลังโหลด...</div></div>
-        <div class="mt-2 text-[11px] text-gray-400">* โครงสร้างคอลัมน์จากไฟล์ต้นฉบับ: ${headers.join(' | ')} ${parsed.sampleRows.length?`• ตัวอย่าง ${parsed.sampleRows.length} แถวจากไฟล์`:''} • แสดงข้อมูลจริงจาก D1</div>
       </div>
     </div>
-    <details class="bg-slate-50 border rounded p-3 text-xs"><summary class="cursor-pointer font-medium">ดู HTML ต้นฉบับ (เลื่อนดู)</summary><iframe src="legeacy_forms/${file}" class="w-full h-[420px] mt-2 border rounded bg-white" loading="lazy"></iframe></details>
   </div>`;
   setTimeout(()=>{ initThaiPickers(app); loadLegacy(view); }, 80);
 }
