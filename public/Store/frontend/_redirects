@@ -1,0 +1,5 @@
+/wrangler.toml /404 404
+/.wrangler/* /404 404
+/*.toml /404 404
+/.env /404 404
+/.env.* /404 404

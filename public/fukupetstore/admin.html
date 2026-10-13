@@ -1,0 +1,3372 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fukupet Admin CMS – Fukupet Store Management</title>
+  <link rel="shortcut icon" href="https://www.chowa.in.th/cdn/shop/files/Favicon_chowa_new_f8d6d5a3-43e0-4c92-a69e-f581dd6fb9d9_32x32.png?v=1643772777" type="image/png">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS & Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- React 18 & Babel Standalone -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    /* ---------------------------------------------------------------------
+       fukupet Admin - Premium Design System & Theme Variables
+    --------------------------------------------------------------------- */
+    :root {
+      --brand-forest-dark: #051C12;     /* Sidebar & Header Dark BG */
+      --brand-forest-medium: #072F1F;   /* Primary Dark Forest Accent */
+      --brand-forest-light: #1A3E30;    /* Card & Hover Tints */
+      --brand-lime: #B4F105;            /* Highlight Lime Yellow */
+      --brand-lime-hover: #c1f824;      
+      --brand-lime-translucent: rgba(180, 241, 5, 0.15);
+
+      --bs-body-bg: #F4F6F5;            /* Canvas background */
+      --text-main: #0B130F;             /* Primary text */
+      --text-muted-green: #6C7E75;      /* Secondary text */
+      --text-sidebar-muted: #879A91;    /* Sidebar inactive link labels */
+
+      --card-background: #FFFFFF;
+      --border-light: #E9EFEF;
+      --border-dark-green: rgba(255, 255, 255, 0.1);
+
+      --sidebar-width: 270px;
+      --sidebar-minimized-width: 80px;
+
+      --radius-xxl: 24px;
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+
+      --shadow-sm: 0 2px 8px rgba(11, 19, 15, 0.02);
+      --shadow-md: 0 10px 30px rgba(11, 19, 15, 0.04);
+      --shadow-lg: 0 20px 50px rgba(11, 19, 15, 0.08);
+
+      --font-family: 'Plus Jakarta Sans', 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: var(--font-family) !important;
+    }
+
+    body {
+      background-color: var(--bs-body-bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      font-size: 0.925rem;
+      font-weight: 500;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+    /* ---------------------------------------------------------------------
+       Sidebar Layout (.sidebar-wrapper)
+    --------------------------------------------------------------------- */
+    .sidebar-wrapper {
+      width: var(--sidebar-width);
+      background-color: var(--brand-forest-dark);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1030;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1rem;
+      border-right: 1px solid var(--border-dark-green);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 1.5rem;
+      padding-left: 0.5rem;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .sidebar-brand i {
+      color: var(--brand-lime);
+      font-size: 1.6rem;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-brand:hover i {
+      transform: scale(1.15) rotate(90deg);
+    }
+
+    .sidebar-brand span {
+      background: linear-gradient(135deg, #FFFFFF 60%, var(--brand-lime) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sidebar-menu-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .sidebar-menu-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-sidebar-muted);
+      padding-left: 0.75rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
+    }
+
+    .sidebar-menu-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu-item {
+      margin-bottom: 0.25rem;
+    }
+
+    .sidebar-menu-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.875rem;
+      color: var(--text-sidebar-muted);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .sidebar-menu-link i {
+      font-size: 1.1rem;
+      transition: color 0.2s ease;
+    }
+
+    .sidebar-menu-link:hover {
+      color: #FFFFFF;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-menu-link.active {
+      color: #FFFFFF;
+      background-color: rgba(255, 255, 255, 0.08);
+      font-weight: 700;
+    }
+
+    .sidebar-menu-link.active::before {
+      content: '';
+      position: absolute;
+      left: -1rem;
+      top: 15%;
+      height: 70%;
+      width: 4px;
+      background-color: var(--brand-lime);
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 10px var(--brand-lime);
+    }
+
+    .sidebar-menu-link.active i {
+      color: var(--brand-lime);
+    }
+
+    .sidebar-badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+      font-weight: 800;
+      background-color: var(--brand-lime);
+      color: var(--brand-forest-dark);
+      padding: 0.15rem 0.5rem;
+      border-radius: 50rem;
+    }
+
+    .sidebar-visibility-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-left: auto;
+    }
+    .sidebar-visibility-dot.visible { background-color: var(--brand-lime); box-shadow: 0 0 6px var(--brand-lime); }
+    .sidebar-visibility-dot.hidden { background-color: #64748B; opacity: 0.5; }
+
+    /* Sidebar Bottom Profile */
+    .sidebar-profile {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background-color: rgba(255, 255, 255, 0.04);
+      padding: 0.75rem;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-dark-green);
+      color: #FFFFFF;
+    }
+
+    .sidebar-profile-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-lg);
+      background-color: var(--brand-forest-medium);
+      color: var(--brand-lime);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 1px solid var(--border-dark-green);
+    }
+
+    .sidebar-profile-info {
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .sidebar-profile-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #FFFFFF;
+    }
+
+    .sidebar-profile-role {
+      font-size: 0.7rem;
+      color: var(--brand-lime);
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Minimized Sidebar */
+    body.sidebar-minimized .sidebar-wrapper {
+      width: var(--sidebar-minimized-width);
+      padding: 1.5rem 0.5rem;
+      align-items: center;
+    }
+
+    body.sidebar-minimized .sidebar-brand span,
+    body.sidebar-minimized .sidebar-menu-title,
+    body.sidebar-minimized .sidebar-menu-link span,
+    body.sidebar-minimized .sidebar-badge,
+    body.sidebar-minimized .sidebar-visibility-dot,
+    body.sidebar-minimized .sidebar-profile-info {
+      display: none !important;
+    }
+
+    body.sidebar-minimized .sidebar-brand {
+      padding-left: 0;
+      justify-content: center;
+    }
+
+    body.sidebar-minimized .sidebar-menu-link {
+      justify-content: center;
+      padding: 0.65rem;
+    }
+
+    body.sidebar-minimized .sidebar-menu-link.active::before {
+      left: -0.5rem;
+    }
+
+    body.sidebar-minimized .sidebar-profile {
+      padding: 0.35rem;
+      justify-content: center;
+      border: none;
+      background: transparent;
+    }
+
+    body.sidebar-minimized .main-wrapper {
+      margin-left: var(--sidebar-minimized-width);
+    }
+
+    /* ---------------------------------------------------------------------
+       Main Content Wrapper Layout
+    --------------------------------------------------------------------- */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      padding: 1.5rem 2rem;
+      min-height: 100vh;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Header Navbar */
+    .navbar-fukupet {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: rgba(244, 246, 245, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      margin-top: -1.5rem;
+      margin-left: -2rem;
+      margin-right: -2rem;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      gap: 1.25rem;
+    }
+
+    .navbar-fukupet-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-toggle-sidebar {
+      background: var(--card-background);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: var(--brand-forest-medium);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .btn-toggle-sidebar:hover {
+      background: var(--brand-forest-medium);
+      color: #FFFFFF;
+    }
+
+    .navbar-fukupet-right {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    /* DB Badges */
+    .fukupet-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      border-radius: 50rem;
+      font-size: 0.825rem;
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+    .fukupet-badge-connected {
+      background: #DCFCE7;
+      color: #15803D;
+      border: 1px solid #86EFAC;
+    }
+    .fukupet-badge-local {
+      background: #FEF3C7;
+      color: #B45309;
+      border: 1px solid #FDE68A;
+    }
+    .fukupet-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .fukupet-badge-connected .fukupet-badge-dot { background-color: #22C55E; box-shadow: 0 0 8px #22C55E; }
+    .fukupet-badge-local .fukupet-badge-dot { background-color: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+
+    /* Action Buttons */
+    .btn-fukupet-primary {
+      background-color: var(--brand-forest-medium);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-lg);
+      padding: 0.55rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease-in-out;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-fukupet-primary:hover {
+      background-color: var(--brand-forest-dark);
+      color: var(--brand-lime);
+      box-shadow: 0 4px 14px var(--brand-lime-translucent);
+    }
+
+    .btn-fukupet-lime {
+      background-color: var(--brand-lime);
+      color: var(--brand-forest-dark);
+      border: none;
+      border-radius: var(--radius-lg);
+      padding: 0.55rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px var(--brand-lime-translucent);
+      transition: all 0.25s ease-in-out;
+      cursor: pointer;
+    }
+
+    .btn-fukupet-lime:hover {
+      background-color: var(--brand-lime-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-fukupet-outline {
+      background-color: #FFFFFF;
+      color: var(--text-main);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 0.55rem 1.1rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-fukupet-outline:hover {
+      background-color: #F8FAFC;
+      border-color: #CBD5E1;
+      color: var(--brand-forest-medium);
+    }
+
+    /* ---------------------------------------------------------------------
+       fukupet Admin Cards & Page Header
+    --------------------------------------------------------------------- */
+    .fukupet-card {
+      background: var(--card-background);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-light);
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow-md);
+      transition: all 0.25s ease;
+    }
+
+    .fukupet-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.15rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .fukupet-card-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--brand-forest-medium);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 0;
+    }
+
+    .fukupet-card-title i {
+      color: var(--brand-forest-medium);
+      font-size: 1.3rem;
+    }
+
+    /* Stat KPI Widget Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .kpi-card {
+      background: var(--card-background);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-light);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: var(--brand-forest-medium);
+    }
+
+    .kpi-card.kpi-lime::before { background-color: var(--brand-lime); }
+    .kpi-card.kpi-emerald::before { background-color: var(--sys-green); }
+    .kpi-card.kpi-orange::before { background-color: var(--sys-orange); }
+
+    .kpi-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      background: #F4F6F5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: var(--brand-forest-medium);
+      flex-shrink: 0;
+    }
+
+    .kpi-icon.icon-lime { background: rgba(180, 241, 5, 0.2); color: #051C12; }
+    .kpi-icon.icon-emerald { background: var(--sys-green-bg); color: var(--sys-green); }
+    .kpi-icon.icon-orange { background: var(--sys-orange-bg); color: var(--sys-orange); }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted-green);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 0.15rem;
+      line-height: 1.2;
+    }
+
+    /* Form Controls */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--brand-forest-medium);
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 0.65rem 0.95rem;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 0.925rem;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+      background: #FFFFFF;
+      color: var(--text-main);
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--brand-forest-medium);
+      box-shadow: 0 0 0 3px rgba(7, 47, 31, 0.12);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    /* Reusable fukupet Table */
+    .fukupet-table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+    }
+
+    .fukupet-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: left;
+      background: #FFFFFF;
+    }
+
+    .fukupet-table th {
+      background: #F8FAFC;
+      padding: 0.95rem 1.15rem;
+      font-weight: 700;
+      color: var(--brand-forest-medium);
+      border-bottom: 1px solid var(--border-light);
+      text-transform: uppercase;
+      font-size: 0.775rem;
+      letter-spacing: 0.05em;
+    }
+
+    .fukupet-table td {
+      padding: 1rem 1.15rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+
+    .fukupet-table tbody tr:hover {
+      background-color: #F8FAFC;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 50rem;
+      font-size: 0.775rem;
+      font-weight: 700;
+    }
+
+    .status-pending { background: var(--sys-orange-bg); color: #C2410C; }
+    .status-confirmed { background: #E0E7FF; color: #3730A3; }
+    .status-shipping { background: #DBEAFE; color: #1E40AF; }
+    .status-completed { background: var(--sys-green-bg); color: #15803D; }
+    .status-cancelled { background: var(--sys-red-bg); color: #B91C1C; }
+
+    /* Media Dropzone & Cards */
+    .upload-dropzone {
+      border: 2px dashed #CBD5E1;
+      border-radius: var(--radius-xl);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      background: #F8FAFC;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .upload-dropzone:hover {
+      border-color: var(--brand-forest-medium);
+      background: rgba(180, 241, 5, 0.05);
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .media-card {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: #FFFFFF;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .media-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .media-img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      background: #F1F5F9;
+    }
+
+    .media-info {
+      padding: 0.85rem;
+    }
+
+    .media-name {
+      font-weight: 700;
+      color: var(--brand-forest-medium);
+      font-size: 0.825rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.25rem;
+    }
+
+    .image-preview-thumb {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      background: #F8FAFC;
+    }
+
+    .image-preview-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    .hidden-file-input { display: none; }
+
+    /* Toast Notification */
+    .toast-fukupet {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--brand-forest-dark);
+      color: #FFFFFF;
+      padding: 0.95rem 1.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.9rem;
+      font-weight: 700;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid var(--brand-lime);
+      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .toast-fukupet i { color: var(--brand-lime); font-size: 1.2rem; }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Login Screen - fukupet Dark Forest Style */
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top left, #072F1F 0%, #051C12 60%, #020B07 100%);
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .login-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xxl);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .login-brand-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: var(--radius-xl);
+      background: var(--brand-forest-dark);
+      color: var(--brand-lime);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 1.25rem auto;
+      box-shadow: 0 10px 25px var(--brand-lime-translucent);
+    }
+
+    .login-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--brand-forest-dark);
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .login-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted-green);
+      margin-bottom: 1.75rem;
+    }
+
+    .login-error-box {
+      background: var(--sys-red-bg);
+      border: 1px solid #FCA5A5;
+      color: #991B1B;
+      font-size: 0.85rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.25rem;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .login-card .form-group {
+      text-align: left;
+      margin-bottom: 1.15rem;
+    }
+
+    .login-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 0.85rem;
+      font-size: 1rem;
+      margin-top: 0.75rem;
+      border-radius: var(--radius-lg);
+    }
+  </style>
+</head>
+<body>
+  <div id="admin-root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const CONTENT_SECTIONS = [
+      { id: 'topbar', label: '1. แถบประกาศบนสุด', icon: 'bi-megaphone', visibilityKey: 'top_bar' },
+      { id: 'header', label: '2. โลโก้ & เมนูนำทาง', icon: 'bi-layout-header', visibilityKey: 'header' },
+      { id: 'product', label: '3. ข้อมูลสินค้า & ราคา', icon: 'bi-tag', visibilityKey: 'product' },
+      { id: 'gallery', label: '4. แกลเลอรีรูปภาพ', icon: 'bi-images', visibilityKey: 'gallery' },
+      { id: 'sizes', label: '5. ขนาดหมอน', icon: 'bi-aspect-ratio', visibilityKey: 'sizes' },
+      { id: 'bundles', label: '6. โปรโมชั่นเซ็ต', icon: 'bi-box', visibilityKey: 'bundles' },
+      { id: 'colors', label: '6.5 ตัวเลือกสี', icon: 'bi-palette', visibilityKey: 'product' },
+      { id: 'upsell', label: '7. สินค้าซื้อเพิ่ม (Upsell)', icon: 'bi-plus-circle', visibilityKey: 'upsell' },
+      { id: 'accordions', label: '8. แท็บรายละเอียดสินค้า', icon: 'bi-card-text', visibilityKey: 'accordions' },
+      { id: 'features', label: '9. จุดเด่น 4 ไอคอน', icon: 'bi-stars', visibilityKey: 'features' },
+      { id: 'benefits', label: '10. การ์ดคุณประโยชน์', icon: 'bi-shield-check', visibilityKey: 'benefits_section' },
+      { id: 'hotspots', label: '11. โครงสร้าง 3D Hotspots', icon: 'bi-layers-half', visibilityKey: 'hotspots_section' },
+      { id: 'comparison', label: '12. ตารางเปรียบเทียบ', icon: 'bi-table', visibilityKey: 'comparison_section' },
+      { id: 'reviews', label: '13. รีวิวจากลูกค้าจริง', icon: 'bi-star', visibilityKey: 'reviews_section' },
+      { id: 'faq', label: '14. คำถามที่พบบ่อย (FAQ)', icon: 'bi-question-circle', visibilityKey: 'faq_section' },
+      { id: 'club_section', label: '14.5 เข้าร่วม Fukupetstore Club', icon: 'bi-envelope-heart', visibilityKey: 'club_section' },
+      { id: 'footer', label: '15. ส่วนท้าย & ข้อมูลติดต่อ', icon: 'bi-body-text', visibilityKey: 'footer' }
+    ];
+
+    function AdminApp() {
+      const [activeTab, setActiveTab] = useState('dashboard');
+      const [activeContentSubTab, setActiveContentSubTab] = useState('topbar');
+      const [isMinimized, setIsMinimized] = useState(false);
+
+      const [siteData, setSiteData] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [dbStatus, setDbStatus] = useState(null);
+      const [toast, setToast] = useState(null);
+      const [orders, setOrders] = useState([]);
+      const [mediaImages, setMediaImages] = useState([]);
+      const [uploading, setUploading] = useState(false);
+      const [authState, setAuthState] = useState({ checked: false, loggedIn: false, username: null, is_superadmin: false });
+      const [adminUsers, setAdminUsers] = useState([]);
+      const [newUser, setNewUser] = useState({ username: '', password: '', display_name: '' });
+      const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+      const [loginError, setLoginError] = useState('');
+      const [loginSubmitting, setLoginSubmitting] = useState(false);
+
+      // Effect: add/remove body class for minimized sidebar
+      useEffect(() => {
+        if (isMinimized) {
+          document.body.classList.add('sidebar-minimized');
+        } else {
+          document.body.classList.remove('sidebar-minimized');
+        }
+      }, [isMinimized]);
+
+      // Check existing admin session
+      useEffect(() => {
+        fetch('api.php?action=check_auth', { credentials: 'same-origin' })
+          .then(res => res.json())
+          .then(res => setAuthState({ checked: true, loggedIn: !!res.logged_in, username: res.username || null, is_superadmin: !!res.is_superadmin }))
+          .catch(() => setAuthState({ checked: true, loggedIn: false, username: null, is_superadmin: false }));
+      }, []);
+
+      const authFetch = (url, options = {}) => {
+        return fetch(url, { ...options, credentials: 'same-origin' }).then(res => {
+          if (res.status === 401) {
+            setAuthState(prev => ({ ...prev, loggedIn: false }));
+            throw new Error('unauthorized');
+          }
+          return res;
+        });
+      };
+
+      const handleLoginSubmit = (e) => {
+        e.preventDefault();
+        setLoginError('');
+        setLoginSubmitting(true);
+        fetch('api.php?action=login', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(loginForm)
+        })
+          .then(res => res.json().then(data => ({ ok: res.ok, data })))
+          .then(({ ok, data }) => {
+            if (ok && data.success) {
+              setAuthState({ checked: true, loggedIn: true, username: data.username, is_superadmin: !!data.is_superadmin });
+              loadData();
+              loadOrders();
+              loadMedia();
+            } else {
+              setLoginError(data.error || 'เข้าสู่ระบบไม่สำเร็จ');
+            }
+          })
+          .catch(() => setLoginError('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'))
+          .finally(() => setLoginSubmitting(false));
+      };
+
+      const handleLogout = () => {
+        fetch('api.php?action=logout', { method: 'POST', credentials: 'same-origin' })
+          .catch(() => {})
+          .finally(() => {
+            setAuthState({ checked: true, loggedIn: false, username: null });
+            setLoginForm({ username: '', password: '' });
+            setSiteData(null);
+            setOrders([]);
+            setMediaImages([]);
+          });
+      };
+
+      const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(null), 3500);
+      };
+
+      const loadData = () => {
+        authFetch('api.php?action=get_content')
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              setSiteData(res.data);
+              setDbStatus(res.db_status);
+            }
+          })
+          .catch(() => showToast('เกิดข้อผิดพลาดในการโหลดข้อมูล'))
+          .finally(() => setLoading(false));
+      };
+
+      const loadOrders = () => {
+        authFetch('api.php?action=get_orders')
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) setOrders(res.orders || []);
+          })
+          .catch(() => {});
+      };
+
+      const loadMedia = () => {
+        authFetch('api.php?action=list_images')
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) setMediaImages(res.images || []);
+          })
+          .catch(() => {});
+      };
+
+      const loadAdminUsers = () => {
+        if (!authState.is_superadmin) return;
+        authFetch('api.php?action=get_admin_users')
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) setAdminUsers(res.data || []);
+          })
+          .catch(() => {});
+      };
+
+      useEffect(() => {
+        if (activeTab === 'permissions') {
+          loadAdminUsers();
+        }
+      }, [activeTab, authState.is_superadmin]);
+
+      const handleCreateUser = (e) => {
+        e.preventDefault();
+        authFetch('api.php?action=create_admin_user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newUser)
+        }).then(res => res.json()).then(res => {
+          if (res.success) {
+            setNewUser({ username: '', password: '', display_name: '' });
+            loadAdminUsers();
+            setToast('สร้างผู้ใช้งานสำเร็จ');
+            setTimeout(() => setToast(null), 3000);
+          } else {
+            alert('Error: ' + res.error);
+          }
+        });
+      };
+
+      const handleDeleteUser = (id) => {
+        if (!confirm('ยืนยันการลบผู้ใช้งานนี้?')) return;
+        authFetch('api.php?action=delete_admin_user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        }).then(res => res.json()).then(res => {
+          if (res.success) {
+            loadAdminUsers();
+            setToast('ลบผู้ใช้งานสำเร็จ');
+            setTimeout(() => setToast(null), 3000);
+          } else {
+            alert('Error: ' + res.error);
+          }
+        });
+      };
+
+      useEffect(() => {
+        loadData();
+        loadOrders();
+        loadMedia();
+      }, []);
+
+      const toggleSectionVisibility = (visKey) => {
+        const currentVis = siteData.section_visibility || {};
+        const isVisible = currentVis[visKey] !== false;
+        const newVis = { ...currentVis, [visKey]: !isVisible };
+        const updatedSiteData = { ...siteData, section_visibility: newVis };
+        setSiteData(updatedSiteData);
+
+        authFetch('api.php?action=save_section', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ section_key: 'section_visibility', data: newVis })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              showToast(!isVisible ? '👁️ แสดงส่วนนี้บนหน้าเว็บแล้ว' : '🙈 ซ่อนส่วนนี้จากหน้าเว็บแล้ว');
+            }
+          });
+      };
+
+      const saveSection = (sectionKey) => {
+        authFetch('api.php?action=save_section', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ section_key: sectionKey, data: siteData[sectionKey] })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              if (siteData.section_visibility) {
+                authFetch('api.php?action=save_section', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ section_key: 'section_visibility', data: siteData.section_visibility })
+                });
+              }
+              showToast(`บันทึกส่วน "${sectionKey}" เรียบร้อยแล้ว`);
+            } else showToast('ข้อผิดพลาด: ' + res.error);
+          })
+          .catch(() => showToast('หมดเวลาเข้าสู่ระบบ หรือไม่สามารถบันทึกได้'));
+      };
+
+      const updateFooterListItem = (listKey, index, field, value) => {
+        const list = [...(siteData.footer?.[listKey] || [])];
+        list[index] = { ...list[index], [field]: value };
+        setSiteData({ ...siteData, footer: { ...siteData.footer, [listKey]: list } });
+      };
+
+      const addFooterListItem = (listKey) => {
+        const list = [...(siteData.footer?.[listKey] || []), { label: '', href: '#' }];
+        setSiteData({ ...siteData, footer: { ...siteData.footer, [listKey]: list } });
+      };
+
+      const removeFooterListItem = (listKey, index) => {
+        const list = (siteData.footer?.[listKey] || []).filter((_, itemIndex) => itemIndex !== index);
+        setSiteData({ ...siteData, footer: { ...siteData.footer, [listKey]: list } });
+      };
+
+      const saveAll = () => {
+        authFetch('api.php?action=save_all', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: siteData })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) showToast('บันทึกข้อมูลเว็บไซต์ทั้งหมดเรียบร้อยแล้ว!');
+            else showToast('ข้อผิดพลาด: ' + res.error);
+          })
+          .catch(() => showToast('หมดเวลาเข้าสู่ระบบ หรือไม่สามารถบันทึกได้'));
+      };
+
+      const handleFileUpload = (file, onSuccess) => {
+        if (!file) return;
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        authFetch('api.php?action=upload_image', {
+          method: 'POST',
+          body: formData
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              showToast(`อัปโหลดสำเร็จ: ${res.filename}`);
+              loadMedia();
+              if (onSuccess) onSuccess(res.url);
+            } else Swal.fire({ icon: 'error', title: 'อัปโหลดล้มเหลว', text: res.error });
+          })
+          .catch(() => Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'เกิดข้อผิดพลาดในการอัปโหลดไฟล์' }))
+          .finally(() => setUploading(false));
+      };
+
+      const handleDeleteMedia = (filename) => {
+        Swal.fire({
+          icon: 'warning',
+          title: 'ยืนยันการลบ',
+          text: `คุณต้องการลบรูปภาพ "${filename}" ใช่หรือไม่?`,
+          showCancelButton: true,
+          confirmButtonText: 'ลบ',
+          cancelButtonText: 'ยกเลิก',
+          confirmButtonColor: '#d33'
+        }).then(result => {
+          if (!result.isConfirmed) return;
+          authFetch('api.php?action=delete_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename })
+          })
+            .then(res => res.json())
+            .then(res => {
+              if (res.success) {
+                showToast('ลบรูปภาพเรียบร้อยแล้ว');
+                loadMedia();
+              } else showToast('ข้อผิดพลาด: ' + res.error);
+            });
+        });
+      };
+
+      const updateOrderStatus = (orderNo, newStatus, currentTrackingNumber = '', currentCarrier = '') => {
+        const applyStatus = (trackingNumber = '', shippingCarrier = '') => {
+          authFetch('api.php?action=update_order_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_no: orderNo, status: newStatus, tracking_number: trackingNumber, shipping_carrier: shippingCarrier })
+          })
+            .then(res => res.json())
+            .then(res => {
+              if (res.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'สำเร็จ',
+                  text: `อัปเดตสถานะออเดอร์ ${orderNo} แล้ว`,
+                  timer: 2000,
+                  showConfirmButton: false
+                });
+                loadOrders();
+              } else {
+                Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: res.error || 'อัปเดตสถานะไม่สำเร็จ' });
+              }
+            });
+        };
+
+        if (newStatus === 'shipping') {
+          Swal.fire({
+            title: 'ข้อมูลการจัดส่ง',
+            html: `
+              <input id="swal-shipping-carrier" class="swal2-input" placeholder="ชื่อขนส่ง (เช่น Kerry, Flash, J&T)" value="${String(currentCarrier || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" maxlength="100" style="display:flex;margin-bottom:10px">
+              <input id="swal-tracking-number" class="swal2-input" placeholder="เลข Tracking" value="${String(currentTrackingNumber || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" maxlength="100" style="display:flex">
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'บันทึก',
+            cancelButtonText: 'ยกเลิก',
+            preConfirm: () => {
+              const shippingCarrier = document.getElementById('swal-shipping-carrier').value.trim();
+              const trackingNumber = document.getElementById('swal-tracking-number').value.trim();
+              if (!shippingCarrier) {
+                Swal.showValidationMessage('กรุณากรอกชื่อขนส่ง');
+                return false;
+              }
+              if (!trackingNumber) {
+                Swal.showValidationMessage('กรุณากรอกเลข Tracking');
+                return false;
+              }
+              return { shippingCarrier, trackingNumber };
+            }
+          }).then(result => {
+            if (result.isConfirmed && result.value) {
+              applyStatus(result.value.trackingNumber, result.value.shippingCarrier);
+            }
+          });
+          return;
+        }
+
+        applyStatus();
+      };
+
+      const runInitDb = () => {
+        Swal.fire({
+          icon: 'question',
+          title: 'ยืนยันการติดตั้ง',
+          text: 'ต้องการรันติดตั้งตารางและข้อมูลเริ่มต้นลงใน MySQL ใช่หรือไม่?',
+          showCancelButton: true,
+          confirmButtonText: 'ติดตั้ง',
+          cancelButtonText: 'ยกเลิก'
+        }).then(result => {
+          if (!result.isConfirmed) return;
+          authFetch('api.php?action=init_db', { method: 'POST' })
+            .then(res => res.json())
+            .then(res => {
+              if (res.success) {
+                showToast(res.message);
+                loadData();
+              } else Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: res.error });
+            })
+            .catch(() => Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: 'หมดเวลาเข้าสู่ระบบ หรือไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้' }));
+        });
+      };
+
+      if (!authState.checked) {
+        return (
+          <div className="d-flex align-items-center justify-content-center min-vh-100 text-muted fw-bold">
+            <div className="spinner-border text-success me-3" role="status"></div>
+            กำลังตรวจสอบสถานะสิทธิ์ผู้ดูแลระบบ...
+          </div>
+        );
+      }
+
+      // Login Gate Screen
+      if (!authState.loggedIn) {
+        return (
+          <div className="login-wrapper">
+            <form className="login-card" onSubmit={handleLoginSubmit}>
+              <div className="login-brand-icon">
+                <i className="bi bi-asterisk"></i>
+              </div>
+              <h1 className="login-title">fukupet Admin CMS</h1>
+              <p className="login-subtitle">ระบบจัดการเนื้อหาหลังบ้าน fukupet Admin Edition</p>
+
+              {loginError && (
+                <div className="login-error-box">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                  {loginError}
+                </div>
+              )}
+
+              <div className="form-group">
+                <label className="form-label">ชื่อผู้ใช้งาน</label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-end-0 text-muted"><i className="bi bi-person-fill"></i></span>
+                  <input
+                    type="text"
+                    className="form-input border-start-0"
+                    placeholder="Username"
+                    required
+                    autoFocus
+                    value={loginForm.username}
+                    onChange={e => setLoginForm({ ...loginForm, username: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">รหัสผ่าน</label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-end-0 text-muted"><i className="bi bi-lock-fill"></i></span>
+                  <input
+                    type="password"
+                    className="form-input border-start-0"
+                    placeholder="Password"
+                    required
+                    value={loginForm.password}
+                    onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="btn-fukupet-lime login-btn" disabled={loginSubmitting}>
+                {loginSubmitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    กำลังตรวจสอบ...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-box-arrow-in-right"></i>
+                    เข้าสู่ระบบ CMS
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        );
+      }
+
+      if (loading || !siteData) {
+        return (
+          <div className="d-flex align-items-center justify-content-center min-vh-100 text-muted fw-bold">
+            <div className="spinner-border text-success me-3" role="status"></div>
+            กำลังโหลดข้อมูลระบบ CMS...
+          </div>
+        );
+      }
+
+      const totalSales = orders.reduce((sum, o) => sum + (parseFloat(o.total_price) || 0), 0);
+      const visMap = siteData.section_visibility || {};
+
+      // Render Toggle Switch Component for each Section Header
+      const renderSectionHeader = (title, icon, sectionKey, visKey, saveKey) => {
+        const isVisible = visMap[visKey] !== false;
+        return (
+          <div className="fukupet-card-header">
+            <h3 className="fukupet-card-title">
+              <i className={`bi ${icon}`}></i> {title}
+            </h3>
+            <div className="d-flex align-items-center gap-3 ms-auto">
+              <div className="form-check form-switch m-0" title="คลิกเพื่อ แสดง/ซ่อน ส่วนนี้บนหน้าเว็บจริง">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id={`vis-switch-${visKey}`}
+                  checked={isVisible}
+                  onChange={() => toggleSectionVisibility(visKey)}
+                />
+                <label className="form-check-label fw-bold small text-dark" htmlFor={`vis-switch-${visKey}`}>
+                  {isVisible ? '👁️ แสดงบนหน้าเว็บ' : '🙈 ซ่อนจากหน้าเว็บ'}
+                </label>
+              </div>
+              <button className="btn-fukupet-primary btn-sm" onClick={() => saveSection(saveKey)}>
+                💾 บันทึกส่วนนี้
+              </button>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div>
+          {/* SIDEBAR */}
+          <div className="sidebar-wrapper">
+            <a href="admin.html" className="sidebar-brand">
+              <i className="bi bi-asterisk"></i>
+              <span>fukupet Admin</span>
+            </a>
+
+            <div className="flex-grow-1 overflow-y-auto">
+              {/* Menu Section */}
+              <div className="sidebar-menu-section">
+                <div className="sidebar-menu-title">Main Menu</div>
+                <ul className="sidebar-menu-list">
+                  <li className="sidebar-menu-item">
+                    <a
+                      className={`sidebar-menu-link ${activeTab === 'dashboard' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('dashboard')}
+                    >
+                      <i className="bi bi-grid-fill"></i>
+                      <span>Dashboard</span>
+                    </a>
+                  </li>
+                  <li className="sidebar-menu-item">
+                    <a
+                      className={`sidebar-menu-link ${activeTab === 'orders' ? 'active' : ''}`}
+                      onClick={() => { setActiveTab('orders'); loadOrders(); }}
+                    >
+                      <i className="bi bi-bag-check-fill"></i>
+                      <span>คำสั่งซื้อ</span>
+                      {orders.length > 0 && <span className="sidebar-badge">{orders.length}</span>}
+                    </a>
+                  </li>
+                  <li className="sidebar-menu-item">
+                    <a
+                      className={`sidebar-menu-link ${activeTab === 'seo' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('seo')}
+                    >
+                      <i className="bi bi-search"></i>
+                      <span>ตั้งค่า SEO</span>
+                    </a>
+                  </li>
+                  <li className="sidebar-menu-item">
+                    <a
+                      className={`sidebar-menu-link ${activeTab === 'payment_settings' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('payment_settings')}
+                    >
+                      <i className="bi bi-credit-card-fill"></i>
+                      <span>ตั้งค่าการชำระเงิน</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Content Management Section - ALL 15 SECTIONS AS SIDEBAR TABS */}
+              <div className="sidebar-menu-section">
+                <div className="sidebar-menu-title">การจัดการเนื้อหาหน้าเว็บ</div>
+                <ul className="sidebar-menu-list">
+                  {CONTENT_SECTIONS.map(sec => {
+                    const isSecActive = activeTab === 'content' && activeContentSubTab === sec.id;
+                    const isSecVisible = visMap[sec.visibilityKey] !== false;
+                    return (
+                      <li key={sec.id} className="sidebar-menu-item">
+                        <a
+                          className={`sidebar-menu-link ${isSecActive ? 'active' : ''}`}
+                          onClick={() => {
+                            setActiveTab('content');
+                            setActiveContentSubTab(sec.id);
+                          }}
+                          title={isSecVisible ? 'ส่วนนี้เปิดแสดงผลบนหน้าเว็บ' : 'ส่วนนี้ถูกซ่อนบนหน้าเว็บ'}
+                        >
+                          <i className={`bi ${sec.icon}`}></i>
+                          <span>{sec.label}</span>
+                          <span
+                            className={`sidebar-visibility-dot ${isSecVisible ? 'visible' : 'hidden'}`}
+                            title={isSecVisible ? 'แสดงบนหน้าเว็บ' : 'ซ่อนบนหน้าเว็บ'}
+                          ></span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                  <li className="sidebar-menu-item mt-2">
+                    <a
+                      className={`sidebar-menu-link ${activeTab === 'media' ? 'active' : ''}`}
+                      onClick={() => { setActiveTab('media'); loadMedia(); }}
+                    >
+                      <i className="bi bi-images"></i>
+                      <span>คลังรูปภาพ (Images)</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* System Section */}
+              <div className="sidebar-menu-section">
+                <div className="sidebar-menu-title">System & Settings</div>
+                <ul className="sidebar-menu-list">
+                  <li className="sidebar-menu-item">
+                    <a
+                      className={`sidebar-menu-link ${activeTab === 'seo' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('seo')}
+                    >
+                      <i className="bi bi-search"></i>
+                      <span>ตั้งค่า SEO</span>
+                    </a>
+                  </li>
+                  <li className="sidebar-menu-item">
+                    <a
+                      className={`sidebar-menu-link ${activeTab === 'payment_settings' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('payment_settings')}
+                    >
+                      <i className="bi bi-credit-card-fill"></i>
+                      <span>ตั้งค่าการชำระเงิน</span>
+                    </a>
+                  </li>
+                  {authState.is_superadmin && (
+                    <>
+                      <li className="sidebar-menu-item">
+                        <a
+                          className={`sidebar-menu-link ${activeTab === 'database' ? 'active' : ''}`}
+                          onClick={() => setActiveTab('database')}
+                        >
+                          <i className="bi bi-database-gear"></i>
+                          <span>ฐานข้อมูล SQL</span>
+                        </a>
+                      </li>
+                      <li className="sidebar-menu-item">
+                        <a
+                          className={`sidebar-menu-link ${activeTab === 'permissions' ? 'active' : ''}`}
+                          onClick={() => setActiveTab('permissions')}
+                        >
+                          <i className="bi bi-person-lines-fill"></i>
+                          <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                        </a>
+                      </li>
+                    </>
+                  )}
+                  <li className="sidebar-menu-item">
+                    <a
+                      href="index.html"
+                      target="_blank"
+                      className="sidebar-menu-link"
+                    >
+                      <i className="bi bi-box-arrow-up-right"></i>
+                      <span>ดูหน้าเว็บจริง ↗</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Profile Footer */}
+            <div className="sidebar-profile">
+              <div className="sidebar-profile-avatar">
+                <i className="bi bi-person-fill"></i>
+              </div>
+              <div className="sidebar-profile-info">
+                <div className="sidebar-profile-name">{authState.username || 'Administrator'}</div>
+                <div className="sidebar-profile-role">Super Admin</div>
+              </div>
+              <button
+                className="btn btn-sm btn-outline-light border-0 p-1 ms-auto"
+                title="ออกจากระบบ"
+                onClick={handleLogout}
+              >
+                <i className="bi bi-box-arrow-right fs-5 text-danger"></i>
+              </button>
+            </div>
+          </div>
+
+          {/* MAIN CONTENT WRAPPER */}
+          <div className="main-wrapper">
+            {/* Navbar Header */}
+            <header className="navbar-fukupet">
+              <div className="navbar-fukupet-left">
+                <button
+                  className="btn-toggle-sidebar"
+                  onClick={() => setIsMinimized(!isMinimized)}
+                  title="Toggle Sidebar"
+                >
+                  <i className={`bi ${isMinimized ? 'bi-indent' : 'bi-dedent'}`}></i>
+                </button>
+
+                <div className="d-none d-md-block ms-2">
+                  <h5 className="mb-0 fw-bold text-dark" style={{ letterSpacing: '-0.02em' }}>
+                    {activeTab === 'dashboard' && 'Dashboard Overview'}
+                    {activeTab === 'orders' && 'คำสั่งซื้อทั้งหมด (Orders)'}
+                    {activeTab === 'content' && (CONTENT_SECTIONS.find(s => s.id === activeContentSubTab)?.label || 'จัดการเนื้อหา')}
+                    {activeTab === 'media' && 'คลังสื่อ & รูปภาพ (Media)'}
+                    {activeTab === 'database' && 'การตั้งค่าฐานข้อมูล SQL'}
+                    {activeTab === 'permissions' && 'จัดการสิทธิ์ผู้ใช้งาน'}
+                    {activeTab === 'seo' && 'ตั้งค่า SEO'}
+                    {activeTab === 'payment_settings' && 'ตั้งค่าการชำระเงิน'}
+                  </h5>
+                  <span className="text-muted small">fukupet Admin Control Panel</span>
+                </div>
+              </div>
+
+              <div className="navbar-fukupet-right">
+                {dbStatus?.connected ? (
+                  <div className="fukupet-badge fukupet-badge-connected" title="เชื่อมต่อ MySQL สมบูรณ์">
+                    <span className="fukupet-badge-dot"></span>
+                    <span>MySQL Connected ({dbStatus.database})</span>
+                  </div>
+                ) : (
+                  <div className="fukupet-badge fukupet-badge-local" title="ใช้งานฐานข้อมูล Local JSON">
+                    <span className="fukupet-badge-dot"></span>
+                    <span>Local Data Mode</span>
+                  </div>
+                )}
+
+                <a href="index.html" target="_blank" className="btn-fukupet-outline">
+                  <i className="bi bi-globe"></i>
+                  <span>ดูหน้าเว็บ</span>
+                </a>
+
+                <button className="btn-fukupet-lime" onClick={saveAll}>
+                  <i className="bi bi-floppy-fill"></i>
+                  <span>บันทึกทั้งหมด</span>
+                </button>
+              </div>
+            </header>
+
+            {/* TAB 1: DASHBOARD */}
+            {activeTab === 'dashboard' && (
+              <div>
+                {/* KPI Widgets Grid */}
+                <div className="kpi-grid">
+                  <div className="kpi-card kpi-emerald">
+                    <div className="kpi-icon icon-emerald">
+                      <i className="bi bi-bag-check-fill"></i>
+                    </div>
+                    <div>
+                      <div className="kpi-label">คำสั่งซื้อทั้งหมด</div>
+                      <div className="kpi-value">{orders.length} <span className="fs-6 fw-normal text-muted">ออเดอร์</span></div>
+                    </div>
+                  </div>
+
+                  <div className="kpi-card kpi-lime">
+                    <div className="kpi-icon icon-lime">
+                      <i className="bi bi-wallet2"></i>
+                    </div>
+                    <div>
+                      <div className="kpi-label">ยอดขายรวม</div>
+                      <div className="kpi-value">฿{totalSales.toLocaleString()}</div>
+                    </div>
+                  </div>
+
+                  <div className="kpi-card kpi-orange">
+                    <div className="kpi-icon icon-orange">
+                      <i className="bi bi-database-check"></i>
+                    </div>
+                    <div>
+                      <div className="kpi-label">สถานะฐานข้อมูล</div>
+                      <div className="kpi-value fs-5 fw-bold" style={{ color: dbStatus?.connected ? 'var(--sys-green)' : 'var(--sys-orange)' }}>
+                        {dbStatus?.connected ? 'MySQL Active' : 'Local JSON'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="kpi-card">
+                    <div className="kpi-icon">
+                      <i className="bi bi-images"></i>
+                    </div>
+                    <div>
+                      <div className="kpi-label">รูปภาพในระบบ</div>
+                      <div className="kpi-value">{mediaImages.length} <span className="fs-6 fw-normal text-muted">ไฟล์</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Action Widget Card */}
+                <div className="fukupet-card">
+                  <div className="fukupet-card-header mb-2 border-0 pb-0">
+                    <h3 className="fukupet-card-title">
+                      <i className="bi bi-lightning-charge-fill text-warning"></i>
+                      การจัดการด่วน (Quick Actions)
+                    </h3>
+                  </div>
+                  <p className="text-muted mb-4">
+                    คลิกเลือกหัวข้อเมนูด้านซ้ายมือเพื่อแก้ไขเนื้อหาแต่ละส่วน หรือปรับเปลี่ยนการแสดงผล/ซ่อนส่วนต่างๆ ของหน้าเว็บได้ทันที
+                  </p>
+
+                  <div className="d-flex flex-wrap gap-3">
+                    <button
+                      className="btn-fukupet-primary"
+                      onClick={() => { setActiveTab('content'); setActiveContentSubTab('product'); }}
+                    >
+                      <i className="bi bi-tag-fill"></i>
+                      แก้ไขสินค้า & ราคา
+                    </button>
+
+                    <button
+                      className="btn-fukupet-outline"
+                      onClick={() => { setActiveTab('content'); setActiveContentSubTab('gallery'); }}
+                    >
+                      <i className="bi bi-images"></i>
+                      จัดการรูปแกลเลอรี
+                    </button>
+
+                    <button
+                      className="btn-fukupet-outline"
+                      onClick={() => setActiveTab('orders')}
+                    >
+                      <i className="bi bi-receipt"></i>
+                      ดูคำสั่งซื้อ ({orders.length})
+                    </button>
+
+                    <button
+                      className="btn-fukupet-outline"
+                      onClick={() => setActiveTab('media')}
+                    >
+                      <i className="bi bi-cloud-arrow-up-fill"></i>
+                      อัปโหลดรูปภาพ
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            
+            {/* TAB: SEO SETTINGS */}
+            {activeTab === 'seo' && (
+              <div className="fukupet-card">
+                <div className="fukupet-card-header">
+                  <h3 className="fukupet-card-title">
+                    <i className="bi bi-search"></i>
+                    ตั้งค่า SEO (Search Engine Optimization)
+                  </h3>
+                  <button className="btn-fukupet-primary btn-sm" onClick={() => saveSection('seo')}>
+                    💾 บันทึกส่วนนี้
+                  </button>
+                </div>
+                <div className="form-grid">
+                  <div className="form-group full-width">
+                    <label className="form-label">Meta Title (ชื่อหน้าเว็บ)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={siteData.seo?.title || ''}
+                      onChange={e => setSiteData({ ...siteData, seo: { ...siteData.seo, title: e.target.value } })}
+                      placeholder="เช่น หมอนโคซี่ Fukupetstore - หมอนสุขภาพที่ดีที่สุด"
+                    />
+                  </div>
+                  <div className="form-group full-width">
+                    <label className="form-label">Meta Description (คำอธิบายหน้าเว็บ)</label>
+                    <textarea
+                      className="form-textarea"
+                      value={siteData.seo?.description || ''}
+                      onChange={e => setSiteData({ ...siteData, seo: { ...siteData.seo, description: e.target.value } })}
+                      placeholder="อธิบายเกี่ยวกับหน้าเว็บสั้นๆ เพื่อให้แสดงผลบน Google"
+                    ></textarea>
+                  </div>
+                  <div className="form-group full-width">
+                    <label className="form-label">Meta Keywords (คำค้นหา)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={siteData.seo?.keywords || ''}
+                      onChange={e => setSiteData({ ...siteData, seo: { ...siteData.seo, keywords: e.target.value } })}
+                      placeholder="เช่น หมอนสุขภาพ, หมอนเมมโมรี่โฟม, แก้ปวดคอ (คั่นด้วยลูกน้ำ)"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: SEO SETTINGS */}
+            {activeTab === 'seo' && (
+              <div className="fukupet-card">
+                <div className="fukupet-card-header">
+                  <h3 className="fukupet-card-title">
+                    <i className="bi bi-search"></i>
+                    ตั้งค่า SEO (Search Engine Optimization)
+                  </h3>
+                  <button className="btn-fukupet-primary btn-sm" onClick={() => saveSection('seo')}>
+                    💾 บันทึกส่วนนี้
+                  </button>
+                </div>
+                <div className="alert alert-info small mb-4">
+                  <i className="bi bi-info-circle-fill me-2"></i>
+                  การตั้งค่า SEO จะช่วยให้ Google และ Search Engine อื่นๆ แสดงผลหน้าเว็บของคุณได้ดียิ่งขึ้น
+                </div>
+                <div className="form-grid">
+                  <div className="form-group full-width">
+                    <label className="form-label">Meta Title (ชื่อหน้าเว็บที่แสดงบน Google)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={siteData.seo?.title || ''}
+                      onChange={e => setSiteData({ ...siteData, seo: { ...siteData.seo, title: e.target.value } })}
+                      placeholder="เช่น หมอนโคซี่ Fukupetstore - หมอนสุขภาพที่ดีที่สุด"
+                    />
+                    <small className="text-muted">แนะนำ: 50-60 ตัวอักษร</small>
+                  </div>
+                  <div className="form-group full-width">
+                    <label className="form-label">Meta Description (คำอธิบายหน้าเว็บ)</label>
+                    <textarea
+                      className="form-textarea"
+                      value={siteData.seo?.description || ''}
+                      onChange={e => setSiteData({ ...siteData, seo: { ...siteData.seo, description: e.target.value } })}
+                      placeholder="อธิบายเกี่ยวกับหน้าเว็บสั้นๆ เพื่อให้แสดงผลบน Google"
+                    ></textarea>
+                    <small className="text-muted">แนะนำ: 150-160 ตัวอักษร</small>
+                  </div>
+                  <div className="form-group full-width">
+                    <label className="form-label">Meta Keywords (คำค้นหา)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={siteData.seo?.keywords || ''}
+                      onChange={e => setSiteData({ ...siteData, seo: { ...siteData.seo, keywords: e.target.value } })}
+                      placeholder="เช่น หมอนสุขภาพ, หมอนเมมโมรี่โฟม, แก้ปวดคอ (คั่นด้วยลูกน้ำ)"
+                    />
+                  </div>
+                  <div className="form-group full-width">
+                    <label className="form-label">OG Image URL (รูปตัวอย่างเมื่อแชร์ Social Media)</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={siteData.seo?.og_image || ''}
+                      onChange={e => setSiteData({ ...siteData, seo: { ...siteData.seo, og_image: e.target.value } })}
+                      placeholder="URL รูปภาพสำหรับ Facebook/Line แชร์"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: PAYMENT SETTINGS */}
+            {activeTab === 'payment_settings' && (
+              <div className="fukupet-card">
+                <div className="fukupet-card-header">
+                  <h3 className="fukupet-card-title">
+                    <i className="bi bi-credit-card-fill"></i>
+                    ตั้งค่าการชำระเงิน
+                  </h3>
+                  <button className="btn-fukupet-primary btn-sm" onClick={() => saveSection('payment_settings')}>
+                    💾 บันทึกส่วนนี้
+                  </button>
+                </div>
+
+                <h5 className="fw-bold mb-3 text-dark">วิธีชำระเงินที่เปิดใช้</h5>
+                <div className="form-grid mb-4">
+                  <div className="form-group">
+                    <label className="form-label">เก็บเงินปลายทาง (COD)</label>
+                    <select className="form-select"
+                      value={siteData.payment_settings?.cod_enabled !== false ? '1' : '0'}
+                      onChange={e => setSiteData({ ...siteData, payment_settings: { ...siteData.payment_settings, cod_enabled: e.target.value === '1' } })}>
+                      <option value="1">เปิดใช้งาน</option>
+                      <option value="0">ปิดใช้งาน</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">โอนเงินธนาคาร (Bank Transfer)</label>
+                    <select className="form-select"
+                      value={siteData.payment_settings?.bank_enabled !== false ? '1' : '0'}
+                      onChange={e => setSiteData({ ...siteData, payment_settings: { ...siteData.payment_settings, bank_enabled: e.target.value === '1' } })}>
+                      <option value="1">เปิดใช้งาน</option>
+                      <option value="0">ปิดใช้งาน</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">พร้อมเพย์ (PromptPay)</label>
+                    <select className="form-select"
+                      value={siteData.payment_settings?.promptpay_enabled ? '1' : '0'}
+                      onChange={e => setSiteData({ ...siteData, payment_settings: { ...siteData.payment_settings, promptpay_enabled: e.target.value === '1' } })}>
+                      <option value="1">เปิดใช้งาน</option>
+                      <option value="0">ปิดใช้งาน</option>
+                    </select>
+                  </div>
+                </div>
+
+                <h5 className="fw-bold mb-3 text-dark">ตั้งค่าพร้อมเพย์ (PromptPay QR)</h5>
+                <div className="form-grid mb-4">
+                  <div className="form-group">
+                    <label className="form-label">เบอร์โทร / เลขประจำตัว PromptPay</label>
+                    <input type="text" className="form-input"
+                      value={siteData.payment_settings?.promptpay_number || ''}
+                      onChange={e => setSiteData({ ...siteData, payment_settings: { ...siteData.payment_settings, promptpay_number: e.target.value } })}
+                      placeholder="เช่น 0812345678 หรือ 1234567890123"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">ชื่อบัญชี PromptPay</label>
+                    <input type="text" className="form-input"
+                      value={siteData.payment_settings?.promptpay_name || ''}
+                      onChange={e => setSiteData({ ...siteData, payment_settings: { ...siteData.payment_settings, promptpay_name: e.target.value } })}
+                      placeholder="ชื่อที่แสดงบน QR Code"
+                    />
+                  </div>
+                  <div className="form-group full-width">
+                    <label className="form-label">QR Code พร้อมเพย์ (สร้างอัตโนมัติจากเบอร์โทร/เลขประจำตัวด้านบน)</label>
+                    <p className="text-muted" style={{ fontSize: 13 }}>QR Code จะถูกสร้างจาก <strong>เบอร์โทร / เลขประจำตัว PromptPay</strong> ที่กรอกด้านบนโดยอัตโนมัติ ไม่ต้องอัปโหลดรูป</p>
+                    {siteData.payment_settings?.promptpay_number ? (
+                      <div className="mt-2">
+                        <img src={`https://promptpay.io/${siteData.payment_settings.promptpay_number}.png`} alt="QR Preview" style={{ width: 150, height: 150, objectFit: 'contain', border: '1px solid #ddd', borderRadius: 8, padding: 8, background: '#fff' }} />
+                      </div>
+                    ) : (
+                      <p className="text-muted" style={{ fontSize: 13 }}>ยังไม่ได้กรอกเบอร์โทร / เลขประจำตัว PromptPay</p>
+                    )}
+                  </div>
+                </div>
+
+                <h5 className="fw-bold mb-3 text-dark">ตั้งค่าโอนเงินธนาคาร</h5>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label className="form-label">ชื่อธนาคาร</label>
+                    <input type="text" className="form-input"
+                      value={siteData.payment_settings?.bank_name || ''}
+                      onChange={e => setSiteData({ ...siteData, payment_settings: { ...siteData.payment_settings, bank_name: e.target.value } })}
+                      placeholder="เช่น ธนาคารกสิกรไทย (KBank)"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">เลขบัญชี</label>
+                    <input type="text" className="form-input"
+                      value={siteData.payment_settings?.bank_account || ''}
+                      onChange={e => setSiteData({ ...siteData, payment_settings: { ...siteData.payment_settings, bank_account: e.target.value } })}
+                      placeholder="เช่น 123-4-56789-0"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">ชื่อเจ้าของบัญชี</label>
+                    <input type="text" className="form-input"
+                      value={siteData.payment_settings?.bank_account_name || ''}
+                      onChange={e => setSiteData({ ...siteData, payment_settings: { ...siteData.payment_settings, bank_account_name: e.target.value } })}
+                      placeholder="เช่น บริษัท ฟุกุเพ็ต จำกัด"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+
+            {/* TAB 2: ORDERS TABLE */}
+            {activeTab === 'orders' && (
+              <div className="fukupet-card">
+                <div className="fukupet-card-header">
+                  <h3 className="fukupet-card-title">
+                    <i className="bi bi-box-seam-fill"></i>
+                    รายการคำสั่งซื้อจากหน้าเว็บ ({orders.length})
+                  </h3>
+                  <button className="btn-fukupet-outline btn-sm" onClick={loadOrders}>
+                    <i className="bi bi-arrow-clockwise"></i> รีเฟรช
+                  </button>
+                </div>
+
+                {orders.length === 0 ? (
+                  <div className="text-center py-5 text-muted">
+                    <i className="bi bi-inbox fs-1 d-block mb-2"></i>
+                    ยังไม่มีคำสั่งซื้อเข้ามาในระบบขณะนี้
+                  </div>
+                ) : (
+                  <div className="fukupet-table-wrapper">
+                    <table className="fukupet-table">
+                      <thead>
+                        <tr>
+                          <th>เลขที่คำสั่งซื้อ</th>
+                          <th>วันที่สั่งซื้อ</th>
+                          <th>ชื่อลูกค้า</th>
+                          <th>เบอร์โทร</th>
+                          <th>รายละเอียดสินค้า</th>
+                          <th>ยอดรวม</th>
+                          <th>วิธีชำระเงิน</th>
+                          <th>สลิปโอนเงิน</th>
+                          <th>Tracking</th>
+                          <th>สถานะ</th>
+                          <th>จัดการ</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orders.map((ord, idx) => (
+                          <tr key={idx}>
+                            <td><strong className="text-dark">{ord.order_no}</strong></td>
+                            <td className="small text-muted">{ord.created_at}</td>
+                            <td className="fw-bold">{ord.customer_name}</td>
+                            <td>
+                              <a href={`tel:${ord.customer_phone}`} className="text-decoration-none fw-semibold">
+                                {ord.customer_phone}
+                              </a>
+                            </td>
+                            <td>
+                              <div className="fw-semibold">{ord.product_title}</div>
+                              <div className="small text-muted">{ord.size_name} | {ord.bundle_name} (x{ord.quantity})</div>
+                              {(ord.colors?.length > 0 || ord.notes) && (
+                                <div className="small text-muted">{ord.colors?.length > 0 ? `สีสินค้า: ${ord.colors.map((color, index) => `ชิ้นที่ ${index + 1}: ${color}`).join(', ')}` : ord.notes}</div>
+                              )}
+                              {ord.upsell_included == 1 && (
+                                <div className="small text-success fw-bold">+ ปลอกหมอน Tencel</div>
+                              )}
+                              <div className="small text-muted opacity-75 mt-1">ที่อยู่: {ord.customer_address}</div>
+                            </td>
+                            <td><strong className="text-success fs-6">฿{parseFloat(ord.total_price).toLocaleString()}</strong></td>
+                            <td>
+                              <span className="badge bg-light text-dark border">
+                                {ord.payment_method === 'cod' ? 'เก็บเงินปลายทาง' : 'โอนเงิน'}
+                              </span>
+                            </td>
+                            <td>
+                              {ord.slip_path ? (
+                                <a href={ord.slip_path} target="_blank" rel="noreferrer" title="เปิดดูสลิป">
+                                  <img src={ord.slip_path} alt={`สลิป ${ord.order_no}`} style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, border: '1px solid #ddd' }} />
+                                </a>
+                              ) : (
+                                <span className="small text-muted">ยังไม่แนบ</span>
+                              )}
+                            </td>
+                            <td>
+                              {ord.tracking_number ? (
+                                <div className="d-flex flex-column gap-1 align-items-start">
+                                  <span className="badge bg-info-subtle text-info-emphasis border">
+                                    {ord.tracking_number}
+                                  </span>
+                                  {ord.shipping_carrier && (
+                                    <span className="badge bg-secondary">{ord.shipping_carrier}</span>
+                                  )}
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary py-0 px-2"
+                                    onClick={() => updateOrderStatus(ord.order_no, 'shipping', ord.tracking_number, ord.shipping_carrier)}
+                                  >
+                                    แก้ไข
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-primary py-0 px-2"
+                                  onClick={() => updateOrderStatus(ord.order_no, 'shipping', '')}
+                                >
+                                  เพิ่มเลข
+                                </button>
+                              )}
+                            </td>
+                            <td>
+                              <span className={`status-badge status-${ord.status || 'pending'}`}>
+                                {ord.status === 'confirmed' ? 'ยืนยันแล้ว' :
+                                 ord.status === 'shipping' ? 'กำลังจัดส่ง' :
+                                 ord.status === 'completed' ? 'สำเร็จ' :
+                                 ord.status === 'cancelled' ? 'ยกเลิก' : 'รอดำเนินการ'}
+                              </span>
+                            </td>
+                            <td>
+                              <select
+                                className="form-select form-select-sm"
+                                style={{ width: 'auto' }}
+                                value={ord.status || 'pending'}
+                                onChange={(e) => updateOrderStatus(ord.order_no, e.target.value, ord.tracking_number, ord.shipping_carrier)}
+                              >
+                                <option value="pending">รอดำเนินการ</option>
+                                <option value="confirmed">ยืนยันออเดอร์</option>
+                                <option value="shipping">กำลังจัดส่ง</option>
+                                <option value="completed">สำเร็จ</option>
+                                <option value="cancelled">ยกเลิก</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 3: CONTENT CMS SECTIONS */}
+            {activeTab === 'content' && (
+              <div>
+                {/* SUBTAB 1: TOP BAR */}
+                {activeContentSubTab === 'topbar' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('1. แถบประกาศด้านบนสุด (Top Announcement Bar)', 'bi-megaphone-fill', 'topbar', 'top_bar', 'top_bar')}
+                    <div className="form-grid">
+                      {siteData.top_bar?.items?.map((item, idx) => (
+                        <div key={idx} className="form-group">
+                          <label className="form-label">ข้อความประกาศที่ {idx + 1}</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={item}
+                            onChange={e => {
+                              const newItems = [...siteData.top_bar.items];
+                              newItems[idx] = e.target.value;
+                              setSiteData({ ...siteData, top_bar: { ...siteData.top_bar, items: newItems } });
+                            }}
+                          />
+                        </div>
+                      ))}
+                      <div className="form-group">
+                        <label className="form-label">เวลานับถอยหลังโปรโมชั่น (วินาที)</label>
+                        <input
+                          type="number"
+                          className="form-input"
+                          value={siteData.top_bar?.timer_seconds || 31335}
+                          onChange={e => {
+                            setSiteData({ ...siteData, top_bar: { ...siteData.top_bar, timer_seconds: parseInt(e.target.value) || 0 } });
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 2: HEADER */}
+                {activeContentSubTab === 'header' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('2. โลโก้และเมนูนำทาง (Header & Logo)', 'bi-layout-header', 'header', 'header', 'header')}
+                    <div className="form-group">
+                      <label className="form-label">รูปภาพโลโก้เว็บไซต์ (URL หรือ อัปโหลดใหม่)</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={siteData.header?.logo_url || ''}
+                        onChange={e => setSiteData({ ...siteData, header: { ...siteData.header, logo_url: e.target.value } })}
+                      />
+                      <div className="image-preview-wrap">
+                        <img src={siteData.header?.logo_url} alt="Logo Preview" className="image-preview-thumb" style={{ height: 40, width: 'auto' }} />
+                        <label className="btn-fukupet-outline btn-sm m-0">
+                          📁 อัปโหลดโลโก้ใหม่
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden-file-input"
+                            onChange={e => handleFileUpload(e.target.files[0], url => {
+                              setSiteData({ ...siteData, header: { ...siteData.header, logo_url: url } });
+                            })}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <h5 className="fw-bold mt-4 mb-3 text-dark">รายการเมนูนำทาง (Navigation Links)</h5>
+                    <div className="form-grid">
+                      {siteData.header?.nav_links?.map((nav, idx) => (
+                        <div key={idx} className="form-group d-flex gap-2">
+                          <input
+                            type="text"
+                            className="form-input"
+                            placeholder="ชื่อเมนู"
+                            value={nav.label}
+                            onChange={e => {
+                              const newLinks = [...siteData.header.nav_links];
+                              newLinks[idx].label = e.target.value;
+                              setSiteData({ ...siteData, header: { ...siteData.header, nav_links: newLinks } });
+                            }}
+                          />
+                          <input
+                            type="text"
+                            className="form-input"
+                            placeholder="ลิงก์ #anchor"
+                            value={nav.href}
+                            onChange={e => {
+                              const newLinks = [...siteData.header.nav_links];
+                              newLinks[idx].href = e.target.value;
+                              setSiteData({ ...siteData, header: { ...siteData.header, nav_links: newLinks } });
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 3: PRODUCT */}
+                {activeContentSubTab === 'product' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('3. ข้อมูลสินค้าหลัก (Product Info & Pricing)', 'bi-tag-fill', 'product', 'product', 'product')}
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label className="form-label">ชื่อสินค้า</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.title || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, title: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">แบรนด์สินค้า</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.brand || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, brand: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">คะแนนรีวิว (เช่น 5.0)</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.rating || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, rating: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">ข้อความรีวิว (เช่น (1,955+ รีวิว))</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.reviews_text || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, reviews_text: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">ป้ายยอดขาย (Sold Badge)</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.sold_text || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, sold_text: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">ข้อความด่วน/สถานะสินค้า</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.urgency_text || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, urgency_text: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group full-width">
+                        
+                      <div className="form-group full-width">
+                        <label className="form-label">แสดงไอคอนความน่าเชื่อถือ (Trust Badges)</label>
+                        <select
+                          className="form-select"
+                          value={siteData.section_visibility?.trust_badges !== false ? '1' : '0'}
+                          onChange={e => toggleSectionVisibility('trust_badges')}
+                        >
+                          <option value="1">แสดง (Show)</option>
+                          <option value="0">ซ่อน (Hide)</option>
+                        </select>
+                      </div>
+
+                        <label className="form-label">ข้อความรับประกัน (ใต้ปุ่มสั่งซื้อ)</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.guarantee_text || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, guarantee_text: e.target.value } })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 4: GALLERY */}
+                {activeContentSubTab === 'gallery' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader(`4. แกลเลอรีรูปภาพสินค้า (${siteData.product?.gallery?.length || 0} รูป)`, 'bi-images', 'gallery', 'gallery', 'product')}
+                    <div className="d-flex justify-content-end mb-3">
+                      <label className="btn-fukupet-lime btn-sm m-0">
+                        <i className="bi bi-plus-lg"></i> อัปโหลดรูปเพิ่มเข้าแกลเลอรี
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden-file-input"
+                          onChange={e => handleFileUpload(e.target.files[0], url => {
+                            const newGallery = [...(siteData.product?.gallery || []), { url, thumb: url, alt: 'รูปสินค้า' }];
+                            setSiteData({ ...siteData, product: { ...siteData.product, gallery: newGallery } });
+                          })}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="row g-3">
+                      {siteData.product?.gallery?.map((img, idx) => (
+                        <div key={idx} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                          <div className="card h-100 border p-2">
+                            <img src={img.thumb || img.url} alt={img.alt} className="card-img-top rounded" style={{ height: 140, objectFit: 'cover' }} />
+                            <div className="card-body p-2 d-flex flex-column gap-2">
+                              <input
+                                type="text"
+                                className="form-input small"
+                                placeholder="URL รูปภาพ"
+                                value={img.url}
+                                onChange={e => {
+                                  const newGal = [...siteData.product.gallery];
+                                  newGal[idx].url = e.target.value;
+                                  newGal[idx].thumb = e.target.value;
+                                  setSiteData({ ...siteData, product: { ...siteData.product, gallery: newGal } });
+                                }}
+                              />
+                              <div className="d-flex justify-content-between">
+                                <label className="btn btn-sm btn-outline-secondary py-1 px-2 m-0 small">
+                                  เปลี่ยน
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden-file-input"
+                                    onChange={e => handleFileUpload(e.target.files[0], url => {
+                                      const newGal = [...siteData.product.gallery];
+                                      newGal[idx].url = url;
+                                      newGal[idx].thumb = url;
+                                      setSiteData({ ...siteData, product: { ...siteData.product, gallery: newGal } });
+                                    })}
+                                  />
+                                </label>
+                                <button
+                                  className="btn btn-sm btn-outline-danger py-1 px-2 small"
+                                  onClick={() => {
+                                    const newGal = siteData.product.gallery.filter((_, i) => i !== idx);
+                                    setSiteData({ ...siteData, product: { ...siteData.product, gallery: newGal } });
+                                  }}
+                                >
+                                  ลบ
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 5: SIZES */}
+                {activeContentSubTab === 'sizes' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('5. ตัวเลือกขนาดหมอน (Sizes)', 'bi-aspect-ratio-fill', 'sizes', 'sizes', 'product')}
+                    <div className="form-grid">
+                      {siteData.product?.sizes?.map((size, idx) => (
+                        <div key={idx} className="p-3 border rounded-3 bg-light">
+                          <h5 className="fw-bold text-dark mb-3">{size.title}</h5>
+                          <div className="form-group">
+                            <label className="form-label">ชื่อขนาด</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={size.title}
+                              onChange={e => {
+                                const newSizes = [...siteData.product.sizes];
+                                newSizes[idx].title = e.target.value;
+                                setSiteData({ ...siteData, product: { ...siteData.product, sizes: newSizes } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">รายละเอียดขนาด</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={size.subtitle}
+                              onChange={e => {
+                                const newSizes = [...siteData.product.sizes];
+                                newSizes[idx].subtitle = e.target.value;
+                                setSiteData({ ...siteData, product: { ...siteData.product, sizes: newSizes } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">ราคาขาย (฿)</label>
+                            <input
+                              type="number"
+                              className="form-input"
+                              value={size.price}
+                              onChange={e => {
+                                const newSizes = [...siteData.product.sizes];
+                                newSizes[idx].price = parseInt(e.target.value) || 0;
+                                setSiteData({ ...siteData, product: { ...siteData.product, sizes: newSizes } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group mb-0">
+                            <label className="form-label">ราคาเต็ม/เปรียบเทียบ (฿)</label>
+                            <input
+                              type="number"
+                              className="form-input"
+                              value={size.compare_price}
+                              onChange={e => {
+                                const newSizes = [...siteData.product.sizes];
+                                newSizes[idx].compare_price = parseInt(e.target.value) || 0;
+                                setSiteData({ ...siteData, product: { ...siteData.product, sizes: newSizes } });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 6: BUNDLES */}
+                {activeContentSubTab === 'bundles' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('6. โปรโมชั่นเซ็ตสุดคุ้ม (Bundle Deals)', 'bi-box-fill', 'bundles', 'bundles', 'product')}
+                    <div className="form-grid">
+                      {siteData.product?.bundles?.map((b, idx) => (
+                        <div key={idx} className="p-3 border rounded-3 bg-light">
+                          <div className="form-group">
+                            <label className="form-label">ป้ายกำกับ (Badge)</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={b.badge || ''}
+                              onChange={e => {
+                                const newB = [...siteData.product.bundles];
+                                newB[idx].badge = e.target.value;
+                                setSiteData({ ...siteData, product: { ...siteData.product, bundles: newB } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">ชื่อแพ็กเกจ</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={b.name}
+                              onChange={e => {
+                                const newB = [...siteData.product.bundles];
+                                newB[idx].name = e.target.value;
+                                setSiteData({ ...siteData, product: { ...siteData.product, bundles: newB } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group mb-0">
+                            <label className="form-label">รายละเอียด</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={b.desc}
+                              onChange={e => {
+                                const newB = [...siteData.product.bundles];
+                                newB[idx].desc = e.target.value;
+                                setSiteData({ ...siteData, product: { ...siteData.product, bundles: newB } });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 6b: COLOR OPTIONS */}
+                {activeContentSubTab === 'colors' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('ตัวเลือกสี (Color Options)', 'bi-palette', 'colors', 'product', 'product')}
+                    <div className="alert alert-info small">
+                      <i className="bi bi-info-circle-fill me-2"></i>
+                      ตัวเลือกสีนี้จะแสดงเมื่อลูกค้าเลือกซื้อ <strong>2 ชิ้นขึ้นไป</strong> และลูกค้าจะเลือกสีแยกสำหรับสินค้าแต่ละชิ้นได้
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">ชื่อหัวข้อเลือกสี</label>
+                      <input type="text" className="form-input"
+                        value={siteData.product?.color_label || 'เลือกสีปลอกหมอน:'}
+                        onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, color_label: e.target.value } })}
+                      />
+                    </div>
+                    <h5 className="fw-bold mt-4 mb-3 text-dark">รายการสีที่ให้เลือก</h5>
+                    {(siteData.product?.color_options || []).map((col, idx) => (
+                      <div key={idx} className="d-flex gap-2 mb-2 align-items-center">
+                        <input type="text" className="form-input" placeholder="ชื่อสี เช่น ขาว, เทา" value={col.name}
+                          onChange={e => { const a = [...siteData.product.color_options]; a[idx].name = e.target.value; setSiteData({ ...siteData, product: { ...siteData.product, color_options: a } }); }} />
+                        <input type="color" style={{ width: 48, height: 40, border: '1px solid #ddd', borderRadius: 8, cursor: 'pointer' }} value={col.hex || '#ffffff'}
+                          onChange={e => { const a = [...siteData.product.color_options]; a[idx].hex = e.target.value; setSiteData({ ...siteData, product: { ...siteData.product, color_options: a } }); }} />
+                        <button className="btn btn-sm btn-outline-danger px-2" onClick={() => { const a = siteData.product.color_options.filter((_,i)=>i!==idx); setSiteData({...siteData,product:{...siteData.product,color_options:a}}); }}>ลบ</button>
+                      </div>
+                    ))}
+                    <button className="btn-fukupet-lime btn-sm mt-2" onClick={() => setSiteData({...siteData,product:{...siteData.product,color_options:[...(siteData.product.color_options||[]),{name:'',hex:'#ffffff'}]}})}>
+                      <i className="bi bi-plus-lg"></i> เพิ่มสี
+                    </button>
+                  </div>
+                )}
+
+                {/* SUBTAB 7: UPSELL */}
+                {activeContentSubTab === 'upsell' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('7. สินค้าเสนอขายเพิ่ม (Upsell Add-on)', 'bi-plus-circle-fill', 'upsell', 'upsell', 'product')}
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label className="form-label">เปิดใช้งาน Upsell</label>
+                        <select
+                          className="form-select"
+                          value={siteData.product?.upsell?.enabled ? '1' : '0'}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, upsell: { ...siteData.product.upsell, enabled: e.target.value === '1' } } })}
+                        >
+                          <option value="1">เปิดใช้งาน (Enabled)</option>
+                          <option value="0">ปิดใช้งาน (Disabled)</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">หัวข้อ Upsell</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.upsell?.title || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, upsell: { ...siteData.product.upsell, title: e.target.value } } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">คำบรรยาย</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.upsell?.meta || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, upsell: { ...siteData.product.upsell, meta: e.target.value } } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">ราคาขายเพิ่ม (฿)</label>
+                        <input
+                          type="number"
+                          className="form-input"
+                          value={siteData.product?.upsell?.price || 790}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, upsell: { ...siteData.product.upsell, price: parseInt(e.target.value) || 0 } } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">ราคาเต็ม (฿)</label>
+                        <input
+                          type="number"
+                          className="form-input"
+                          value={siteData.product?.upsell?.compare_price || 1290}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, upsell: { ...siteData.product.upsell, compare_price: parseInt(e.target.value) || 0 } } })}
+                        />
+                      </div>
+                      <div className="form-group full-width">
+                        <label className="form-label">รูปภาพสินค้า Upsell</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.product?.upsell?.image || ''}
+                          onChange={e => setSiteData({ ...siteData, product: { ...siteData.product, upsell: { ...siteData.product.upsell, image: e.target.value } } })}
+                        />
+                        <div className="image-preview-wrap">
+                          <img src={siteData.product?.upsell?.image} alt="Upsell Preview" className="image-preview-thumb" />
+                          <label className="btn-fukupet-outline btn-sm m-0">
+                            📁 อัปโหลดรูปภาพใหม่
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden-file-input"
+                              onChange={e => handleFileUpload(e.target.files[0], url => {
+                                setSiteData({ ...siteData, product: { ...siteData.product, upsell: { ...siteData.product.upsell, image: url } } });
+                              })}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 8: ACCORDIONS */}
+                {activeContentSubTab === 'accordions' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('8. แท็บรายละเอียดสินค้า (Product Accordions)', 'bi-card-text', 'accordions', 'accordions', 'product')}
+                    {siteData.product?.accordions?.map((acc, idx) => (
+                      <div key={idx} className="p-3 border rounded-3 bg-light mb-3">
+                        <div className="form-group">
+                          <label className="form-label">หัวข้อแท็บที่ {idx + 1}</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={acc.title}
+                            onChange={e => {
+                              const newA = [...siteData.product.accordions];
+                              newA[idx].title = e.target.value;
+                              setSiteData({ ...siteData, product: { ...siteData.product, accordions: newA } });
+                            }}
+                          />
+                        </div>
+                        <div className="form-group mb-0">
+                          <label className="form-label">เนื้อหา (รองรับ HTML)</label>
+                          <textarea
+                            className="form-textarea"
+                            value={acc.content}
+                            onChange={e => {
+                              const newA = [...siteData.product.accordions];
+                              newA[idx].content = e.target.value;
+                              setSiteData({ ...siteData, product: { ...siteData.product, accordions: newA } });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SUBTAB 9: FEATURES */}
+                {activeContentSubTab === 'features' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('9. จุดเด่น 4 ไอคอน (Features Row)', 'bi-stars', 'features', 'features', 'features')}
+                    <div className="form-grid">
+                      {siteData.features?.map((f, idx) => (
+                        <div key={idx} className="p-3 border rounded-3 bg-light">
+                          <div className="form-group">
+                            <label className="form-label">ข้อความไอคอนที่ {idx + 1}</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={f.title}
+                              onChange={e => {
+                                const newF = [...siteData.features];
+                                newF[idx].title = e.target.value;
+                                setSiteData({ ...siteData, features: newF });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group mb-0">
+                            <label className="form-label">รูปไอคอน</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={f.icon}
+                              onChange={e => {
+                                const newF = [...siteData.features];
+                                newF[idx].icon = e.target.value;
+                                setSiteData({ ...siteData, features: newF });
+                              }}
+                            />
+                            <div className="image-preview-wrap">
+                              <img src={f.icon} alt="Icon" className="image-preview-thumb" style={{ width: 44, height: 44 }} />
+                              <label className="btn-fukupet-outline btn-sm m-0">
+                                เปลี่ยน
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden-file-input"
+                                  onChange={e => handleFileUpload(e.target.files[0], url => {
+                                    const newF = [...siteData.features];
+                                    newF[idx].icon = url;
+                                    setSiteData({ ...siteData, features: newF });
+                                  })}
+                                />
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 10: BENEFITS */}
+                {activeContentSubTab === 'benefits' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('10. การ์ดคุณประโยชน์ 3 ข้อ (Benefits Section)', 'bi-shield-check', 'benefits', 'benefits_section', 'benefits_section')}
+                    <div className="form-group">
+                      <label className="form-label">หัวข้อหลักของส่วนนี้</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={siteData.benefits_section?.title || ''}
+                        onChange={e => setSiteData({ ...siteData, benefits_section: { ...siteData.benefits_section, title: e.target.value } })}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">คำโปรยใต้หัวข้อ</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={siteData.benefits_section?.subtitle || ''}
+                        onChange={e => setSiteData({ ...siteData, benefits_section: { ...siteData.benefits_section, subtitle: e.target.value } })}
+                      />
+                    </div>
+
+                    <h5 className="fw-bold mt-4 mb-3 text-dark">การ์ดคุณประโยชน์ 3 ใบ</h5>
+                    <div className="form-grid">
+                      {siteData.benefits_section?.cards?.map((card, idx) => (
+                        <div key={idx} className="p-3 border rounded-3 bg-light">
+                          <h6 className="fw-bold text-dark mb-3">การ์ดที่ {idx + 1}: {card.title}</h6>
+                          <div className="form-group">
+                            <label className="form-label">ชื่อประโยชน์</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={card.title}
+                              onChange={e => {
+                                const newCards = [...siteData.benefits_section.cards];
+                                newCards[idx].title = e.target.value;
+                                setSiteData({ ...siteData, benefits_section: { ...siteData.benefits_section, cards: newCards } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">คำอธิบาย</label>
+                            <textarea
+                              className="form-textarea"
+                              value={card.text}
+                              onChange={e => {
+                                const newCards = [...siteData.benefits_section.cards];
+                                newCards[idx].text = e.target.value;
+                                setSiteData({ ...siteData, benefits_section: { ...siteData.benefits_section, cards: newCards } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group mb-0">
+                            <label className="form-label">รูปภาพการ์ด</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={card.image}
+                              onChange={e => {
+                                const newCards = [...siteData.benefits_section.cards];
+                                newCards[idx].image = e.target.value;
+                                setSiteData({ ...siteData, benefits_section: { ...siteData.benefits_section, cards: newCards } });
+                              }}
+                            />
+                            <div className="image-preview-wrap">
+                              <img src={card.image} alt="Card" className="image-preview-thumb" />
+                              <label className="btn-fukupet-outline btn-sm m-0">
+                                เปลี่ยนภาพ
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden-file-input"
+                                  onChange={e => handleFileUpload(e.target.files[0], url => {
+                                    const newCards = [...siteData.benefits_section.cards];
+                                    newCards[idx].image = url;
+                                    setSiteData({ ...siteData, benefits_section: { ...siteData.benefits_section, cards: newCards } });
+                                  })}
+                                />
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 11: HOTSPOTS */}
+                {activeContentSubTab === 'hotspots' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('11. โครงสร้าง 4 ชั้น 3D Hotspots', 'bi-layers-half', 'hotspots', 'hotspots_section', 'hotspots_section')}
+                    <div className="form-group">
+                      <label className="form-label">ภาพ 3D หมอน (พื้นหลัง Hotspots)</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={siteData.hotspots_section?.image || ''}
+                        onChange={e => setSiteData({ ...siteData, hotspots_section: { ...siteData.hotspots_section, image: e.target.value } })}
+                      />
+                      <div className="image-preview-wrap">
+                        <img src={siteData.hotspots_section?.image} alt="3D Preview" className="image-preview-thumb" style={{ width: 100, height: 60 }} />
+                        <label className="btn-fukupet-outline btn-sm m-0">
+                          📁 อัปโหลดภาพ 3D
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden-file-input"
+                            onChange={e => handleFileUpload(e.target.files[0], url => {
+                              setSiteData({ ...siteData, hotspots_section: { ...siteData.hotspots_section, image: url } });
+                            })}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <h5 className="fw-bold mt-4 mb-3 text-dark">รายละเอียดหมุด 4 ชั้น</h5>
+                    <div className="form-grid">
+                      {siteData.hotspots_section?.pins?.map((pin, idx) => (
+                        <div key={idx} className="p-3 border rounded-3 bg-light">
+                          <h6 className="fw-bold text-dark mb-3">ชั้นที่ {pin.id}: {pin.title}</h6>
+                          <div className="form-group">
+                            <label className="form-label">ชื่อชั้น</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={pin.title}
+                              onChange={e => {
+                                const newP = [...siteData.hotspots_section.pins];
+                                newP[idx].title = e.target.value;
+                                setSiteData({ ...siteData, hotspots_section: { ...siteData.hotspots_section, pins: newP } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">คุณสมบัติ</label>
+                            <textarea
+                              className="form-textarea"
+                              value={pin.feature}
+                              onChange={e => {
+                                const newP = [...siteData.hotspots_section.pins];
+                                newP[idx].feature = e.target.value;
+                                setSiteData({ ...siteData, hotspots_section: { ...siteData.hotspots_section, pins: newP } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group mb-0">
+                            <label className="form-label">ประโยชน์</label>
+                            <textarea
+                              className="form-textarea"
+                              value={pin.benefit}
+                              onChange={e => {
+                                const newP = [...siteData.hotspots_section.pins];
+                                newP[idx].benefit = e.target.value;
+                                setSiteData({ ...siteData, hotspots_section: { ...siteData.hotspots_section, pins: newP } });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 12: COMPARISON */}
+                {activeContentSubTab === 'comparison' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('12. ตารางเปรียบเทียบกับหมอนทั่วไป', 'bi-table', 'comparison', 'comparison_section', 'comparison_section')}
+                    <div className="form-group">
+                      <label className="form-label">หัวข้อตาราง</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={siteData.comparison_section?.title || ''}
+                        onChange={e => setSiteData({ ...siteData, comparison_section: { ...siteData.comparison_section, title: e.target.value } })}
+                      />
+                    </div>
+                    <div className="form-grid mb-3">
+                      <div className="form-group">
+                        <label className="form-label">ชื่อสินค้าเรา</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.comparison_section?.chowa_name || ''}
+                          onChange={e => setSiteData({ ...siteData, comparison_section: { ...siteData.comparison_section, chowa_name: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">ชื่อสินค้าทั่วไป</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.comparison_section?.other_name || ''}
+                          onChange={e => setSiteData({ ...siteData, comparison_section: { ...siteData.comparison_section, other_name: e.target.value } })}
+                        />
+                      </div>
+                    </div>
+
+                    <h5 className="fw-bold mt-4 mb-3 text-dark">แถวคุณสมบัติเปรียบเทียบ</h5>
+                    {siteData.comparison_section?.rows?.map((row, idx) => (
+                      <div key={idx} className="d-flex gap-3 align-items-center mb-2 bg-light p-2 rounded border">
+                        <input
+                          type="text"
+                          className="form-input flex-grow-1"
+                          value={row.feature}
+                          onChange={e => {
+                            const newR = [...siteData.comparison_section.rows];
+                            newR[idx].feature = e.target.value;
+                            setSiteData({ ...siteData, comparison_section: { ...siteData.comparison_section, rows: newR } });
+                          }}
+                        />
+                        <label className="d-flex align-items-center gap-1 small font-weight-bold">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            checked={row.chowa}
+                            onChange={e => {
+                              const newR = [...siteData.comparison_section.rows];
+                              newR[idx].chowa = e.target.checked;
+                              setSiteData({ ...siteData, comparison_section: { ...siteData.comparison_section, rows: newR } });
+                            }}
+                          />
+                          เรามี (✓)
+                        </label>
+                        <label className="d-flex align-items-center gap-1 small text-muted">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            checked={row.other}
+                            onChange={e => {
+                              const newR = [...siteData.comparison_section.rows];
+                              newR[idx].other = e.target.checked;
+                              setSiteData({ ...siteData, comparison_section: { ...siteData.comparison_section, rows: newR } });
+                            }}
+                          />
+                          ทั่วไปมี (✓)
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SUBTAB 13: REVIEWS */}
+                {activeContentSubTab === 'reviews' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader(`13. รีวิวจากลูกค้าจริง (${siteData.reviews_section?.reviews?.length || 0} รีวิว)`, 'bi-star-fill', 'reviews', 'reviews_section', 'reviews_section')}
+                    <div className="form-grid mb-4">
+                      <div className="form-group">
+                        <label className="form-label">คะแนนเฉลี่ยรวม</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.reviews_section?.score || '4.9'}
+                          onChange={e => setSiteData({ ...siteData, reviews_section: { ...siteData.reviews_section, score: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">จำนวนรีวิวรวม</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.reviews_section?.total_reviews || '1,955+'}
+                          onChange={e => setSiteData({ ...siteData, reviews_section: { ...siteData.reviews_section, total_reviews: e.target.value } })}
+                        />
+                      </div>
+                    </div>
+
+                    <h5 className="fw-bold mb-3 text-dark">รายการรีวิวของลูกค้า</h5>
+                    {siteData.reviews_section?.reviews?.map((rev, idx) => (
+                      <div key={idx} className="p-3 border rounded-3 bg-light mb-3">
+                        <div className="form-grid">
+                          <div className="form-group">
+                            <label className="form-label">ชื่อผู้รีวิว</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={rev.author}
+                              onChange={e => {
+                                const newR = [...siteData.reviews_section.reviews];
+                                newR[idx].author = e.target.value;
+                                setSiteData({ ...siteData, reviews_section: { ...siteData.reviews_section, reviews: newR } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">จำนวนดาว (1-5)</label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="5"
+                              className="form-input"
+                              value={rev.stars}
+                              onChange={e => {
+                                const newR = [...siteData.reviews_section.reviews];
+                                newR[idx].stars = parseInt(e.target.value) || 5;
+                                setSiteData({ ...siteData, reviews_section: { ...siteData.reviews_section, reviews: newR } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group full-width">
+                            <label className="form-label">หัวข้อรีวิว</label>
+                            <input
+                              type="text"
+                              className="form-input"
+                              value={rev.title}
+                              onChange={e => {
+                                const newR = [...siteData.reviews_section.reviews];
+                                newR[idx].title = e.target.value;
+                                setSiteData({ ...siteData, reviews_section: { ...siteData.reviews_section, reviews: newR } });
+                              }}
+                            />
+                          </div>
+                          <div className="form-group full-width mb-0">
+                            <label className="form-label">ข้อความรีวิว</label>
+                            <textarea
+                              className="form-textarea"
+                              value={rev.body}
+                              onChange={e => {
+                                const newR = [...siteData.reviews_section.reviews];
+                                newR[idx].body = e.target.value;
+                                setSiteData({ ...siteData, reviews_section: { ...siteData.reviews_section, reviews: newR } });
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SUBTAB 14: FAQ */}
+                {activeContentSubTab === 'faq' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('14. คำถามที่พบบ่อย (FAQs)', 'bi-question-circle-fill', 'faq', 'faq_section', 'faq_section')}
+                    <div className="d-flex justify-content-end mb-3">
+                      <button
+                        className="btn-fukupet-outline btn-sm"
+                        onClick={() => {
+                          const newF = [...(siteData.faq_section?.faqs || []), { id: Date.now(), question: 'คำถามใหม่?', answer: 'คำตอบ...' }];
+                          setSiteData({ ...siteData, faq_section: { ...siteData.faq_section, faqs: newF } });
+                        }}
+                      >
+                        <i className="bi bi-plus-lg"></i> เพิ่มคำถาม
+                      </button>
+                    </div>
+                    {siteData.faq_section?.faqs?.map((faq, idx) => (
+                      <div key={idx} className="p-3 border rounded-3 bg-light mb-3">
+                        <div className="d-flex justify-content-between mb-2">
+                          <strong className="text-dark">คำถามที่ {idx + 1}</strong>
+                          <button
+                            className="btn btn-sm btn-outline-danger py-0 px-2"
+                            onClick={() => {
+                              const newF = siteData.faq_section.faqs.filter((_, i) => i !== idx);
+                              setSiteData({ ...siteData, faq_section: { ...siteData.faq_section, faqs: newF } });
+                            }}
+                          >
+                            ลบคำถาม
+                          </button>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">คำถาม</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={faq.question}
+                            onChange={e => {
+                              const newF = [...siteData.faq_section.faqs];
+                              newF[idx].question = e.target.value;
+                              setSiteData({ ...siteData, faq_section: { ...siteData.faq_section, faqs: newF } });
+                            }}
+                          />
+                        </div>
+                        <div className="form-group mb-0">
+                          <label className="form-label">คำตอบ (รองรับ HTML)</label>
+                          <textarea
+                            className="form-textarea"
+                            value={faq.answer}
+                            onChange={e => {
+                              const newF = [...siteData.faq_section.faqs];
+                              newF[idx].answer = e.target.value;
+                              setSiteData({ ...siteData, faq_section: { ...siteData.faq_section, faqs: newF } });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SUBTAB 14b: FUKUPETSTORE CLUB */}
+                {activeContentSubTab === 'club_section' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('14.5 เข้าร่วม Fukupetstore Club', 'bi-envelope-heart-fill', 'club_section', 'club_section', 'footer')}
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label className="form-label">หัวข้อ Fukupetstore Club</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.footer?.club_title || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, club_title: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">คำอธิบาย Fukupetstore Club</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.footer?.club_desc || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, club_desc: e.target.value } })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 15: FOOTER */}
+                {activeContentSubTab === 'footer' && (
+                  <div className="fukupet-card">
+                    {renderSectionHeader('15. ส่วนท้ายเว็บไซต์ & ข้อมูลติดต่อ (Footer)', 'bi-body-text', 'footer', 'footer', 'footer')}
+                    <div className="form-grid mb-4">
+                      {[
+                        ['footer_about', 'ส่วนแนะนำเกี่ยวกับเรา'],
+                        ['footer_products', 'คอลัมน์สินค้า'],
+                        ['footer_services', 'คอลัมน์บริการและช่วยเหลือ'],
+                        ['footer_contact', 'คอลัมน์ข้อมูลติดต่อ'],
+                        ['footer_bottom', 'แถบลิขสิทธิ์และช่องทางชำระเงิน']
+                      ].map(([visibilityKey, label]) => (
+                        <div className="form-group" key={visibilityKey}>
+                          <label className="form-label">{label}</label>
+                          <select className="form-select" value={siteData.section_visibility?.[visibilityKey] !== false ? '1' : '0'} onChange={() => toggleSectionVisibility(visibilityKey)}>
+                            <option value="1">แสดง</option>
+                            <option value="0">ซ่อน</option>
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="form-grid">
+                      <div className="form-group full-width">
+                        <label className="form-label">คำอธิบายเกี่ยวกับเรา (About)</label>
+                        <textarea
+                          className="form-textarea"
+                          value={siteData.footer?.about || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, about: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">หัวข้อ Fukupetstore Club</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.footer?.club_title || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, club_title: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">คำอธิบาย Fukupetstore Club</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.footer?.club_desc || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, club_desc: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group full-width">
+                        <label className="form-label">ข้อความลิขสิทธิ์ (Copyright)</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.footer?.copyright || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, copyright: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group full-width">
+                        <label className="form-label">ข้อความช่องทางการชำระเงิน</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={siteData.footer?.payments || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, payments: e.target.value } })}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">หัวข้อคอลัมน์สินค้า</label>
+                        <input type="text" className="form-input" value={siteData.footer?.products_title || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, products_title: e.target.value } })} />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">หัวข้อคอลัมน์บริการ</label>
+                        <input type="text" className="form-input" value={siteData.footer?.services_title || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, services_title: e.target.value } })} />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">หัวข้อคอลัมน์ติดต่อ</label>
+                        <input type="text" className="form-input" value={siteData.footer?.contact_title || ''}
+                          onChange={e => setSiteData({ ...siteData, footer: { ...siteData.footer, contact_title: e.target.value } })} />
+                      </div>
+
+                      {[
+                        ['products', 'เมนูสินค้า'],
+                        ['services', 'เมนูบริการและช่วยเหลือ'],
+                        ['contact', 'ข้อมูลติดต่อ']
+                      ].map(([listKey, title]) => (
+                        <div className="form-group full-width" key={listKey}>
+                          <label className="form-label">{title}</label>
+                          {(siteData.footer?.[listKey] || []).map((item, index) => (
+                            <div key={index} className="d-flex gap-2 mb-2 align-items-center">
+                              <input
+                                type="text"
+                                className="form-input"
+                                placeholder="ข้อความที่แสดง"
+                                value={item.label || ''}
+                                onChange={e => updateFooterListItem(listKey, index, 'label', e.target.value)}
+                              />
+                              <input
+                                type="text"
+                                className="form-input"
+                                placeholder="ลิงก์ เช่น https://... หรือ #product"
+                                value={item.href || ''}
+                                onChange={e => updateFooterListItem(listKey, index, 'href', e.target.value)}
+                              />
+                              <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => removeFooterListItem(listKey, index)}>ลบ</button>
+                            </div>
+                          ))}
+                          <button type="button" className="btn-fukupet-outline btn-sm mt-1" onClick={() => addFooterListItem(listKey)}>
+                            <i className="bi bi-plus-lg"></i> เพิ่มรายการ
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            )}
+
+            {/* TAB 4: MEDIA MANAGER */}
+            {activeTab === 'media' && (
+              <div className="fukupet-card">
+                <div className="fukupet-card-header">
+                  <h3 className="fukupet-card-title">
+                    <i className="bi bi-images"></i> คลังรูปภาพในระบบ (/images/) - ทั้งหมด {mediaImages.length} ไฟล์
+                  </h3>
+                  <button className="btn-fukupet-outline btn-sm" onClick={loadMedia}>
+                    <i className="bi bi-arrow-clockwise"></i> รีเฟรช
+                  </button>
+                </div>
+
+                <div
+                  className="upload-dropzone mb-4"
+                  onClick={() => document.getElementById('media-dropzone-input').click()}
+                >
+                  <div className="fs-1 text-success mb-2"><i className="bi bi-cloud-arrow-up"></i></div>
+                  <h5 className="fw-bold text-dark">คลิกที่นี่เพื่อเลือกไฟล์รูปภาพเพื่ออัปโหลด</h5>
+                  <p className="text-muted small mb-0">
+                    ไฟล์จะถูกอัปโหลดและบันทึกตรงเข้าโฟลเดอร์ <code>images/</code> โดยอัตโนมัติ (รองรับ JPG, PNG, WebP, GIF, SVG)
+                  </p>
+                  <input
+                    type="file"
+                    id="media-dropzone-input"
+                    accept="image/*"
+                    className="hidden-file-input"
+                    onChange={e => handleFileUpload(e.target.files[0])}
+                  />
+                </div>
+
+                {uploading && (
+                  <div className="alert alert-info text-center fw-bold">
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    กำลังอัปโหลดไฟล์รูปภาพ...
+                  </div>
+                )}
+
+                <div className="media-grid">
+                  {mediaImages.map((img, idx) => (
+                    <div key={idx} className="media-card">
+                      <img src={img.url} alt={img.filename} className="media-img" />
+                      <div className="media-info">
+                        <div className="media-name" title={img.filename}>{img.filename}</div>
+                        <div className="text-muted small mb-2">{img.size_formatted}</div>
+                        <div className="d-flex gap-1">
+                          <button
+                            className="btn btn-sm btn-outline-secondary py-1 px-2 flex-grow-1 small"
+                            onClick={() => {
+                              navigator.clipboard.writeText(img.url);
+                              showToast('คัดลอก URL เรียบร้อย: ' + img.url);
+                            }}
+                          >
+                            <i className="bi bi-copy"></i> คัดลอก
+                          </button>
+                          <button
+                            className="btn btn-sm btn-outline-danger py-1 px-2 small"
+                            onClick={() => handleDeleteMedia(img.filename)}
+                          >
+                            <i className="bi bi-trash"></i> ลบ
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 5: DATABASE SETUP */}
+            {activeTab === 'database' && authState.is_superadmin && (
+              <div className="fukupet-card">
+                <div className="fukupet-card-header">
+                  <h3 className="fukupet-card-title"><i className="bi bi-database-gear"></i> การเชื่อมต่อฐานข้อมูล SQL & การตั้งค่าระบบ</h3>
+                </div>
+
+                <div className="row g-3 mb-4">
+                  <div className="col-md-3">
+                    <div className="p-3 border rounded bg-light">
+                      <span className="text-muted small d-block">Host</span>
+                      <strong className="fs-6">localhost:3306</strong>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="p-3 border rounded bg-light">
+                      <span className="text-muted small d-block">Database Name</span>
+                      <strong className="fs-6">fukupet_dbwebsite</strong>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="p-3 border rounded bg-light">
+                      <span className="text-muted small d-block">User Name</span>
+                      <strong className="fs-6">fukupet_yok</strong>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="p-3 border rounded bg-light">
+                      <span className="text-muted small d-block">สถานะการเชื่อมต่อ</span>
+                      <strong className="fs-6" style={{ color: dbStatus?.connected ? 'var(--sys-green)' : 'var(--sys-orange)' }}>
+                        {dbStatus?.connected ? '✓ เชื่อมต่อสำเร็จ' : '⚠️ โหมด Local JSON'}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+
+                {dbStatus?.error && (
+                  <div className="alert alert-warning mb-4 small fw-semibold">
+                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>ข้อความแจ้งเตือนจาก MySQL:</strong> {dbStatus.error}
+                  </div>
+                )}
+
+                <div className="p-4 border rounded-3 bg-light">
+                  <h5 className="fw-bold text-dark mb-2">🚀 ติดตั้งและสร้างตารางฐานข้อมูล (Init Database)</h5>
+                  <p className="text-muted small mb-3">
+                    หากคุณได้สร้าง Database <code>fukupet_dbwebsite</code> ในแผงควบคุม Hosting เรียบร้อยแล้ว คุณสามารถคลิกปุ่มด้านล่างเพื่อสร้างตารางทั้งหมด พร้อมข้อมูลเริ่มต้น 100% ได้ทันที
+                  </p>
+                  <div className="d-flex gap-2 flex-wrap">
+                    <button className="btn-fukupet-primary" onClick={runInitDb}>
+                      <i className="bi bi-lightning-charge-fill"></i>
+                      สั่งติดตั้งฐานข้อมูลอัตโนมัติ (Run Init DB)
+                    </button>
+                    <a href="initdatabase.sql" download="initdatabase.sql" className="btn-fukupet-outline">
+                      <i className="bi bi-download"></i>
+                      ดาวน์โหลด initdatabase.sql
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'permissions' && authState.is_superadmin && (
+              <div className="fukupet-card">
+                <div className="fukupet-card-header">
+                  <h3 className="fukupet-card-title"><i className="bi bi-person-lines-fill"></i> จัดการสิทธิ์ผู้ใช้งาน</h3>
+                </div>
+                
+                <div className="row g-4 mb-4">
+                  <div className="col-md-4">
+                    <div className="p-4 border rounded-3 bg-light">
+                      <h5 className="fw-bold text-dark mb-3">เพิ่มผู้ดูแลระบบ</h5>
+                      <form onSubmit={handleCreateUser}>
+                        <div className="mb-3">
+                          <label className="form-label small fw-bold">ชื่อผู้ใช้งาน (Username)</label>
+                          <input type="text" className="form-control" required value={newUser.username} onChange={e => setNewUser({...newUser, username: e.target.value})} />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label small fw-bold">รหัสผ่าน (Password)</label>
+                          <input type="password" className="form-control" required value={newUser.password} onChange={e => setNewUser({...newUser, password: e.target.value})} />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label small fw-bold">ชื่อแสดงผล (Display Name)</label>
+                          <input type="text" className="form-control" required value={newUser.display_name} onChange={e => setNewUser({...newUser, display_name: e.target.value})} />
+                        </div>
+                        <button type="submit" className="btn-fukupet-primary w-100">
+                          <i className="bi bi-person-plus-fill me-2"></i> สร้างผู้ใช้งาน
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  
+                  <div className="col-md-8">
+                    <h5 className="fw-bold text-dark mb-3">รายชื่อผู้ดูแลระบบ (Admin Users)</h5>
+                    <div className="table-responsive">
+                      <table className="table table-bordered table-hover align-middle">
+                        <thead className="table-light">
+                          <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Display Name</th>
+                            <th>Created At</th>
+                            <th className="text-center">จัดการ</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {adminUsers.map(user => (
+                            <tr key={user.id}>
+                              <td>{user.id}</td>
+                              <td>{user.username}</td>
+                              <td>{user.display_name}</td>
+                              <td>{user.created_at}</td>
+                              <td className="text-center">
+                                <button className="btn btn-sm btn-danger" onClick={() => handleDeleteUser(user.id)}>
+                                  <i className="bi bi-trash"></i> ลบ
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                          {adminUsers.length === 0 && (
+                            <tr>
+                              <td colSpan="5" className="text-center py-3 text-muted">ไม่พบข้อมูลผู้ใช้งาน</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* Toast Notification */}
+          {toast && (
+            <div className="toast-fukupet">
+              <i className="bi bi-check-circle-fill"></i>
+              <span>{toast}</span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('admin-root')).render(<AdminApp />);
+  </script>
+</body>
+</html>

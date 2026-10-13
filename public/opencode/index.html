@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CM — บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) | ผู้ผลิตและส่งออกผักแช่แข็ง | SET:CM</title>
+  <meta name="description" content="บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) SET:CM ผู้ผลิตและส่งออกผักแปรรูปแช่แข็ง ถั่วแระ ถั่วแขก ข้าวโพดหวาน ข้าวโพดฝักอ่อน ผักผสม ก่อตั้ง 3 พ.ย. 2531 ทุน 381.15 ลบ. โรงงานเชียงใหม่ 2 แห่ง">
+  <meta name="keywords" content="CM, Chiangmai Frozen Foods, เชียงใหม่โฟรเซ่นฟูดส์, SET, หุ้น CM, ผักแช่แข็ง">
+  <meta name="author" content="Chiangmai Frozen Foods PCL">
+  <meta name="theme-color" content="#022C22">
+  <link rel="canonical" href="https://cmfrozen.com/opencode/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="th_TH">
+  <meta property="og:title" content="CM — บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน)">
+  <meta property="og:description" content="ผู้ผลิตและส่งออกผักแช่แข็ง ถั่วแระ ข้าวโพดหวาน รายใหญ่จากเชียงใหม่ จดทะเบียน SET:CM">
+  <meta property="og:url" content="https://cmfrozen.com/opencode/">
+  <meta property="og:image" content="img/dashboard.png">
+  <link id="favicon" rel="icon" href="img/feat-cube.png" type="image/png">
+  <link rel="alternate icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23059669'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='14' fill='white'%3ECM%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --brand-400:#34D399;--brand-500:#10B981;--brand-600:#059669;--brand-700:#047857;--brand-800:#065F46;--brand-900:#022C22;
+      --brand-cyan:#34D399;--mint:#065F46;--violet:#A3E635;
+      /* โทนเข้ม — พื้นเข้มทั้งหมด */
+      --gray-50:#022C22;--gray-100:#064E3B;--gray-200:#065F46;--gray-300:#047857;--gray-400:#059669;--gray-500:#10B981;--gray-600:#6EE7B7;--gray-700:#A7F3D0;--gray-800:#D1FAE5;--gray-900:#ECFDF5;
+      --text-strong:#FFFFFF;--text-body:#ECFDF5;--text-muted:#A7F3D0;--text-faint:#6EE7B7;
+      --bg-soft:#022C22;--bg-white:#064E3B;--bg-card:#065F46;--bg-section:#064E3B;--surface-white:#065F46;
+      --border-strong:#047857;--border-soft:#065F46;
+      --gradient-brand-panel: radial-gradient(circle at 14% 0%, rgba(167,243,208,.10), transparent 36%), radial-gradient(circle at 92% 112%, rgba(52,211,153,.14), transparent 38%), linear-gradient(135deg,#022C22,#064E3B 52%,#065F46);
+      --shadow-panel:0 24px 56px rgba(0,0,0,.45);
+      --shadow-card:0 8px 24px rgba(0,0,0,.30);
+      --shadow-card-hover:0 16px 36px rgba(0,0,0,.40);
+      --glass-filter:blur(20px) saturate(130%);
+      --ease-out:cubic-bezier(.22,1,.36,1);
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:100px}
+    body{font-family:'Noto Sans Thai',sans-serif;color:var(--gray-900);background:var(--bg-soft);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    .container{width:min(1180px,100% - 48px);margin-inline:auto}
+    section{padding:84px 0;scroll-margin-top:88px}
+    h1,h2,h3,h4{letter-spacing:-.02em;line-height:1.25}
+    img{max-width:100%}
+    /* header */
+    .header{position:fixed;top:0;left:0;right:0;z-index:50;padding:16px 24px 0;pointer-events:none;transition:transform .3s var(--ease-out)}
+    .header.hidden{transform:translateY(-110%)}
+    .header-inner{pointer-events:auto;max-width:1180px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;border:1px solid #047857;border-radius:9999px;box-shadow:0 12px 32px rgba(5,150,105,.14), inset 0 1px 0 rgba(255,255,255,.6);backdrop-filter:var(--glass-filter);background:rgba(6, 78, 59,.92);transition:background .3s,box-shadow .3s}
+    .header-inner.is-scrolled{background:rgba(4, 120, 87,.96);box-shadow:0 16px 40px rgba(5,150,105,.18)}
+    .header-brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+    .header-brand .brand-box{width:38px;height:38px;border-radius:10px;background:var(--brand-500);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;box-shadow:0 6px 16px rgba(5,150,105,.3)}
+    .header-brand span{font-weight:700;font-size:17px;color:var(--gray-900);letter-spacing:-.02em}
+    .header-brand small{display:block;font-size:11px;font-weight:600;color:var(--brand-700);letter-spacing:.06em;line-height:1}
+    .header-links{display:flex;align-items:center;gap:4px;list-style:none}
+    .header-links a{display:block;padding:9px 14px;border-radius:9999px;text-decoration:none;color:#ECFDF5;font-size:14px;font-weight:600;transition:all .2s}
+    .header-links a:hover{color:#FFFFFF;background:#065F46}
+    .header-links a.active{color:#FFFFFF;background:#047857;font-weight:700;border:1px solid #10B981}
+    .header-cta{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:var(--brand-500);color:#fff!important;border-radius:9999px;font-weight:600;font-size:14px;text-decoration:none;box-shadow:0 6px 18px rgba(5,150,105,.3);transition:all .2s}
+    .header-cta:hover{transform:translateY(-2px);background:var(--brand-600)}
+    .theme-toggle{width:42px;height:42px;border-radius:9999px;border:1px solid rgba(5,150,105,.12);background:rgba(2, 44, 34,.9);backdrop-filter:blur(12px);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray-700);box-shadow:0 4px 14px rgba(16,33,61,.08);transition:all .25s var(--ease-out);flex-shrink:0}
+    .theme-toggle:hover{transform:translateY(-1px) rotate(12deg);color:var(--brand-600);border-color:#D7E5FC}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;border:none;background:none}
+    .hamburger span{display:block;width:22px;height:2.5px;background:var(--gray-900);border-radius:2px;transition:all .3s}
+    .mobile-menu{display:flex;justify-content:flex-end;position:fixed;inset:0;z-index:49;background:rgba(8,20,46,.5);backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:opacity .3s var(--ease-out),visibility .3s}
+    .mobile-menu.active{opacity:1;visibility:visible}
+    .mobile-menu[hidden]{display:none!important}
+    .mobile-menu-content{position:absolute;top:0;right:0;width:min(320px,85vw);height:100%;background:#064E3B;padding:90px 24px 32px;box-shadow:var(--shadow-panel);border-left:1px solid #047857}
+    .mobile-menu-links{list-style:none;display:flex;flex-direction:column;gap:4px}
+    .mobile-menu-links a{display:block;padding:14px 16px;text-decoration:none;color:var(--gray-900);font-weight:500;font-size:16px;border-radius:12px}
+    .mobile-menu-links a:hover{background:#022C22;color:var(--brand-700)}
+    .mobile-menu-cta{display:block;margin-top:16px;padding:14px;background:var(--brand-500);color:#fff;text-align:center;border-radius:12px;font-weight:600;text-decoration:none}
+    /* hero */
+    .hero{position:relative;overflow:hidden;padding:148px 0 64px;background:linear-gradient(180deg,#022C22 0%,#064E3B 58%,#064E3B 100%);isolation:isolate}
+    .hero-mesh{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .hero-mesh .orb{position:absolute;border-radius:50%;filter:blur(42px);opacity:.55;mix-blend-mode:plus-lighter}
+    .hero-mesh .orb-1{width:520px;height:520px;left:-80px;top:-120px;background:radial-gradient(circle at 50% 50%,#34D399 0%, transparent 62%);animation:orbFloat 14s ease-in-out infinite}
+    .hero-mesh .orb-2{width:620px;height:620px;right:-140px;top:10%;background:radial-gradient(circle at 50% 50%,#6EE7B7 0%, transparent 62%);opacity:.32;animation:orbFloat 18s ease-in-out infinite reverse}
+    .hero-mesh .orb-3{width:520px;height:520px;left:36%;bottom:-160px;background:radial-gradient(circle at 50% 50%,#10B981 0%, transparent 62%);opacity:.22;animation:orbFloat 20s ease-in-out infinite}
+    @keyframes orbFloat{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(18px,-18px,0) scale(1.06)}}
+    .hero::before{content:'';position:absolute;inset:0;background-image: radial-gradient(circle, rgba(16,185,129,0.14) 1px, transparent 1px);background-size:24px 24px;opacity:.5;mask-image:linear-gradient(90deg,#000, transparent 38% 62%, #000);pointer-events:none}
+    .hero-inner{position:relative;text-align:center}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;background:#064E3B;border:1px solid var(--brand-500);border-radius:9999px;font-size:13px;font-weight:600;color:var(--brand-600);box-shadow:0 6px 18px rgba(5,150,105,.12);margin-bottom:22px}
+    .hero-badge .dot{width:8px;height:8px;background:#17B26A;border-radius:50%;animation:pulse 2s infinite}
+    .live-dot{width:7px;height:7px;border-radius:50%;background:#17B26A;box-shadow:0 0 0 6px rgba(23,178,106,.18);animation:livePulse 1.8s ease-in-out infinite;display:inline-block}
+    @keyframes livePulse{0%,100%{box-shadow:0 0 0 6px rgba(23,178,106,.18)}50%{box-shadow:0 0 0 10px rgba(23,178,106,.06)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .hero h1{font-size:clamp(22px,3.2vw,32px);font-weight:700;letter-spacing:-.02em;line-height:1.25;color:var(--gray-900);max-width:980px;margin-inline:auto;white-space:nowrap;text-wrap:nowrap}
+    .hero h1 .grad{display:inline;background:linear-gradient(90deg,#10B981 0%,#34D399 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-size:inherit;font-weight:800;letter-spacing:inherit;margin-left:.28em}
+    .hero h1 small{display:block;margin-top:8px;font-size:12px;font-weight:600;letter-spacing:.1em;color:#6EE7B7;text-transform:uppercase;opacity:.9;white-space:normal}
+    .hero-desc{margin:16px auto 0;max-width:720px;font-size:16px;font-weight:500;color:var(--gray-800);line-height:1.7}
+    .hero-actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:28px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 26px;border-radius:9999px;font-weight:600;font-size:15px;text-decoration:none;cursor:pointer;border:none;transition:all .25s var(--ease-out)}
+    .btn-primary{background:var(--brand-500);color:#fff;box-shadow:0 6px 18px rgba(5,150,105,.3)}
+    .btn-primary:hover{transform:translateY(-2px);background:var(--brand-600);box-shadow:0 10px 26px rgba(5,150,105,.4)}
+    .btn-ghost{background:#064E3B;color:var(--brand-600);border:1px solid #065F46}
+    .btn-ghost:hover{border-color:var(--brand-500);transform:translateY(-2px);box-shadow:var(--shadow-card-hover)}
+    .btn-white{background:#022C22;color:var(--brand-700);box-shadow:0 10px 26px rgba(0,0,0,.10);border:1px solid #047857}
+    /* stock ticker card */
+    .hero-stock-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;max-width:980px;margin:44px auto 0;text-align:left}
+    .stock-card{background:rgba(6, 95, 70,.96);backdrop-filter:blur(16px);border:1px solid #065F46;border-radius:20px;padding:20px;box-shadow:0 12px 32px rgba(5,150,105,.12)}
+    .stock-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .stock-head h3{font-size:15px;font-weight:700}
+    .stock-price{font-size:32px;font-weight:800;color:var(--gray-900);letter-spacing:-.02em}
+    .stock-price small{font-size:13px;font-weight:600;color:#17B26A;margin-left:8px}
+    .stock-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;font-size:12px}
+    .stock-meta div{background:#022C22;border:1px solid #047857;border-radius:12px;padding:10px}
+    .stock-meta b{display:block;font-size:15px;color:var(--gray-900)}
+    .stock-source{margin-top:10px;font-size:11px;color:var(--gray-700)}
+    .stock-source a{color:var(--brand-600);text-decoration:none}
+    .hero-info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .hero-info-card{display:flex;align-items:flex-start;gap:14px;background:rgba(6, 95, 70,.92);backdrop-filter:blur(16px);border:1px solid #065F46;border-radius:18px;padding:18px;box-shadow:0 12px 32px rgba(5,150,105,.10);transition:all .3s var(--ease-out)}
+    .hero-info-card:hover{transform:translateY(-4px)}
+    .hero-info-card .card-num{width:36px;height:36px;border-radius:50%;background:#022C22;color:var(--brand-600);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+    .hero-info-card h4{font-size:14px;font-weight:700;margin-bottom:4px}
+    .hero-info-card p{font-size:12.5px;color:var(--gray-700);line-height:1.5}
+    /* sections — โทนเขียวแมตช์ */
+    .section-tag{display:inline-flex;align-items:center;gap:8px;color:#6EE7B7;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
+    .section-title{font-size:clamp(26px,3.6vw,36px);font-weight:800;color:var(--gray-900);letter-spacing:-.035em;line-height:1.2;margin-bottom:12px}
+    .section-desc{font-size:15px;font-weight:500;color:var(--gray-800);line-height:1.7;max-width:640px;margin:0 auto}
+    .section-header{text-align:center;margin-bottom:44px}
+    .band-section{background:var(--bg-soft)}
+    .period-band{background:var(--gradient-brand-panel);color:#fff;border-radius:28px;padding:32px;text-align:center;box-shadow:var(--shadow-panel);position:relative;overflow:hidden}
+    .period-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:18px}
+    .period-stat .num{font-size:34px;font-weight:800;line-height:1;color:var(--mint)}
+    .period-stat .lbl{font-size:13px;color:rgba(255,255,255,.8);margin-top:6px}
+    /* about grid */
+    .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:start}
+    .about-card{background:var(--bg-card);border:1px solid var(--border-strong);border-radius:24px;padding:28px;box-shadow:var(--shadow-card)}
+    .about-card h3{font-size:18px;font-weight:700;margin-bottom:10px}
+    .about-card p{font-size:14px;color:var(--gray-800);line-height:1.8}
+    .kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+    .kv{border:1px solid #065F46;background:#064E3B;border-radius:16px;padding:14px}
+    .kv b{display:block;font-size:18px;color:var(--brand-700)}
+    .kv span{font-size:12px;color:var(--gray-700)}
+    /* products — ไม่ขาว: พื้นฟ้าอ่อน + การ์ดฟ้าขาวอมคราม */
+    #products{background: linear-gradient(180deg,#064E3B 0%,#064E3B 100%); border-top:1px solid #047857; border-bottom:1px solid #047857}
+    .models-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .model-card{display:flex;flex-direction:column;gap:0;background:#022C22;border:1px solid #047857;border-radius:20px;overflow:hidden;box-shadow:0 8px 24px rgba(5,150,105,.08);transition:all .3s var(--ease-out);text-align:left}
+    .model-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-card-hover);border-color:var(--brand-500)}
+    .model-card .model-img{width:100%;height:168px;object-fit:cover;display:block;transition:transform .5s var(--ease-out)}
+    .model-card:hover .model-img{transform:scale(1.06)}
+    .model-card .model-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
+    .model-card .model-name{font-size:15px;font-weight:700;color:var(--gray-900)}
+    .model-card p{font-size:13px;color:var(--gray-700);line-height:1.6}
+    .model-card .chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--brand-600);background:#022C22;border-radius:9999px;padding:6px 10px;width:fit-content}
+    /* timeline / factories */
+    .timeline-panel{background:var(--gradient-brand-panel);border-radius:28px;padding:32px;color:#fff;box-shadow:var(--shadow-panel);position:relative;overflow:hidden}
+    .timeline-panel .section-tag{color:var(--mint)}
+    .timeline-panel .section-title{color:#fff}
+    .timeline-panel .section-desc{color:rgba(255,255,255,.8)}
+    .timeline-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;position:relative}
+    .timeline-item{text-align:left;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:18px}
+    .timeline-item h3{font-size:15px;font-weight:700;margin-bottom:6px}
+    .timeline-item p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.6}
+    .timeline-item .t-date{font-size:12px;font-weight:700;color:var(--mint);margin-bottom:6px}
+    /* investor */
+    #investor{background:var(--bg-section)}
+    .invest-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+    .invest-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-card)}
+    .invest-table th,.invest-table td{padding:12px 14px;font-size:13px;text-align:left;border-bottom:1px solid #047857}
+    .invest-table th{background:#064E3B;font-weight:700;color:var(--gray-800);width:44%}
+    .invest-table tr:last-child th,.invest-table tr:last-child td{border-bottom:none}
+    .invest-note{font-size:11px;color:var(--gray-700);margin-top:10px}
+    /* steps/contact/footer */
+    .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .step-card{background:var(--bg-card);border:1px solid var(--border-strong);border-radius:20px;padding:22px;text-align:center;box-shadow:var(--shadow-card);transition:all .3s var(--ease-out)}
+    .step-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-card-hover);border-color:var(--brand-500)}
+    .step-num{width:40px;height:40px;border-radius:50%;background:var(--brand-500);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;margin:0 auto 14px;box-shadow:0 6px 16px rgba(5,150,105,.3)}
+    .contact-bar{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+    .contact-item{display:flex;align-items:center;gap:14px;background:var(--bg-card);border:1px solid var(--border-strong);border-radius:18px;padding:18px 22px;text-decoration:none;color:var(--gray-900);box-shadow:var(--shadow-card);transition:all .3s var(--ease-out)}
+    .contact-item:hover{transform:translateY(-3px);box-shadow:var(--shadow-card-hover);border-color:var(--brand-500)}
+    .contact-item .c-icon{width:44px;height:44px;border-radius:50%;background:#022C22;color:var(--brand-500);display:flex;align-items:center;justify-content:center;font-size:18px}
+    .footer{background:#047857;padding:56px 24px 32px;border-top:1px solid #065F46}
+    .footer-inner{max-width:1180px;margin:0 auto}
+    .footer-top{display:grid;grid-template-columns:1.7fr 1fr 1fr 1.3fr;gap:32px;padding-bottom:28px;border-bottom:1px solid var(--gray-200)}
+    .footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .footer-brand .brand-box{width:38px;height:38px;border-radius:10px;background:var(--brand-500);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+    .footer-brand span{font-weight:700;font-size:16px;color:var(--gray-900)}
+    .footer-about p{font-size:13px;color:var(--gray-700);line-height:1.7;max-width:360px}
+    .footer-col h4{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--gray-900)}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+    .footer-col a{color:var(--gray-700);text-decoration:none;font-size:13px}
+    .footer-col a:hover{color:var(--brand-500)}
+    .footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:18px;font-size:12px;color:var(--gray-700);flex-wrap:wrap;gap:10px}
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(18px) scale(.98);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out)}
+    .reveal.in{opacity:1;transform:none}
+    @media(max-width:1024px){
+      .hero-stock-wrap{grid-template-columns:1fr}
+      .hero-info-cards{grid-template-columns:1fr}
+      .about-grid,.invest-grid{grid-template-columns:1fr}
+      .models-grid{grid-template-columns:repeat(2,1fr)}
+      .timeline-grid,.steps-grid{grid-template-columns:repeat(2,1fr)}
+      .footer-top{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:1024px){
+      .hero h1{white-space:normal;text-wrap:balance}
+      .hero h1 .grad{margin-left:0}
+    }
+    @media(max-width:768px){
+      .header-links,.header-cta{display:none}
+      .hamburger{display:flex}
+      .models-grid{grid-template-columns:1fr}
+      .timeline-grid,.steps-grid{grid-template-columns:1fr}
+      .footer-top{grid-template-columns:1fr}
+      .hero{padding:120px 0 48px}
+      .hero h1{font-size:clamp(20px,5.2vw,26px);white-space:normal;text-wrap:balance}
+    }
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    .skip-link{position:absolute;top:-100px;left:16px;background:var(--brand-600);color:#fff;padding:10px 18px;border-radius:9999px;z-index:100;text-decoration:none;font-weight:600;font-size:14px}
+    .skip-link:focus{top:12px}
+    /* Cookie PDPA — โทนเข้มเขียว */
+    .cookie-bar{position:fixed;left:16px;right:16px;bottom:16px;z-index:60;max-width:1180px;margin-inline:auto;background:rgba(6,78,59,.96);backdrop-filter:blur(16px) saturate(130%);border:1px solid #047857;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.45);padding:18px;display:flex;gap:16px;align-items:center;transform:translateY(140%);opacity:0;visibility:hidden;transition:all .45s var(--ease-out)}
+    .cookie-bar.show{transform:none;opacity:1;visibility:visible}
+    .cookie-bar .cookie-icon{width:44px;height:44px;border-radius:12px;background:#022C22;color:#6EE7B7;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid #047857}
+    .cookie-bar .cookie-text{flex:1;min-width:0}
+    .cookie-bar .cookie-text h4{font-size:14px;font-weight:700;color:#ECFDF5;margin-bottom:4px}
+    .cookie-bar .cookie-text p{font-size:12.5px;line-height:1.6;color:#A7F3D0}
+    .cookie-bar .cookie-text a{color:#6EE7B7;text-decoration:underline;text-underline-offset:3px}
+    .cookie-bar .cookie-text a:hover{color:#ECFDF5}
+    .cookie-actions{display:flex;gap:10px;flex-wrap:wrap;flex-shrink:0}
+    .cookie-actions .btn{padding:10px 18px;font-size:13px;white-space:nowrap}
+    .cookie-actions .btn-accept{background:#10B981;color:#022C22;border:1px solid #34D399}
+    .cookie-actions .btn-accept:hover{background:#34D399}
+    .cookie-actions .btn-reject{background:transparent;color:#A7F3D0;border:1px solid #047857}
+    .cookie-actions .btn-reject:hover{background:rgba(255,255,255,.06);color:#ECFDF5}
+    .cookie-actions .btn-manage{background:#064E3B;color:#D1FAE5;border:1px solid #047857}
+    .cookie-settings{position:fixed;inset:0;z-index:61;background:rgba(2,44,34,.72);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all .3s}
+    .cookie-settings.show{opacity:1;visibility:visible}
+    .cookie-panel{width:min(560px,100%);background:#064E3B;border:1px solid #047857;border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.5);padding:24px;max-height:90vh;overflow:auto}
+    .cookie-panel h3{font-size:18px;font-weight:700;color:#ECFDF5;margin-bottom:8px}
+    .cookie-panel .cookie-opt{display:flex;gap:14px;align-items:flex-start;padding:14px;border:1px solid #047857;border-radius:14px;background:#022C22;margin-top:12px}
+    .cookie-panel .cookie-opt b{font-size:14px;color:#ECFDF5}
+    .cookie-panel .cookie-opt span{font-size:12px;color:#A7F3D0;line-height:1.5}
+    .cookie-panel .cookie-opt input{accent-color:#10B981;width:18px;height:18px;margin-top:2px}
+    /* Go Top */
+    .goTop{position:fixed;right:18px;bottom:18px;z-index:55;width:48px;height:48px;border-radius:50%;border:1px solid #047857;background:#065F46;color:#ECFDF5;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(0,0,0,.35);cursor:pointer;opacity:0;visibility:hidden;transform:translateY(8px);transition:all .3s var(--ease-out)}
+    .goTop.show{opacity:1;visibility:visible;transform:none}
+    .goTop:hover{background:#047857;color:#FFFFFF;transform:translateY(-2px)}
+    .goTop i{font-size:16px}
+    @media(max-width:768px){.cookie-bar{flex-direction:column;align-items:stretch;left:12px;right:12px;bottom:12px}.cookie-actions{justify-content:stretch}.cookie-actions .btn{flex:1} .goTop{right:12px;bottom:84px}}
+    /* dark */
+    /* dark */
+    html[data-theme="dark"] body{background:#080F22;color:var(--gray-900)}
+    html[data-theme="dark"] .header-inner{background:rgba(18,28,51,.86);border-color:rgba(255,255,255,.10);box-shadow:0 16px 40px rgba(0,0,0,.35)}
+    html[data-theme="dark"] .header-brand span{color:#E8EEFB}
+    html[data-theme="dark"] .header-links a{color:#C7D2E8}
+    html[data-theme="dark"] .stock-card,html[data-theme="dark"] .about-card,html[data-theme="dark"] .model-card,html[data-theme="dark"] .step-card,html[data-theme="dark"] .contact-item,html[data-theme="dark"] .hero-info-card{background:#111E36;border-color:rgba(255,255,255,.08);box-shadow:0 12px 32px rgba(0,0,0,.35)}
+    html[data-theme="dark"] .hero{background:linear-gradient(180deg,#0B1530 0%,#0A1020 72%,#080F22 100%)}
+    html[data-theme="dark"] .footer{background:#060B1A}
+    /* ===== READABILITY BOOST — high contrast + larger line-height ===== */
+    body{color:var(--text-body);line-height:1.78;letter-spacing:-.01em}
+    h1,h2,h3{color:var(--gray-900)}
+    .hero{ background: linear-gradient(180deg,#022C22 0%, #064E3B 60%, #064E3B 100%); }
+    .hero-desc{color:var(--gray-800);font-weight:500;font-size:16.5px}
+    .hero-desc b{color:var(--gray-900);font-weight:700}
+    .section-desc{color:var(--gray-700);font-weight:500}
+    .about-card p,.model-card p{color:var(--gray-800);font-weight:400}
+    .about-card, .model-card, .stock-card, .invest-table, .contact-item, .step-card{border-color:var(--border-strong)}
+    .invest-table th{background:#064E3B;color:var(--gray-800);font-weight:700}
+    .invest-table td{color:var(--gray-800);font-weight:500}
+    .invest-table td b{color:var(--gray-900);font-weight:800}
+    .kv{background:#064E3B;border-color:#065F46}
+    .kv span{color:var(--gray-600);font-weight:600;letter-spacing:.02em}
+    .kv b{color:var(--gray-900)}
+    .stock-meta div{background:#022C22;border-color:#047857}
+    .stock-meta span{color:var(--gray-600);font-weight:600}
+    .stock-meta b{color:var(--gray-900)}
+    .stock-source{color:var(--gray-600)}
+    .hero-info-card p{color:var(--gray-700);font-weight:500}
+    .footer-about p{color:var(--gray-600)}
+    .footer-col a{color:var(--gray-600);font-weight:500}
+    .footer-col a:hover{color:var(--brand-600)}
+    .footer-bottom{color:var(--gray-600)}
+    .btn-ghost{background:#064E3B;border-color:#065F46;color:var(--brand-700);font-weight:700}
+    .btn-ghost:hover{border-color:var(--brand-500);background:#047857}
+    /* focus ring ชัดขึ้น */
+    a:focus-visible, button:focus-visible{outline:3px solid var(--brand-500);outline-offset:2px}
+    /* dark mode readability */
+    html[data-theme="dark"]{--text-body:#F1F5F9;--text-muted:#CBD5E1}
+    html[data-theme="dark"] .section-desc{color:#CBD5E1}
+    html[data-theme="dark"] .hero-desc{color:#CBD5E1}
+    html[data-theme="dark"] .invest-table th{background:#1E293B;color:#F1F5F9}
+    html[data-theme="dark"] .invest-table td{color:#CBD5E1}
+    html[data-theme="dark"] .kv{background:#1E293B;border-color:#334155}
+    html[data-theme="dark"] .kv span{color:#94A3B8}
+    html[data-theme="dark"] .stock-meta div{background:#1E293B;border-color:#334155}
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">ข้ามไปยังเนื้อหาหลัก</a>
+  <header class="header" id="header" role="banner">
+    <div class="header-inner">
+      <a href="/" class="header-brand" aria-label="CM Frozen หน้าแรก">
+        <div class="brand-box">CM</div>
+        <div>
+          <span>CM Frozen</span>
+          <small>CHIANGMAI FROZEN FOODS PCL • SET:CM</small>
+        </div>
+      </a>
+      <nav aria-label="เมนูหลัก">
+        <ul class="header-links">
+          <li><a href="#about" class="active">เกี่ยวกับเรา</a></li>
+          <li><a href="#products">ผลิตภัณฑ์</a></li>
+          <li><a href="#factories">โรงงาน</a></li>
+          <li><a href="#investor">นักลงทุน</a></li>
+          <li><a href="#financials">งบ & ESG</a></li>
+          <li><a href="#contact">ติดต่อ</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;align-items:center;gap:10px">
+        <a href="https://www.set.or.th/th/market/product/stock/quote/cm/price" target="_blank" class="header-cta"><i class="fa-solid fa-chart-line"></i> ดูหุ้น CM</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="สลับธีม"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
+        <button class="hamburger" id="hamburger" aria-label="เปิดเมนู" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" hidden>
+    <div class="mobile-menu-content">
+      <button class="mobile-close" id="mobileClose" aria-label="ปิดเมนู" style="position:absolute;top:18px;right:18px;background:#F3F3F3;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-xmark"></i></button>
+      <ul class="mobile-menu-links">
+        <li><a href="#about">เกี่ยวกับเรา</a></li>
+        <li><a href="#products">ผลิตภัณฑ์</a></li>
+        <li><a href="#factories">โรงงาน</a></li>
+        <li><a href="#investor">นักลงทุน</a></li>
+        <li><a href="#financials">งบ & ESG</a></li>
+        <li><a href="#contact">ติดต่อ</a></li>
+      </ul>
+      <a href="https://www.set.or.th/th/market/product/stock/quote/cm/company-profile/information" target="_blank" class="mobile-menu-cta">ข้อมูล SET:CM</a>
+    </div>
+  </div>
+  <main id="main">
+    <!-- HERO CORPORATE -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-mesh" aria-hidden="true"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
+      <div class="container hero-inner">
+        <div class="hero-badge reveal"><span class="live-dot"></span><span class="dot"></span> SET:CM • เกษตรและอุตสาหกรรมอาหาร <span style="opacity:.6">|</span> อาหารและเครื่องดื่ม</div>
+        <h1 id="hero-heading" class="reveal" style="transition-delay:.08s">บริษัท เชียงใหม่โฟรเซ่นฟูดส์ <span class="grad">จำกัด (มหาชน)</span><small>CHIANGMAI FROZEN FOODS PUBLIC COMPANY LIMITED</small></h1>
+        <p class="hero-desc reveal" style="transition-delay:.16s">ผู้ผลิตและส่งออก <b>ผักแปรรูปแช่แข็ง</b> — ถั่วแระ ถั่วแขก ข้าวโพดหวาน ข้าวโพดฝักอ่อน ผักผสม — ส่งออกญี่ปุ่น สหรัฐฯ ยุโรป โรงงานเชียงใหม่ 2 แห่ง กำลังการผลิตมาตรฐานสากล</p>
+        <div class="hero-actions reveal" style="transition-delay:.22s">
+          <a href="#products" class="btn btn-primary">ดูผลิตภัณฑ์ <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="https://www.cmfrozen.com" target="_blank" class="btn btn-ghost"><i class="fa-solid fa-globe"></i> cmfrozen.com</a>
+          <a href="https://www.set.or.th/th/market/product/stock/quote/cm/factsheet" target="_blank" class="btn btn-ghost"><i class="fa-solid fa-file-lines"></i> Factsheet SET</a>
+        </div>
+
+        <div class="hero-stock-wrap reveal" style="transition-delay:.28s">
+          <div class="stock-card" id="stockCard">
+            <div class="stock-head">
+              <h3><i class="fa-solid fa-chart-column" style="color:var(--brand-500)"></i> ข้อมูลหลักทรัพย์ CM <span id="liveDot" class="live-dot" style="margin-left:8px;vertical-align:middle" title="เรียลไทม์"></span></h3>
+              <span style="font-size:12px;background:#022C22;color:var(--brand-700);padding:6px 10px;border-radius:9999px;font-weight:700">SET • mai/food <span id="stockStatus" style="margin-left:6px;color:#6EE7B7">● LIVE</span></span>
+            </div>
+            <div class="stock-price"><span id="stockPrice">1.54</span> <small>บาท <span id="stockChange" style="color:#FCA5A5">-1.90%</span> • <span id="stockTime">31 ส.ค. 2569 • 16:55 ICT</span></small> <span id="stockFlash" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;margin-left:6px;opacity:0;transition:opacity .3s"></span></div>
+            <div style="font-size:12px;color:var(--gray-700)"><span id="stockRange">ช่วง 52 สัปดาห์ 1.48 - 1.85 บาท • วันนี้ 1.54 - 1.56</span> • P/BV 0.47 • <span id="stockCap">Market Cap 587.0 ลบ.</span> • Vol <span id="stockVol">95,000 หุ้น</span></div>
+            <!-- กราฟราคาหุ้น บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) SET:CM -->
+            <div style="margin-top:14px;background:#022C22;border:1px solid #047857;border-radius:12px;overflow:hidden">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#065F46;border-bottom:1px solid #047857">
+                <span style="font-size:13px;font-weight:800;color:#ECFDF5"><i class="fa-solid fa-chart-line" style="color:#6EE7B7"></i> กราฟราคาหุ้น — บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) <span style="opacity:.8;font-weight:600">(SET:CM / CM.BK)</span></span>
+                <span style="font-size:11px;color:#A7F3D0;background:rgba(255,255,255,.12);padding:4px 8px;border-radius:9999px">CMFROZEN • mai • THB</span>
+              </div>
+              <div style="padding:12px;background:#0B3328">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                  <span style="font-size:12px;font-weight:700;color:#ECFDF5">กราฟ 30 วัน • บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) — SET:CM</span>
+                  <span id="backupChartStatus" style="font-size:11px;color:#A7F3D0">กำลังโหลด Yahoo CM.BK...</span>
+                </div>
+                <canvas id="backupChart" height="160" style="width:100%;height:200px;max-height:220px;background:#022C22;border-radius:8px"></canvas>
+                <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+                  <button data-range="1mo" class="rangeBtn" style="flex:1;padding:6px;font-size:11px;background:#065F46;color:#ECFDF5;border:1px solid #047857;border-radius:8px;cursor:pointer">1 เดือน</button>
+                  <button data-range="3mo" class="rangeBtn" style="flex:1;padding:6px;font-size:11px;background:#022C22;color:#A7F3D0;border:1px solid #047857;border-radius:8px;cursor:pointer">3 เดือน</button>
+                  <button data-range="1y" class="rangeBtn" style="flex:1;padding:6px;font-size:11px;background:#022C22;color:#A7F3D0;border:1px solid #047857;border-radius:8px;cursor:pointer">1 ปี</button>
+                  <button data-range="max" class="rangeBtn" style="flex:1;padding:6px;font-size:11px;background:#022C22;color:#A7F3D0;border:1px solid #047857;border-radius:8px;cursor:pointer">สูงสุด</button>
+                </div>
+              </div>
+              <div style="padding:8px 14px;background:#022C22;border-top:1px solid #047857;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+                <span style="font-size:11px;color:#6EE7B7"><i class="fa-solid fa-circle-info"></i> ข้อมูลเรียลไทม์จาก Yahoo Finance CM.BK • SET:CM</span>
+                <span style="font-size:11px;color:#A7F3D0">ที่มา: SET • Yahoo Finance</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <a href="https://www.set.or.th/th/market/product/stock/quote/cm/price" target="_blank" class="btn btn-ghost" style="padding:8px 12px;font-size:12px;flex:1"><i class="fa-solid fa-up-right-from-square"></i> SET</a>
+              <a href="https://finance.yahoo.com/quote/CM.BK" target="_blank" class="btn btn-ghost" style="padding:8px 12px;font-size:12px;flex:1"><i class="fa-brands fa-yahoo"></i> Yahoo</a>
+              <button id="refreshStock" class="btn btn-ghost" style="padding:8px 12px;font-size:12px"><i class="fa-solid fa-rotate"></i> รีเฟรช</button>
+            </div>
+            <div class="stock-meta">
+              <div><span>ทุนจดทะเบียน</span><b>381.15 ลบ.</b><span>พาร์ 1.00 บาท</span></div>
+              <div><span>Paid-up</span><b>381.15 ลบ.</b><span>381,145,725 หุ้น</span></div>
+              <div><span>EV</span><b>541.66 ลบ.</b><span>EV/EBITDA 22.44</span></div>
+              <div><span>ผู้ถือหุ้นรายย่อย</span><b>2,341 ราย • 41.62%</b><span>ณ 13 มี.ค. 2569</span></div>
+            </div>
+            <div class="stock-source">ที่มา: <a href="https://www.set.or.th/th/market/product/stock/quote/cm/company-profile/information" target="_blank">SET — ข้อมูลบริษัท CM</a> / Yahoo Finance CM.BK (เรียลไทม์ ~15s) • IPO 40.00 บาท @ พาร์ 10 บาท</div>
+          </div>
+          <div class="hero-info-cards" style="grid-template-columns:1fr;gap:12px">
+            <div class="hero-info-card"><div class="card-num"><i class="fa-solid fa-leaf"></i></div><div><h4>ผลิตและส่งออกผักแช่แข็ง</h4><p>ถั่วแระ / ถั่วแขก / ข้าวโพดหวาน / ข้าวโพดฝักอ่อน / ผักผสม — โรงงาน 92 ม.3 หนองจ๊อม และ 299 ม.14 แม่แฝกใหม่ สันทราย เชียงใหม่</p></div></div>
+            <div class="hero-info-card"><div class="card-num"><i class="fa-solid fa-certificate"></i></div><div><h4>ก่อตั้ง 3 พ.ย. 2531 • มหาชน 8 ก.พ. 2537</h4><p>จดทะเบียน SET 25 ม.ค. 2536 • ที่ปรึกษา IPO: บง.ร่วมเสริมกิจ + บล.พัฒนสิน</p></div></div>
+            <div class="hero-info-card"><div class="card-num"><i class="fa-solid fa-users"></i></div><div><h4>พนักงาน 1,834 คน • ผู้สอบบัญชี AST Master</h4><p>นางสาวภคมน เลาหอารีดิลก / สุนันทา คำสุข / นงราม เลาหอารีดิลก — รอบบัญชี 31 ธ.ค.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="band-section">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-tag"><i class="fa-solid fa-building"></i> เกี่ยวกับองค์กร</div>
+          <h2 class="section-title">ผู้นำผักแช่แข็งจากเชียงใหม่ สู่ตลาดโลก</h2>
+          <p class="section-desc">บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) ดำเนินธุรกิจผลิตและส่งออกผักแปรรูปแช่แข็งมากว่า 35 ปี ส่งออกหลัก ญี่ปุ่น สหรัฐฯ สวีเดน เดนมาร์ก ไต้หวัน จีน พร้อมบริษัทย่อย อะกรีฟู้ดโพรเซสซิ่ง จำหน่ายข้าวโพดหวานแช่แข็งบรรจุถุง</p>
+        </div>
+        <div class="about-grid">
+          <div class="about-card reveal">
+            <h3><i class="fa-solid fa-circle-info" style="color:var(--brand-500)"></i> ภาพรวมธุรกิจ</h3>
+            <p>ลักษณะธุรกิจตาม SET: <b>ผลิตและส่งออก ผักแปรรูปแช่แข็ง</b> เช่น ถั่วแขกแช่แข็ง, ถั่วแระแช่แข็ง, ข้าวโพดหวานแช่แข็ง, ข้าวโพดฝักอ่อนแช่แข็ง และผักผสมแช่แข็ง กระบวนการผลิตควบคุมคุณภาพตั้งแต่แปลงปลูกถึงบรรจุเย็นตามมาตรฐานส่งออก ขายผ่านลูกค้าต่างประเทศและผู้จัดจำหน่าย</p>
+            <div class="kv-grid">
+              <div class="kv"><span>ตลาดส่งออกหลัก</span><b>JP • US • SE • DK • TW • CN</b></div>
+              <div class="kv"><span>หมวดอุตสาหกรรม</span><b>อาหารและเครื่องดื่ม</b></div>
+              <div class="kv"><span>เว็บไซต์</span><b><a href="https://www.cmfrozen.com" target="_blank" style="color:var(--brand-600);text-decoration:none">cmfrozen.com</a></b></div>
+              <div class="kv"><span>อีเมล</span><b>info@cmfrozen.com</b></div>
+            </div>
+            <p class="invest-note">ข้อมูลจาก SET Factsheet และ <a href="https://www.cmfrozen.com/ข้อมูลบริษัท/" target="_blank" style="color:var(--brand-600)">cmfrozen.com/ข้อมูลบริษัท</a> • ปรับปรุง 31 ส.ค. 2569 • ราคา 1.56 บาท (Yahoo CM.BK)</p>
+          </div>
+          <div class="about-card reveal" style="transition-delay:.08s">
+            <h3><i class="fa-solid fa-people-group" style="color:var(--brand-500)"></i> คณะกรรมการและผู้บริหาร</h3>
+            <table class="invest-table" style="box-shadow:none;border-radius:12px">
+              <tr><th>ประธานกรรมการ</th><td>นายประยูร พลพิพัฒนพงศ์</td></tr>
+              <tr><th>ประธานกรรมการบริหาร</th><td>นายประภาส พลพิพัฒนพงศ์</td></tr>
+              <tr><th>กรรมการผู้จัดการ</th><td>นายอังกูร พลพิพัฒนพงศ์</td></tr>
+              <tr><th>เลขานุการบริษัท</th><td>นางกาญจนา ชัยมังกร (ข้อมูล SEC)</td></tr>
+              <tr><th>ผู้ถือหุ้นรายย่อย</th><td>2,522 ราย (12 มี.ค. 2568) • NVDR 1.80%</td></tr>
+              <tr><th>ต่างด้าวถือครอง</th><td>21.90% / จำกัด 49.00%</td></tr>
+            </table>
+            <a href="https://www.set.or.th/th/market/product/stock/quote/cm/company-profile/board-of-directors" target="_blank" class="btn btn-ghost" style="margin-top:14px;width:100%"><i class="fa-solid fa-up-right-from-square"></i> ดูข้อมูลกรรมการเต็ม SET</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section id="products">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-tag"><i class="fa-solid fa-box-open"></i> ผลิตภัณฑ์หลัก</div>
+          <h2 class="section-title">Frozen Vegetables — ผักแช่แข็งส่งออก</h2>
+          <p class="section-desc">ผลิตภัณฑ์แช่เยือกแข็ง 5 กลุ่มหลัก ตัด หั่น เมล็ด พร้อมรับประทาน โรงงานเชียงใหม่มาตรฐาน GMP HACCP</p>
+        </div>
+        <div class="models-grid">
+          <div class="model-card reveal">
+            <img class="model-img" src="img/soybeans.png" alt="ถั่วแระญี่ปุ่น — รูปผลิตภัณฑ์จริง" loading="lazy">
+            <div class="model-body"><div class="chip"><i class="fa-solid fa-seedling"></i> EDAMAME</div><div class="model-name">ถั่วแระญี่ปุ่น (Soy Beans)</div><p>ถั่วแระฝักและเมล็ด คัดเกรด ส่งออกญี่ปุ่นเป็นหลัก เก็บเกี่ยวฤดูหนาวเชียงใหม่</p></div>
+          </div>
+          <div class="model-card reveal" style="transition-delay:.06s">
+            <img class="model-img" src="img/green-beans_n.png" alt="ถั่วแขก — รูปผลิตภัณฑ์จริง" loading="lazy">
+            <div class="model-body"><div class="chip"><i class="fa-solid fa-leaf"></i> GREEN BEANS</div><div class="model-name">ถั่วแขกและถั่วพุ่ม</div><p>ถั่วแขกตัดท่อน แช่แข็ง รักษาสีและกรอบ สำหรับตลาดยุโรปและสหรัฐฯ</p></div>
+          </div>
+          <div class="model-card reveal" style="transition-delay:.12s">
+            <img class="model-img" src="img/sweet-corn.png" alt="ข้าวโพดหวาน — รูปผลิตภัณฑ์จริง" loading="lazy">
+            <div class="model-body"><div class="chip"><i class="fa-solid fa-corn"></i> SWEET CORN</div><div class="model-name">ข้าวโพดหวาน</div><p>เมล็ดข้าวโพดหวานแช่แข็ง และบรรจุถุงโดย บ.อะกรีฟู้ดโพรเซสซิ่ง (บริษัทย่อย)</p></div>
+          </div>
+          <div class="model-card reveal">
+            <img class="model-img" src="img/baby-corn.png" alt="ข้าวโพดฝักอ่อน — รูปผลิตภัณฑ์จริง" loading="lazy">
+            <div class="model-body"><div class="chip"><i class="fa-solid fa-spa"></i> BABY CORN</div><div class="model-name">ข้าวโพดฝักอ่อน</div><p>ฝักอ่อนทั้งฝักและหั่น แช่แข็ง สำหรับอาหารญี่ปุ่นและยุโรป</p></div>
+          </div>
+          <div class="model-card reveal" style="transition-delay:.06s">
+            <img class="model-img" src="img/mix-vegbaby.png" alt="ผักผสม — รูปผลิตภัณฑ์จริง" loading="lazy">
+            <div class="model-body"><div class="chip"><i class="fa-solid fa-carrot"></i> MIXED VEG</div><div class="model-name">ผักผสมแช่แข็ง</div><p>แครอท ข้าวโพด ถั่วลันเตา ฟักแม้ว มะม่วง สับปะรด รวมตามสูตรลูกค้า</p></div>
+          </div>
+          <div class="model-card reveal" style="transition-delay:.12s">
+            <img class="model-img" src="img/ai.png" alt="คุณภาพ — รูปโรงงาน" loading="lazy">
+            <div class="model-body"><div class="chip"><i class="fa-solid fa-award"></i> QUALITY</div><div class="model-name">ระบบประกันคุณภาพ</div><p>GMP • HACCP • BRC • Halal • ตรวจสอบย้อนกลับถึงแปลง • <a href="https://www.cmfrozen.com/นโยบายด้านคุณภาพ/" target="_blank" style="color:var(--brand-600)">ดูใบรับรอง</a></p></div>
+          </div>
+        </div>
+        <p style="text-align:center;margin-top:18px;font-size:12px;color:var(--gray-700)">ฤดูเก็บเกี่ยว: <a href="https://www.cmfrozen.com/ฤดูการเก็บเกี่ยว" target="_blank" style="color:var(--brand-600)">ดูปฏิทิน Harvest Season</a> • กระบวนการผลิต: <a href="https://www.cmfrozen.com/การผลิต" target="_blank" style="color:var(--brand-600)">Production</a></p>
+      </div>
+    </section>
+
+    <!-- FACTORIES -->
+    <section id="factories" style="background:var(--bg-soft)">
+      <div class="container">
+        <div class="timeline-panel reveal">
+          <div class="section-header" style="margin-bottom:28px">
+            <div class="section-tag"><i class="fa-solid fa-location-dot"></i> ที่ตั้ง</div>
+            <h2 class="section-title">สำนักงานใหญ่และโรงงาน 2 แห่ง เชียงใหม่</h2>
+            <p class="section-desc">สำนักงานกรุงเทพ ประสานส่งออก • โรงงานสันทราย ใกล้แหล่งเพาะปลูก ควบคุม Cold Chain ครบวงจร</p>
+          </div>
+          <div class="timeline-grid">
+            <div class="timeline-item">
+              <div class="t-date">สำนักงานใหญ่ • กรุงเทพฯ</div>
+              <h3>149/34 ซอยแองโกลพลาซ่า ถ.สุรวงศ์</h3>
+              <p>แขวงสุริยวงศ์ เขตบางรัก กทม. 10500<br>โทร 02-6340061-4 • แฟกซ์ 02-2384090<br>โทรสำรอง FactSheet: 0-2238-4091, 0-2235-9934</p>
+              <a href="https://www.cmfrozen.com/แผนที่บริษัท" target="_blank" class="btn btn-white" style="margin-top:12px;padding:8px 14px;font-size:13px"><i class="fa-solid fa-map"></i> แผนที่</a>
+            </div>
+            <div class="timeline-item">
+              <div class="t-date">โรงงาน 1 • หนองจ๊อม สันทราย</div>
+              <h3>92 หมู่ที่ 3 ต.หนองจ๊อม อ.สันทราย</h3>
+              <p>จ.เชียงใหม่ 50210<br>โทร 053-844961-4, 053-498195-6<br>แฟกซ์ 053-498199</p>
+            </div>
+            <div class="timeline-item">
+              <div class="t-date">โรงงาน 2 • แม่แฝกใหม่ สันทราย</div>
+              <h3>299 หมู่ที่ 14 ต.แม่แฝกใหม่</h3>
+              <p>จ.เชียงใหม่ 50290<br>โทร 053-848088-94<br>แฟกซ์ 053-848097</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVESTOR -->
+    <section id="investor">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-tag"><i class="fa-solid fa-chart-line"></i> นักลงทุนสัมพันธ์</div>
+          <h2 class="section-title">Investor Relations — SET:CM</h2>
+          <p class="section-desc">ข้อมูลจาก <a href="https://www.set.or.th/th/market/product/stock/quote/cm/company-profile/information" target="_blank" style="color:var(--brand-600)">SET Company Profile</a> และ <a href="https://www.set.or.th/th/market/product/stock/quote/cm/factsheet" target="_blank" style="color:var(--brand-600)">Factsheet</a> ณ 31 ส.ค. 2569 • ราคาล่าสุด 1.56 บาท Yahoo CM.BK</p>
+        </div>
+        <div class="invest-grid">
+          <div class="reveal">
+            <table class="invest-table">
+              <tr><th>ชื่อย่อ / ตลาด</th><td>CM • SET หมวดเกษตรและอุตสาหกรรมอาหาร</td></tr>
+              <tr><th>ที่อยู่จดทะเบียน</th><td>149/34 ชั้น 3-4 ซอยแองโกลพลาซ่า ถ.สุรวงศ์ กทม. 10500</td></tr>
+              <tr><th>เว็บไซต์</th><td><a href="http://www.cmfrozen.com" target="_blank" style="color:var(--brand-600)">www.cmfrozen.com</a></td></tr>
+              <tr><th>ก่อตั้ง / จดทะเบียน mai</th><td>03/11/2531 • 25 ม.ค. 2536 • มหาชน 08/02/2537</td></tr>
+              <tr><th>ทุนชำระแล้ว</th><td>381.15 ล้านบาท • พาร์ 1.00 บาท (เดิม 10 บาท @ 31 พ.ค. 2548)</td></tr>
+              <tr><th>ราคา IPO</th><td>40.00 บาท @ พาร์ 10 บาท</td></tr>
+              <tr><th>ผู้สอบบัญชี</th><td>AST Master • ภคมน เลาหอารีดิลก / สุนันทา คำสุข / นงราม เลาหอารีดิลก</td></tr>
+              <tr><th>รอบบัญชี</th><td>31 ธ.ค. • รายงานล่าสุด ไม่มีเงื่อนไข</td></tr>
+            </table>
+            <div class="invest-note">ที่ปรึกษา IPO: บง.ร่วมเสริมกิจ + บล.พัฒนสิน • รายงานประจำปี 2568: <a href="https://weblink.set.or.th/dat/f56/0317E1N270320261644550837T.zip" target="_blank" style="color:var(--brand-600)">ดาวน์โหลด ZIP</a></div>
+          </div>
+          <div class="reveal" style="transition-delay:.08s">
+            <table class="invest-table">
+              <tr><th>ราคาล่าสุด</th><td><b id="investPrice">1.54 บาท</b> • <span id="investDate">31 ส.ค. 2569</span> <span id="investChange" style="color:#FCA5A5;font-weight:600">-1.90%</span></td></tr>
+              <tr><th>Market Cap</th><td id="investCap">587.0 ล้านบาท</td></tr>
+              <tr><th>EV / EBITDA</th><td>541.66 / -16.84 ลบ. • EV/EBITDA 22.44</td></tr>
+              <tr><th>P/BV</th><td>0.47 เท่า • P/E —</td></tr>
+              <tr><th>52W High/Low</th><td>1.85 / 1.48 บาท</td></tr>
+              <tr><th>Free Float</th><td>41.62% • ต่างด้าว 21.90% (จำกัด 49%) • NVDR 1.80%</td></tr>
+              <tr><th>ปันผล</th><td><a href="https://www.set.or.th/th/market/product/stock/quote/cm/rights-benefits" target="_blank" style="color:var(--brand-600)">ดูสิทธิประโยชน์ SET</a> • งบการเงิน <a href="https://www.set.or.th/th/market/product/stock/quote/cm/financial-statement/company-highlights" target="_blank" style="color:var(--brand-600)">Highlights</a></td></tr>
+            </table>
+            <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+              <a href="https://www.set.or.th/th/market/product/stock/quote/cm/price" target="_blank" class="btn btn-primary" style="flex:1"><i class="fa-solid fa-chart-simple"></i> ราคาย้อนหลัง</a>
+              <a href="https://www.set.or.th/th/market/product/stock/quote/cm/news" target="_blank" class="btn btn-ghost" style="flex:1"><i class="fa-solid fa-newspaper"></i> ข่าว CM</a>
+            </div>
+          </div>
+        </div>
+        <div class="period-band reveal" style="margin-top:28px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;text-align:left;padding:28px">
+          <div><h3 style="font-size:18px;font-weight:700;margin-bottom:6px">เอกสารนักลงทุน</h3><p style="margin:0;color:rgba(255,255,255,.9);font-size:13px">งบการเงิน 56-1 One Report • Opportunity Day • ข่าวตลาดหลักทรัพย์</p></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a href="https://market.sec.or.th/public/idisc/th/Viewmore/fs-full?searchSymbol=CM" target="_blank" class="btn btn-white"><i class="fa-solid fa-file-pdf"></i> งบการเงินเต็ม SEC</a>
+            <a href="https://www.set.or.th/th/market/product/stock/quote/cm/company-profile/oppday-company-snapshot" target="_blank" class="btn btn-ghost" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)">OPPDAY</a>
+          </div>
+        </div>
+        <p class="invest-note" style="text-align:center;margin-top:14px">คำสงวนสิทธิ์ SET: ข้อมูลเพื่อการศึกษาเท่านั้น ตลาดหลักทรัพย์ฯ ไม่รับรองความถูกต้องครบถ้วน • ดู <a href="https://www.set.or.th/th/market/product/stock/quote/cm/factsheet" target="_blank" style="color:var(--brand-600)">Factsheet ต้นฉบับ</a></p>
+      </div>
+    </section>
+
+    <!-- FINANCIALS & ESG — เติมให้สมบูรณ์ -->
+    <section id="financials" style="background:var(--bg-soft)">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-tag"><i class="fa-solid fa-file-invoice-dollar"></i> ข้อมูลงบการเงิน & ESG</div>
+          <h2 class="section-title">งบการเงินและบรรษัทภิบาล</h2>
+          <p class="section-desc">สรุปจาก SET Factsheet และ SEC — ดูฉบับเต็มได้ที่ลิงก์ด้านล่าง</p>
+        </div>
+        <div class="invest-grid">
+          <div class="about-card reveal" style="background:var(--bg-card)">
+            <h3><i class="fa-solid fa-chart-pie" style="color:var(--brand-500)"></i> สถิติสำคัญ</h3>
+            <table class="invest-table" style="box-shadow:none">
+              <tr><th> Turnover (สะสม)</th><td>ปริมาณ 53,700 หุ้น • มูลค่า 85.55 พันบาท (30 พ.ค. 69)</td></tr>
+              <tr><th> 52W High / Low</th><td>1.85 / 1.48 บาท</td></tr>
+              <tr><th>P/E / P/BV</th><td>P/E — เท่า • P/BV 0.47 เท่า</td></tr>
+              <tr><th>ผู้สอบบัญชี</th><td>AST Master • ไม่มีเงื่อนไข • รอบ 31 ธ.ค.</td></tr>
+            </table>
+            <div style="display:flex;gap:10px;margin-top:14px">
+              <a href="https://www.set.or.th/th/market/product/stock/quote/cm/financial-statement/company-highlights" target="_blank" class="btn btn-ghost" style="flex:1"><i class="fa-solid fa-magnifying-glass-chart"></i> Highlights</a>
+              <a href="https://www.set.or.th/th/market/product/stock/quote/cm/financial-statement/latest/balance" target="_blank" class="btn btn-ghost" style="flex:1">งบดุล</a>
+            </div>
+          </div>
+          <div class="about-card reveal" style="background:var(--bg-card);transition-delay:.08s">
+            <h3><i class="fa-solid fa-shield-halved" style="color:var(--brand-500)"></i> CG / ESG / CAC</h3>
+            <div class="kv-grid" style="grid-template-columns:1fr 1fr">
+              <div class="kv" style="background:#064E3B"><span>CG Score</span><b>—</b><span>รายงานล่าสุด</span></div>
+              <div class="kv" style="background:#064E3B"><span>SET ESG Ratings</span><b>—</b><span>—</span></div>
+              <div class="kv" style="background:#064E3B"><span>Thai CAC</span><b>n/a</b><span>ยังไม่รับรอง</span></div>
+              <div class="kv" style="background:#064E3B"><span>AGM Level</span><b>—</b><span>—</span></div>
+            </div>
+            <p class="invest-note"><i class="fa-solid fa-circle-info" style="color:var(--brand-500)"></i> อ้างอิง <a href="https://www.cmfrozen.com/wp-content/uploads/2025/12/cac_no_gift2025.png" target="_blank" style="color:var(--brand-600)">CAC No Gift 2025</a> และ <a href="https://www.cmfrozen.com/wp-content/uploads/2024/12/3_SET-ESG-Ratings_A.jpg" target="_blank" style="color:var(--brand-600)">SET ESG Ratings</a> บน cmfrozen.com</p>
+            <a href="https://www.set.or.th/th/market/product/stock/quote/cm/company-profile/information" target="_blank" class="btn btn-primary" style="width:100%;margin-top:12px"><i class="fa-solid fa-up-right-from-square"></i> ดูข้อมูลบริษัทเต็ม SET</a>
+          </div>
+        </div>
+        <div class="about-card reveal" style="margin-top:20px;background:var(--bg-card)">
+          <h3><i class="fa-solid fa-newspaper" style="color:var(--brand-500)"></i> สิทธิประโยชน์ • ข่าว • งบย้อนหลัง</h3>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px">
+            <a href="https://www.set.or.th/th/market/product/stock/quote/cm/rights-benefits" target="_blank" class="contact-item" style="flex-direction:column;align-items:flex-start;gap:8px"><b><i class="fa-solid fa-gift" style="color:var(--brand-500)"></i> สิทธิประโยชน์</b><span style="font-size:12px;color:var(--gray-600)">ปันผล • XR • XW</span></a>
+            <a href="https://www.set.or.th/th/market/product/stock/quote/cm/news" target="_blank" class="contact-item" style="flex-direction:column;align-items:flex-start;gap:8px"><b><i class="fa-solid fa-bullhorn" style="color:var(--brand-500)"></i> ข่าว SET</b><span style="font-size:12px;color:var(--gray-600)">ข่าวบริษัทล่าสุด</span></a>
+            <a href="https://www.set.or.th/th/market/product/stock/quote/cm/historical-trading" target="_blank" class="contact-item" style="flex-direction:column;align-items:flex-start;gap:8px"><b><i class="fa-solid fa-clock-rotate-left" style="color:var(--brand-500)"></i> ราคาย้อนหลัง</b><span style="font-size:12px;color:var(--gray-600)">Historical Trading</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact-section" id="contact" style="background:var(--bg-soft)">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-tag"><i class="fa-solid fa-headset"></i> ติดต่อองค์กร</div>
+          <h2 class="section-title">ติดต่อ Chiangmai Frozen Foods</h2>
+        </div>
+        <div class="contact-bar reveal">
+          <a href="tel:026340061" class="contact-item">
+            <div class="c-icon"><i class="fa-solid fa-phone"></i></div>
+            <div><div style="font-size:12px;color:var(--gray-700)">สำนักงานใหญ่</div><div style="font-size:15px;font-weight:700">02-6340061-4</div></div>
+          </a>
+          <a href="tel:053844961" class="contact-item">
+            <div class="c-icon"><i class="fa-solid fa-industry"></i></div>
+            <div><div style="font-size:12px;color:var(--gray-700)">โรงงานเชียงใหม่</div><div style="font-size:15px;font-weight:700">053-844961-4</div></div>
+          </a>
+          <a href="mailto:info@cmfrozen.com" class="contact-item">
+            <div class="c-icon"><i class="fa-solid fa-envelope"></i></div>
+            <div><div style="font-size:12px;color:var(--gray-700)">อีเมล</div><div style="font-size:15px;font-weight:700">info@cmfrozen.com</div></div>
+          </a>
+          <a href="https://www.cmfrozen.com/ติดต่อเรา/" target="_blank" class="contact-item">
+            <div class="c-icon"><i class="fa-solid fa-paper-plane"></i></div>
+            <div><div style="font-size:12px;color:var(--gray-700)">เว็บองค์กร</div><div style="font-size:15px;font-weight:700">cmfrozen.com</div></div>
+          </a>
+        </div>
+        <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--gray-700)">ข้อมูลบริษัทเผยแพร่ตาม SET • อัปเดตล่าสุด 31 ส.ค. 2569 • แหล่งข้อมูล: <a href="https://www.set.or.th/th/market/product/stock/quote/cm/company-profile/information" target="_blank" style="color:var(--brand-600)">SET CM Information</a> และ <a href="https://www.cmfrozen.com/ข้อมูลบริษัท/" target="_blank" style="color:var(--brand-600)">cmfrozen.com</a></p>
+      </div>
+    </section>
+  </main>
+  <footer class="footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-about">
+          <div class="footer-brand"><div class="brand-box">CM</div><span>Chiangmai Frozen Foods PCL</span></div>
+          <p>บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) — ผู้ผลิตและส่งออกผักแช่แข็งมาตรฐานสากล 149/34 สุรวงศ์ บางรัก กทม. • โรงงานสันทราย เชียงใหม่ • SET:CM</p>
+          <p style="margin-top:10px;font-size:11px;color:var(--gray-500)">ราคาหุ้น 1.54 บาท • Market Cap 587.0 ลบ. • Vol 95,000 หุ้น • ข้อมูล ณ 31 ส.ค. 2569 จาก SET/ Yahoo CM.BK</p>
+        </div>
+        <div class="footer-col">
+          <h4>องค์กร</h4>
+          <ul><li><a href="#about">เกี่ยวกับเรา</a></li><li><a href="#products">ผลิตภัณฑ์</a></li><li><a href="https://www.cmfrozen.com/ใบรับรอง" target="_blank">ใบรับรอง</a></li><li><a href="https://www.cmfrozen.com/คณะกรรมการบริษัท" target="_blank">คณะกรรมการ</a></li><li><a href="#" id="openCookieSettings" style="cursor:pointer">ตั้งค่าคุกกี้</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>นักลงทุน</h4>
+          <ul><li><a href="https://www.set.or.th/th/market/product/stock/quote/cm/factsheet" target="_blank">Factsheet SET</a></li><li><a href="https://www.set.or.th/th/market/product/stock/quote/cm/financial-statement/company-highlights" target="_blank">งบการเงิน</a></li><li><a href="https://www.set.or.th/th/market/product/stock/quote/cm/news" target="_blank">ข่าว SET</a></li><li><a href="https://www.cmfrozen.com/นักลงทุนสัมพันธ์/" target="_blank">IR cmfrozen.com</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>ติดต่อ</h4>
+          <div style="font-size:13px;color:var(--gray-700);line-height:1.7"><i class="fa-solid fa-phone" style="color:var(--brand-500)"></i> 02-6340061-4<br><i class="fa-solid fa-fax" style="color:var(--brand-500)"></i> 02-2384090<br><i class="fa-solid fa-envelope" style="color:var(--brand-500)"></i> info@cmfrozen.com<br><i class="fa-solid fa-location-dot" style="color:var(--brand-500)"></i> 92 ม.3 หนองจ๊อม สันทราย เชียงใหม่ 50210</div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="copyYear">2025</span> Chiangmai Frozen Foods PCL (SET:CM). ข้อมูลจาก ตลาดหลักทรัพย์แห่งประเทศไทย • เพื่อการศึกษาเท่านั้น</span>
+        <div style="display:flex;gap:16px"><a href="https://www.set.or.th/th/terms-and-conditions" target="_blank" style="color:var(--gray-700);text-decoration:none">SET Terms</a><a href="https://www.cmfrozen.com/pdpa/" target="_blank" style="color:var(--gray-700);text-decoration:none">PDPA</a><a href="#" id="footerCookieLink" style="color:var(--gray-700);text-decoration:none">คุกกี้</a></div>
+      </div>
+    </div>
+  </footer>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Corporation",
+    "name":"บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน)",
+    "alternateName":"Chiangmai Frozen Foods PCL",
+    "tickerSymbol":"SET:CM",
+    "url":"https://cmfrozen.com/",
+    "logo":"https://cmfrozen.com/wp-content/uploads/2015/04/logo.png",
+    "description":"ผู้ผลิตและส่งออกผักแปรรูปแช่แข็ง ถั่วแระ ถั่วแขก ข้าวโพดหวาน ข้าวโพดฝักอ่อน ผักผสม",
+    "foundingDate":"1988-11-03",
+    "address":[{"@type":"PostalAddress","streetAddress":"149/34 ซอยแองโกลพลาซ่า ถ.สุรวงศ์","addressLocality":"บางรัก","addressRegion":"กรุงเทพมหานคร","postalCode":"10500","addressCountry":"TH"},{"@type":"PostalAddress","streetAddress":"92 หมู่ 3 ต.หนองจ๊อม อ.สันทราย","addressLocality":"เชียงใหม่","postalCode":"50210","addressCountry":"TH"}],
+    "contactPoint":[{"@type":"ContactPoint","telephone":"+66-2-634-0061","contactType":"customer service","availableLanguage":["th","en"]}]
+  }
+  </script>
+  <script>
+    document.getElementById('copyYear').textContent=new Date().getFullYear();
+    (function(){
+      var header=document.getElementById('header');var lastY=window.scrollY,ticking=false;
+      function onScroll(){var y=window.scrollY,delta=y-lastY;if(y<80)header.classList.remove('hidden');else if(delta>8)header.classList.add('hidden');else if(delta<-8)header.classList.remove('hidden');lastY=y;ticking=false}
+      window.addEventListener('scroll',function(){if(!ticking){requestAnimationFrame(onScroll);ticking=true}}, {passive:true});
+    })();
+    (function(){
+      var btn=document.getElementById('hamburger'),menu=document.getElementById('mobileMenu'),closeBtn=document.getElementById('mobileClose');
+      function openMenu(){menu.hidden=false;requestAnimationFrame(function(){menu.classList.add('active')});btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';closeBtn&&closeBtn.focus()}
+      function closeMenu(){menu.classList.remove('active');btn.setAttribute('aria-expanded','false');document.body.style.overflow='';setTimeout(function(){menu.hidden=true},300);btn.focus()}
+      btn.addEventListener('click',function(){menu.classList.contains('active')?closeMenu():openMenu()});
+      closeBtn&&closeBtn.addEventListener('click',closeMenu);
+      menu.addEventListener('click',function(e){if(e.target===menu)closeMenu()});
+      document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classList.contains('active'))closeMenu()});
+      document.querySelectorAll('.mobile-menu-links a, .mobile-menu-cta').forEach(function(a){a.addEventListener('click',closeMenu)});
+    })();
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      a.addEventListener('click',function(e){
+        var href=this.getAttribute('href');
+        if(href.length>1){var t=document.querySelector(href);if(t){e.preventDefault();var top=t.getBoundingClientRect().top+window.scrollY-84;window.scrollTo({top:top,behavior:'smooth'});history.pushState(null,'',href)}}
+      });
+    });
+    (function(){
+      var sections=document.querySelectorAll('section[id]');var navLinks=document.querySelectorAll('.header-links a[href^="#"]');if(!sections.length)return;
+      var obs=new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){var id=en.target.id;navLinks.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+id); if(l.getAttribute('href')==='#'+id) l.setAttribute('aria-current','true'); else l.removeAttribute('aria-current')})}
+        });
+      },{rootMargin:'-40% 0px -55% 0px',threshold:0});
+      sections.forEach(function(s){obs.observe(s)});
+    })();
+    (function(){var inner=document.querySelector('.header-inner');if(!inner)return;window.addEventListener('scroll',function(){inner.classList.toggle('is-scrolled',window.scrollY>10)},{passive:true})})();
+    (function(){
+      var els=document.querySelectorAll('.reveal, .model-card, .about-card, .timeline-item, .contact-item, .stock-card');
+      els.forEach(function(el,i){if(!el.classList.contains('reveal'))el.classList.add('reveal');el.style.transitionDelay=(i%4*70)+'ms'});
+      var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+      els.forEach(function(el){io.observe(el)});
+    })();
+    (function(){
+      var btn=document.getElementById('themeToggle'),icon=document.getElementById('themeIcon');if(!btn)return;
+      var KEY='cmf-theme';
+      function apply(t){if(t==='dark')document.documentElement.setAttribute('data-theme','dark');else document.documentElement.removeAttribute('data-theme');if(icon)icon.className=t==='dark'?'fa-solid fa-sun':'fa-solid fa-moon'}
+      var saved=localStorage.getItem(KEY);var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var cur=saved||(prefersDark?'dark':'light');apply(cur);
+      btn.addEventListener('click',function(){cur=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';localStorage.setItem(KEY,cur);apply(cur)});
+    })();
+    // ===== Animated Favicon — เคลื่อนไหวชัดเจน =====
+    (function(){
+      var link=document.getElementById('favicon');if(!link)return;
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var canvas=document.createElement('canvas');canvas.width=32;canvas.height=32;var ctx=canvas.getContext('2d');if(!ctx)return;
+      if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){this.beginPath();this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();return this};}
+      var frame=0,rafId=null,last=0,interval=65;
+      function setFavicon(url){link.href=url;link.type='image/png';if(frame%30===0){var clone=link.cloneNode(true);clone.href=url;link.remove();document.head.appendChild(clone);link=clone;link.id='favicon'}}
+      function draw(){
+        var t=frame;ctx.clearRect(0,0,32,32);
+        var hue=(145+t*1.4)%360,hue2=(hue+32)%360;
+        var g=ctx.createLinearGradient(0,0,32,32);g.addColorStop(0,'hsl('+hue+',100%,58%)');g.addColorStop(1,'hsl('+hue2+',100%,62%)');
+        ctx.fillStyle=g;var pulse=1+Math.sin(t*.18)*.06,size=28*pulse,off=(32-size)/2;
+        ctx.beginPath();try{ctx.roundRect(off,off,size,size,8)}catch(e){ctx.rect(off,off,size,size)}ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,.22)';ctx.beginPath();try{ctx.roundRect(off,off,size,size*.48,8)}catch(e){ctx.rect(off,off,size,size*.45)}ctx.fill();
+        ctx.fillStyle='#fff';ctx.font='900 13px \"Noto Sans Thai\",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.25)';ctx.shadowBlur=4;ctx.fillText('CM',16,16.5+Math.sin(t*.22)*.9);ctx.shadowColor='transparent';
+        var ang=t*.22,r=11,sx=16+Math.cos(ang)*r,sy=16+Math.sin(ang)*r;
+        ctx.save();ctx.translate(sx,sy);ctx.rotate(ang*2);ctx.font='9px serif';ctx.fillText('❄',0,0);ctx.restore();
+        ctx.beginPath();ctx.arc(sx,sy,5,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.18)';ctx.fill();
+        try{setFavicon(canvas.toDataURL('image/png'))}catch(e){}
+        frame=(frame+1)%1000;
+      }
+      function loop(now){rafId=requestAnimationFrame(loop);if(now-last<interval)return;last=now;draw()}
+      function start(){if(rafId)return;last=performance.now();rafId=requestAnimationFrame(loop)}
+      function stop(){if(rafId)cancelAnimationFrame(rafId);rafId=null}
+      document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else start()});
+      try{draw();start()}catch(e){var emojis=['🧊','❄️','💠'],ei=0;setInterval(function(){link.href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>"+emojis[ei%emojis.length]+"</text></svg>";ei++},600)}
+      window.__faviconAnim={start:start,stop:stop}
+    })();
+    // ===== Cookie PDPA =====
+    (function(){
+      function initCookiePDPA(){
+      var KEY='cmf-cookie-consent-v1';
+      var bar=document.getElementById('cookieBar');
+      var settings=document.getElementById('cookieSettings');
+      var btnAccept=document.getElementById('cookieAccept');
+      var btnReject=document.getElementById('cookieReject');
+      var btnManage=document.getElementById('cookieManage');
+      var btnSave=document.getElementById('cookieSave');
+      var btnCancel=document.getElementById('cookieCancel');
+      var openLinks=[document.getElementById('openCookieSettings'),document.getElementById('footerCookieLink')];
+      if(!bar || !settings) return;
+      function getConsent(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+      function saveConsent(o){
+        localStorage.setItem(KEY, JSON.stringify(o));
+        // ตัวอย่าง: ถ้ายอมรับ analytics ค่อยโหลด tag เพิ่มได้ที่นี่
+        // if(o.analytics) loadAnalytics();
+      }
+      function hideBar(){ bar.classList.remove('show'); }
+      function showBar(){ if(!getConsent()) setTimeout(function(){ bar.classList.add('show'); }, 900); }
+      function openSettings(){
+        // preload current
+        var c=getConsent()||{necessary:true,analytics:false,marketing:false};
+        var a=document.getElementById('ck-analytics'); if(a) a.checked=!!c.analytics;
+        var m=document.getElementById('ck-marketing'); if(m) m.checked=!!c.marketing;
+        settings.classList.add('show'); settings.setAttribute('aria-hidden','false');
+      }
+      function closeSettings(){ settings.classList.remove('show'); settings.setAttribute('aria-hidden','true'); }
+      if(btnAccept) btnAccept.addEventListener('click', function(){ saveConsent({necessary:true,analytics:true,marketing:true,at:Date.now()}); hideBar(); closeSettings(); });
+      if(btnReject) btnReject.addEventListener('click', function(){ saveConsent({necessary:true,analytics:false,marketing:false,at:Date.now()}); hideBar(); closeSettings(); });
+      if(btnManage) btnManage.addEventListener('click', openSettings);
+      if(btnSave) btnSave.addEventListener('click', function(){
+        var av=document.getElementById('ck-analytics'); var mv=document.getElementById('ck-marketing');
+        saveConsent({necessary:true,analytics:av&&av.checked,marketing:mv&&mv.checked,at:Date.now()}); hideBar(); closeSettings();
+      });
+      if(btnCancel) btnCancel.addEventListener('click', closeSettings);
+      settings.addEventListener('click', function(e){ if(e.target===settings) closeSettings(); });
+      document.addEventListener('keydown', function(e){ if(e.key==='Escape' && settings.classList.contains('show')) closeSettings(); });
+      openLinks.forEach(function(el){ if(el) el.addEventListener('click', function(e){ e.preventDefault(); openSettings(); }); });
+      showBar();
+      // expose for debug
+      window.__cookiePDPA={get:getConsent,reset:function(){localStorage.removeItem(KEY); location.reload();},show:showBar,open:openSettings};
+      }
+      if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initCookiePDPA);
+      else initCookiePDPA();
+    })();
+    // ===== Go Top =====
+    (function(){
+      var btn=document.getElementById('goTop');
+      if(!btn) return;
+      var ticking=false;
+      function onScroll(){
+        var y=window.scrollY||document.documentElement.scrollTop;
+        if(y> 380) btn.classList.add('show'); else btn.classList.remove('show');
+        ticking=false;
+      }
+      window.addEventListener('scroll', function(){ if(!ticking){ requestAnimationFrame(onScroll); ticking=true; } }, {passive:true});
+      btn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+      btn.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); window.scrollTo({top:0, behavior:'smooth'}); } });
+    })();
+    // ===== Real-time CM (Yahoo Finance CM.BK) — บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) SET:CM เท่านั้น =====
+    (function(){
+      var priceEl=document.getElementById('stockPrice'), changeEl=document.getElementById('stockChange'), timeEl=document.getElementById('stockTime'), rangeEl=document.getElementById('stockRange'), capEl=document.getElementById('stockCap'), volEl=document.getElementById('stockVol'), statusEl=document.getElementById('stockStatus'), flashEl=document.getElementById('stockFlash');
+      var investPriceEl=document.getElementById('investPrice'), investDateEl=document.getElementById('investDate'), investCapEl=document.getElementById('investCap'), investChangeEl=document.getElementById('investChange');
+      if(!priceEl) return;
+      function flash(){ if(!flashEl) return; flashEl.style.opacity='1'; setTimeout(function(){ flashEl.style.opacity='0'; }, 650); }
+      async function fetchWithFallback(url){
+        var proxies=[
+          url,
+          'https://corsproxy.io/?'+encodeURIComponent(url),
+          'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
+          'https://query2.finance.yahoo.com/v8/finance/chart/CM.BK?interval=1m&range=1d'
+        ];
+        for(var i=0;i<proxies.length;i++){
+          try{
+            var r=await fetch(proxies[i], {cache:'no-store'});
+            if(!r.ok) continue;
+            var txt=await r.text();
+            var j=JSON.parse(txt);
+            if(typeof j==='string') j=JSON.parse(j);
+            if(j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta) return j;
+          }catch(e){ /* try next */ }
+        }
+        throw new Error('all proxies failed');
+      }
+      async function fetchCM(){
+        try{
+          var url='https://query1.finance.yahoo.com/v8/finance/chart/CM.BK?interval=1m&range=1d';
+          var j=await fetchWithFallback(url);
+          var meta=j.chart.result[0].meta;
+          if(!meta || meta.regularMarketPrice==null) throw new Error('no meta');
+          // ยืนยันว่าเป็น CM Chiangmai Frozen Foods ไม่ใช่ Apple
+          if(meta.symbol && meta.symbol!=='CM.BK' && !String(meta.symbol).includes('CM')) console.warn('Unexpected symbol', meta.symbol);
+          if(meta.shortName && /Apple/i.test(meta.shortName)) throw new Error('Wrong symbol Apple detected');
+          var price=meta.regularMarketPrice, prev=meta.chartPreviousClose||price, changePct = meta.regularMarketChangePercent!=null?meta.regularMarketChangePercent:((price-prev)/prev*100);
+          var high=meta.regularMarketDayHigh, low=meta.regularMarketDayLow, vol=meta.regularMarketVolume, cap=price*381145725/1e6;
+          var t=new Date(meta.regularMarketTime*1000);
+          var timeStr=t.toLocaleString('th-TH',{timeZone:'Asia/Bangkok',hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short',year:'2-digit'});
+          priceEl.textContent=price.toFixed(2);
+          changeEl.textContent=(changePct>=0?'+':'')+changePct.toFixed(2)+'%';
+          changeEl.style.color=changePct>=0?'#6EE7B7':'#FCA5A5';
+          timeEl.textContent=timeStr+' • LIVE';
+          if(rangeEl) rangeEl.textContent='ช่วง 52 สัปดาห์ '+meta.fiftyTwoWeekLow.toFixed(2)+' - '+meta.fiftyTwoWeekHigh.toFixed(2)+' บาท • วันนี้ '+(low?low.toFixed(2):'-')+' - '+(high?high.toFixed(2):'-');
+          if(volEl && vol!=null) volEl.textContent=Number(vol).toLocaleString('th-TH')+' หุ้น';
+          if(capEl) capEl.textContent='Market Cap '+cap.toFixed(2)+' ลบ.';
+          if(investPriceEl) investPriceEl.textContent=price.toFixed(2)+' บาท';
+          if(investDateEl) investDateEl.textContent=timeStr.split(' ')[0]+' '+timeStr.split(' ')[1]+' '+timeStr.split(' ')[2];
+          if(investCapEl) investCapEl.textContent=cap.toFixed(2)+' ล้านบาท';
+          if(investChangeEl){ investChangeEl.textContent=(changePct>=0?'+':'')+changePct.toFixed(2)+'%'; investChangeEl.style.color=changePct>=0?'#10B981':'#EF4444'; }
+          if(statusEl) statusEl.textContent='● LIVE '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' • '+meta.longName;
+          // อัปเดตเอกสาร title ถ้าเป็น Apple ให้แก้กลับ
+          if(document.title.includes('Apple')) document.title=document.title.replace(/Apple[^|]*/,'CM — บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน)');
+          flash();
+        }catch(e){
+          if(statusEl) statusEl.textContent='● DELAY — ใช้ข้อมูล 1.56 บาท (31 ส.ค.)';
+          console.warn('CM realtime fail', e);
+        }
+      }
+      document.getElementById('refreshStock')?.addEventListener('click', fetchCM);
+      fetchCM(); setInterval(fetchCM, 30000);
+      // โหลดกราฟ Yahoo + Chart.js — บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) SET:CM (มีข้อมูลสำรอง กันกรณี CORS)
+      (function loadBackupChart(){
+        var cvs=document.getElementById('backupChart'), status=document.getElementById('backupChartStatus');
+        if(!cvs) return;
+        // ข้อมูลสำรอง 30 วันล่าสุดจาก Yahoo CM.BK (31 Aug 2026) — ป้องกันกราฟว่างเมื่อ CORS บล็อค
+        var FALLBACK_PRICES = [1.54, 1.53, 1.53, 1.59, 1.57, 1.57, 1.56, 1.58, 1.58, 1.57, 1.51, 1.51, 1.5, 1.5, 1.52, 1.56, 1.56, 1.54, 1.56, 1.54, 1.57, 1.54];
+        var FALLBACK_LABELS = ["31 Jul", "03 Aug", "04 Aug", "05 Aug", "06 Aug", "07 Aug", "10 Aug", "11 Aug", "12 Aug", "13 Aug", "14 Aug", "17 Aug", "18 Aug", "19 Aug", "20 Aug", "21 Aug", "24 Aug", "25 Aug", "26 Aug", "27 Aug", "28 Aug", "31 Aug"];
+        function drawChart(prices, labels){
+          if(!window.Chart){
+            var s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js'; s.onload=function(){ drawChart(prices, labels); }; document.head.appendChild(s); return;
+          }
+          try{
+            var ctx=cvs.getContext('2d');
+            if(window._cmChart) try{ window._cmChart.destroy(); }catch(e){}
+            window._cmChart = new Chart(ctx, {
+              type:'line',
+              data:{
+                labels: labels,
+                datasets:[{
+                  label:'CM.BK — บริษัท เชียงใหม่โฟรเซ่นฟูดส์ จำกัด (มหาชน) (บาท)',
+                  data: prices,
+                  borderColor:'#10B981',
+                  backgroundColor:'rgba(16,185,129,0.15)',
+                  fill:true,
+                  tension:0.35,
+                  pointRadius:0,
+                  borderWidth:2
+                }]
+              },
+              options:{
+                responsive:true,
+                maintainAspectRatio:false,
+                plugins:{
+                  legend:{display:true, labels:{color:'#A7F3D0', font:{size:11}, boxWidth:12}},
+                  tooltip:{mode:'index', intersect:false, backgroundColor:'#022C22', titleColor:'#ECFDF5', bodyColor:'#A7F3D0', borderColor:'#047857', borderWidth:1}
+                },
+                scales:{
+                  x:{ticks:{color:'#6EE7B7', maxTicksLimit:6, font:{size:10}}, grid:{color:'rgba(4,120,87,0.2)'}},
+                  y:{ticks:{color:'#6EE7B7', font:{size:10}}, grid:{color:'rgba(4,120,87,0.2)'}}
+                },
+                interaction:{mode:'index', intersect:false}
+              }
+            });
+            if(status) status.textContent='✓ ข้อมูล Yahoo CM.BK • 30 วัน • THB';
+            if(status) status.style.color='#6EE7B7';
+          }catch(e){ if(status) status.textContent='โหลดกราฟสำรองไม่สำเร็จ'; }
+        }
+        async function fetchHistory(){
+          var urls=[
+            'https://query1.finance.yahoo.com/v8/finance/chart/CM.BK?interval=1d&range=1mo',
+            'https://query2.finance.yahoo.com/v8/finance/chart/CM.BK?interval=1d&range=1mo',
+            'https://corsproxy.io/?'+encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/CM.BK?interval=1d&range=1mo')
+          ];
+          for(var i=0;i<urls.length;i++){
+            try{
+              var r=await fetch(urls[i], {cache:'no-store'});
+              if(!r.ok) continue;
+              var j=JSON.parse(await r.text());
+              if(typeof j==='string') j=JSON.parse(j);
+              var res=j.chart.result[0];
+              if(!res || !res.indicators || !res.indicators.quote) continue;
+              // ตรวจว่าไม่ใช่ Apple
+              if(res.meta && res.meta.shortName && /Apple/i.test(res.meta.shortName)) continue;
+              var quotes=res.indicators.quote[0].close;
+              var stamps=res.timestamp;
+              var prices=[], labels=[];
+              for(var k=0;k<quotes.length;k++){
+                if(quotes[k]==null) continue;
+                prices.push(Number(quotes[k].toFixed(2)));
+                var d=new Date(stamps[k]*1000);
+                labels.push(d.toLocaleDateString('th-TH',{month:'short', day:'2-digit'}));
+              }
+              if(prices.length>5){ drawChart(prices, labels); return; }
+            }catch(e){}
+          }
+          if(status) status.textContent='โหลดประวัติ CM.BK ไม่สำเร็จ — ดูที่ SET';
+          if(status) status.style.color='#FCA5A5';
+        }
+        // วาดกราฟสำรองทันที กันกรณี CORS บล็อค — ผู้ใช้จะเห็นกราฟเลย ไม่ต้องรอ fetch
+        try{ drawChart(FALLBACK_PRICES, FALLBACK_LABELS); }catch(e){ console.warn(e); }
+        // ปุ่มเปลี่ยนช่วง
+        document.querySelectorAll('.rangeBtn').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            document.querySelectorAll('.rangeBtn').forEach(function(b){ b.style.background='#022C22'; b.style.color='#A7F3D0'; });
+            this.style.background='#065F46'; this.style.color='#ECFDF5';
+            var r=this.getAttribute('data-range');
+            var map={ '1mo':{i:'1d',ra:'1mo'}, '3mo':{i:'1d',ra:'3mo'}, '1y':{i:'1d',ra:'1y'}, 'max':{i:'1wk',ra:'max'} };
+            var cfg=map[r]||map['1mo'];
+            fetchHistoryWith(cfg.i, cfg.ra);
+          });
+        });
+        function fetchHistoryWith(interval, range){
+          if(status) { status.textContent='กำลังโหลด '+range+'...'; status.style.color='#A7F3D0'; }
+          (async function(){
+            var urls=[
+              'https://query1.finance.yahoo.com/v8/finance/chart/CM.BK?interval='+interval+'&range='+range,
+              'https://query2.finance.yahoo.com/v8/finance/chart/CM.BK?interval='+interval+'&range='+range,
+              'https://corsproxy.io/?'+encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/CM.BK?interval='+interval+'&range='+range)
+            ];
+            for(var i=0;i<urls.length;i++){
+              try{
+                var r=await fetch(urls[i], {cache:'no-store'});
+                if(!r.ok) continue;
+                var j=JSON.parse(await r.text());
+                if(typeof j==='string') j=JSON.parse(j);
+                var res=j.chart.result[0];
+                if(!res || !res.indicators || !res.indicators.quote) continue;
+                if(res.meta && res.meta.shortName && /Apple/i.test(res.meta.shortName)) continue;
+                var quotes=res.indicators.quote[0].close;
+                var stamps=res.timestamp;
+                var prices=[], labels=[];
+                for(var k=0;k<quotes.length;k++){
+                  if(quotes[k]==null) continue;
+                  prices.push(Number(quotes[k].toFixed(2)));
+                  var d=new Date(stamps[k]*1000);
+                  labels.push(d.toLocaleDateString('th-TH',{month:'short', day:'2-digit'}));
+                }
+                if(prices.length>5){ drawChart(prices, labels); return; }
+              }catch(e){}
+            }
+            if(status) { status.textContent='โหลดประวัติ CM.BK ไม่สำเร็จ — ดูที่ SET'; status.style.color='#FCA5A5'; }
+          })();
+        }
+        fetchHistory();
+        // expose for refresh
+        window._fetchHistoryWith=fetchHistoryWith;
+      })();
+      window.__refreshCM=fetchCM;
+    })();
+  </script>
+  <!-- Cookie PDPA Bar -->
+  <button class="goTop" id="goTop" aria-label="กลับขึ้นบน"><i class="fa-solid fa-arrow-up"></i></button>
+  <div class="cookie-bar" id="cookieBar" role="dialog" aria-live="polite" aria-label="คุกกี้ PDPA">
+    <div class="cookie-icon"><i class="fa-solid fa-cookie-bite"></i></div>
+    <div class="cookie-text">
+      <h4>เราใช้คุกกี้ (Cookies) เพื่อประสบการณ์ที่ดี</h4>
+      <p>เราใช้คุกกี้ที่จำเป็นและคุกกี้วิเคราะห์/การตลาด เพื่อปรับปรุงเว็บไซต์และวิเคราะห์การใช้งาน ตาม <a href="https://www.cmfrozen.com/pdpa/" target="_blank">นโยบาย PDPA</a> คุณสามารถเลือกตั้งค่าได้</p>
+    </div>
+    <div class="cookie-actions">
+      <button class="btn btn-reject" id="cookieReject">ปฏิเสธ</button>
+      <button class="btn cookie-manage btn-manage" id="cookieManage">ตั้งค่า</button>
+      <button class="btn btn-accept" id="cookieAccept">ยอมรับทั้งหมด</button>
+    </div>
+  </div>
+  <div class="cookie-settings" id="cookieSettings" aria-hidden="true" role="dialog" aria-label="ตั้งค่าคุกกี้">
+    <div class="cookie-panel">
+      <h3><i class="fa-solid fa-sliders" style="color:#34D399"></i> ตั้งค่าคุกกี้</h3>
+      <p style="font-size:12.5px;color:#A7F3D0;line-height:1.6">เลือกประเภทคุกกี้ที่คุณยินยอม คุกกี้ที่จำเป็นไม่สามารถปิดได้</p>
+      <div class="cookie-opt">
+        <input type="checkbox" checked disabled>
+        <div><b>จำเป็น (Necessary)</b><br><span>จำเป็นต่อการใช้งานเว็บไซต์ ความปลอดภัย และการจดจำการตั้งค่าพื้นฐาน</span></div>
+      </div>
+      <div class="cookie-opt">
+        <input type="checkbox" id="ck-analytics">
+        <div><b>วิเคราะห์ (Analytics)</b><br><span>ช่วยวิเคราะห์การเข้าชม ปรับปรุงเนื้อหาและประสิทธิภาพ</span></div>
+      </div>
+      <div class="cookie-opt">
+        <input type="checkbox" id="ck-marketing">
+        <div><b>การตลาด (Marketing)</b><br><span>ใช้เพื่อนำเสนอเนื้อหาและโฆษณาที่เกี่ยวข้อง</span></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+        <button class="btn btn-reject" id="cookieCancel" style="flex:1">ยกเลิก</button>
+        <button class="btn btn-accept" id="cookieSave" style="flex:1;background:#10B981;color:#022C22"><i class="fa-solid fa-check"></i> บันทึกการตั้งค่า</button>
+      </div>
+      <p style="font-size:11px;color:#6EE7B7;margin-top:12px;text-align:center">ดูรายละเอียด <a href="https://www.cmfrozen.com/pdpa/" target="_blank" style="color:#6EE7B7">Terms and Privacy Policy (PDPA)</a></p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+name = "fukupetstore"
+main = "worker.js"
+compatibility_date = "2026-09-18"
+compatibility_flags = ["nodejs_compat"]
+
+# Static assets - entire fukupetstore folder served as site
+[assets]
+directory = "./"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+# Vars (admin credentials - แนะนำตั้งผ่าน dashboard Secrets จะปลอดภัยกว่า)
+[vars]
+ADMIN_USER = "admin"
+ADMIN_PASS = "fukupet2026"
+
+# D1 Database - สร้างก่อนแล้วนำ ID มาใส่ที่นี่
+# รัน: npx wrangler d1 create fukupetstore-db
+# แล้วคัดลอก database_id มาแทนค่า 8a98f497-fa6f-4ae9-91b3-2fdfd3a68bd3
+[[d1_databases]]
+binding = "DB"
+database_name = "fukupetstore-db"
+database_id = "8a98f497-fa6f-4ae9-91b3-2fdfd3a68bd3"
+
+
+
+# สำหรับ local dev ให้ wrangler อ่าน .dev.vars ถ้ามี
+# สร้างไฟล์ .dev.vars ใส่ ADMIN_USER / ADMIN_PASS จริงถ้าต้องการแยกจาก prod

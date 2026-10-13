@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ใบลา CM 2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.4/dist/sweetalert2.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.4/dist/sweetalert2.all.min.js" defer></script>
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+  <style>
+    :root {
+      --bg: #f2f4f7;
+      --card: #fff;
+      --text: #1b2430;
+      --muted: #66717f;
+      --line: #d5dae1;
+      --accent: #1f5fbf;
+      --on: #fff;
+      --field: #fff;
+      --ok: #19743a;
+      --no: #b42318
+    }
+
+    @media (prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #12161c;
+        --card: #1b222b;
+        --text: #e8ecf1;
+        --muted: #9aa5b3;
+        --line: #333d49;
+        --accent: #6ea3f5;
+        --on: #0d1522;
+        --field: #141a21
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #12161c;
+      --card: #1b222b;
+      --text: #e8ecf1;
+      --muted: #9aa5b3;
+      --line: #333d49;
+      --accent: #6ea3f5;
+      --on: #0d1522;
+      --field: #141a21
+    }
+
+    :root {
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px)
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px)
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Sarabun', 'TH Sarabun PSK', sans-serif
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.5
+    }
+
+    .wrap {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 12px 12px 96px
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 8px 4px 2px
+    }
+
+    .sub {
+      color: var(--muted);
+      margin: 0 4px 12px;
+      font-size: 14px
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px
+    }
+
+    h2 {
+      font-size: 16px;
+      margin: 0 0 10px
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      color: var(--muted);
+      margin: 10px 0 4px
+    }
+
+    label:first-of-type {
+      margin-top: 0
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 46px;
+      padding: 9px 12px;
+      font-size: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--field);
+      color: var(--text)
+    }
+
+    input[readonly] {
+      background: var(--bg);
+      color: var(--text);
+      cursor: default;
+      font-weight: 700
+    }
+
+    .input-icon-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .input-icon-wrap input {
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    .input-icon-wrap .input-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quick-days {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 8px 0 10px;
+    }
+
+    .quick-days span {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .btn-chip {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .btn-chip:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ===== ปรับแต่ง Flatpickr ให้สวยงามเข้ากับธีม ===== */
+    .flatpickr-calendar {
+      font-family: 'Sarabun', 'TH Sarabun PSK', sans-serif !important;
+      background: var(--card) !important;
+      border: 1px solid var(--line) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+      color: var(--text) !important;
+    }
+
+    .flatpickr-calendar.arrowTop:before,
+    .flatpickr-calendar.arrowTop:after {
+      border-bottom-color: var(--card) !important;
+    }
+
+    .flatpickr-calendar.arrowBottom:before,
+    .flatpickr-calendar.arrowBottom:after {
+      border-top-color: var(--card) !important;
+    }
+
+    .flatpickr-months {
+      background: var(--card) !important;
+      border-top-left-radius: 12px !important;
+      border-top-right-radius: 12px !important;
+      padding: 6px 0 !important;
+    }
+
+    .flatpickr-months .flatpickr-month {
+      color: var(--text) !important;
+      fill: var(--text) !important;
+      height: 34px !important;
+    }
+
+    .flatpickr-current-month {
+      font-size: 110% !important;
+      color: var(--text) !important;
+      padding: 4px 0 0 0 !important;
+    }
+
+    .flatpickr-current-month .cur-month {
+      font-weight: 700 !important;
+      color: var(--text) !important;
+    }
+
+    .flatpickr-current-month input.cur-year {
+      font-weight: 700 !important;
+      color: var(--text) !important;
+    }
+
+    .flatpickr-months .flatpickr-prev-month,
+    .flatpickr-months .flatpickr-next-month {
+      color: var(--text) !important;
+      fill: var(--text) !important;
+      padding: 8px !important;
+    }
+
+    .flatpickr-months .flatpickr-prev-month:hover svg,
+    .flatpickr-months .flatpickr-next-month:hover svg {
+      fill: var(--accent) !important;
+    }
+
+    span.flatpickr-weekday {
+      color: var(--muted) !important;
+      font-weight: 700 !important;
+    }
+
+    .flatpickr-day {
+      color: var(--text) !important;
+      border-radius: 8px !important;
+    }
+
+    .flatpickr-day:hover {
+      background: rgba(31, 95, 191, 0.15) !important;
+      border-color: transparent !important;
+    }
+
+    .flatpickr-day.today {
+      border-color: var(--accent) !important;
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+      background: var(--accent) !important;
+      color: #fff !important;
+      border-color: var(--accent) !important;
+    }
+
+    .flatpickr-day.flatpickr-disabled,
+    .flatpickr-day.flatpickr-disabled:hover {
+      color: var(--muted) !important;
+      opacity: 0.4 !important;
+    }
+
+    .flatpickr-time {
+      border-top: 1px solid var(--line) !important;
+      background: var(--card) !important;
+      line-height: 40px !important;
+      height: 40px !important;
+    }
+
+    .flatpickr-time input {
+      color: var(--text) !important;
+      font-family: 'Sarabun', sans-serif !important;
+      font-weight: 700 !important;
+      font-size: 17px !important;
+      background: transparent !important;
+    }
+
+    .flatpickr-time input:hover,
+    .flatpickr-time input:focus {
+      background: rgba(31, 95, 191, 0.08) !important;
+    }
+
+    .flatpickr-time .flatpickr-time-separator {
+      color: var(--text) !important;
+      font-weight: 700 !important;
+    }
+
+    .flatpickr-time .flatpickr-am-pm {
+      color: var(--text) !important;
+    }
+
+    .numInputWrapper span.arrowUp:after {
+      border-bottom-color: var(--text) !important;
+    }
+
+    .numInputWrapper span.arrowDown:after {
+      border-top-color: var(--text) !important;
+    }
+
+    #code {
+      border: 2px solid #d92d20;
+      font-weight: 700
+    }
+
+    .hint {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 6px 0 0;
+      line-height: 1.45
+    }
+
+    .hint b {
+      color: var(--accent)
+    }
+
+    .derived {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .derived>div>label {
+      margin-top: 10px
+    }
+
+    .ro-note {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      background: #eef4ff;
+      border: 1px solid #c8dcfb;
+      color: #123a75;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      margin: 0 4px 12px;
+      line-height: 1.45
+    }
+
+    .tools {
+      display: flex;
+      gap: 8px;
+      margin: 0 4px 12px
+    }
+
+    .tools .btn {
+      flex: 1;
+      min-height: 44px;
+      font-size: 14px;
+      padding: 0 10px
+    }
+
+    input:focus,
+    select:focus,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px
+    }
+
+    .g2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .g2>div>label {
+      margin-top: 10px
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .chips label {
+      margin: 0;
+      flex: 1;
+      min-width: 90px
+    }
+
+    .chips input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      min-height: 0
+    }
+
+    .chips input:disabled+span {
+      opacity: 0.75;
+      cursor: not-allowed;
+      background: var(--bg)
+    }
+
+    .chips span {
+      display: block;
+      text-align: center;
+      padding: 11px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 16px;
+      background: var(--field)
+    }
+
+    .chips input:checked+span {
+      background: var(--accent);
+      color: var(--on);
+      border-color: var(--accent);
+      font-weight: 700
+    }
+
+    .chips input:focus-visible+span {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px
+    }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      min-height: 32px
+    }
+
+    .pd {
+      margin-bottom: 14px
+    }
+
+    .approval {
+      display: flex;
+      gap: 8px;
+      margin: 8px 0 2px
+    }
+
+    .approval label {
+      flex: 1;
+      margin: 0;
+      cursor: pointer
+    }
+
+    .approval input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      min-height: 0
+    }
+
+    .approval span {
+      display: block;
+      min-height: 42px;
+      padding: 9px 12px;
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700
+    }
+
+    .approval .ok input:checked+span {
+      background: #19743a;
+      color: #fff;
+      border-color: #19743a
+    }
+
+    .approval .no input:checked+span {
+      background: #b42318;
+      color: #fff;
+      border-color: #b42318
+    }
+
+    .approval input:focus-visible+span {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px
+    }
+
+    .approval-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px
+    }
+
+    .approval-box {
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 8px
+    }
+
+    .approval-box+.approval-box {
+      margin-top: 12px
+    }
+
+    .approval-header b {
+      font-size: 14px
+    }
+
+    .lock-badge {
+      white-space: nowrap;
+      font-size: 13px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: #fff3cd;
+      color: #856404;
+      font-weight: 700;
+      border: 1px solid #ffeeba
+    }
+
+    .lock-badge.unlocked {
+      background: #d4edda;
+      color: #155724;
+      border-color: #c3e6cb
+    }
+
+    .approval-box.locked {
+      border: 1.5px dashed var(--line)
+    }
+
+    .approval-box.unlocked {
+      border: 2px solid var(--accent)
+    }
+
+    .pin-gate {
+      background: var(--bg);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 6px
+    }
+
+    canvas {
+      width: 100%;
+      height: 130px;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: #fff;
+      touch-action: none;
+      display: block
+    }
+
+    .btn {
+      min-height: 48px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+      padding: 0 16px;
+      cursor: pointer
+    }
+
+    .btn.pri {
+      background: var(--accent);
+      color: var(--on);
+      border-color: var(--accent)
+    }
+
+    .bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--card);
+      border-top: 1px solid var(--line);
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      gap: 10px;
+      justify-content: center
+    }
+
+    .bar .btn {
+      flex: 1;
+      max-width: 270px
+    }
+
+    #preview {
+      display: none;
+      padding: 12px
+    }
+
+    #preview.on {
+      display: block
+    }
+
+    #form.off {
+      display: none
+    }
+
+    .pbar {
+      display: flex;
+      gap: 10px;
+      max-width: 560px;
+      margin: 0 auto 12px
+    }
+
+    .pbar .btn {
+      flex: 1
+    }
+
+    #pw {
+      margin: 0 auto;
+      overflow: hidden
+    }
+
+    #toast {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+      max-width: 536px;
+      margin: 0 auto;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--text);
+      color: var(--bg);
+      font-weight: 700;
+      display: none;
+      z-index: 9
+    }
+
+    #toast.on {
+      display: block
+    }
+
+    .btn:disabled {
+      opacity: .55
+    }
+
+    /* ===== ป๊อปอัปตัวอย่าง PDF (SweetAlert) ===== */
+    .swal-pdf-box {
+      padding: 6px !important;
+      margin: 0
+    }
+
+    #pdfViewer {
+      max-height: 66vh;
+      overflow: auto;
+      background: #f1f3f6;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center
+    }
+
+    #pdfViewer canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 0 auto 10px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .18)
+    }
+
+    #pdfViewer iframe {
+      display: block;
+      width: 100%;
+      height: 60vh;
+      border: 0;
+      background: #fff
+    }
+
+    #pdfViewer .pdf-note {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 6px 0
+    }
+
+    @media(max-width:640px) {
+      .swal-popup {
+        max-width: 96vw !important;
+        width: 96vw !important
+      }
+
+      #pdfViewer {
+        max-height: 56vh
+      }
+    }
+
+    .note {
+      max-width: 560px;
+      margin: 10px auto 0;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    /* ===== ใบลา ครึ่ง A4 (210 x 148.5 mm) ===== */
+    @page {
+      size: 210mm 148.5mm;
+      margin: 0
+    }
+
+    #paper {
+      background: #fff;
+      color: #000;
+      width: 210mm;
+      height: 148.5mm;
+      padding: 6mm 12mm;
+      font-size: 12.5px;
+      line-height: 1.35;
+      transform-origin: 0 0;
+      overflow: hidden
+    }
+
+    #paper * {
+      font-family: 'Sarabun', 'TH Sarabun PSK', sans-serif
+    }
+
+    #paper .top {
+      display: flex;
+      justify-content: space-between
+    }
+
+    #paper .bx {
+      border: 1.2px solid #000;
+      padding: 1px 10px;
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    #paper .ttl {
+      text-align: center;
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 4px
+    }
+
+    #paper .r {
+      display: flex;
+      align-items: baseline;
+      margin-bottom: 4px;
+      width: 100%;
+      white-space: nowrap
+    }
+
+    #paper .r.b {
+      justify-content: space-between
+    }
+
+    #paper .d {
+      border-bottom: 1px dotted #000;
+      display: inline-block;
+      margin: 0 3px;
+      min-height: 1.1em;
+      text-align: center;
+      padding: 0 3px;
+      flex-grow: 1;
+      overflow: hidden
+    }
+
+    #paper .i {
+      border-bottom: 1px dotted #000;
+      display: inline-block;
+      margin: 0 3px;
+      min-height: 1.1em;
+      text-align: center;
+      padding: 0 3px;
+      flex-grow: 0
+    }
+
+    #paper .ty {
+      text-align: center;
+      margin: 3px 0 5px;
+      word-spacing: 14px
+    }
+
+    #paper table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 3px 0 5px;
+      font-size: 11.5px
+    }
+
+    #paper th,
+    #paper td {
+      border: 1px solid #000;
+      padding: 1px 6px;
+      line-height: 1.25
+    }
+
+    #paper th {
+      font-size: 10.5px;
+      text-align: center
+    }
+
+    #paper td:nth-child(2),
+    #paper td:nth-child(4) {
+      text-align: center
+    }
+
+    #paper .dc {
+      text-indent: 2.5em;
+      font-size: 12px;
+      margin-top: 4px
+    }
+
+    #paper .sd {
+      text-align: center;
+      width: 48%;
+      font-size: 12px;
+      margin: 3px 0 8px
+    }
+
+    #paper .sg {
+      display: flex;
+      justify-content: space-between
+    }
+
+    #paper .sc {
+      width: 48%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    #paper .sr {
+      display: flex;
+      align-items: baseline;
+      font-size: 12px;
+      white-space: nowrap
+    }
+
+    #paper .sr.c {
+      justify-content: center;
+      font-weight: 700
+    }
+
+    #paper .d.s {
+      position: relative;
+      overflow: visible;
+      height: 1.1em
+    }
+
+    #paper .sig {
+      position: absolute;
+      left: 50%;
+      bottom: -2px;
+      transform: translateX(-50%);
+      height: 24px;
+      max-width: 100%
+    }
+
+    @media print {
+      body {
+        background: none
+      }
+
+      :root {
+        padding: 0
+      }
+
+      .wrap,
+      .bar,
+      .pbar,
+      .note {
+        display: none !important
+      }
+
+      #preview {
+        display: block !important;
+        padding: 0
+      }
+
+      #pw {
+        width: auto !important;
+        height: auto !important;
+        margin: 0
+      }
+
+      #paper {
+        transform: none !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap" id="form">
+    <h1>ใบลา (CM 2)</h1>
+    <p class="sub">กรอกข้อมูลแล้วกด “ดูตัวอย่างใบลา” เพื่อพิมพ์หรือบันทึกเป็น PDF ขนาดครึ่ง A4</p>
+
+    <div class="ro-note">
+      <span>&#128274;</span>
+      <span><b>หัวหน้างาน / หัวหน้าแผนก / ผู้ช่วย–รอง–ผู้จัดการ:</b> หน้านี้เป็นฟอร์มสำหรับผู้ลาเท่านั้น
+        ผู้อนุมัติดูและอนุมัติใบลาแบบ <b>อ่านอย่างเดียว</b> ได้ที่หน้าอนุมัติ (กดปุ่มด้านล่าง)</span>
+    </div>
+
+    <div class="tools">
+      <button class="btn" id="reset" type="button">ล้างฟอร์ม</button>
+      <button class="btn" id="goApprove" type="button">หน้าอนุมัติใบลา</button>
+    </div>
+
+    <section>
+
+      <h2>ข้อมูลทั่วไป</h2>
+      <label>ประเภทพนักงาน</label>
+      <div class="chips" id="emp">
+        <label><input type="radio" name="emp" value="รายเดือน" checked><span>รายเดือน</span></label>
+        <label><input type="radio" name="emp" value="รายวัน"><span>รายวัน</span></label>
+        <label><input type="radio" name="emp" value="ต่างด้าว"><span>ต่างด้าว</span></label>
+      </div>
+      <label for="fdate">วันที่ยื่นใบลา (วัน/เดือน/ปี พ.ศ.)</label>
+      <div class="input-icon-wrap">
+        <input type="text" id="fdate" placeholder="วว/ดด/ปปปป" autocomplete="off">
+        <span class="input-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </span>
+      </div>
+      <label for="to">เรียน</label>
+      <input id="to" placeholder="เช่น ผู้จัดการฝ่ายบุคคล" autocomplete="off">
+    </section>
+
+    <section>
+      <h2>ผู้ลา</h2>
+      <label>คำนำหน้า</label>
+      <div class="chips" id="pre">
+        <label><input type="radio" name="pre" value="นาย" checked><span>นาย</span></label>
+        <label><input type="radio" name="pre" value="นาง"><span>นาง</span></label>
+        <label><input type="radio" name="pre" value="นางสาว"><span>นางสาว</span></label>
+      </div>
+      <label for="name">ชื่อ - นามสกุล</label>
+      <input id="name" autocomplete="name" list="nameList">
+      <datalist id="nameList"></datalist>
+      <div class="g2">
+        <div><label for="code">รหัสพนักงาน (พิมพ์เพื่อดึงข้อมูล)</label><input id="code" inputmode="numeric"
+            list="codeList" placeholder="พิมพ์รหัสพนักงาน"><datalist id="codeList"></datalist></div>
+        <div><label for="dept">แผนก</label><input id="dept"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>รายละเอียดการลา</h2>
+      <label for="type">ขอลา (เลือกหรือพิมพ์เอง)</label>
+      <input id="type" list="types" placeholder="เช่น ลากิจ">
+      <datalist id="types">
+        <option value="ลากิจ">
+        <option value="ลาป่วย">
+        <option value="ลาพักร้อน">
+        <option value="ลาคลอด">
+        <option value="ลาทำหมัน">
+      </datalist>
+      <label for="why">เนื่องจาก</label>
+      <input id="why" placeholder="เหตุผลการลา">
+      <div class="g2">
+        <div>
+          <label for="d1">ลาตั้งแต่วันที่ (พ.ศ.)</label>
+          <div class="input-icon-wrap">
+            <input type="text" id="d1" placeholder="วว/ดด/ปปปป" autocomplete="off">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </span>
+          </div>
+        </div>
+        <div>
+          <label for="d2">ถึงวันที่ (พ.ศ.)</label>
+          <div class="input-icon-wrap">
+            <input type="text" id="d2" placeholder="วว/ดด/ปปปป" autocomplete="off">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </span>
+          </div>
+        </div>
+        <div>
+          <label for="t1">ตั้งแต่เวลา (24 ชม.)</label>
+          <div class="input-icon-wrap">
+            <input type="text" id="t1" placeholder="00:00" autocomplete="off">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span>
+          </div>
+        </div>
+        <div>
+          <label for="t2">ถึงเวลา (24 ชม.)</label>
+          <div class="input-icon-wrap">
+            <input type="text" id="t2" placeholder="00:00" autocomplete="off">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="quick-days">
+        <span>เลือกช่วงวันด่วน:</span>
+        <button type="button" class="btn-chip" onclick="setLeaveDays(1)">1 วัน</button>
+        <button type="button" class="btn-chip" onclick="setLeaveDays(2)">2 วัน</button>
+        <button type="button" class="btn-chip" onclick="setLeaveDays(3)">3 วัน</button>
+        <button type="button" class="btn-chip" onclick="setLeaveDays(7)">1 สัปดาห์</button>
+        <button type="button" class="btn-chip" onclick="setLeaveDays(14)">2 สัปดาห์</button>
+        <button type="button" class="btn-chip" onclick="setLeaveDays(30)">1 เดือน</button>
+      </div>
+      <div class="derived">
+        <div><label for="qty">รวมจำนวน (คำนวณให้อัตโนมัติ)</label><input id="qty" readonly
+            placeholder="เลือกวันที่ก่อน"></div>
+        <div><label for="unit">หน่วย (คำนวณให้อัตโนมัติ)</label><input id="unit" readonly placeholder="-"></div>
+      </div>
+      <p class="hint" id="qtyNote">ระบบคำนวณจำนวนวันลาให้อัตโนมัติ (<b>รายเดือน:</b> หยุดเสาร์-อาทิตย์, <b>รายวัน/ต่างด้าว:</b> หยุดเฉพาะวันอาทิตย์) — ช่องนี้อ่านอย่างเดียว แก้ไขไม่ได้</p>
+    </section>
+
+
+    <section>
+      <h2>สถิติการลาก่อนหน้านี้</h2>
+      <details>
+        <summary>กรอกสถิติ (ไม่บังคับ)</summary>
+        <p class="sub" style="margin:6px 0">รูปแบบ วัน:ชั่วโมง:นาที เช่น 2:0:0</p>
+        <div class="g2" id="stats"></div>
+      </details>
+    </section>
+
+    <section>
+      <h2>ลายมือชื่อผู้ลา</h2>
+      <div class="pd" data-k="app" data-t="ผู้ลา"></div>
+    </section>
+  </div>
+
+  <div id="preview">
+    <div class="pbar">
+      <button class="btn" id="back" type="button">แก้ไข</button>
+      <button class="btn" id="prt" type="button">พิมพ์ / PDF</button>
+      <button class="btn pri" id="save2" type="button">บันทึกลง Sheet</button>
+    </div>
+    <div id="pw">
+      <div id="paper"></div>
+    </div>
+    <p class="note">ตอนพิมพ์ให้เลือกกระดาษ A4 และมาตราส่วน 100% หรือบันทึกเป็น PDF แล้วพิมพ์ทีหลัง</p>
+  </div>
+
+  <div class="bar" id="bar"><button class="btn" id="show" type="button" style="display:none;">ดูตัวอย่างใบลา</button><button class="btn"
+      id="pdfNow" type="button" style="display:none;">📄 ดู PDF</button><button class="btn pri" id="save" type="button">บันทึกลง
+      Sheet</button></div>
+  <div id="toast" role="status"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    $('goApprove').addEventListener('click', function () {
+      const btn = this; btn.disabled = true;
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(function (baseUrl) {
+          const url = new URL(baseUrl); url.searchParams.set('page', 'approve'); window.top.location.href = url.toString();
+        }).withFailureHandler(function () { btn.disabled = false; alertMsg('เปิดหน้าอนุมัติไม่สำเร็จ', 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่'); }).getWebAppUrl();
+      } else {
+        const url = new URL(window.location.href); url.searchParams.set('page', 'approve'); window.top.location.href = url.toString();
+      }
+    });
+    const MON = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+    const STATS = ['ลากิจ', 'ลาพักร้อน', 'ลาป่วยมีใบรับรองแพทย์', 'ลาคลอด', 'ลาป่วยไม่มีใบรับรองแพทย์', 'ลาทำหมัน', 'ขาดงาน', 'ลืมบัตร / ลืมรูดบัตร', 'มาสาย / กลับก่อน', 'อุบัติเหตุ / เจ็บป่วยในงาน'];
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const pd = v => { if (!v) return ['', '', '']; const [y, m, d] = v.split('-'); return [+d, MON[m - 1], +y + 543] };
+    const radio = n => { const el = document.querySelector(`input[name=${n}]:checked`); return el ? el.value : '' };
+    /* ปรับรหัสพนักงานให้เทียบกันได้ เช่น 001 = 1 = "1.0" (ต้องตรงกับ approverCodeKey_ ฝั่ง server) */
+    const codeKey = v => { const raw = String(v == null ? '' : v).toLowerCase().replace(/[\s,\u00a0\u200b-\u200d\ufeff']/g, '').replace(/\.0+$/, ''); return /^\d+$/.test(raw) ? raw.replace(/^0+(?=\d)/, '') : raw };
+
+    /* ===== SweetAlert (มี fallback เป็น alert ถ้า CDN โหลดไม่ได้) ===== */
+    function swalReady() { return typeof Swal !== 'undefined' }
+    function alertMsg(title, text, icon) {
+      if (swalReady()) return Swal.fire({ title: title, text: text || '', icon: icon || 'error', confirmButtonText: 'รับทราบ' });
+      return window.alert(text ? title + '\n' + text : title);
+    }
+    function okMsg(title, text, extra) {
+      if (swalReady()) return Swal.fire({ title: title, text: text || '', icon: 'success', confirmButtonText: 'ตกลง', timer: 2600, timerProgressBar: true, ...(extra || {}) });
+      return window.alert(title + (text ? '\n' + text : ''));
+    }
+
+    $('stats').innerHTML = STATS.map((s, i) => `<div><label for="s${i}">${s}</label><input id="s${i}" placeholder="0:0:0"></div>`).join('');
+
+    /* ===== คำนวณจำนวนวันลาอัตโนมัติ (ตรงกับ computeLeaveDuration ฝั่ง server) =====
+       - นับรวมวันเริ่ม-วันสิ้นสุด ไม่นับวันอาทิตย์
+       - ลาวันเดียวที่กรอกเวลา คิดเป็นนาที/ชั่วโมง
+       - ช่องผลลัพธ์เป็น read-only ผู้ใช้แก้ไขไม่ได้ */
+    function parseDateOnly(v) {
+      const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(String(v || '').trim());
+      if (!m) return null;
+      const d = new Date(+m[1], +m[2] - 1, +m[3]);
+      return isNaN(d.getTime()) ? null : d;
+    }
+    function parseTimeOnly(v) {
+      const m = /^(\d{1,2}):(\d{2})/.exec(String(v || '').trim());
+      if (!m) return null;
+      const h = +m[1], mi = +m[2];
+      return (h > 24 || mi > 59) ? null : h * 60 + mi;
+    }
+    function computeLeave(d1, d2, t1, t2, empType) {
+      const isMonthly = (empType || radio('emp')) === 'รายเดือน';
+      const out = { days: 0, hours: 0, minutes: 0, skippedSunday: 0, skippedSaturday: 0, qty: '', unit: '', note: '', error: '' };
+      const start = parseDateOnly(d1);
+      if (!start) return out;
+      const end = parseDateOnly(d2) || new Date(start.getTime());
+      if (end.getTime() < start.getTime()) { out.error = 'วันที่สิ้นสุดต้องไม่ก่อนวันที่เริ่มต้นการลา'; return out }
+
+      let days = 0, sunday = 0, saturday = 0;
+      const cur = new Date(start.getTime());
+      while (cur.getTime() <= end.getTime()) {
+        const dow = cur.getDay();
+        if (dow === 0) sunday++;
+        else if (isMonthly && dow === 6) saturday++;
+        else days++;
+        cur.setDate(cur.getDate() + 1);
+      }
+      out.days = days;
+      out.skippedSunday = sunday;
+      out.skippedSaturday = saturday;
+
+      const fromMin = parseTimeOnly(t1), toMin = parseTimeOnly(t2);
+      const diffDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+      // 1. วันเดียวกัน มีระบุเวลาเริ่มต้นและสิ้นสุด
+      if (diffDays === 0 && fromMin !== null && toMin !== null && toMin > fromMin) {
+        const mins = toMin - fromMin;
+        if (mins < 60) { out.qty = String(mins); out.unit = 'นาที'; out.minutes = mins; }
+        else { const h = Math.round(mins / 60 * 100) / 100; out.qty = String(h); out.unit = 'ชั่วโมง'; out.hours = h; }
+        out.note = 'ลาในวันเดียวกัน ' + out.qty + ' ' + out.unit;
+        return out;
+      }
+
+      // 2. ลาข้ามคืน 1 วัน / กะดึก (เช่น 22:00 ถึง 06:00 วันรุ่งขึ้น)
+      if (diffDays === 1 && fromMin !== null && toMin !== null && toMin <= fromMin) {
+        const mins = (1440 - fromMin) + toMin;
+        if (mins < 60) { out.qty = String(mins); out.unit = 'นาที'; out.minutes = mins; }
+        else { const h = Math.round(mins / 60 * 100) / 100; out.qty = String(h); out.unit = 'ชั่วโมง'; out.hours = h; }
+        out.note = 'ลากะดึกข้ามคืน ' + out.qty + ' ' + out.unit;
+        return out;
+      }
+
+      // 3. ลาหลายวัน / ลาเป็นสัปดาห์ / ลาเต็มวัน
+      let qty = String(days);
+      let unit = 'วัน';
+      if (days === 0 && (sunday > 0 || saturday > 0)) {
+        qty = String(sunday + saturday);
+        unit = 'วัน';
+      }
+
+      out.qty = qty;
+      out.unit = unit;
+
+      let skipNote = '';
+      if (isMonthly) {
+        const totalWeekend = saturday + sunday;
+        if (totalWeekend > 0) {
+          skipNote = ' (ตัดวันเสาร์-อาทิตย์ออก ' + totalWeekend + ' วัน)';
+        }
+      } else {
+        if (sunday > 0) {
+          skipNote = ' (ตัดวันอาทิตย์ออก ' + sunday + ' วัน)';
+        }
+      }
+
+      out.note = days + ' วันทำการ' + skipNote;
+      return out;
+    }
+    function refreshLeaveDuration() {
+      const r = computeLeave($('d1').value, $('d2').value, $('t1').value, $('t2').value, radio('emp'));
+      const note = $('qtyNote');
+      if (r.error) {
+        $('qty').value = ''; $('unit').value = '';
+        note.innerHTML = '<b style="color:#b42318">' + esc(r.error) + '</b>';
+        $('d2').setAttribute('aria-invalid', r.error ? 'true' : 'false');
+        return r;
+      }
+      $('qty').value = r.qty;
+      $('unit').value = r.unit;
+      $('d2').removeAttribute('aria-invalid');
+      note.innerHTML = r.qty
+        ? 'คำนวณได้ <b>' + esc(r.qty + ' ' + r.unit) + '</b> — ' + esc(r.note)
+        : 'ระบบคำนวณจำนวนวันลาให้อัตโนมัติ (<b>รายเดือน:</b> หยุดเสาร์-อาทิตย์, <b>รายวัน/ต่างด้าว:</b> หยุดเฉพาะวันอาทิตย์) — ช่องนี้อ่านอย่างเดียว แก้ไขไม่ได้';
+      return r;
+    }
+
+    /* ฟังก์ชันช่วยเลือกช่วงวันลาแบบรวดเร็ว (1 วัน, 2 วัน, 1 สัปดาห์, ฯลฯ) */
+    function setLeaveDays(numDays) {
+      let start = parseDateOnly($('d1').value);
+      if (!start) {
+        start = new Date();
+        const y = start.getFullYear(), m = String(start.getMonth() + 1).padStart(2, '0'), d = String(start.getDate()).padStart(2, '0');
+        const startStr = `${y}-${m}-${d}`;
+        if (fpD1) fpD1.setDate(startStr, true);
+        else $('d1').value = startStr;
+      }
+      const end = new Date(start.getTime());
+      end.setDate(end.getDate() + (numDays - 1));
+      const ey = end.getFullYear(), em = String(end.getMonth() + 1).padStart(2, '0'), ed = String(end.getDate()).padStart(2, '0');
+      const endStr = `${ey}-${em}-${ed}`;
+      if (fpD2) {
+        fpD2.set('minDate', $('d1').value);
+        fpD2.setDate(endStr, true);
+      } else {
+        $('d2').value = endStr;
+      }
+      refreshLeaveDuration();
+    }
+
+    /* ===== ตัวจัดการ Datepicker (วัน/เดือน/ปี พ.ศ.) และ Timepicker (24 ชั่วโมง) ===== */
+    let fpFdate = null, fpD1 = null, fpD2 = null, fpT1 = null, fpT2 = null;
+
+    function initThaiDatePicker(elId, onChangeCb) {
+      const el = $(elId);
+      if (!el || typeof flatpickr === 'undefined') return null;
+
+      const updateBEYear = (instance) => {
+        if (instance && instance.currentYearElement) {
+          instance.currentYearElement.value = instance.currentYear + 543;
+        }
+      };
+
+      return flatpickr(el, {
+        locale: 'th',
+        dateFormat: 'Y-m-d',
+        altInput: true,
+        altFormat: 'd/m/Y',
+        allowInput: true,
+        formatDate: function(date, format, locale) {
+          if (format === 'Y-m-d') {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+          }
+          if (format === 'd/m/Y') {
+            const d = String(date.getDate()).padStart(2, '0');
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const yBE = date.getFullYear() + 543;
+            return `${d}/${m}/${yBE}`;
+          }
+          return flatpickr.formatDate(date, format, locale);
+        },
+        parseDate: function(dateStr, format) {
+          if (!dateStr) return null;
+          if (dateStr instanceof Date) return dateStr;
+          const str = String(dateStr).trim();
+          const m1 = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(str);
+          if (m1) {
+            let y = parseInt(m1[3], 10);
+            if (y > 2400) y -= 543;
+            return new Date(y, parseInt(m1[2], 10) - 1, parseInt(m1[1], 10));
+          }
+          const m2 = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(str);
+          if (m2) {
+            let y = parseInt(m2[1], 10);
+            if (y > 2400) y -= 543;
+            return new Date(y, parseInt(m2[2], 10) - 1, parseInt(m2[3], 10));
+          }
+          return new Date(str);
+        },
+        onReady: function(selectedDates, dateStr, instance) {
+          updateBEYear(instance);
+          if (instance.currentYearElement) {
+            instance.currentYearElement.addEventListener('input', function(e) {
+              const val = parseInt(e.target.value, 10);
+              if (!isNaN(val) && val > 2400) {
+                instance.currentYear = val - 543;
+                instance.redraw();
+                updateBEYear(instance);
+              }
+            });
+          }
+        },
+        onMonthChange: function(selectedDates, dateStr, instance) { updateBEYear(instance); },
+        onYearChange: function(selectedDates, dateStr, instance) { updateBEYear(instance); },
+        onOpen: function(selectedDates, dateStr, instance) { updateBEYear(instance); },
+        onValueUpdate: function(selectedDates, dateStr, instance) { updateBEYear(instance); },
+        onChange: function(selectedDates, dateStr, instance) {
+          if (typeof onChangeCb === 'function') onChangeCb(selectedDates, dateStr, instance);
+        }
+      });
+    }
+
+    function init24hTimePicker(elId, onChangeCb) {
+      const el = $(elId);
+      if (!el || typeof flatpickr === 'undefined') return null;
+      return flatpickr(el, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: 'H:i',
+        time_24hr: true,
+        minuteIncrement: 1,
+        allowInput: true,
+        onChange: function(selectedDates, dateStr, instance) {
+          if (typeof onChangeCb === 'function') onChangeCb(selectedDates, dateStr, instance);
+        }
+      });
+    }
+
+    function focusField(id) {
+      if (id === 'fdate' && fpFdate && fpFdate.altInput) { fpFdate.altInput.focus(); return; }
+      if (id === 'd1' && fpD1 && fpD1.altInput) { fpD1.altInput.focus(); return; }
+      if (id === 'd2' && fpD2 && fpD2.altInput) { fpD2.altInput.focus(); return; }
+      if (id === 't1' && fpT1 && (fpT1.altInput || fpT1.input)) { (fpT1.altInput || fpT1.input).focus(); return; }
+      if (id === 't2' && fpT2 && (fpT2.altInput || fpT2.input)) { (fpT2.altInput || fpT2.input).focus(); return; }
+      const el = $(id);
+      if (el) el.focus();
+    }
+
+    // เริ่มต้น Datepicker & Timepicker
+    fpFdate = initThaiDatePicker('fdate');
+    fpD1 = initThaiDatePicker('d1', (selectedDates, dateStr) => {
+      if (dateStr && fpD2) {
+        fpD2.set('minDate', dateStr);
+        if (!$('d2').value || $('d2').value < dateStr) {
+          fpD2.setDate(dateStr, true);
+        }
+      }
+      refreshLeaveDuration();
+    });
+    fpD2 = initThaiDatePicker('d2', () => {
+      refreshLeaveDuration();
+    });
+    fpT1 = init24hTimePicker('t1', (selectedDates, dateStr) => {
+      if (dateStr && !$('t2').value && fpT2) {
+        fpT2.setDate(dateStr, true);
+      }
+      refreshLeaveDuration();
+    });
+    fpT2 = init24hTimePicker('t2', () => {
+      refreshLeaveDuration();
+    });
+
+    // กำหนดวันที่ยื่นใบลาเป็นวันปัจจุบันเริ่มต้น
+    if (fpFdate) {
+      fpFdate.setDate(new Date(), true);
+    } else {
+      const today = new Date();
+      $('fdate').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    }
+
+    ['d1', 'd2', 't1', 't2'].forEach(id => $(id).addEventListener('change', () => {
+      if (id === 'd1' && !$('d2').value) {
+        if (fpD2) fpD2.setDate($('d1').value, true); else $('d2').value = $('d1').value;
+      }
+      if (id === 't1' && !$('t2').value) {
+        if (fpT2) fpT2.setDate($('t1').value, true); else $('t2').value = $('t1').value;
+      }
+      refreshLeaveDuration();
+    }));
+
+    document.querySelectorAll('input[name="emp"]').forEach(r => r.addEventListener('change', () => {
+      refreshLeaveDuration();
+    }));
+
+    /* ช่องลายเซ็นของผู้ลา (ผู้อนุมัติลงชื่อในหน้าอนุมัติแบบอ่านอย่างเดียว) */
+    const pads = {};
+    document.querySelectorAll('.pd').forEach(box => {
+      box.innerHTML = `<label>${esc(box.dataset.t)}</label><canvas aria-label="ลายเซ็น ${esc(box.dataset.t)}"></canvas><div style="margin-top:8px"><button class="btn" type="button">ล้างลายเซ็น</button></div>`;
+      const cv = box.querySelector('canvas'), cx = cv.getContext('2d'); let on = false;
+      const p = {
+        signed: false,
+        fit() {
+          const r = cv.getBoundingClientRect(), q = window.devicePixelRatio || 1;
+          if (r.width === 0 || r.height === 0) return;
+          cv.width = r.width * q; cv.height = r.height * q; cx.setTransform(q, 0, 0, q, 0, 0); cx.lineWidth = 2.2; cx.lineCap = 'round'; cx.lineJoin = 'round'; cx.strokeStyle = '#111'; p.signed = false;
+        },
+        clear() { cx.save(); cx.setTransform(1, 0, 0, 1, 0, 0); cx.clearRect(0, 0, cv.width, cv.height); cx.restore(); p.signed = false },
+        data() { return cv.toDataURL('image/png') }
+      };
+      const pt = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top] };
+      cv.addEventListener('pointerdown', e => { on = true; cv.setPointerCapture(e.pointerId); const [x, y] = pt(e); cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x + .1, y); cx.stroke(); p.signed = true });
+      cv.addEventListener('pointermove', e => { if (!on) return; const [x, y] = pt(e); cx.lineTo(x, y); cx.stroke() });
+      ['pointerup', 'pointercancel'].forEach(t => cv.addEventListener(t, () => on = false));
+      box.querySelector('button').onclick = () => p.clear();
+      pads[box.dataset.k] = p; p.fit();
+    });
+
+    /* สร้างใบลา */
+    const dl = (t, st = '') => `<span class="d" style="${st}">${esc(t)}</span>`;
+    const il = (t, w) => `<span class="i" style="min-width:${w}px">${esc(t)}</span>`;
+    function build() {
+      const emp = radio('emp'), ck = v => emp === v ? '✓' : '&nbsp;&nbsp;';
+      const [fd, fm, fy] = pd($('fdate').value), [a1, a2, a3] = pd($('d1').value), [b1, b2, b3] = pd($('d2').value);
+      const full = `${radio('pre')} ${$('name').value}`.trim();
+      const has = $('name').value.trim();
+      const st = STATS.map((s, i) => $('s' + i).value.trim());
+      const rows = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]].map(([l, r]) => `<tr><td>${STATS[l]}</td><td>${esc(st[l])}</td><td>${STATS[r]}</td><td>${esc(st[r])}</td></tr>`).join('');
+      const S = k => pads[k] && pads[k].signed ? `<img class="sig" src="${pads[k].data()}" alt="">` : '';
+      /* ช่องอนุมัติ/ลงชื่อของผู้อนุมัติ ปล่อยว่างไว้ให้เซ็นในหน้าอนุมัติ */
+      const BLANK = '&nbsp;&nbsp;&nbsp;';
+      const A = () => BLANK;
+      const R = () => BLANK;
+      $('paper').innerHTML = `
+ <div class="top"><div class="bx">แผนกบุคคลธุรการ</div><div class="bx">CM 2</div></div>
+ <div class="ttl">ใบลา</div>
+ <div class="r b"><div><b>เรื่อง</b> &nbsp;ขอลาหยุดงาน</div><div>วันที่ ${il(fd, 45)} เดือน ${il(fm, 90)} พ.ศ. ${il(fy, 55)}</div></div>
+ <div class="ty">(${ck('รายเดือน')}) รายเดือน &nbsp;&nbsp;&nbsp; (${ck('รายวัน')}) รายวัน &nbsp;&nbsp;&nbsp; (${ck('ต่างด้าว')}) ต่างด้าว</div>
+ <div class="r"><b>เรียน</b> ${dl($('to').value, 'text-align:left')}</div>
+ <div class="r">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ข้าพเจ้า</b> ${dl(has ? full : '', 'flex-grow:3')} รหัส ${dl($('code').value)} แผนก ${dl($('dept').value)}</div>
+ <div class="r">มีความประสงค์ขอลา ${dl($('type').value)} เนื่องจาก ${dl($('why').value, 'flex-grow:2')}</div>
+ <div class="r">จึงขอลาตั้งแต่วันที่ ${il(a1, 35)} เดือน ${il(a2, 80)} พ.ศ. ${il(a3, 45)} ถึงวันที่ ${il(b1, 35)} เดือน ${il(b2, 80)} พ.ศ. ${il(b3, 45)}</div>
+ <div class="r">รวม ${il($('qty').value, 60)} ${$('qty').value ? $('unit').value : 'วัน / ชั่วโมง / นาที'} &nbsp;( ตั้งแต่เวลา ${il($('t1').value, 55)} น. ถึงเวลา ${il($('t2').value, 55)} น. )</div>
+ <div class="r" style="margin:4px 0 0"><b>ก่อนการลาครั้งนี้ มีสถิติการลาดังนี้</b></div>
+ <table><thead><tr><th style="width:32%">ประเภทการลา</th><th style="width:18%">จำนวนวัน : ชั่วโมง : นาที</th><th style="width:32%">ประเภทการลา</th><th style="width:18%">จำนวนวัน : ชั่วโมง : นาที</th></tr></thead><tbody>${rows}</tbody></table>
+ <div class="dc">ข้าพเจ้าขอรับรองว่าข้อความข้างต้นนี้เป็นความจริง หากเป็นเท็จข้าพเจ้ายินดีให้บริษัท พิจารณาโทษตามระเบียบบริษัท</div>
+ <div class="sd">จึงเรียนมาเพื่อทราบและโปรดพิจารณา</div>
+ <div class="sg">
+  <div class="sc">
+   <div class="sr">ลงชื่อ <span class="d s">${S('app')}</span> ผู้ลา</div>
+   <div class="sr">แผนกบุคคลฯรับเอกสารวันที่ <span class="d"></span></div>
+   <div class="sr">ลงชื่อ <span class="d"></span></div>
+   <div class="sr">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( <span class="d"></span> )</div>
+   <div class="sr c">แผนกบุคคลธุรการ</div>
+  </div>
+  <div class="sc">
+     <div class="sr" style="justify-content:center">(${A()}) อนุมัติ &nbsp; (${R()}) ไม่อนุมัติ</div>
+     <div class="sr">ลงชื่อ <span class="d s">${S('foreman')}</span> หัวหน้างาน</div>
+     <div class="sr">ลงชื่อ <span class="d s">${S('head')}</span> หัวหน้าแผนก</div>
+    <div class="sr">ลงชื่อ <span class="d s">${S('mgr')}</span></div>
+    <div class="sr">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( <span class="d"></span> )</div>
+    <div class="sr c">ผู้ช่วย/รอง/ผู้จัดการฝ่าย/ผู้จัดการทั่วไป</div>
+   </div>
+ </div>`;
+    }
+    function scale() {
+      const w = 794, h = 561, s = Math.min(1, (document.documentElement.clientWidth - 24) / w);
+      $('paper').style.transform = `scale(${s})`; $('pw').style.width = w * s + 'px'; $('pw').style.height = h * s + 'px';
+    }
+    $('show').onclick = () => { build(); $('form').classList.add('off'); $('bar').style.display = 'none'; $('preview').classList.add('on'); scale(); scrollTo(0, 0) };
+    $('back').onclick = () => { $('preview').classList.remove('on'); $('form').classList.remove('off'); $('bar').style.display = 'flex'; setTimeout(() => Object.values(pads).forEach(p => p.signed || p.fit()), 0) };
+    $('prt').onclick = () => { try { window.print() } catch (e) { alert('เปิดหน้านี้ในเบราว์เซอร์แล้วใช้เมนูพิมพ์ของเครื่อง') } };
+    addEventListener('resize', () => { if ($('preview').classList.contains('on')) scale() });
+
+    /* ===== บันทึกลง Google Sheet (google.script.run) ===== */
+    function collect() {
+      const d = refreshLeaveDuration();
+      return {
+        emp: radio('emp'), fdate: $('fdate').value, to: $('to').value.trim(), pre: radio('pre'), name: $('name').value.trim(),
+        code: $('code').value.trim(), dept: $('dept').value.trim(), type: $('type').value, why: $('why').value,
+        d1: $('d1').value, d2: $('d2').value, t1: $('t1').value, t2: $('t2').value,
+        qty: d.qty, unit: d.unit,
+        stats: STATS.map((s, i) => $('s' + i).value.trim()),
+        sigs: { app: pads.app.signed ? pads.app.data() : '' }
+      };
+    }
+    let tt; function toast(m) { const t = $('toast'); t.textContent = m; t.className = 'on'; clearTimeout(tt); tt = setTimeout(() => t.className = '', 4000) }
+    function setBusy(b) { ['save', 'save2'].forEach(id => { $(id).disabled = b; $(id).textContent = b ? 'กำลังบันทึก...' : 'บันทึกลง Sheet' }) }
+    function backToForm() { if ($('preview').classList.contains('on')) $('back').click() }
+
+    /** เคลียร์ฟอร์มทั้งหมดเพื่อเริ่มใบลาใบใหม่ */
+    function resetForm() {
+      ['fdate', 'to', 'name', 'code', 'dept', 'type', 'why', 'd1', 'd2', 't1', 't2', 'qty', 'unit'].forEach(id => { if ($(id)) $(id).value = '' });
+      if (fpFdate) fpFdate.setDate(new Date(), true);
+      if (fpD1) fpD1.clear();
+      if (fpD2) fpD2.clear();
+      if (fpT1) fpT1.clear();
+      if (fpT2) fpT2.clear();
+      document.querySelectorAll('#stats input').forEach(i => i.value = '');
+      document.querySelectorAll('input[name="pre"]').forEach(r => r.checked = r.value === 'นาย');
+      document.querySelectorAll('input[name="emp"]').forEach(r => r.checked = r.value === 'รายเดือน');
+      Object.values(pads).forEach(p => p.clear && p.clear());
+      lockEmployeeFields(false);
+      refreshLeaveDuration();
+      focusField('d1');
+    }
+
+    function saveToSheet() {
+      const d = collect();
+      if (!d.name) {
+        backToForm();
+        alertMsg('ข้อมูลไม่ครบ', 'กรุณากรอก "ชื่อ - นามสกุล" ก่อนบันทึก', 'warning');
+        focusField('name');
+        return;
+      }
+      if (!d.d1) {
+        backToForm();
+        alertMsg('ข้อมูลไม่ครบ', 'กรุณาเลือก "ลาตั้งแต่วันที่" เพื่อให้ระบบคำนวณจำนวนวันลา', 'warning');
+        focusField('d1');
+        return;
+      }
+      if (!d.qty) {
+        backToForm();
+        alertMsg('คำนวณจำนวนวันลาไม่ได้', 'วันที่สิ้นสุดต้องไม่ก่อนวันที่เริ่มต้น หรือเลือกช่วงเวลาให้ถูกต้อง', 'warning');
+        focusField('d2');
+        return;
+      }
+      if (typeof google === 'undefined' || !google.script) {
+        alertMsg('บันทึกไม่ได้', 'ต้องเปิดผ่านลิงก์ Web App ของ Google Apps Script จึงจะบันทึกลงชีตได้');
+        return;
+      }
+
+      setBusy(true);
+      google.script.run
+        .withSuccessHandler(r => {
+          setBusy(false);
+          if (!r || !r.ok) { alertMsg('บันทึกไม่สำเร็จ', (r && r.message) || 'ไม่ทราบสาเหตุ'); return }
+          backToForm();
+          resetForm();
+          okMsg('บันทึกใบลาเรียบร้อยแล้ว',
+            'เลขที่อ้างอิง: ' + r.id + '\nจำนวนวันลา: ' + (r.durationText || (r.qty + ' ' + r.unit)),
+            r.warn ? { footer: r.warn } : {});
+        })
+        .withFailureHandler(e => { setBusy(false); alertMsg('บันทึกไม่สำเร็จ', (e && e.message ? e.message : String(e))) })
+        .saveLeave(d);
+    }
+    $('save').onclick = saveToSheet; $('save2').onclick = saveToSheet;
+    $('reset').onclick = () => {
+      if (swalReady()) {
+        Swal.fire({
+          title: 'ล้างฟอร์ม?', text: 'ข้อมูลที่กรอกไว้ทั้งหมดและลายเซ็นจะถูกลบ', icon: 'warning',
+          showCancelButton: true, confirmButtonText: 'ล้างฟอร์ม', cancelButtonText: 'ยกเลิก', reverseButtons: true
+        })
+          .then(r => { if (r.isConfirmed) { backToForm(); resetForm(); toast('ล้างฟอร์มเรียบร้อยแล้ว') } });
+      } else {
+        backToForm(); resetForm();
+      }
+    };
+
+    /* ===== ดึงข้อมูลพนักงานจาก Sheet (sh_employee / employee) ===== */
+    let employeeList = [];
+
+    function loadEmployees() {
+      if (typeof google === 'undefined' || !google.script) return;
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res && res.ok && Array.isArray(res.data)) {
+            employeeList = res.data;
+            renderEmployeeOptions();
+          } else if (res && !res.ok) {
+            console.warn('ดึงข้อมูลพนักงานไม่สำเร็จ:', res.message);
+          }
+        })
+        .withFailureHandler(err => {
+          console.error('เกิดข้อผิดพลาดในการดึงข้อมูลพนักงาน:', err);
+        })
+        .getEmployeeList();
+    }
+
+    function renderEmployeeOptions() {
+      const nameList = $('nameList');
+      const codeList = $('codeList');
+
+      if (nameList) {
+        nameList.innerHTML = employeeList.map(e => e.name ? `<option value="${esc(e.name)}">${esc(e.code ? e.code + ' - ' + e.dept : e.dept)}</option>` : '').join('');
+      }
+      if (codeList) {
+        codeList.innerHTML = employeeList.map(e => e.code ? `<option value="${esc(e.code)}">${esc(e.name)}</option>` : '').join('');
+      }
+    }
+
+    function lockEmployeeFields(locked) {
+      ['name', 'dept', 'to'].forEach(id => { if ($(id)) $(id).readOnly = locked; });
+      document.querySelectorAll('input[name="pre"]').forEach(r => r.disabled = locked);
+      document.querySelectorAll('input[name="emp"]').forEach(r => r.disabled = locked);
+    }
+
+
+    function selectEmployee(emp) {
+      if (!emp) return;
+
+      let preVal = emp.pre || '';
+      let nameVal = emp.name || '';
+
+      // แยกคำนำหน้าในกรณีที่สะสมในช่องชื่อ
+      if (!preVal && nameVal) {
+        if (nameVal.startsWith('นาย ')) { preVal = 'นาย'; nameVal = nameVal.slice(4).trim(); }
+        else if (nameVal.startsWith('นาย')) { preVal = 'นาย'; nameVal = nameVal.slice(3).trim(); }
+        else if (nameVal.startsWith('นางสาว ')) { preVal = 'นางสาว'; nameVal = nameVal.slice(7).trim(); }
+        else if (nameVal.startsWith('นางสาว')) { preVal = 'นางสาว'; nameVal = nameVal.slice(6).trim(); }
+        else if (nameVal.startsWith('นาง ')) { preVal = 'นาง'; nameVal = nameVal.slice(4).trim(); }
+        else if (nameVal.startsWith('นาง')) { preVal = 'นาง'; nameVal = nameVal.slice(3).trim(); }
+      }
+
+      if (emp.code) $('code').value = emp.code;
+      if (nameVal) $('name').value = nameVal;
+      if (emp.dept) $('dept').value = emp.dept;
+      if (emp.to) $('to').value = emp.to;
+
+      if (preVal) {
+        const preRadio = ['นาย', 'นาง', 'นางสาว'].includes(preVal.trim())
+          ? document.querySelector(`input[name="pre"][value="${preVal.trim()}"]`)
+          : null;
+        if (preRadio) preRadio.checked = true;
+      }
+
+      if (emp.emp) {
+        const empRadio = ['รายเดือน', 'รายวัน', 'ต่างด้าว'].includes(String(emp.emp).trim())
+          ? document.querySelector(`input[name="emp"][value="${String(emp.emp).trim()}"]`)
+          : null;
+        if (empRadio) empRadio.checked = true;
+      }
+
+      // ล็อกข้อมูลที่ดึงมาให้อ่านได้อย่างเดียว (Read-only)
+      lockEmployeeFields(true);
+      refreshLeaveDuration();
+    }
+
+    // ค้นหาและดึงข้อมูลเมื่อป้อนหรือแก้ไขรหัสพนักงาน
+    function onCodeInput() {
+      const codeVal = $('code').value.trim();
+      if (!codeVal) {
+        $('name').value = '';
+        $('dept').value = '';
+        lockEmployeeFields(false);
+        return;
+      }
+
+      const found = employeeList.find(emp => emp.code && codeKey(emp.code) === codeKey(codeVal));
+      if (found) {
+        selectEmployee(found);
+      } else {
+        // หากพิมพ์รหัสใหม่ที่ไม่ตรงกับคนเดิม ให้ล้างข้อมูลเดิมและปลดล็อกช่องกรอก
+        $('name').value = '';
+        $('dept').value = '';
+        lockEmployeeFields(false);
+
+      }
+    }
+
+    // ค้นหาและดึงข้อมูลเมื่อป้อนชื่อ-นามสกุล
+    function onNameInput() {
+      const nameVal = $('name').value.trim();
+      if (!nameVal) return;
+
+      const found = employeeList.find(emp => {
+        if (!emp.name) return false;
+        const cleanEmpName = String(emp.name).replace(/^(นาย|นางสาว|นาง)\s*/, '').trim();
+        const cleanInputName = nameVal.replace(/^(นาย|นางสาว|นาง)\s*/, '').trim();
+        return cleanEmpName.toLowerCase() === cleanInputName.toLowerCase() || String(emp.name).toLowerCase() === nameVal.toLowerCase();
+      });
+
+      if (found) {
+        selectEmployee(found);
+      }
+    }
+
+    $('code').addEventListener('input', onCodeInput);
+    $('code').addEventListener('change', onCodeInput);
+    $('name').addEventListener('input', onNameInput);
+    $('name').addEventListener('change', onNameInput);
+
+    // เรียกดึงข้อมูลพนักงานและคำนวณจำนวนวันลาเมื่อเปิดหน้าเว็บ
+    loadEmployees();
+    refreshLeaveDuration();
+
+    /* ===== ตัวอย่างใบลาแบบ PDF ใน SweetAlert แสดงในหน้ากรอกใบลาได้เลย
+       โครงหน้ากระดาษตรงกับหน้า “ดูตัวอย่างใบลา” ทุกจุด (ใช้ makeLeavePdfDefinition ตัวเดียวกับหน้าอนุมัติ) ===== */
+    let pdfMakeLoadPromise = null;
+    let pdfMakeLib_ = null;
+    const PDF_MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+    const PDF_PAGE_W = 595.28;
+    const PDF_PAGE_H = 420.94;
+    const PDF_MARGIN_X = 34;
+    const PDF_MARGIN_Y = 17;
+    const PDF_SIG_H = 18;
+    /* ฟอนต์เสริมสำหรับเครื่องหมาย ✓ — ฟอนต์ Sarabun ไม่มี U+2713 จึงต้องแยกฟอนต์ */
+    const PDF_SYMBOL_FONT = 'https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssymbols2/NotoSansSymbols2-Regular.ttf';
+    /* pdfmake วาดเส้นได้เฉพาะ "ตาราง" เท่านั้น (border ของ text/column ถูกละเลย) จึงต้องทำทุกช่องกรอกเป็นตาราง 1 ช่อง */
+    const PDF_LINE_LAYOUT = {
+      hLineWidth: i => (i === 1 ? 0.4 : 0),
+      vLineWidth: () => 0,
+      hLineColor: () => '#000',
+      vLineColor: () => '#000',
+      paddingLeft: () => 0, paddingRight: () => 0,
+      paddingTop: () => 0, paddingBottom: () => 0
+    };
+    const PDF_BOX_LAYOUT = {
+      hLineWidth: () => 0.9,
+      vLineWidth: () => 0.9,
+      hLineColor: () => '#000',
+      vLineColor: () => '#000',
+      paddingLeft: () => 7.5, paddingRight: () => 7.5,
+      paddingTop: () => 0.75, paddingBottom: () => 0.75
+    };
+
+    function pdfTrim(v, n) {
+      const s = String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+      return s.length > n ? s.slice(0, n - 1) + '…' : s;
+    }
+
+    function pdfDateParts(v) {
+      const raw = String(v == null ? '' : v).trim();
+      const m = raw.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (m) return { dd: m[3], mm: PDF_MONTHS[+m[2] - 1] || m[2], yy: String(+m[1] + 543) };
+      const dt = new Date(raw);
+      if (Number.isNaN(dt.getTime())) return { dd: '', mm: '', yy: '' };
+      return { dd: String(dt.getDate()), mm: PDF_MONTHS[dt.getMonth()], yy: String(dt.getFullYear() + 543) };
+    }
+
+    function pdfText(t, extra) {
+      return Object.assign({ text: t == null ? '' : t, margin: [0, 0.1, 0, 0.1] }, extra || {});
+    }
+
+    /* ช่องกรอกเส้นประ — ทำเป็นตาราง 1 ช่อง เส้นล่างอย่างเดียว (pdfmake ไม่วาด border ของ text) */
+    function pdfLine(t, extra) {
+      const e = extra || {};
+      const w = e.width === undefined ? '*' : e.width;
+      return {
+        /* width ต้องใส่ทั้งข้างนอก (ให้คอลัมน์รู้ความกว้าง) และ table.widths ด้านใน (ไม่งั้นตารางจะยืดพื้นที่ที่เหลือทั้งหมด) */
+        width: w,
+        table: { widths: ['*'], body: [[pdfText(String(t == null ? '' : t) || ' ', { alignment: e.alignment || 'left' })]] },
+        layout: PDF_LINE_LAYOUT,
+        margin: [0, 0, 0, 0]
+      };
+    }
+
+    /* ช่องวันที่ — ความกว้างเท่ากับหน้าดูตัวอย่างใบลา (ส่ง w มาได้ ไม่ส่งใช้ค่า default) */
+    function pdfDateCells(p, w) {
+      const wd = w || { dd: 26, mm: 60, yy: 33 };
+      return [
+        pdfLine(p.dd, { width: wd.dd, alignment: 'center' }),
+        pdfText('เดือน', { width: 26, alignment: 'right' }),
+        pdfLine(p.mm, { width: wd.mm, alignment: 'center' }),
+        pdfText('พ.ศ.', { width: 20, alignment: 'right' }),
+        pdfLine(p.yy, { width: wd.yy, alignment: 'center' })
+      ];
+    }
+
+    /* เครื่องหมาย ✓ ในช่องเช็ค — ใช้ฟอนต์ Symbols (ตรงกับหน้าดูตัวอย่างใบลา) */
+    function pdfCheck(on) {
+      return on ? { text: '✓', font: 'Symbols', fontSize: 9 } : { text: '\u00a0\u00a0\u00a0' };
+    }
+
+    function pdfFillRow(label) {
+      return { columns: [pdfText(label, { width: 'auto' }), pdfLine('', { width: '*' })], columnGap: 2, margin: [0, 0, 0, 0.4] };
+    }
+
+    function pdfNameRow(name) {
+      return { columns: [pdfText('(', { width: 8 }), pdfLine(name, { width: '*', alignment: 'center' }), pdfText(')', { width: 8 })], columnGap: 2, margin: [0, 0, 0, 0.4] };
+    }
+
+    /* แถวลงชื่อ — เส้นล่างวาดด้วยตาราง รูปเซ็นวางในเซลล์เดียวกัน */
+    function pdfSigLine(before, data, after) {
+      const inner = data
+        ? { image: data, width: 74, height: PDF_SIG_H, fit: [74, PDF_SIG_H], alignment: 'center' }
+        : { text: ' ', height: PDF_SIG_H };
+      return {
+        columns: [
+          pdfText(before, { width: 'auto' }),
+          { width: '*', table: { widths: ['*'], body: [[{ stack: [inner] }]] }, layout: PDF_LINE_LAYOUT },
+          pdfText(after, { width: 'auto' })
+        ], columnGap: 2, margin: [0, 0, 0, 0.4]
+      };
+    }
+
+    function makeLeavePdfDefinition(d) {
+      d = d || {};
+      const stats = Array.isArray(d.stats) ? d.stats : [];
+      const submitted = pdfDateParts(d.submitted);
+      const fromDate = pdfDateParts(d.fromDate);
+      const toDate = pdfDateParts(d.toDate);
+      const an = d.approverNames || {};
+      /* ผลพิจารณา — เครื่องหมาย ✓ เหมือนหน้าดูตัวอย่างใบลา (ยังไม่อนุมัติ = ช่องว่าง) */
+      const approveOn = d.mgrApproval === 'อนุมัติ' || d.headApproval === 'อนุมัติ' || d.foremanApproval === 'อนุมัติ';
+      const rejectOn = !approveOn && (d.mgrApproval === 'ไม่อนุมัติ' || d.headApproval === 'ไม่อนุมัติ' || d.foremanApproval === 'ไม่อนุมัติ');
+      /* ชื่อผู้ลา = คำนำหน้า + ชื่อ-นามสกุล ในช่องเดียวกัน ตรงกับหน้าดูตัวอย่าง */
+      const full = (((d.prefix || '') + ' ' + (d.name || '')).replace(/\s+/g, ' ')).trim();
+      const qty = String(d.qty == null ? '' : d.qty).trim();
+      const unit = qty ? String(d.unit == null ? '' : d.unit).trim() : 'วัน / ชั่วโมง / นาที';
+
+      const statLabels = ['ลากิจ', 'ลาพักร้อน', 'ลาป่วยมีใบรับรองแพทย์', 'ลาคลอด', 'ลาป่วยไม่มีใบรับรองแพทย์', 'ลาทำหมัน', 'ขาดงาน', 'ลืมบัตร / ลืมรูดบัตร', 'มาสาย / กลับก่อน', 'อุบัติเหตุ / เจ็บป่วยในงาน'];
+      const statBody = [];
+      for (let i = 0; i < statLabels.length; i += 2) {
+        statBody.push([
+          pdfText(statLabels[i], { lineHeight: 1.1 }),
+          pdfText(pdfTrim(stats[i], 12), { alignment: 'center', lineHeight: 1.1 }),
+          pdfText(statLabels[i + 1], { lineHeight: 1.1 }),
+          pdfText(pdfTrim(stats[i + 1], 12), { alignment: 'center', lineHeight: 1.1 })
+        ]);
+      }
+
+      return {
+        pageSize: { width: PDF_PAGE_W, height: PDF_PAGE_H },
+        pageMargins: [PDF_MARGIN_X, PDF_MARGIN_Y, PDF_MARGIN_X, PDF_MARGIN_Y],
+        defaultStyle: { font: 'Sarabun', fontSize: 9, lineHeight: 1.1, color: '#000' },
+        content: [
+          /* หัวกระดาษ — ช่องซ้าย/ขวาชิดสองขอบแบบ .top ของหน้าดูตัวอย่างใบลา */
+          /* หัวกระดาษ — ช่องซ้าย/ขวาเป็นตารางมีกรอบ ชิดสองขอบแบบ .top ของหน้าดูตัวอย่างใบลา */
+          {
+            columns: [
+              { width: 96, table: { widths: [96], body: [[pdfText('แผนกบุคคลธุรการ', { bold: true, fontSize: 9 })]] }, layout: PDF_BOX_LAYOUT },
+              { width: '*', text: '', margin: 0 },
+              { width: 40, table: { widths: [40], body: [[pdfText('CM 2', { bold: true, fontSize: 9, alignment: 'center' })]] }, layout: PDF_BOX_LAYOUT }
+            ], columnGap: 0, margin: [0, 0, 0, 0.1]
+          },
+
+          pdfText('ใบลา', { fontSize: 14.4, bold: true, alignment: 'center', lineHeight: 1.0, margin: [0, 0, 0, 1] }),
+
+          {
+            columns: [
+              pdfText([{ text: 'เรื่อง  ', bold: true }, { text: 'ขอลาหยุดงาน' }], { width: '*' }),
+              pdfText('วันที่', { width: 34, alignment: 'right' })
+            ].concat(pdfDateCells(submitted, { dd: 34, mm: 68, yy: 41 })), columnGap: 2, margin: [0, 0, 0, 0.1]
+          },
+
+          pdfText(['(', pdfCheck(d.employeeType === 'รายเดือน'), ') รายเดือน', '\u00a0'.repeat(13),
+            '(', pdfCheck(d.employeeType === 'รายวัน'), ') รายวัน', '\u00a0'.repeat(13),
+            '(', pdfCheck(d.employeeType === 'ต่างด้าว'), ') ต่างด้าว'],
+            { alignment: 'center', fontSize: 9, margin: [0.5, 0, 0.5, 0] }),
+
+          {
+            columns: [
+              pdfText('เรียน', { width: 34, bold: true }),
+              pdfLine(pdfTrim(d.to, 30), { width: '*' })
+            ], columnGap: 2, margin: [0, 0, 0, 0.1]
+          },
+
+          {
+            columns: [
+              pdfText('', { width: 24 }),
+              pdfText('ข้าพเจ้า', { width: 46, bold: true }),
+              pdfLine(pdfTrim(full, 36), { width: '*' }),
+              pdfText('รหัส', { width: 26 }),
+              pdfLine(pdfTrim(d.code, 10), { width: 60 }),
+              pdfText('แผนก', { width: 26 }),
+              pdfLine(pdfTrim(d.dept, 16), { width: '18%' })
+            ], columnGap: 2, margin: [0, 0, 0, 0.1]
+          },
+
+          {
+            columns: [
+              pdfText('มีความประสงค์ขอลา', { width: 96 }),
+              pdfLine(pdfTrim(d.leaveType, 20), { width: '*' }),
+              pdfText('เนื่องจาก', { width: 52 }),
+              pdfLine(pdfTrim(d.reason, 42), { width: '47%' })
+            ], columnGap: 2, margin: [0, 0, 0, 0.1]
+          },
+
+          {
+            columns: [pdfText('จึงขอลาตั้งแต่วันที่', { width: 96 })]
+              .concat(pdfDateCells(fromDate, { dd: 26, mm: 60, yy: 33 }))
+              .concat([pdfText('ถึงวันที่', { width: 46 })])
+              .concat(pdfDateCells(toDate, { dd: 26, mm: 60, yy: 33 })), columnGap: 2, margin: [0, 0, 0, 0.1]
+          },
+
+          {
+            columns: [
+              pdfText('รวม', { width: 26 }),
+              pdfLine(pdfTrim(qty, 8), { width: 45, alignment: 'center' }),
+              pdfText(unit, { width: 'auto' }),
+              pdfText('( ตั้งแต่เวลา', { width: 'auto' }),
+              pdfLine(pdfTrim(d.fromTime, 8), { width: 41, alignment: 'center' }),
+              pdfText('น. ถึงเวลา', { width: 44 }),
+              pdfLine(pdfTrim(d.toTime, 8), { width: 41, alignment: 'center' }),
+              pdfText('น. )', { width: 24 })
+            ], columnGap: 2, margin: [0, 0, 0, 0.1]
+          },
+
+          pdfText('ก่อนการลาครั้งนี้ มีสถิติการลาดังนี้', { bold: true, margin: [1.5, 0, 0, 0] }),
+
+          {
+            unbreakable: true, margin: [0.5, 0, 1, 0], fontSize: 8.6, lineHeight: 1.1,
+            table: {
+              widths: ['32%', '18%', '32%', '18%'],
+              body: [[
+                pdfText('ประเภทการลา', { bold: true, alignment: 'center', fontSize: 7.4, lineHeight: 1.1 }),
+                pdfText('จำนวนวัน : ชั่วโมง : นาที', { bold: true, alignment: 'center', fontSize: 7.4, lineHeight: 1.1 }),
+                pdfText('ประเภทการลา', { bold: true, alignment: 'center', fontSize: 7.4, lineHeight: 1.1 }),
+                pdfText('จำนวนวัน : ชั่วโมง : นาที', { bold: true, alignment: 'center', fontSize: 7.4, lineHeight: 1.1 })
+              ]].concat(statBody)
+            },
+            layout: {
+              hLineWidth: () => 0.4, vLineWidth: () => 0.4,
+              hLineColor: () => '#000', vLineColor: () => '#000',
+              paddingTop: () => 0.2, paddingBottom: () => 0.2, paddingLeft: () => 4.5, paddingRight: () => 4.5
+            }
+          },
+
+          /* เว้นบรรทัดแรก 2.5em เท่ากับ text-indent ของหน้าดูตัวอย่างใบลา */
+          pdfText('\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0' + 'ข้าพเจ้าขอรับรองว่าข้อความข้างต้นนี้เป็นความจริง หากเป็นเท็จข้าพเจ้ายินดีให้บริษัท พิจารณาโทษตามระเบียบบริษัท', { margin: [1, 1, 0, 1] }),
+
+          {
+            columns: [{
+              width: '48%', stack: [
+                pdfText('จึงเรียนมาเพื่อทราบและโปรดพิจารณา', { alignment: 'center', margin: [0.5, 0, 1, 2] })
+              ]
+            }]
+          },
+
+          {
+            unbreakable: true, columnGap: 20, columns: [
+              {
+                width: '*', stack: [
+                  pdfSigLine('ลงชื่อ', d.sigApplicant || d.sigApp, 'ผู้ลา'),
+                  pdfFillRow('แผนกบุคคลฯรับเอกสารวันที่'),
+                  pdfFillRow('ลงชื่อ'),
+                  pdfNameRow(''),
+                  pdfText('แผนกบุคคลธุรการ', { alignment: 'center', bold: true, fontSize: 8.6 })
+                ]
+              },
+              {
+                width: '*', stack: [
+                  pdfText(['(', pdfCheck(approveOn), ') อนุมัติ\u00a0\u00a0\u00a0\u00a0', '(', pdfCheck(rejectOn), ') ไม่อนุมัติ'], { alignment: 'center', margin: [0, 0, 0, 1] }),
+                  pdfSigLine('ลงชื่อ', d.sigForeman, 'หัวหน้างาน'),
+                  pdfSigLine('ลงชื่อ', d.sigHead, 'หัวหน้าแผนก'),
+                  pdfSigLine('ลงชื่อ', d.sigManager || d.sigMgr, ''),
+                  pdfNameRow(pdfTrim(an.mgr || d.approverName || '', 30)),
+                  pdfText('ผู้ช่วย/รอง/ผู้จัดการฝ่าย/ผู้จัดการทั่วไป', { alignment: 'center', bold: true, fontSize: 8.6 })
+                ]
+              }
+            ]
+          }
+        ]
+      };
+    }
+
+    function pdfFileName_(d) {
+      const id = String((d && d.id) || 'ใบลา').replace(/[^\w\u0E00-\u0E7F-]/g, '_');
+      return 'ใบลา-' + id + '.pdf';
+    }
+
+    /* สร้าง PDF จากข้อมูลที่กรอกในฟอร์ม (ไม่ต้องบันทึกลงชีตก่อน) */
+    function buildFormPdf_(timeoutMs) {
+      return new Promise((resolve, reject) => {
+        let settled = false;
+        const timer = setTimeout(() => finish(reject, new Error('สร้าง PDF ไม่ทันเวลา (60 วินาที) กรุณาตรวจอินเทอร์เน็ตแล้วลองใหม่')), timeoutMs || 60000);
+        function finish(fn, arg) { if (settled) return; settled = true; clearTimeout(timer); fn(arg); }
+        try {
+          const d = collect();
+          const data = {
+            id: 'ใบลาใหม่',
+            submitted: d.fdate, employeeType: d.emp, to: d.to,
+            prefix: d.pre, name: d.name, code: d.code, dept: d.dept,
+            leaveType: d.type, reason: d.why,
+            fromDate: d.d1, toDate: d.d2, fromTime: d.t1, toTime: d.t2,
+            qty: d.qty, unit: d.unit, stats: d.stats,
+            sigApplicant: (d.sigs && d.sigs.app) || '',
+            sigForeman: '', sigHead: '', sigManager: '',
+            approverNames: {}, foremanApproval: '', headApproval: '', mgrApproval: ''
+          };
+          loadPdfMake_().then(lib => {
+            const doc = lib.createPdf(makeLeavePdfDefinition(data));
+            if (!doc || typeof doc.getBlob !== 'function') { finish(reject, new Error('ไลบรารี pdfmake ไม่รองรับการแสดงตัวอย่าง')); return; }
+            return doc.getBlob().then(blob => finish(resolve, { blob: blob, name: pdfFileName_(data), doc: doc }));
+          }).catch(e => finish(reject, (e && e.message) ? new Error(e.message) : e));
+        } catch (e) { finish(reject, (e && e.message) ? new Error(e.message) : e); }
+      });
+    }
+
+    function loadPdfMake_() {
+      if (pdfMakeLib_) return Promise.resolve(pdfMakeLib_);
+      if (!pdfMakeLoadPromise) {
+        pdfMakeLoadPromise = new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/pdfmake@0.3.11/build/pdfmake.min.js';
+          script.onload = () => {
+            const lib = window.pdfMake;
+            if (!lib) { reject(new Error('ไม่พบไลบรารี pdfmake')); return }
+            try {
+              lib.fonts = {
+                Sarabun: {
+                  normal: 'https://raw.githubusercontent.com/google/fonts/main/ofl/sarabun/Sarabun-Regular.ttf',
+                  bold: 'https://raw.githubusercontent.com/google/fonts/main/ofl/sarabun/Sarabun-Bold.ttf',
+                  italics: 'https://raw.githubusercontent.com/google/fonts/main/ofl/sarabun/Sarabun-Italic.ttf',
+                  bolditalics: 'https://raw.githubusercontent.com/google/fonts/main/ofl/sarabun/Sarabun-BoldItalic.ttf'
+                },
+                Symbols: {
+                  normal: PDF_SYMBOL_FONT,
+                  bold: PDF_SYMBOL_FONT,
+                  italics: PDF_SYMBOL_FONT,
+                  bolditalics: PDF_SYMBOL_FONT
+                }
+              };
+              pdfMakeLib_ = lib;
+              resolve(lib);
+            } catch (e) { reject(new Error((e && e.message) || e)) }
+          };
+          script.onerror = () => { pdfMakeLoadPromise = null; reject(new Error('โหลดไลบรารี pdfmake ไม่สำเร็จ')) };
+          document.head.appendChild(script);
+        });
+      }
+      return pdfMakeLoadPromise;
+    }
+
+    /* แสดง PDF ใน SweetAlert popup ในหน้ากรอกใบลา (เรนเดอร์ลง canvas ด้วย PDF.js เพราะ iframe ของ Apps Script ไม่แสดง PDF ของเบราว์เซอร์) */
+    function showPdfModal_(blob, name) {
+      const url = URL.createObjectURL(blob);
+      keepPdfUrl(url);
+      const fileName = name || 'ใบลา.pdf';
+      const downloadPdf = () => {
+        const a = document.createElement('a'); a.href = url; a.download = fileName;
+        document.body.appendChild(a); a.click(); a.remove();
+      };
+      if (!swalReady()) { downloadPdf(); return; }
+
+      Swal.fire({
+        title: '📄 ตัวอย่างใบลา (PDF)',
+        html: '<div id="pdfViewer"><p class="pdf-note">⏳ กำลังเปิดไฟล์ PDF...</p></div>',
+        width: 'min(1000px,96vw)', padding: '10px', customClass: { popup: 'swal-pdf-popup', htmlContainer: 'swal-pdf-box' },
+        showConfirmButton: true, confirmButtonText: '⬇️ ดาวน์โหลด', confirmButtonColor: '#1f5fbf',
+        showDenyButton: true, denyButtonText: '🔗 เปิดแท็บใหม่',
+        showCancelButton: true, cancelButtonText: 'ปิด', reverseButtons: true,
+        didOpen: () => renderPdfInto_(document.getElementById('pdfViewer'), blob, url)
+      }).then(r => {
+        if (r && r.isConfirmed) downloadPdf();
+        else if (r && r.isDenied) {
+          const win = window.open(url, '_blank');
+          if (!win) alertMsg('เปิดแท็บใหม่ไม่ได้', 'เบราว์เซอร์บล็อก pop-up — กด "ดาวน์โหลด" แล้วเปิดไฟล์แทน', 'warning');
+        }
+      });
+    }
+
+    function renderPdfInto_(host, blob, url) {
+      if (!host) return;
+      host.innerHTML = '<p class="pdf-note">⏳ กำลังเปิดไฟล์ PDF...</p>';
+      loadPdfJs_()
+        .then(lib => ensurePdfWorker_(lib).then(() => lib))
+        .then(lib => blob.arrayBuffer().then(buf => lib.getDocument({ data: buf }).promise))
+        .then(pdf => {
+          host.innerHTML = '';
+          let chain = Promise.resolve();
+          for (let i = 1; i <= pdf.numPages; i++) {
+            chain = chain.then(() => pdf.getPage(i)).then(page => {
+              const base = page.getViewport({ scale: 1 });
+              const avail = host.clientWidth || 720;
+              const dpr = Math.min(window.devicePixelRatio || 1, 2);
+              const viewport = page.getViewport({ scale: (avail / base.width) * dpr });
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.floor(viewport.width);
+              canvas.height = Math.floor(viewport.height);
+              host.appendChild(canvas);
+              return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+            });
+          }
+          return chain;
+        })
+        .catch(() => {
+          host.innerHTML = '<iframe src="' + url + '"></iframe>' +
+            '<p class="pdf-note">ถ้ากล่องด้านบนว่างเปล่า กด “⬇️ ดาวน์โหลด” แล้วเปิดไฟล์ หรือกด “🔗 เปิดแท็บใหม่”</p>';
+        });
+    }
+
+    let pdfJsPromise_ = null;
+    function loadPdfJs_() {
+      if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+      if (!pdfJsPromise_) {
+        pdfJsPromise_ = new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+          s.onload = () => {
+            const lib = window.pdfjsLib;
+            if (!lib) { reject(new Error('ไม่พบไลบรารี PDF.js')); return; }
+            resolve(lib);
+          };
+          s.onerror = () => { pdfJsPromise_ = null; reject(new Error('โหลดไลบรารี PDF.js ไม่สำเร็จ')); };
+          document.head.appendChild(s);
+        });
+      }
+      return pdfJsPromise_;
+    }
+
+    /* Worker ของ PDF.js ต้องเป็น same-origin — โหลดสคริปต์มาทำเป็น Blob URL กันถูกบล็อก */
+    function ensurePdfWorker_(lib) {
+      if (lib.__workerReady__) return Promise.resolve();
+      lib.__workerReady__ = true;
+      const remote = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      return fetch(remote)
+        .then(r => { if (!r.ok) throw new Error('โหลด PDF worker ไม่สำเร็จ'); return r.text(); })
+        .then(text => { lib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([text], { type: 'application/javascript' })); })
+        .catch(() => { lib.GlobalWorkerOptions.workerSrc = remote; });
+    }
+
+    /* เก็บ URL ของ blob ไว้ยกเลิกตอนปิดหน้า ไม่ให้รั่วในหน่วยความจำ */
+    const pdfUrls_ = [];
+    function keepPdfUrl(url) { pdfUrls_.push(url); if (pdfUrls_.length > 5) URL.revokeObjectURL(pdfUrls_.shift()); }
+    window.addEventListener('beforeunload', () => { while (pdfUrls_.length) URL.revokeObjectURL(pdfUrls_.pop()); });
+
+    $('pdfNow').onclick = function () {
+      const btn = this;
+      if (btn.disabled) return;
+      const label = btn.textContent;
+      btn.disabled = true; btn.textContent = 'กำลังสร้าง PDF...';
+      buildFormPdf_().then(res => {
+        btn.disabled = false; btn.textContent = label;
+        showPdfModal_(res.blob, res.name);
+      }).catch(e => {
+        btn.disabled = false; btn.textContent = label;
+        alertMsg('สร้าง PDF ไม่สำเร็จ', String((e && e.message) || e));
+      });
+    };
+
+  </script>
+</body>
+
+</html>

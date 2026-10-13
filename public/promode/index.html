@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AOT Digital Signage - ระบบป้ายดิจิทัลสำหรับองค์กร">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>AOT Digital Signage</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+  .imageye-selected {
+    outline: 2px solid black !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+  }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #0a0a0f;
+            color: #e8e8ec;
+            overflow: hidden;
+        }
+        #root {
+            width: 100%;
+            height: 100vh;
+            background: #0a0a0f;
+        }
+        .display-mode {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .display-poster {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .display-brand-background {
+            width: 100%;
+            height: 40%;
+            object-fit: cover;
+        }
+        .display-header {
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2a3a;
+        }
+        .display-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .display-logo-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+        .display-clock {
+            text-align: right;
+        }
+        .display-clock-date, .display-clock-time {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .display-clock-time {
+            font-size: 24px;
+            font-weight: 600;
+            color: #00d4aa;
+        }
+        .display-fullscreen-control {
+            padding: 0 40px 20px;
+        }
+        .display-fullscreen-control button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .display-stage {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .display-media-frame {
+            width: 90%;
+            max-width: 1200px;
+            height: 70%;
+            max-height: 700px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .display-slide {
+            width: 100%;
+            height: 100%;
+        }
+        .display-slide-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .display-rooms {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        .display-room-card {
+            background: #16161f;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #2a2a3a;
+        }
+        .display-room-card--free { border-left: 4px solid #00d4aa; }
+        .display-room-card--busy { border-left: 4px solid #ff6b6b; }
+        .display-room-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .display-room-title-wrap h2 { font-size: 16px; font-weight: 500; margin: 0; }
+        .display-room-status { margin-left: auto; }
+        .display-room-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .display-room-dot--free { background: #00d4aa; }
+        .display-room-dot--busy { background: #ff6b6b; }
+        .display-room-ready { font-size: 12px; color: #666; margin-top: 4px; }
+        .display-room-details { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+        .display-room-details p { display: flex; align-items: center; gap: 8px; color: #aaa; }
+        .display-room-time { color: #888; font-size: 11px; }
+        .display-ticker {
+            background: #0a0a0f;
+            padding: 15px 40px;
+            border-top: 1px solid #2a2a3a;
+        }
+        .display-ticker-track { display: flex; align-items: center; gap: 20px; overflow: hidden; }
+        .display-ticker-track span { white-space: nowrap; font-size: 13px; color: #777; }
+        .display-ticker-dot { color: #555; font-size: 16px; }
+        @media (max-width: 768px) {
+            .display-header { padding: 15px 20px; }
+            .display-clock-time { display: none; }
+            .display-rooms { padding: 20px 15px; }
+            .display-room-card { padding: 16px; }
+            .display-ticker { padding: 10px 15px; }
+            .display-ticker-track { gap: 10px; }
+            .display-ticker-track span { font-size: 11px; }
+        }
+    </style></head>
+  <body style="overflow: hidden;">
+    <div id="root"><div class="display-mode display-poster display-has-ticker display-has-rooms" style="--display-overlay-opacity: 0.7;"><img class="display-brand-background" src="images/header.png" alt="" aria-hidden="true"><header class="display-header "><div class="display-brand"><img src="images/button.png" alt="CM Logo" class="display-logo-img" draggable="false"></div><div class="display-clock"><p class="display-clock-date">จันทร์ 5 ตุลาคม 2026</p><p class="display-clock-time">16:08</p></div></header><div class="display-fullscreen-control"><button type="button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize2" aria-hidden="true"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" x2="14" y1="3" y2="10"></line><line x1="3" x2="10" y1="21" y2="14"></line></svg> เปิดเต็มจอ</button></div><main class="display-stage"><div class="display-media-frame"><div class="display-slide display-slide--fade "><img src="images/1789720031757-cs4uis7myqw.png" alt="โปรโมชั่น" class="display-slide-img" draggable="false"></div></div></main><section class="display-rooms" aria-label="สถานะห้องประชุม"><article class="display-room-card display-room-card--free"><div class="display-room-heading"><div class="display-room-title-wrap"><h2 class="display-room-name">ห้องปฐมนิเทศน์</h2><div class="display-room-status display-room-status--free"><span class="display-room-dot" aria-hidden="true"></span><span>ว่าง</span></div></div></div><p class="display-room-ready">พร้อมใช้งาน</p></article><article class="display-room-card display-room-card--free"><div class="display-room-heading"><div class="display-room-title-wrap"><h2 class="display-room-name">ห้องประชุมเขียว</h2><div class="display-room-status display-room-status--free"><span class="display-room-dot" aria-hidden="true"></span><span>ว่าง</span></div></div></div><p class="display-room-ready">พร้อมใช้งาน</p></article><article class="display-room-card display-room-card--busy"><div class="display-room-heading"><div class="display-room-title-wrap"><h2 class="display-room-name">ห้องประชุมชั้นล่าง</h2><div class="display-room-status display-room-status--busy"><span class="display-room-dot" aria-hidden="true"></span><span>ไม่ว่าง</span></div></div></div><div class="display-room-details"><p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg><span>ส่งฟรี</span></p><p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round" aria-hidden="true"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg><span>คุณกฤษฏิ์ณิชา</span></p><p class="display-room-time"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock3" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16.5 12"></polyline></svg><span>13:00 – 16:30</span></p></div></article><article class="display-room-card display-room-card--free"><div class="display-room-heading"><div class="display-room-title-wrap"><h2 class="display-room-name">ห้องประชุมใหญ่</h2><div class="display-room-status display-room-status--free"><span class="display-room-dot" aria-hidden="true"></span><span>ว่าง</span></div></div></div><p class="display-room-ready">พร้อมใช้งาน</p></article></section><footer class="display-ticker"><div class="display-ticker-track"><span>บริษัทเชียงใหม่โฟรเซ่นฟูดส์ ยินดีต้อนรับ - チェンマイ・フローズน・フーズへようこそ！
+</span><span class="display-ticker-dot" aria-hidden="true">•</span><span aria-hidden="true">บริษัทเชียงใหม่โฟรเซ่นฟูดส์ ยินดีต้อนรับ - チェンマイ・フローズน・フーズへようこそ！
+</span></div></footer></div></div>
+  
+
+</body></html>

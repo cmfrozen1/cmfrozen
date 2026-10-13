@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>หมอนโคซี่ – Fukupetstore</title>
+  <meta name="description" content="หมอนโคซี่ Fukupetstore หมอนสุขภาพใบใหญ่ที่ปรับความสูงได้เอง ไส้ไฮเปอร์เมมโมรี่โฟมนุ่มฟูเหมือนนอนบนปุยเมฆ ช่วยให้ต้นคอและกระดูกสันหลังอยู่ในแนวตรงตลอดคืน">
+  <link rel="shortcut icon" href="https://www.chowa.in.th/cdn/shop/files/Favicon_chowa_new_f8d6d5a3-43e0-4c92-a69e-f581dd6fb9d9_32x32.png?v=1643772777" type="image/png">
+  
+  <!-- Google Fonts: Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet extracted from design.html -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- React 18 & Babel Standalone (cdnjs with unpkg fallback) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script>window.React || document.write('<script src="https://unpkg.com/react@18/umd/react.production.min.js"><\/script>')</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+  <script>window.ReactDOM || document.write('<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"><\/script>')</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js" crossorigin></script>
+  <script>window.Babel || document.write('<script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>')</script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React Application -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Default Initial Fallback Data matching design.html 100%
+    const DEFAULT_DATA = {
+      product_defaults: {
+        color_label: "เลือกสีปลอกหมอน:",
+        color_options: [
+          { name: "สีขาว (White)", hex: "#ffffff" },
+          { name: "สีเทา (Gray)", hex: "#888888" },
+          { name: "สีน้ำเงิน (Navy Blue)", hex: "#1e3a8a" },
+          { name: "สีชมพู (Soft Pink)", hex: "#f472b6" }
+        ]
+      },
+      top_bar: {
+        items: [
+          "🚚 ส่งฟรีทั่วไทย เก็บเงินปลายทางได้",
+          "💳 ผ่อน 0% นานสูงสุด 4 เดือน",
+          "⭐ ลูกค้ากว่า 100,000 คนไว้วางใจ",
+          "🔥 โปรโมชั่นพิเศษหมดเวลาใน:"
+        ],
+        timer_seconds: 31335
+      },
+      header: {
+        logo_url: "https://www.chowa.in.th/cdn/shop/files/Chowa_logo_CMYK_Logo_Blue_croped.png?v=1781661303&width=400",
+        nav_links: [
+          { label: "หมอนสุขภาพ", href: "#product" },
+          { label: "จุดเด่น", href: "#benefits" },
+          { label: "โครงสร้าง 4 ชั้น", href: "#hotspots" },
+          { label: "เปรียบเทียบ", href: "#comparison" },
+          { label: "รีวิวจากลูกค้า", href: "#reviews" },
+          { label: "คำถามที่พบบ่อย", href: "#faq" }
+        ]
+      },
+      product: {
+        title: "หมอนโคซี่",
+        brand: "Fukupetstore",
+        rating: "5.0",
+        reviews_text: "(1,955+ รีวิว)",
+        sold_text: "🔥 ขายแล้วกว่า 10,000+ ใบ",
+        urgency_text: "⚡ มีสินค้า พร้อมส่งทันที จัดส่งฟรีทั่วไทย",
+        guarantee_text: "🛡️ รับประกันความพึงพอใจ คืนเงินเต็มจำนวนใน 7 วัน",
+        gallery: [
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-699926_1400x.png?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-699926_400x.png?v=1738616200", alt: "หมอนโคซี่" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-496375_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-496375_400x.jpg?v=1738616200", alt: "หมอนโคซี่บนเตียง" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-123819_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-123819_400x.jpg?v=1738616200", alt: "โครงสร้างหมอน" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-655523_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-655523_400x.jpg?v=1738616200", alt: "เทไส้ปรับความสูง" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-447802_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-447802_400x.jpg?v=1738616200", alt: "คู่มือความสูง" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-594772_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-594772_400x.jpg?v=1738616200", alt: "แนวคอเวลานอน" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-597736_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-597736_400x.jpg?v=1738616200", alt: "ทดสอบความนุ่ม" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-408032_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-408032_400x.jpg?v=1738616200", alt: "มาตรฐาน CertiPUR-US" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-997234_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-997234_400x.jpg?v=1738616200", alt: "ปลอก SnowMax" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-983423_1400x.png?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-983423_400x.png?v=1738616200", alt: "คอลลาจรีวิว" },
+          { url: "https://www.chowa.in.th/cdn/shop/files/product-144433_1400x.jpg?v=1738616200", thumb: "https://www.chowa.in.th/cdn/shop/files/product-144433_400x.jpg?v=1738616200", alt: "ขนาดหมอน 2 ขนาด" }
+        ],
+        trust_badges: [
+          { icon: "https://ucarecdn.com/3c9e7ad4-72cd-4778-9d52-e200ff0c8606/-/format/auto/-/preview/240x240/-/quality/lighter/Artboard%201.png", text: "ทดลองนอนฟรี<br>7 วัน" },
+          { icon: "https://ucarecdn.com/eb4711a8-4f97-4b60-be98-eac7f004d304/-/format/auto/-/preview/240x240/-/quality/lighter/Artboard%205.png", text: "รับประกันสินค้า<br>แท้ 100%" },
+          { icon: "https://ucarecdn.com/fb814f37-d63a-4598-ae3f-3b444f3a56af/-/format/auto/-/preview/240x240/-/quality/lighter/Artboard%203.png", text: "ผ่อน 0% นาน<br>สูงสุด 4 เดือน" }
+        ],
+        sizes: [
+          { id: "standard", title: "มาตรฐาน (Standard)", subtitle: "ขนาด 18 x 26 นิ้ว", price: 2690, compare_price: 4400 },
+          { id: "king", title: "ใหญ่พิเศษ (King)", subtitle: "ขนาด 18 x 35 นิ้ว", price: 2990, compare_price: 4890 }
+        ],
+        bundles: [
+          { id: 1, badge: "", name: "1 ใบ (เซ็ตทดลอง)", desc: "หมอนโคซี่ + ถุงรีฟิลไส้เมมโมรี่โฟม", multiplier: 1, discount_percent: 0, savings_text: "ลด 39% จากราคาเต็ม" },
+          { id: 2, badge: "Best Seller 10% OFF", name: "2 ใบ (สำหรับคนรู้ใจ)", desc: "หมอน 2 ใบ + ถุงรีฟิล 2 ถุง", multiplier: 2, discount_percent: 10, savings_text: "ประหยัดเพิ่ม 10%" },
+          { id: 4, badge: "แถมฟรี 1 ใบ คุ้มที่สุด", name: "ซื้อ 3 แถม 1 (ได้ 4 ใบ)", desc: "แถมฟรีอีก 1 ใบ สำหรับครอบครัว", multiplier: 3, actual_items: 4, discount_type: "free_one", savings_text: "แถมฟรี 1 ใบ คุ้มที่สุด" }
+        ],
+        upsell: {
+          enabled: true,
+          title: "+ เพิ่ม ปลอกหมอน Tencel Lyocell",
+          meta: "สัมผัสเย็น นุ่มลื่นดุจผ้าไหม อ่อนโยนต่อผิว",
+          price: 790,
+          compare_price: 1290,
+          image: "https://www.chowa.in.th/cdn/shop/files/tencel-lyocell-631776.png?height=200&v=1738616201"
+        },
+        accordions: [
+          {
+            title: "ทำไมต้องใช้หมอนโคซี่?",
+            content: "• <strong>ลดอาการปวดคอ:</strong> ปรับความสูงและต่ำได้ตามสรีระของผู้ใช้ ช่วยให้กระดูกสันหลังอยู่ในแนวที่ถูกต้อง ลดอาการตึงและปวดคอได้จริง<br>• <strong>หลับลึกสบายตลอดคืน:</strong> วัสดุไฮเปอร์เมมโมรี่โฟมมีความนุ่มฟู ช่วยกระจายน้ำหนักกดทับ ลดการตื่นกลางดึก<br>• <strong>นอนสบายทุกท่า:</strong> หมอนใบใหญ่ช่วยโอบอุ้มต้นคอและศีรษะอย่างพอดี ตอบโจทย์ทั้งท่านอนตะแคง หงาย และคว่ำ<br>• <strong>นอนแล้วเย็นสบาย ไม่ร้อน:</strong> ปลอกหมอน SnowMax วัสดุให้สัมผัสเย็นเป็นพิเศษ ระบายอากาศได้ดี นุ่มนวลอ่อนโยนต่อผิว<br>• <strong>ปลอดภัยต่อการใช้งาน:</strong> วัสดุเป็นมิตรต่อสิ่งแวดล้อม ผ่านการรับรองมาตรฐานความปลอดภัย ไร้สารพิษ CertiPUR-US"
+          },
+          {
+            title: "ขนาดและวัสดุ",
+            content: "<strong>ขนาด:</strong><br>• Standard: 18 x 26 นิ้ว (เหมาะกับเตียงเดี่ยวและเตียงควีนไซส์)<br>• King: 18 x 35 นิ้ว (ขนาดใหญ่พิเศษ เหมาะกับเตียงคิงไซส์และคนที่ชอบพลิกตัว)<br><br><strong>วัสดุ:</strong><br>• แกนหมอน: Shredded Hyper Memory Foam เกรดพรีเมียม นุ่มฟู คืนตัวช้า<br>• ปลอกด้านใน: ผ้า Air Mesh ถ่ายเทอากาศได้ดีเยี่ยม<br>• ปลอกหุ้มด้านนอก: ผ้า SnowMax สัมผัสเย็น ปรับสมดุลอุณหภูมิร่างกาย"
+          },
+          {
+            title: "คำแนะนำในการดูแลรักษา",
+            content: "• <strong>ปลอกหมอนด้านนอก:</strong> สามารถถอดซักเครื่องได้ในโหมดถนอมผ้า ใช้น้ำเย็น ไม่ใส่น้ำยาปรับผ้านุ่ม และอบแห้งอุณหภูมิต่ำหรือผึ่งลมในที่ร่ม<br>• <strong>แกนหมอนและปลอกด้านใน:</strong> แนะนำให้ผึ่งลมในที่ร่มเท่านั้น ห้ามซัก และหลีกเลี่ยงไม่ให้แกนเมมโมรี่โฟมโดนน้ำหรือแดดจัด"
+          },
+          {
+            title: "การจัดส่งสินค้า",
+            content: "สินค้าทุกชิ้น <strong>จัดส่งฟรีและมีบริการเก็บเงินปลายทางฟรีทั่วประเทศ</strong> ผ่านทาง EMS บริษัทไปรษณีย์ไทย<br>• กรุงเทพและปริมณฑล: 2-3 วันทำการ<br>• ต่างจังหวัด: 3-5 วันทำการ (มีรหัส Tracking ตรวจสอบสถานะได้ 24 ชั่วโมง)"
+          },
+          {
+            title: "นโยบายการรับประกันสินค้า",
+            content: "หากคุณได้รับสินค้าแล้ว รู้สึกว่าไม่ตอบโจทย์หรือไม่พอใจสินค้าในกรณีใดก็ตาม ทางบริษัทยินดี <strong>คืนเงินเต็มจำนวนภายใน 7 วัน</strong> นับตั้งแต่วันที่ได้รับสินค้าตามเงื่อนไขที่กำหนด พร้อมการรับประกันคุณภาพวัสดุ 1 ปีเต็ม"
+          }
+        ]
+      },
+      features: [
+        { icon: "https://ucarecdn.com/af853f1d-a2fd-4b6e-a6d0-3613c76f0d8f/-/format/auto/-/preview/240x240/-/quality/lighter/Pressure.png", title: "กระจายน้ำหนักกดทับ" },
+        { icon: "https://ucarecdn.com/ea22384d-0934-47fd-9434-d4cbf05af369/-/format/auto/-/preview/240x240/-/quality/lighter/Bacteria.png", title: "ป้องกันแบคทีเรีย" },
+        { icon: "https://ucarecdn.com/3313a9e9-5c8c-4178-9de9-e5436ff3cb10/-/format/auto/-/preview/240x240/-/quality/lighter/Airflow.png", title: "ระบายอากาศยอดเยี่ยม" },
+        { icon: "https://ucarecdn.com/2f09d6de-fba4-4901-85d8-3ff2d53ad3bd/-/format/auto/-/preview/240x240/-/quality/lighter/Alignment.png", title: "รองรับสรีระตามหลักกายภาพ" }
+      ],
+      benefits_section: {
+        title: "ตื่นมาคอไม่ปวด หลับลึกได้ทั้งคืน",
+        subtitle: "หมอนสุขภาพที่ออกแบบมาเพื่อแก้ปัญหาการนอนอย่างแท้จริง โอบรับสรีระของคุณในทุกมิติ",
+        cards: [
+          {
+            image: "https://www.chowa.in.th/cdn/shop/files/Benefit_cp_1.jpg?v=1787284838&width=630",
+            title: "นุ่มฟูไม่แฟบ คอไม่ตึงตอนเช้า",
+            text: "หมอนเก่าที่แฟบจนหัวจมลงไป ทำให้คอตึงและพลิกไปมาทั้งคืน ไส้ไฮเปอร์เมมโมรี่โฟมคืนตัวได้ดี รับหัวและคอไว้เท่าเดิมทุกคืน",
+            bullets: [
+              "คงรูปไม่แฟบ ไม่ยุบเป็นก้อน",
+              "รับหัวและคอไว้ในแนวระนาบทั้งคืน",
+              "ตื่นมาคอไม่ตึง ไม่ปวดเมื่อยเหมือนเคย"
+            ]
+          },
+          {
+            image: "https://www.chowa.in.th/cdn/shop/files/Benefit_cp_2.jpg?v=1787284838&width=630",
+            title: "ปรับความสูงให้พอดีตัวคุณได้เอง",
+            text: "หมอนสูงไปหรือต่ำไปคือต้นเหตุที่ทำให้คอตึงตอนเช้า เติมหรือลดไส้ไฮเปอร์เมมโมรี่โฟมได้เองจนได้ความสูงที่พอดีกับสรีระคุณ",
+            bullets: [
+              "เติมหรือลดไส้ได้เองตามสรีระและความชอบ",
+              "ปรับระดับสูงต่ำได้จนพอดีแนวกระดูกคอ",
+              "จบปัญหาซื้อหมอนมาแล้วนอนไม่พอดี"
+            ]
+          },
+          {
+            image: "https://www.chowa.in.th/cdn/shop/files/Benefit_cp_3.jpg?v=1787284838&width=630",
+            title: "นอนเย็นสบาย หลับลึกตลอดคืน",
+            text: "ปลอก SnowMax ช่วยระบายอากาศและปรับสมดุลอุณหภูมิ ไม่ร้อนไม่อับ หมดกังวลเรื่องเหงื่อสะสม หลับสบายยาวตลอดคืน",
+            bullets: [
+              "ระบายความร้อนได้ดีเยี่ยม ไม่อบศีรษะ",
+              "สัมผัสเย็นสบายผ่อนคลายตลอดทั้งคืน",
+              "ลดความอับชื้น ป้องกันไรฝุ่นและเหงื่อสะสม"
+            ]
+          }
+        ],
+        cta_text: "สั่งซื้อหมอนโคซี่เลย",
+        cta_link: "#product",
+        guarantee: "🛡️ รับประกันความพึงพอใจ ยินดีคืนเงินภายใน 7 วัน"
+      },
+      hotspots_section: {
+        title: "4 ชั้นที่ทำให้คุณหลับลึกทั้งคืน",
+        subtitle: "นวัตกรรมการออกแบบหมอนสุขภาพจากเกาหลี รวม 4 องค์ประกอบสำคัญเพื่อการพักผ่อนระดับพรีเมียม",
+        image: "https://www.chowa.in.th/cdn/shop/files/CP_3D_realistic_image_png.png?v=1787284641&width=1200",
+        pins: [
+          {
+            id: 1,
+            title: "1. ไส้ Hyper Memory Foam",
+            pin_title: "ไส้ Hyper Memory Foam",
+            top: "58%",
+            left: "28%",
+            feature: "วัสดุนุ่มนิ่ม คืนตัวได้ดีเยี่ยม เติมหรือลดไส้หมอนได้เองตามชอบ",
+            benefit: "ปรับความสูงพอดีตัวคุณ นุ่มสบายรองรับสรีระ ไม่ยุบตัวเป็นหลุม"
+          },
+          {
+            id: 2,
+            title: "2. ปลอกใน Air Mesh",
+            pin_title: "ปลอกใน Air Mesh",
+            top: "44%",
+            left: "53%",
+            feature: "ผ้าโครงข่ายเนื้อบางเบา ระบายอากาศและการไหลเวียนของลมได้ดี",
+            benefit: "ลดการสะสมของความร้อนและความอับชื้นตลอดทั้งคืน"
+          },
+          {
+            id: 3,
+            title: "3. ปลอกนอก SnowMax",
+            pin_title: "ปลอกนอก SnowMax",
+            top: "34%",
+            left: "74%",
+            feature: "เนื้อผ้าเทคโนโลยี SnowMax ให้สัมผัสเย็นเฉียบ นุ่มนวล อ่อนโยนต่อผิวหน้า",
+            benefit: "เย็นสบายตั้งแต่วินาทีแรกที่หนุน ช่วยให้ผ่อนคลายและเข้าสู่สภาวะหลับลึกเร็วขึ้น"
+          },
+          {
+            id: 4,
+            title: "4. แถบ Gusset ด้านข้าง",
+            pin_title: "แถบ Gusset",
+            top: "76%",
+            left: "83%",
+            feature: "แถบขอบรอบหมอนเสริมโครงสร้างช่วยยึดทรงหมอนให้อยู่รูป",
+            benefit: "คงรูปทรงได้ยาวนานหลายปี ไม่ยวบแบนแม้ใช้งานทุกคืน"
+          }
+        ]
+      },
+      comparison_section: {
+        title: "ทำไมต้องหมอนโคซี่",
+        subtitle: "เทียบให้เห็นชัดเจนว่าหมอนโคซี่เหนือกว่าหมอนทั่วไปอย่างไร",
+        chowa_name: "หมอนโคซี่ Fukupetstore",
+        chowa_img: "https://www.chowa.in.th/cdn/shop/files/Chowa_15_Rendering.3_copy.png?v=1787128546&width=300",
+        other_name: "หมอนทั่วไป",
+        other_img: "https://www.chowa.in.th/cdn/shop/files/pillow-other-brand.png?v=1785146409&width=300",
+        rows: [
+          { feature: "ปรับความสูงได้เองตามสรีระ", chowa: true, other: false },
+          { feature: "รองรับสรีระคอในแนวระนาบ", chowa: true, other: false },
+          { feature: "ปลอกผ้าเย็น SnowMax ไม่อับร้อน", chowa: true, other: false },
+          { feature: "โฟมแท้ คืนตัวดี ไม่ยุบยวบเป็นหลุม", chowa: true, other: false },
+          { feature: "มาตรฐานความปลอดภัย CertiPUR-US", chowa: true, other: false },
+          { feature: "การรับประกันทดลองนอน 7 วัน คืนเงินได้", chowa: true, other: false }
+        ],
+        cta_text: "สั่งซื้อและรับสิทธิ์ทดลองนอน 7 วัน",
+        cta_link: "#product"
+      },
+      reviews_section: {
+        title: "รีวิวจากลูกค้าจริง",
+        subtitle: "ประสบการณ์จริงจากผู้ใช้งานหมอนโคซี่ Fukupetstore ทั่วประเทศ",
+        score: "4.9",
+        total_reviews: "1,955+",
+        bars: [
+          { stars: 5, percent: 91, count: "1,778 (91%)" },
+          { stars: 4, percent: 7, count: "140 (7%)" },
+          { stars: 3, percent: 2, count: "30 (2%)" },
+          { stars: 2, percent: 0.5, count: "1 (0%)" },
+          { stars: 1, percent: 0.5, count: "6 (0%)" }
+        ],
+        reviews: [
+          {
+            id: 1,
+            avatar: "C",
+            avatar_bg: "#1E306E",
+            author: "Chomcheun Sudsataya",
+            verified: true,
+            stars: 5,
+            title: "เปลี่ยนมาใช้หมอนโคซี่กันทั้งครอบครัว 6 ใบ",
+            body: "เปลี่ยนมาใช้หมอนโคซี่กันทั้งครอบครัว 6 ใบ ทุกคนชอบมาก หลับสบายขึ้น ตื่นมาแล้วสดชื่น ดีจริงๆค่ะ ปรับเอาไส้ออกนิดหน่อยนอนพอดีมาก ไม่ปวดคอเลย แนะนำเลยค่ะ",
+            photo: "https://www.chowa.in.th/cdn/shop/files/product-983423_400x.png?v=1738616200"
+          },
+          {
+            id: 2,
+            avatar: "อ",
+            avatar_bg: "#2563eb",
+            author: "อัมพร รักเกียรตินักรบ",
+            verified: true,
+            stars: 5,
+            title: "คุณภาพการนอนหลับดี คุ้มค่าสมราคา จัดส่งรวดเร็วครับ",
+            body: "ให้ความรู้สึกเกี่ยวกับสุขภาพของการนอนหลับที่ดีมากๆ หลับได้นานขึ้นและตื่นมารู้สึกกระปรี้กระเปร่า มีความสุขกับการนอนมากขึ้น ไม่ตื่นกลางดึกเหมือนเมื่อก่อน",
+            photo: ""
+          },
+          {
+            id: 3,
+            avatar: "ส",
+            avatar_bg: "#059669",
+            author: "สมศักดิ์ เศวตรัตนเสถียร",
+            verified: true,
+            stars: 5,
+            title: "นอนหลับสบาย ปลอกหมอนเย็นจริง",
+            body: "ตอนแรกกังวลว่าจะสูงไป แต่พอแกะตักโฟมออกใส่ถุงรีฟิลตามที่แนะนำ ได้ระดับที่พอดีมาก นอนตะแคงก็ไม่กดทับหัวไหล่ ปลอกหมอนเย็นสัมผัสดีมาก คุ้มค่าเงินครับ",
+            photo: "https://www.chowa.in.th/cdn/shop/files/product-655523_400x.jpg?v=1738616200"
+          },
+          {
+            id: 4,
+            avatar: "ว",
+            avatar_bg: "#d97706",
+            author: "วิศิษฎ์ กิจเจริญ",
+            verified: true,
+            stars: 5,
+            title: "แก้ปัญหาคอเคล็ดได้จริงครับ",
+            body: "เคยซื้อหมอนมาหลายแบรนด์ทั้งแพงและถูก นอนไม่เคยจบ มาจบที่หมอนโคซี่ใบนี้ โฟมนุ่มแน่นกำลังดี คืนตัวเนียนมาก ไม่ยวบแฟบ สั่งเพิ่มให้คุณแม่เรียบร้อยครับ",
+            photo: ""
+          }
+        ]
+      },
+      faq_section: {
+        title: "คำถามที่พบบ่อย",
+        subtitle: "ข้อสงสัยยอดนิยมเกี่ยวกับหมอนโคซี่ Fukupetstore",
+        faqs: [
+          {
+            id: 1,
+            question: "หมอนโคซี่เหมาะกับใคร?",
+            answer: "เหมาะกับคนที่ต้องการหลับลึกและหลับสบายขึ้น ชอบสัมผัสนุ่มฟูสบายตัวแบบโรงแรมระดับ 5 ดาว และต้องการหมอนที่ปรับความสูงได้เองให้เข้ากับแนวกระดูกคอและสรีระส่วนบุคคลอย่างสมบูรณ์แบบ"
+          },
+          {
+            id: 2,
+            question: "ปรับความสูงของหมอนอย่างไร?",
+            answer: "คุณสามารถรูดซิปเปิดปลอกหมอนแล้วเติมหรือตักไส้ไฮเปอร์เมมโมรี่โฟมออกได้เองตามความชอบ โดยในกล่องจะมีถุงซิปล็อกสำหรับเก็บไส้ที่นำออกมาให้อย่างสะดวก ปรับระดับความสูงและความนุ่มให้พอดีกับตัวเองได้อย่างง่ายดาย"
+          },
+          {
+            id: 3,
+            question: "ใช้ไปนานๆ หมอนจะยุบหรือเสียทรงไหม?",
+            answer: "ไส้ไฮเปอร์เมมโมรี่โฟมแท้ 100% ไม่ใช่ใยสังเคราะห์ จึงไม่ยุบยวบแบนเป็นหลุม ออกแบบโครงสร้างให้คงรูปทรง คืนตัวช้าๆ อย่างนุ่มนวล และทนทานต่อการใช้งานทุกคืนได้ยาวนานหลายปี"
+          },
+          {
+            id: 4,
+            question: "มีกลิ่นสารเคมีไหม ปลอดภัยหรือเปล่า?",
+            answer: "อาจมีกลิ่นธรรมชาติของเมมโมรี่โฟมใหม่อ่อนๆ ในช่วงแรกที่เปิดกล่อง ซึ่งจะจางหายไปเองหลังจากผึ่งลม 1-2 วัน และวัสดุทั้งหมดผ่านการรับรองมาตรฐานสากล CertiPUR-US และ OEKO-TEX Standard 100 ปลอดจากสารเคมีอันตราย วางใจได้ 100%"
+          },
+          {
+            id: 5,
+            question: "ใช้กี่คืนถึงจะเริ่มรู้สึกสบายขึ้น?",
+            answer: "ผู้ใช้ส่วนใหญ่รู้สึกสบายและหลับลึกขึ้นตั้งแต่คืนแรกที่ใช้ บางท่านอาจใช้เวลาปรับตัวประมาณ 3-5 คืน โดยแนะนำให้ทดลองปรับปริมาณไส้โฟมให้เข้ากับท่านอนประจำ (นอนหงาย ตะแคง หรือคว่ำ) เพื่อให้ได้ความสูงที่สมบูรณ์แบบที่สุด"
+          },
+          {
+            id: 6,
+            question: "จำเป็นต้องซื้อปลอกหมอนแยกไหม?",
+            answer: "ไม่จำเป็นครับ ตัวหมอนมาพร้อมปลอก SnowMax สัมผัสเย็นคุณภาพสูงที่ถอดซักได้ หรือหากต้องการใช้ปลอกหมอนมาตรฐานทั่วไปที่คุณมีอยู่ที่บ้านก็สามารถสวมทับได้ทันที"
+          },
+          {
+            id: 7,
+            question: "ทำความสะอาดหมอนอย่างไร?",
+            answer: "• <strong>ปลอกหมอน:</strong> ถอดซักเครื่องได้ในโหมดถนอมผ้า ใช้น้ำเย็น ไม่ใส่น้ำยาปรับผ้านุ่ม อบแห้งอุณหภูมิต่ำหรือผึ่งลมในที่ร่ม<br>• <strong>แกนหมอนและปลอกด้านใน:</strong> แนะนำให้ผึ่งลมในที่ร่มเท่านั้น ห้ามนำไปซักน้ำ และหลีกเลี่ยงแสงแดดจัด"
+          },
+          {
+            id: 8,
+            question: "หากนอนแล้วไม่พอใจ คืนสินค้าได้ไหม?",
+            answer: "สามารถคืนได้ครับ เรามีนโยบายรับประกันความพึงพอใจ <strong>ให้คุณทดลองนอนฟรี 7 วัน</strong> หากรู้สึกว่าหมอนไม่ตอบโจทย์ สามารถส่งคืนเพื่อขอรับเงินคืนเต็มจำนวนได้ทันที พร้อมรับประกันคุณภาพวัสดุยาวนาน 1 ปีเต็ม"
+          }
+        ]
+      },
+      footer: {
+        about: "Fukupetstore แบรนด์นวัตกรรมการนอนเพื่อสุขภาพชั้นนำ มุ่งมั่นพัฒนาหมอน ท็อปเปอร์ และเครื่องนอนที่ตอบโจทย์หลักสรีรศาสตร์ เพื่อยกระดับคุณภาพการนอนและชีวิตที่ดีขึ้นในทุกๆ วัน",
+        club_title: "เข้าร่วม Fukupetstore Club",
+        club_desc: "รับส่วนลดพิเศษ 10% สำหรับการสั่งซื้อครั้งแรก พร้อมสาระความรู้เรื่องการนอนหลับ",
+        products: [
+          { label: "หมอนโคซี่ (Cozy Pillow)", href: "#product" },
+          { label: "หมอนลูน่า (Luna Pillow)", href: "#product" },
+          { label: "หมอน NeckFit", href: "#product" },
+          { label: "ท็อปเปอร์ยางพาราไฮบริด", href: "#product" },
+          { label: "ปลอกหมอน Tencel Lyocell", href: "#product" }
+        ],
+        services: [
+          { label: "คำถามที่พบบ่อย", href: "#faq" },
+          { label: "นโยบายทดลองนอน 7 วัน", href: "#product" },
+          { label: "การรับประกันสินค้า", href: "#product" },
+          { label: "ตรวจสอบสถานะพัสดุ", href: "#product" },
+          { label: "นโยบายความเป็นส่วนตัว", href: "#product" }
+        ],
+        contact: [
+          { label: "LINE: @fukupetstore", href: "#" },
+          { label: "Facebook: Fukupetstore", href: "#" },
+          { label: "Instagram: @fukupetstore", href: "#" },
+          { label: "TikTok: @fukupetstore", href: "#" },
+          { label: "โทร: 02-XXX-XXXX (09:00 - 18:00)", href: "#" }
+        ],
+        copyright: "© 2026 Fukupetstore Copyright. All rights reserved.",
+        payments: "การชำระเงินที่ปลอดภัย: Visa, Mastercard, PromptPay, ShopeePay, TrueMoney, เก็บเงินปลายทาง (COD)"
+      }
+    };
+
+    function App() {
+      const [siteData, setSiteData] = useState(DEFAULT_DATA);
+      const [loading, setLoading] = useState(true);
+
+      // Product options state
+      const [selectedSizeId, setSelectedSizeId] = useState('standard');
+      const [selectedBundleId, setSelectedBundleId] = useState(1);
+      const [upsellAdded, setUpsellAdded] = useState(false);
+      const [quantity, setQuantity] = useState(1);
+
+      // Gallery state
+      const [activeSlide, setActiveSlide] = useState(0);
+      const [selectedColors, setSelectedColors] = useState([]);
+
+      // Hotspots state
+      const [activeHotspotId, setActiveHotspotId] = useState(1);
+
+      // Accordion open states
+      const [openAccs, setOpenAccs] = useState({ 0: true });
+      const [openFaqs, setOpenFaqs] = useState({ 0: true });
+
+      // Reviews filter
+      const [reviewFilter, setReviewFilter] = useState('all');
+
+      // Cart & Checkout
+      const [cartOpen, setCartOpen] = useState(false);
+      const [checkoutOpen, setCheckoutOpen] = useState(false);
+      const [orderForm, setOrderForm] = useState({ name: '', phone: '', address: '', payment_method: 'cod' });
+      const [orderSubmitting, setOrderSubmitting] = useState(false);
+      const [orderResult, setOrderResult] = useState(null);
+      const [slipUploading, setSlipUploading] = useState(false);
+      const [slipUploadMessage, setSlipUploadMessage] = useState('');
+      const [trackingOpen, setTrackingOpen] = useState(false);
+      const [trackingPhone, setTrackingPhone] = useState('');
+      const [trackingLoading, setTrackingLoading] = useState(false);
+      const [trackingOrders, setTrackingOrders] = useState([]);
+      const [trackingMessage, setTrackingMessage] = useState('');
+
+      // Sticky Bar
+      const [stickyVisible, setStickyVisible] = useState(false);
+
+      // Timer
+      const [timeLeft, setTimeLeft] = useState(31335);
+
+      // Fetch dynamic content from API
+      useEffect(() => {
+        fetch('api.php?action=get_content')
+          .then(res => res.json())
+          .then(res => {
+            if (res.success && res.data) {
+              setSiteData(prev => ({
+                ...prev,
+                ...res.data
+              }));
+            }
+          })
+          .catch(err => {
+            console.log('Using default dataset fallback:', err);
+          })
+          .finally(() => setLoading(false));
+      }, []);
+
+      
+      // Update SEO Meta Tags
+      useEffect(() => {
+        if (siteData.seo) {
+          if (siteData.seo.title) document.title = siteData.seo.title;
+          
+          let metaDesc = document.querySelector('meta[name="description"]');
+          if (metaDesc && siteData.seo.description) {
+            metaDesc.setAttribute("content", siteData.seo.description);
+          }
+          
+          let metaKeywords = document.querySelector('meta[name="keywords"]');
+          if (!metaKeywords && siteData.seo.keywords) {
+            metaKeywords = document.createElement('meta');
+            metaKeywords.name = "keywords";
+            document.head.appendChild(metaKeywords);
+          }
+          if (metaKeywords && siteData.seo.keywords) {
+            metaKeywords.setAttribute("content", siteData.seo.keywords);
+          }
+
+          // OG Tags
+          if (siteData.seo.og_image) {
+            let ogImg = document.querySelector('meta[property="og:image"]');
+            if (!ogImg) {
+              ogImg = document.createElement('meta');
+              ogImg.setAttribute('property', 'og:image');
+              document.head.appendChild(ogImg);
+            }
+            ogImg.setAttribute('content', siteData.seo.og_image);
+          }
+          if (siteData.seo.description) {
+            let ogDesc = document.querySelector('meta[property="og:description"]');
+            if (!ogDesc) {
+              ogDesc = document.createElement('meta');
+              ogDesc.setAttribute('property', 'og:description');
+              document.head.appendChild(ogDesc);
+            }
+            ogDesc.setAttribute('content', siteData.seo.description);
+          }
+        }
+      }, [siteData.seo]);
+
+      // Sync countdown timer with admin-configured duration (top_bar.timer_seconds)
+      useEffect(() => {
+        const t = parseInt(siteData.top_bar?.timer_seconds, 10);
+        if (!isNaN(t) && t > 0) {
+          setTimeLeft(t);
+        }
+      }, [siteData.top_bar?.timer_seconds]);
+
+      // Scroll listener for sticky bar
+      useEffect(() => {
+        const handleScroll = () => {
+          const hero = document.getElementById('product');
+          if (hero) {
+            const rect = hero.getBoundingClientRect();
+            setStickyVisible(rect.bottom < 150);
+          }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      // Countdown interval (resets to admin-configured duration when it hits zero)
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setTimeLeft(prev => (prev > 0 ? prev - 1 : 31335));
+        }, 1000);
+        return () => clearInterval(interval);
+      }, []);
+
+      // Price calculation
+      const sizes = (siteData.product?.sizes && siteData.product.sizes.length > 0) ? siteData.product.sizes : DEFAULT_DATA.product.sizes;
+      const currentSize = sizes.find(s => s.id === selectedSizeId) || sizes[0] || DEFAULT_DATA.product.sizes[0];
+      const bundles = (siteData.product?.bundles && siteData.product.bundles.length > 0) ? siteData.product.bundles : DEFAULT_DATA.product.bundles;
+      const currentBundle = bundles.find(b => b.id === selectedBundleId) || bundles[0] || DEFAULT_DATA.product.bundles[0];
+      const upsellPrice = siteData.product?.upsell?.price || 790;
+      const colorOptions = (siteData.product?.color_options && siteData.product.color_options.length > 0)
+        ? siteData.product.color_options
+        : DEFAULT_DATA.product_defaults.color_options;
+      const paymentSettings = siteData.payment_settings || {};
+      // Older saved settings may only have a PromptPay number. Treat that as
+      // enabled so customers can still select it, while respecting an explicit off.
+      const promptpayEnabled = paymentSettings.promptpay_enabled === true ||
+        paymentSettings.promptpay_enabled === 1 ||
+        paymentSettings.promptpay_enabled === '1' ||
+        (paymentSettings.promptpay_enabled !== false && Boolean(String(paymentSettings.promptpay_number || '').trim()));
+      // `actual_items` covers promotions such as "buy 3, get 1"; use the
+      // bundle multiplier for regular bundles and fall back to one item.
+      const itemsPerBundle = Math.max(1, Number(currentBundle?.actual_items ?? currentBundle?.multiplier ?? 1));
+      const selectedItemCount = itemsPerBundle * quantity;
+      const needsColorSelection = selectedItemCount >= 2 && colorOptions.length > 0;
+      const colorsSelectedForEveryItem = !needsColorSelection || (
+        selectedColors.length === selectedItemCount && selectedColors.every(Boolean)
+      );
+      const selectedColorsLabel = selectedColors
+        .map((color, index) => color ? `ชิ้นที่ ${index + 1}: ${color}` : null)
+        .filter(Boolean)
+        .join(', ');
+
+      // Keep one color slot per physical item when the package or quantity changes.
+      useEffect(() => {
+        setSelectedColors(previous => Array.from({ length: needsColorSelection ? selectedItemCount : 0 }, (_, index) => {
+          const color = previous[index] || '';
+          return colorOptions.some(option => option.name === color) ? color : '';
+        }));
+      }, [needsColorSelection, selectedItemCount, colorOptions.map(option => option.name).join('|')]);
+
+      let calculatedTotal = 0;
+      let calculatedCompare = 0;
+
+      const sizePrice = currentSize?.price || 2690;
+      const sizeComparePrice = currentSize?.compare_price || 4400;
+
+      if (currentBundle?.id === 1) {
+        calculatedTotal = sizePrice * quantity;
+        calculatedCompare = sizeComparePrice * quantity;
+      } else if (currentBundle?.id === 2) {
+        calculatedTotal = Math.round(sizePrice * 2 * 0.9) * quantity;
+        calculatedCompare = (sizeComparePrice * 2) * quantity;
+      } else if (currentBundle?.id === 4) {
+        calculatedTotal = (sizePrice * 3) * quantity;
+        calculatedCompare = (sizeComparePrice * 4) * quantity;
+      } else {
+        calculatedTotal = sizePrice * quantity;
+        calculatedCompare = sizeComparePrice * quantity;
+      }
+
+      if (upsellAdded) {
+        calculatedTotal += upsellPrice * quantity;
+        calculatedCompare += (siteData.product?.upsell?.compare_price || 1290) * quantity;
+      }
+
+      const savings = calculatedCompare - calculatedTotal;
+
+      // Format Timer
+      const h = String(Math.floor(timeLeft / 3600)).padStart(2, '0');
+      const m = String(Math.floor((timeLeft % 3600) / 60)).padStart(2, '0');
+      const s = String(timeLeft % 60).padStart(2, '0');
+
+      // Gallery images
+      const gallery = (siteData.product?.gallery && siteData.product.gallery.length > 0) ? siteData.product.gallery : DEFAULT_DATA.product.gallery;
+      const currentImg = gallery[activeSlide] || gallery[0] || DEFAULT_DATA.product.gallery[0];
+
+      // Handle Submit Order
+      const handleOrderSubmit = (e) => {
+        e.preventDefault();
+        if (!colorsSelectedForEveryItem) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'เลือกสีไม่ครบ',
+            text: `กรุณาเลือกสีให้ครบทั้ง ${selectedItemCount} ชิ้น`,
+            confirmButtonText: 'ตกลง'
+          });
+          return;
+        }
+        setOrderSubmitting(true);
+        const payload = {
+          name: orderForm.name,
+          phone: orderForm.phone,
+          address: orderForm.address,
+          payment_method: orderForm.payment_method,
+          product_title: siteData.product.title,
+          size_name: currentSize.title,
+          bundle_name: currentBundle.name,
+          quantity: quantity,
+          colors: needsColorSelection ? selectedColors : [],
+          upsell_included: upsellAdded,
+          total_price: calculatedTotal
+        };
+
+        fetch('api.php?action=create_order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              setSlipUploadMessage('');
+              setOrderResult({
+                order_no: res.order_no,
+                total: calculatedTotal
+        });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: res.error || 'ไม่สามารถสั่งซื้อได้',
+                confirmButtonText: 'ตกลง'
+              });
+            }
+          })
+          .catch(err => {
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: 'เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง',
+              confirmButtonText: 'ตกลง'
+            });
+          })
+          .finally(() => setOrderSubmitting(false));
+      };
+
+      const proceedToCheckout = () => {
+        if (!colorsSelectedForEveryItem) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'เลือกสีไม่ครบ',
+            text: `กรุณาเลือกสีให้ครบทั้ง ${selectedItemCount} ชิ้นก่อนสั่งซื้อ`,
+            confirmButtonText: 'ตกลง'
+          });
+          return;
+        }
+        setCartOpen(false);
+        setCheckoutOpen(true);
+      };
+
+      const openCart = () => {
+        if (!colorsSelectedForEveryItem) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'เลือกสีไม่ครบ',
+            text: `กรุณาเลือกสีให้ครบทั้ง ${selectedItemCount} ชิ้นก่อนเพิ่มลงตะกร้า`,
+            confirmButtonText: 'ตกลง'
+          });
+          return;
+        }
+        setCartOpen(true);
+      };
+
+      const handleSlipUpload = (event) => {
+        const file = event.target.files?.[0];
+        if (!file || !orderResult?.order_no) return;
+        setSlipUploading(true);
+        setSlipUploadMessage('กำลังอัปโหลดสลิป...');
+        const formData = new FormData();
+        formData.append('order_no', orderResult.order_no);
+        formData.append('slip', file);
+
+        fetch('api.php?action=upload_slip', { method: 'POST', body: formData })
+          .then(res => res.json())
+          .then(res => {
+            if (!res.success) throw new Error(res.error || 'ไม่สามารถอัปโหลดสลิปได้');
+            setOrderResult(previous => ({ ...previous, slip_path: res.slip_path }));
+            setSlipUploadMessage('แนบสลิปเรียบร้อยแล้ว เจ้าหน้าที่จะตรวจสอบการชำระเงิน');
+          })
+          .catch(error => setSlipUploadMessage(error.message || 'ไม่สามารถอัปโหลดสลิปได้'))
+          .finally(() => setSlipUploading(false));
+      };
+
+      const getOrderStatusLabel = (status) => {
+        if (status === 'confirmed') return 'ยืนยันออเดอร์แล้ว';
+        if (status === 'shipping') return 'กำลังจัดส่ง';
+        if (status === 'completed') return 'จัดส่งสำเร็จ';
+        if (status === 'cancelled') return 'ยกเลิก';
+        return 'รอดำเนินการ';
+      };
+
+      const openTrackingLookup = () => {
+        setTrackingOpen(true);
+        setTrackingMessage('');
+        setTrackingOrders([]);
+      };
+
+      const handleTrackingLookup = (event) => {
+        event.preventDefault();
+        const phone = trackingPhone.trim();
+        if (!phone) {
+          setTrackingMessage('กรุณากรอกเบอร์โทรศัพท์ที่ใช้สั่งซื้อ');
+          return;
+        }
+
+        setTrackingLoading(true);
+        setTrackingMessage('');
+        setTrackingOrders([]);
+
+        fetch('api.php?action=lookup_order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (!res.success) throw new Error(res.error || 'ไม่สามารถค้นหาข้อมูลได้');
+            const orders = res.orders || [];
+            setTrackingOrders(orders);
+            if (orders.length === 0) {
+              setTrackingMessage('ไม่พบคำสั่งซื้อจากเบอร์โทรนี้');
+            }
+          })
+          .catch(error => setTrackingMessage(error.message || 'ไม่สามารถค้นหาข้อมูลได้'))
+          .finally(() => setTrackingLoading(false));
+      };
+
+      return (
+        <div>
+          {/* 1. TOP ANNOUNCEMENT BAR & COUNTDOWN */}
+          {siteData.section_visibility?.top_bar !== false && (
+          <div className="top-bar">
+            <div className="top-bar-inner">
+              {(siteData.top_bar?.items || []).map((item, idx) => (
+                <div key={idx} className="top-bar-item">
+                  <span>{item}</span>
+                  {idx === ((siteData.top_bar?.items?.length || 0) - 1) && (
+                    <span className="top-bar-timer">{h}:{m}:{s}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          )}
+
+          {/* 2. NAVIGATION HEADER */}
+          {siteData.section_visibility?.header !== false && (
+          <header className="site-header">
+            <div className="container">
+              <div className="header-inner">
+                <a href="#" className="header-logo">
+                  <img src={siteData.header?.logo_url} alt="Fukupetstore Logo" />
+                </a>
+                
+                <ul className="nav-links">
+                  {(siteData.header?.nav_links || []).filter(nav => {
+                    const sectionId = nav.href.replace("#", "");
+                    if (sectionId === "product") return siteData.section_visibility?.product !== false;
+                    if (sectionId === "benefits") return siteData.section_visibility?.benefits_section !== false;
+                    if (sectionId === "hotspots") return siteData.section_visibility?.hotspots_section !== false;
+                    if (sectionId === "comparison") return siteData.section_visibility?.comparison_section !== false;
+                    if (sectionId === "reviews") return siteData.section_visibility?.reviews_section !== false;
+                    if (sectionId === "faq") return siteData.section_visibility?.faq_section !== false;
+                    return true;
+                  }).map((nav, idx) => (
+                    <li key={idx}>
+                      <a href={nav.href} className={`nav-link ${idx === 0 ? 'active' : ''}`}>{nav.label}</a>
+                    </li>
+                  ))}
+                  <li>
+                    <button type="button" className="nav-link nav-button-link" onClick={openTrackingLookup}>ขอเลข Tracking</button>
+                  </li>
+                </ul>
+
+                <div className="header-actions">
+                  <button className="header-btn" onClick={openTrackingLookup} title="ขอเลข Tracking">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                  </button>
+                  <button className="header-btn" onClick={() => setCartOpen(true)} title="ตะกร้าสินค้า">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span className="cart-badge">{(upsellAdded ? 2 : 1) * quantity}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </header>
+          )}
+
+          {/* 3. HERO / PRODUCT SECTION */}
+          {siteData.section_visibility?.product !== false && (
+          <section className="product-section" id="product">
+            <div className="container">
+              <div className="product-grid">
+                
+                {/* Gallery Column (Left) */}
+                <div className="gallery-container">
+                  <div className="gallery-main">
+                    <img src={currentImg.url} alt={currentImg.alt} />
+                    <button className="gallery-nav-btn prev" onClick={() => setActiveSlide(prev => (prev > 0 ? prev - 1 : gallery.length - 1))}>‹</button>
+                    <button className="gallery-nav-btn next" onClick={() => setActiveSlide(prev => (prev < gallery.length - 1 ? prev + 1 : 0))}>›</button>
+                  </div>
+
+                  {/* Thumbnails */}
+                  <div className="gallery-thumbs">
+                    {gallery.map((thumb, idx) => (
+                      <div
+                        key={idx}
+                        className={`gallery-thumb ${idx === activeSlide ? 'active' : ''}`}
+                        onClick={() => setActiveSlide(idx)}
+                      >
+                        <img src={thumb.thumb || thumb.url} alt={thumb.alt} />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Trust Badges */}
+                  {siteData.section_visibility?.trust_badges !== false && (
+                  <div className="trust-badges-row">
+                    {(siteData.product?.trust_badges || []).map((badge, idx) => (
+                      <div key={idx} className="trust-badge-item">
+                        <img src={badge.icon} alt="Badge" />
+                        <span dangerouslySetInnerHTML={{ __html: badge.text }}></span>
+                      </div>
+                    ))}
+                  </div>
+                  )}
+                </div>
+
+                {/* Product Form Column (Right) */}
+                <div className="product-info">
+                  <div className="product-header-rating">
+                    <span className="stars">★★★★★</span>
+                    <span style={{ color: 'var(--primary-color)', fontWeight: 600 }}>{siteData.product?.rating}</span>
+                    <span style={{ color: 'var(--text-muted)' }}>{siteData.product?.reviews_text}</span>
+                    <span className="sold-badge">{siteData.product?.sold_text}</span>
+                  </div>
+
+                  <h1 className="product-title">{siteData.product?.title}</h1>
+
+                  <div className="product-price-box">
+                    <span className="current-price">฿{calculatedTotal.toLocaleString()}</span>
+                    <span className="compare-price">฿{calculatedCompare.toLocaleString()}</span>
+                    <span className="discount-tag">ประหยัด ฿{savings.toLocaleString()}</span>
+                  </div>
+
+                  <div className="urgency-pill">
+                    <span className="urgency-dot"></span>
+                    <span>{siteData.product?.urgency_text}</span>
+                  </div>
+
+                  {/* Size Selector */}
+                  {siteData.section_visibility?.sizes !== false && (
+                  <div>
+                    <div className="option-group-label">เลือกขนาดหมอน:</div>
+                    <div className="size-selector">
+                      {sizes.map(size => (
+                        <div
+                          key={size.id}
+                          className={`size-option ${selectedSizeId === size.id ? 'active' : ''}`}
+                          onClick={() => setSelectedSizeId(size.id)}
+                        >
+                          <span className="size-title">{size.title}</span>
+                          <span className="size-sub">{size.subtitle} (฿{size.price.toLocaleString()})</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  )}
+
+                  {/* Deal / Bundle Selector */}
+                  <div className="bundle-section">
+                    <div className="bundle-header">
+                      <span>🎁 โปรโมชั่นพิเศษ (ยิ่งซื้อ ยิ่งคุ้ม)</span>
+                      <span style={{ color: '#059669', fontWeight: 700 }}>ส่งฟรีทุกออเดอร์</span>
+                    </div>
+
+                    {bundles.map(bundle => {
+                      let bPrice = currentSize.price;
+                      let bSavingsText = bundle.savings_text;
+                      if (bundle.id === 2) {
+                        bPrice = Math.round(currentSize.price * 2 * 0.9);
+                        bSavingsText = `ประหยัดเพิ่ม ฿${(currentSize.price * 2 - bPrice).toLocaleString()}`;
+                      } else if (bundle.id === 4) {
+                        bPrice = currentSize.price * 3;
+                        bSavingsText = `ประหยัด ฿${currentSize.price.toLocaleString()} (แถมฟรี 1 ใบ)`;
+                      }
+
+                      return (
+                        <div
+                          key={bundle.id}
+                          className={`deal-card ${selectedBundleId === bundle.id ? 'active' : ''}`}
+                          onClick={() => setSelectedBundleId(bundle.id)}
+                        >
+                          {bundle.badge && <span className="deal-badge">{bundle.badge}</span>}
+                          <div className="deal-left">
+                            <div className="deal-radio"></div>
+                            <div>
+                              <div className="deal-name">{bundle.name}</div>
+                              <div className="deal-desc">{bundle.desc}</div>
+                            </div>
+                          </div>
+                          <div className="deal-right">
+                            <div className="deal-price">฿{bPrice.toLocaleString()}</div>
+                            <div className="deal-savings">{bSavingsText}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Select a color for every physical item in multi-item purchases. */}
+                  {needsColorSelection && (
+                    <div className="bundle-section" style={{ paddingTop: 16 }}>
+                      <div className="option-group-label">{siteData.product?.color_label || DEFAULT_DATA.product_defaults.color_label}</div>
+                      <div style={{ marginTop: 8, display: 'grid', gap: 14 }}>
+                        {Array.from({ length: selectedItemCount }, (_, itemIndex) => (
+                          <div key={itemIndex} style={{ padding: '10px 0', borderBottom: itemIndex < selectedItemCount - 1 ? '1px solid #eee' : 'none' }}>
+                            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>สินค้าชิ้นที่ {itemIndex + 1}</div>
+                            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                              {colorOptions.map((col, colorIndex) => (
+                                <div
+                                  key={colorIndex}
+                                  onClick={() => setSelectedColors(previous => {
+                                    const next = [...previous];
+                                    next[itemIndex] = col.name;
+                                    return next;
+                                  })}
+                                  style={{
+                                    display: 'flex', alignItems: 'center', gap: 8,
+                                    padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
+                                    border: selectedColors[itemIndex] === col.name ? '2px solid var(--primary-color)' : '1.5px solid #ddd',
+                                    background: selectedColors[itemIndex] === col.name ? 'rgba(7,47,31,0.05)' : '#fff',
+                                    fontWeight: 600, fontSize: 14
+                                  }}
+                                >
+                                  <span style={{ width: 20, height: 20, borderRadius: '50%', background: col.hex, border: '1px solid #ccc', display: 'inline-block' }}></span>
+                                  {col.name}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Upsell Checkbox */}
+                  {siteData.product?.upsell?.enabled && siteData.section_visibility?.upsell !== false && (
+                    <div
+                      className={`upsell-box ${upsellAdded ? 'active' : ''}`}
+                      onClick={() => setUpsellAdded(!upsellAdded)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={upsellAdded}
+                        onChange={() => {}}
+                        style={{ width: 20, height: 20, accentColor: 'var(--primary-color)' }}
+                      />
+                      <img className="upsell-img" src={siteData.product.upsell.image} alt="ปลอกหมอน" />
+                      <div className="upsell-details">
+                        <div className="upsell-title">{siteData.product.upsell.title}</div>
+                        <div className="upsell-meta">{siteData.product.upsell.meta}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div className="upsell-price">+฿{siteData.product.upsell.price.toLocaleString()}</div>
+                        <div style={{ fontSize: 11, color: '#999', textDecoration: 'line-through' }}>฿{siteData.product.upsell.compare_price.toLocaleString()}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons Row */}
+                  <div className="cta-row">
+                    <div className="qty-picker">
+                      <button className="qty-btn" onClick={() => setQuantity(q => (q > 1 ? q - 1 : 1))}>−</button>
+                      <div className="qty-val">{quantity}</div>
+                      <button className="qty-btn" onClick={() => setQuantity(q => q + 1)}>+</button>
+                    </div>
+                    <button className="btn-buy-now" onClick={proceedToCheckout}>
+                      <span>สั่งซื้อเลย</span>
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                    <button className="btn-add-cart" onClick={openCart} title="เพิ่มลงในรถเข็น">
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </button>
+                  </div>
+
+                  <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
+                    {siteData.product?.guarantee_text}
+                  </div>
+
+                  {/* Product Accordion Tabs */}
+                  <div className="product-accordions">
+                    {(siteData.product?.accordions || []).map((acc, idx) => (
+                      <div key={idx} className={`acc-item ${openAccs[idx] ? 'open' : ''}`}>
+                        <button
+                          className="acc-trigger"
+                          onClick={() => setOpenAccs(prev => ({ ...prev, [idx]: !prev[idx] }))}
+                        >
+                          <span>{acc.title}</span>
+                          <span className="acc-icon">{openAccs[idx] ? '−' : '+'}</span>
+                        </button>
+                        <div className="acc-content" dangerouslySetInnerHTML={{ __html: acc.content }}></div>
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </section>
+          )}
+
+          {/* 4. FEATURE ROW (4 ICONS) */}
+          {siteData.section_visibility?.features !== false && (
+          <section className="features-row-sec">
+            <div className="container">
+              <div className="features-grid">
+                {(siteData.features || []).map((f, idx) => (
+                  <div key={idx} className="feature-card">
+                    <div className="feature-card-icon">
+                      <img src={f.icon} alt={f.title} />
+                    </div>
+                    <div className="feature-card-title">{f.title}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+          )}
+
+          {/* 5. BENEFIT CARDS */}
+          {siteData.section_visibility?.benefits_section !== false && (
+          <section className="benefits-sec" id="benefits">
+            <div className="container">
+              <div className="section-head">
+                <h2 className="section-title">{siteData.benefits_section?.title}</h2>
+                <p className="section-subtitle">{siteData.benefits_section?.subtitle}</p>
+              </div>
+
+              <div className="benefits-grid">
+                {(siteData.benefits_section?.cards || []).map((card, idx) => (
+                  <div key={idx} className="benefit-card">
+                    <div className="benefit-img">
+                      <img src={card.image} alt={card.title} />
+                    </div>
+                    <h3 className="benefit-title">{card.title}</h3>
+                    <p className="benefit-text">{card.text}</p>
+                    <ul className="benefit-bullets">
+                      {(card.bullets || []).map((b, bIdx) => (
+                        <li key={bIdx}>{b}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              <div className="benefits-cta-wrap">
+                <a href={siteData.benefits_section?.cta_link || '#product'} className="btn-section-cta">
+                  {siteData.benefits_section?.cta_text}
+                </a>
+                <div className="benefits-guarantee">{siteData.benefits_section?.guarantee}</div>
+              </div>
+            </div>
+          </section>
+          )}
+
+          {/* 6. FUNCTION HOTSPOTS / 3D ANATOMY */}
+          {siteData.section_visibility?.hotspots_section !== false && (
+          <section className="hotspots-sec" id="hotspots">
+            <div className="container">
+              <div className="section-head">
+                <h2 className="section-title">{siteData.hotspots_section?.title}</h2>
+                <p className="section-subtitle">{siteData.hotspots_section?.subtitle}</p>
+              </div>
+
+              <div className="hotspots-grid">
+                <div className="hotspots-figure-wrap">
+                  <img src={siteData.hotspots_section?.image} alt="โครงสร้าง 3 มิติ หมอนโคซี่" />
+                  
+                  {(siteData.hotspots_section?.pins || []).map(pin => (
+                    <button
+                      key={pin.id}
+                      className={`hotspot-pin ${activeHotspotId === pin.id ? 'active' : ''}`}
+                      style={{ top: pin.top, left: pin.left }}
+                      title={pin.pin_title}
+                      onClick={() => setActiveHotspotId(pin.id)}
+                    >
+                      {pin.id}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="hotspots-list">
+                  {(siteData.hotspots_section?.pins || []).map(pin => (
+                    <div
+                      key={pin.id}
+                      className={`hotspot-card ${activeHotspotId === pin.id ? 'open' : ''}`}
+                    >
+                      <div className="hotspot-card-header" onClick={() => setActiveHotspotId(pin.id)}>
+                        <span className="hotspot-card-title">{pin.title}</span>
+                        <span className="hotspot-card-badge">{activeHotspotId === pin.id ? '−' : '+'}</span>
+                      </div>
+                      <div className="hotspot-card-body">
+                        <div>
+                          <div className="hotspot-prop-label">คุณสมบัติ:</div>
+                          <div className="hotspot-prop-desc">{pin.feature}</div>
+                        </div>
+                        <div>
+                          <div className="hotspot-prop-label">ประโยชน์:</div>
+                          <div className="hotspot-prop-desc">{pin.benefit}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+          )}
+
+          {/* 7. COMPARISON TABLE */}
+          {siteData.section_visibility?.comparison_section !== false && (
+          <section className="comparison-sec" id="comparison">
+            <div className="container">
+              <div className="section-head">
+                <h2 className="section-title">{siteData.comparison_section?.title}</h2>
+                <p className="section-subtitle">{siteData.comparison_section?.subtitle}</p>
+              </div>
+
+              <div className="comparison-table-wrap">
+                <table className="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>คุณสมบัติ</th>
+                      <th>
+                        <div className="comp-pillow-header">
+                          <img className="comp-pillow-img" src={siteData.comparison_section?.chowa_img} alt={siteData.comparison_section?.chowa_name} />
+                          <span className="comp-pillow-name">{siteData.comparison_section?.chowa_name}</span>
+                        </div>
+                      </th>
+                      <th>
+                        <div className="comp-pillow-header">
+                          <img className="comp-pillow-img" src={siteData.comparison_section?.other_img} alt={siteData.comparison_section?.other_name} />
+                          <span className="comp-pillow-name" style={{ color: 'var(--text-muted)' }}>{siteData.comparison_section?.other_name}</span>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(siteData.comparison_section?.rows || []).map((row, idx) => (
+                      <tr key={idx}>
+                        <td>{row.feature}</td>
+                        <td>{row.chowa ? <span className="comp-icon-check">✓</span> : <span className="comp-icon-cross">✕</span>}</td>
+                        <td>{row.other ? <span className="comp-icon-check">✓</span> : <span className="comp-icon-cross">✕</span>}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div style={{ textAlign: 'center', marginTop: 36 }}>
+                  <a href={siteData.comparison_section?.cta_link || '#product'} className="btn-section-cta">
+                    {siteData.comparison_section?.cta_text}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+          )}
+
+          {/* 8. CUSTOMER REVIEWS */}
+          {siteData.section_visibility?.reviews_section !== false && (
+          <section className="reviews-sec" id="reviews">
+            <div className="container">
+              <div className="section-head">
+                <h2 className="section-title">{siteData.reviews_section?.title}</h2>
+                <p className="section-subtitle">{siteData.reviews_section?.subtitle}</p>
+              </div>
+
+              {/* Rating Summary Card */}
+              <div className="reviews-summary-card">
+                <div className="reviews-score-box">
+                  <div className="reviews-big-number">{siteData.reviews_section?.score}</div>
+                  <div className="stars" style={{ fontSize: 20, margin: '6px 0' }}>★★★★★</div>
+                  <div style={{ fontSize: 14, color: 'var(--text-muted)', fontWeight: 500 }}>จาก {siteData.reviews_section?.total_reviews} รีวิว</div>
+                </div>
+
+                <div className="reviews-bars">
+                  {(siteData.reviews_section?.bars || []).map((b, idx) => (
+                    <div key={idx} className="bar-row">
+                      <span className="bar-stars">{b.stars} ดาว</span>
+                      <div className="bar-track"><div className="bar-fill" style={{ width: `${b.percent}%` }}></div></div>
+                      <span className="bar-count">{b.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filter Buttons */}
+              <div className="reviews-filter-row">
+                <button
+                  className={`filter-btn ${reviewFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setReviewFilter('all')}
+                >
+                  รีวิวทั้งหมด ({siteData.reviews_section?.reviews?.length || 0})
+                </button>
+                <button
+                  className={`filter-btn ${reviewFilter === 'photo' ? 'active' : ''}`}
+                  onClick={() => setReviewFilter('photo')}
+                >
+                  มีรูปภาพ
+                </button>
+                <button
+                  className={`filter-btn ${reviewFilter === '5stars' ? 'active' : ''}`}
+                  onClick={() => setReviewFilter('5stars')}
+                >
+                  5 ดาวเท่านั้น
+                </button>
+                <button
+                  className={`filter-btn ${reviewFilter === 'verified' ? 'active' : ''}`}
+                  onClick={() => setReviewFilter('verified')}
+                >
+                  ยืนยันการสั่งซื้อแล้ว
+                </button>
+              </div>
+
+              {/* Review Cards Grid */}
+              <div className="reviews-grid">
+                {(siteData.reviews_section?.reviews || [])
+                  .filter(r => {
+                    if (reviewFilter === 'photo') return !!r.photo;
+                    if (reviewFilter === '5stars') return r.stars === 5;
+                    if (reviewFilter === 'verified') return r.verified;
+                    return true;
+                  })
+                  .map(rev => (
+                    <div key={rev.id} className="review-card">
+                      <div className="review-author-wrap">
+                        <div className="review-avatar" style={{ background: rev.avatar_bg || 'var(--primary-color)' }}>
+                          {rev.avatar || rev.author[0]}
+                        </div>
+                        <div>
+                          <div className="review-author-name">{rev.author}</div>
+                          {rev.verified && (
+                            <div className="review-badge">
+                              <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                              <span>ผู้ซื้อที่ได้รับการยืนยัน</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="review-stars">{'★'.repeat(rev.stars)}</div>
+                      <div className="review-title">{rev.title}</div>
+                      <div className="review-body">{rev.body}</div>
+                      {rev.photo && <img className="review-photo" src={rev.photo} alt="รูปรีวิว" />}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </section>
+          )}
+
+          {/* 9. FAQ SECTION */}
+          {siteData.section_visibility?.faq_section !== false && (
+          <section className="faq-sec" id="faq">
+            <div className="container">
+              <div className="section-head">
+                <h2 className="section-title">{siteData.faq_section?.title}</h2>
+                <p className="section-subtitle">{siteData.faq_section?.subtitle}</p>
+              </div>
+
+              <div className="faq-container">
+                {(siteData.faq_section?.faqs || []).map((faq, idx) => (
+                  <div key={idx} className={`faq-item ${openFaqs[idx] ? 'open' : ''}`}>
+                    <button
+                      className="faq-trigger"
+                      onClick={() => setOpenFaqs(prev => ({ ...prev, [idx]: !prev[idx] }))}
+                    >
+                      <span>{faq.question}</span>
+                      <span className="faq-icon">{openFaqs[idx] ? '−' : '+'}</span>
+                    </button>
+                    <div className="faq-body" dangerouslySetInnerHTML={{ __html: faq.answer }}></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+          )}
+
+          {/* 10. STICKY CTA BAR */}
+          <div className={`sticky-cta-bar ${stickyVisible ? 'visible' : ''}`}>
+            <div className="sticky-info">
+              <img className="sticky-thumb" src={currentImg.thumb || currentImg.url} alt="หมอนโคซี่" />
+              <div>
+                <div className="sticky-title">{siteData.product?.title} {siteData.product?.brand}</div>
+                <div className="sticky-price">
+                  ฿{calculatedTotal.toLocaleString()} <span style={{ fontSize: 12, color: '#888', textDecoration: 'line-through' }}>฿{calculatedCompare.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+            <button className="sticky-btn" onClick={proceedToCheckout}>สั่งซื้อเลย</button>
+          </div>
+
+          {/* 11. CART DRAWER */}
+          <div className={`cart-overlay ${cartOpen ? 'open' : ''}`} onClick={() => setCartOpen(false)}></div>
+          <div className={`cart-drawer ${cartOpen ? 'open' : ''}`}>
+            <div className="cart-drawer-header">
+              <span className="cart-drawer-title">ตะกร้าสินค้าของคุณ</span>
+              <button className="cart-close-btn" onClick={() => setCartOpen(false)}>×</button>
+            </div>
+
+            <div className="cart-progress-bar">
+              🎉 คุณได้รับสิทธิ์ <strong>จัดส่งฟรีทั่วไทย</strong> สำหรับออเดอร์นี้!
+            </div>
+
+            <div className="cart-items-wrap">
+              <div className="cart-item">
+                <img className="cart-item-img" src={currentImg.thumb || currentImg.url} alt="หมอน" />
+                  <div className="cart-item-info">
+                    <div className="cart-item-title">{siteData.product?.title} {siteData.product?.brand}</div>
+                    <div className="cart-item-variant">ขนาด: {currentSize.title} | {currentBundle.name} (x{quantity})</div>
+                    {needsColorSelection && <div className="cart-item-variant">สี: {selectedColorsLabel}</div>}
+                    <div className="cart-item-price">
+                    ฿{(calculatedTotal - (upsellAdded ? upsellPrice * quantity : 0)).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+
+              {upsellAdded && (
+                <div className="cart-item">
+                  <img className="cart-item-img" src={siteData.product?.upsell?.image} alt="ปลอกหมอน" />
+                  <div className="cart-item-info">
+                    <div className="cart-item-title">{siteData.product?.upsell?.title}</div>
+                    <div className="cart-item-variant">ขนาดเข้าชุด | สีเทา Elegant Grey (x{quantity})</div>
+                    <div className="cart-item-price">฿{(upsellPrice * quantity).toLocaleString()}</div>
+                  </div>
+                  <span className="cart-item-remove" onClick={() => setUpsellAdded(false)}>ลบ</span>
+                </div>
+              )}
+            </div>
+
+            <div className="cart-drawer-footer">
+              <div className="cart-subtotal-row">
+                <span>ยอดรวมทั้งหมด:</span>
+                <span className="cart-total-price">฿{calculatedTotal.toLocaleString()}</span>
+              </div>
+              <button
+                className="btn-checkout"
+                onClick={() => {
+                  setCartOpen(false);
+                  setCheckoutOpen(true);
+                }}
+              >
+                ดำเนินการสั่งซื้อ (Checkout)
+              </button>
+              <div style={{ textAlign: 'center', fontSize: 12, color: '#888' }}>
+                🔒 ชำระเงินปลอดภัย รองรับบัตรเครดิต, โอนเงิน, พร้อมเพย์ และเก็บเงินปลายทาง
+              </div>
+            </div>
+          </div>
+
+          {/* 12. CHECKOUT MODAL */}
+          <div className={`modal-overlay ${checkoutOpen ? 'open' : ''}`}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <div className="modal-title">📦 สั่งซื้อสินค้า</div>
+                <button className="modal-close" onClick={() => { setCheckoutOpen(false); setOrderResult(null); setSlipUploadMessage(''); }}>×</button>
+              </div>
+
+              {orderResult ? (
+                <div style={{ textAlign: 'center', padding: '24px 0' }}>
+                  <div style={{ fontSize: 50, color: '#059669', marginBottom: 12 }}>✓</div>
+                  <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--primary-color)', marginBottom: 8 }}>
+                    สั่งซื้อสินค้าสำเร็จแล้ว!
+                  </h3>
+                  <p style={{ fontSize: 14, color: '#666', marginBottom: 16 }}>
+                    เลขที่คำสั่งซื้อของคุณ: <strong style={{ color: '#151515' }}>{orderResult.order_no}</strong>
+                  </p>
+                  <div className="order-summary-box" style={{ textAlign: 'left' }}>
+                    <div className="order-summary-row">
+                      <span>ยอดชำระสุทธิ:</span>
+                      <strong>฿{orderResult.total.toLocaleString()}</strong>
+                    </div>
+                    <div className="order-summary-row">
+                      <span>วิธีชำระเงิน:</span>
+                      <span>
+                        {orderForm.payment_method === 'cod' ? 'เก็บเงินปลายทาง (COD)' :
+                         orderForm.payment_method === 'promptpay' ? 'พร้อมเพย์ (PromptPay)' : 'โอนเงินผ่านธนาคาร'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {orderForm.payment_method !== 'cod' && (
+                    <div style={{ marginTop: 16, padding: 16, borderRadius: 12, background: '#f8fafb', border: '1px dashed #9ab6a5', textAlign: 'left' }}>
+                      <div style={{ fontWeight: 700, color: '#072F1F', marginBottom: 6 }}>แนบสลิปโอนเงิน</div>
+                      <div style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>อัปโหลดไฟล์ JPG, PNG หรือ WebP ขนาดไม่เกิน 5 MB</div>
+                      {orderResult.slip_path ? (
+                        <div>
+                          <img src={orderResult.slip_path} alt="สลิปการโอนเงิน" style={{ maxWidth: '100%', width: 260, maxHeight: 320, objectFit: 'contain', display: 'block', margin: '0 auto 10px', borderRadius: 8, border: '1px solid #ddd' }} />
+                          <div style={{ color: '#059669', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>แนบสลิปเรียบร้อยแล้ว</div>
+                        </div>
+                      ) : (
+                        <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleSlipUpload} disabled={slipUploading} />
+                      )}
+                      {slipUploadMessage && <div style={{ marginTop: 10, fontSize: 13, color: orderResult.slip_path ? '#059669' : '#666' }}>{slipUploadMessage}</div>}
+                    </div>
+                  )}
+
+                  {/* PromptPay QR Code on Success Screen */}
+                  {orderForm.payment_method === 'promptpay' && siteData.payment_settings?.promptpay_number && (
+                    <div style={{ marginTop: 16, padding: '16px', background: '#f8fafb', borderRadius: 12, textAlign: 'center', border: '1px solid #e2e8e4' }}>
+                      <div style={{ fontWeight: 700, marginBottom: 8, color: '#072F1F', fontSize: 16 }}>📱 สแกน QR Code เพื่อชำระเงิน</div>
+                      <img src={`https://promptpay.io/${siteData.payment_settings.promptpay_number}.png`} alt="PromptPay QR"
+                        style={{ width: 220, height: 220, objectFit: 'contain', borderRadius: 8, background: '#fff', padding: 8, border: '1px solid #ddd', margin: '0 auto', display: 'block' }} />
+                      <div style={{ marginTop: 10, fontSize: 14 }}>
+                        <strong>{siteData.payment_settings?.promptpay_name}</strong>
+                        {siteData.payment_settings?.promptpay_number && (
+                          <div style={{ color: '#666', fontSize: 13 }}>{siteData.payment_settings.promptpay_number}</div>
+                        )}
+                      </div>
+                      <div style={{ marginTop: 8, fontSize: 14, color: '#072F1F', fontWeight: 700 }}>
+                        ยอดที่ต้องชำระ: ฿{orderResult.total.toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bank Details on Success Screen */}
+                  {orderForm.payment_method === 'bank' && siteData.payment_settings?.bank_name && (
+                    <div style={{ marginTop: 16, padding: '16px', background: '#f8fafb', borderRadius: 12, border: '1px solid #e2e8e4', textAlign: 'left' }}>
+                      <div style={{ fontWeight: 700, marginBottom: 8, color: '#072F1F' }}>🏦 รายละเอียดบัญชีธนาคารสำหรับโอนเงิน</div>
+                      <div style={{ fontSize: 14 }}><strong>ธนาคาร:</strong> {siteData.payment_settings?.bank_name}</div>
+                      <div style={{ fontSize: 14 }}><strong>เลขบัญชี:</strong> {siteData.payment_settings?.bank_account}</div>
+                      <div style={{ fontSize: 14 }}><strong>ชื่อบัญชี:</strong> {siteData.payment_settings?.bank_account_name}</div>
+                      <div style={{ marginTop: 8, fontSize: 14, color: '#072F1F', fontWeight: 700 }}>
+                        ยอดที่ต้องโอน: ฿{orderResult.total.toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+                  <p style={{ fontSize: 13, color: '#888', marginBottom: 20 }}>
+                    เจ้าหน้าที่จะติดต่อเพื่อยืนยันการจัดส่งสินค้าโดยเร็วที่สุด ขอบคุณที่ไว้วางใจ Fukupetstore
+                  </p>
+                  <button
+                    className="btn-submit-order"
+                    onClick={() => {
+                      setCheckoutOpen(false);
+                      setOrderResult(null);
+                      setSlipUploadMessage('');
+                    }}
+                  >
+                    กลับสู่หน้าหลัก
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleOrderSubmit}>
+                  {/* Order Summary in Modal */}
+                  <div className="order-summary-box">
+                    <div className="order-summary-row">
+                      <span>สินค้า:</span>
+                      <span>{siteData.product?.title} ({currentSize.title})</span>
+                    </div>
+                    <div className="order-summary-row">
+                      <span>แพ็กเกจ:</span>
+                      <span>{currentBundle.name} (x{quantity})</span>
+                    </div>
+                    {needsColorSelection && (
+                      <div className="order-summary-row">
+                        <span>สีสินค้า:</span>
+                        <span>{selectedColorsLabel}</span>
+                      </div>
+                    )}
+                    {upsellAdded && (
+                      <div className="order-summary-row">
+                        <span>ของแถม/ซื้อเพิ่ม:</span>
+                        <span>ปลอกหมอน Tencel (+฿{(upsellPrice * quantity).toLocaleString()})</span>
+                      </div>
+                    )}
+                    <div className="order-summary-row">
+                      <span>การจัดส่ง:</span>
+                      <span style={{ color: '#059669', fontWeight: 600 }}>จัดส่งฟรีทั่วไทย</span>
+                    </div>
+                    <div className="order-summary-row order-summary-total">
+                      <span>ยอดชำระทั้งหมด:</span>
+                      <span>฿{calculatedTotal.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">ชื่อ - นามสกุล ผู้รับ *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="เช่น สมชาย ใจดี"
+                      required
+                      value={orderForm.name}
+                      onChange={e => setOrderForm({ ...orderForm, name: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">เบอร์โทรศัพท์ติดต่อ *</label>
+                    <input
+                      type="tel"
+                      className="form-input"
+                      placeholder="เช่น 081-234-5678"
+                      required
+                      value={orderForm.phone}
+                      onChange={e => setOrderForm({ ...orderForm, phone: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">ที่อยู่สำหรับจัดส่งสินค้า *</label>
+                    <textarea
+                      className="form-textarea"
+                      placeholder="บ้านเลขที่, ถนน, ตำบล/แขวง, อำเภอ/เขต, จังหวัด, รหัสไปรษณีย์"
+                      required
+                      value={orderForm.address}
+                      onChange={e => setOrderForm({ ...orderForm, address: e.target.value })}
+                    ></textarea>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">วิธีชำระเงิน</label>
+                    <div className="payment-methods">
+                      {siteData.payment_settings?.cod_enabled !== false && (
+                        <div
+                          className={`payment-option ${orderForm.payment_method === 'cod' ? 'active' : ''}`}
+                          onClick={() => setOrderForm({ ...orderForm, payment_method: 'cod' })}
+                        >
+                          🚚 เก็บเงินปลายทาง (COD)
+                        </div>
+                      )}
+                      {siteData.payment_settings?.bank_enabled !== false && (
+                        <div
+                          className={`payment-option ${orderForm.payment_method === 'bank' ? 'active' : ''}`}
+                          onClick={() => setOrderForm({ ...orderForm, payment_method: 'bank' })}
+                        >
+                          🏦 โอนเงินผ่านธนาคาร
+                        </div>
+                      )}
+                      {promptpayEnabled && (
+                        <div
+                          className={`payment-option ${orderForm.payment_method === 'promptpay' ? 'active' : ''}`}
+                          onClick={() => setOrderForm({ ...orderForm, payment_method: 'promptpay' })}
+                        >
+                          📱 พร้อมเพย์ (PromptPay)
+                        </div>
+                      )}
+                    </div>
+
+                    {/* PromptPay QR Code - show after selecting promptpay */}
+                    {orderForm.payment_method === 'bank' && siteData.payment_settings?.bank_name && (
+                      <div style={{ marginTop: 16, padding: '16px', background: '#f8fafb', borderRadius: 12, border: '1px solid #e2e8e4' }}>
+                        <div style={{ fontWeight: 700, marginBottom: 8, color: '#072F1F' }}>🏦 รายละเอียดบัญชีธนาคาร</div>
+                        <div style={{ fontSize: 14 }}><strong>ธนาคาร:</strong> {siteData.payment_settings?.bank_name}</div>
+                        <div style={{ fontSize: 14 }}><strong>เลขบัญชี:</strong> {siteData.payment_settings?.bank_account}</div>
+                        <div style={{ fontSize: 14 }}><strong>ชื่อบัญชี:</strong> {siteData.payment_settings?.bank_account_name}</div>
+                        <div style={{ marginTop: 8, fontSize: 13, color: '#888' }}>ยอดที่ต้องโอน: <strong style={{ color: '#072F1F' }}>฿{calculatedTotal.toLocaleString()}</strong></div>
+                      </div>
+                    )}
+                    {orderForm.payment_method === 'promptpay' && siteData.payment_settings?.promptpay_number && (
+                      <div style={{ marginTop: 16, padding: '16px', background: '#f8fafb', borderRadius: 12, textAlign: 'center', border: '1px solid #e2e8e4' }}>
+                        <div style={{ fontWeight: 700, marginBottom: 8, color: '#072F1F' }}>📱 สแกน QR Code เพื่อชำระเงิน</div>
+                        <img src={`https://promptpay.io/${siteData.payment_settings.promptpay_number}.png`} alt="PromptPay QR"
+                          style={{ width: 200, height: 200, objectFit: 'contain', borderRadius: 8, background: '#fff', padding: 8, border: '1px solid #ddd' }} />
+                        <div style={{ marginTop: 8, fontSize: 14 }}>
+                          <strong>{siteData.payment_settings?.promptpay_name}</strong>
+                          {siteData.payment_settings?.promptpay_number && (
+                            <div style={{ color: '#666', fontSize: 13 }}>{siteData.payment_settings.promptpay_number}</div>
+                          )}
+                        </div>
+                        <div style={{ marginTop: 8, fontSize: 13, color: '#888' }}>ยอดที่ต้องชำระ: <strong style={{ color: '#072F1F' }}>฿{calculatedTotal.toLocaleString()}</strong></div>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn-submit-order"
+                    disabled={orderSubmitting}
+                    style={{ marginTop: 8 }}
+                  >
+                    {orderSubmitting ? 'กำลังบันทึกคำสั่งซื้อ...' : 'ยืนยันการสั่งซื้อ'}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+
+          {/* 13. TRACKING LOOKUP MODAL */}
+          <div className={`modal-overlay ${trackingOpen ? 'open' : ''}`}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <div className="modal-title">ขอเลข Tracking</div>
+                <button className="modal-close" onClick={() => setTrackingOpen(false)}>×</button>
+              </div>
+
+              <form onSubmit={handleTrackingLookup} className="tracking-form">
+                <div className="form-group">
+                  <label className="form-label">เบอร์โทรศัพท์ที่ใช้สั่งซื้อ</label>
+                  <input
+                    type="tel"
+                    className="form-input"
+                    placeholder="เช่น 081-234-5678"
+                    value={trackingPhone}
+                    onChange={e => setTrackingPhone(e.target.value)}
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn-submit-order" disabled={trackingLoading}>
+                  {trackingLoading ? 'กำลังค้นหา...' : 'ค้นหาคำสั่งซื้อ'}
+                </button>
+              </form>
+
+              {trackingMessage && (
+                <div className="tracking-message">{trackingMessage}</div>
+              )}
+
+              {trackingOrders.length > 0 && (
+                <div className="tracking-results">
+                  {trackingOrders.map(order => (
+                    <div className="tracking-card" key={order.order_no}>
+                      <div className="tracking-card-head">
+                        <strong>{order.order_no}</strong>
+                        <span className={`tracking-status tracking-status-${order.status || 'pending'}`}>
+                          {getOrderStatusLabel(order.status)}
+                        </span>
+                      </div>
+                      <div className="tracking-row">
+                        <span>วันที่สั่งซื้อ</span>
+                        <strong>{order.created_at || '-'}</strong>
+                      </div>
+                      <div className="tracking-row">
+                        <span>สินค้า</span>
+                        <strong>{order.product_title} {order.size_name ? `(${order.size_name})` : ''}</strong>
+                      </div>
+                      <div className="tracking-row">
+                        <span>แพ็กเกจ</span>
+                        <strong>{order.bundle_name || '-'} x{order.quantity || 1}</strong>
+                      </div>
+                      <div className="tracking-row">
+                        <span>ยอดรวม</span>
+                        <strong>฿{Number(order.total_price || 0).toLocaleString()}</strong>
+                      </div>
+                      {order.status === 'shipping' ? (
+                        <div className="tracking-number-box">
+                          <span>เลข Tracking</span>
+                          <strong>{order.tracking_number || 'กำลังอัปเดตเลข Tracking'}</strong>
+                          {order.shipping_carrier && (
+                            <div style={{ marginTop: 6, fontSize: 13 }}>
+                              ขนส่งโดย: <strong>{order.shipping_carrier}</strong>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="tracking-note">เลข Tracking จะแสดงเมื่อสถานะเป็น “กำลังจัดส่ง”</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 14. FUKUPETSTORE CLUB & FOOTER */}
+          {siteData.section_visibility?.club_section !== false && (<section className="chowa-club-sec">
+            <div className="chowa-club-inner">
+              <h3 className="club-title">{siteData.footer?.club_title}</h3>
+              <p className="club-desc">{siteData.footer?.club_desc}</p>
+              <form
+                className="club-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'สมัครสมาชิกสำเร็จ',
+                    text: 'ขอบคุณที่สมัครสมาชิก Fukupetstore Club! เราได้ส่งโค้ดส่วนลดไปยังอีเมลของคุณแล้ว',
+                    confirmButtonText: 'ตกลง',
+                    confirmButtonColor: 'var(--primary-color)'
+                  });
+                }}
+              >
+                <input type="email" className="club-input" placeholder="กรอกอีเมลของคุณ..." required />
+                <button type="submit" className="club-btn">รับส่วนลด</button>
+              </form>
+            </div>
+          </section>
+          )}
+
+          {siteData.section_visibility?.footer !== false && (
+          <footer className="site-footer">
+            <div className="container">
+              <div className="footer-grid">
+                {siteData.section_visibility?.footer_about !== false && (<div className="footer-about">
+                  <img src={siteData.header?.logo_url} alt="Fukupetstore Logo" />
+                  <p>{siteData.footer?.about}</p>
+                </div>)}
+
+                {siteData.section_visibility?.footer_products !== false && (<div className="footer-col">
+                  <h4>{siteData.footer?.products_title || 'สินค้าของเรา'}</h4>
+                  <ul>
+                    {(siteData.footer?.products || []).map((p, idx) => (
+                      <li key={idx}><a href={p.href}>{p.label}</a></li>
+                    ))}
+                  </ul>
+                </div>)}
+
+                {siteData.section_visibility?.footer_services !== false && (<div className="footer-col">
+                  <h4>{siteData.footer?.services_title || 'การบริการและช่วยเหลือ'}</h4>
+                  <ul>
+                    {(siteData.footer?.services || []).map((s, idx) => (
+                      <li key={idx}><a href={s.href}>{s.label}</a></li>
+                    ))}
+                  </ul>
+                </div>)}
+
+                {siteData.section_visibility?.footer_contact !== false && (<div className="footer-col">
+                  <h4>{siteData.footer?.contact_title || 'ติดต่อเรา'}</h4>
+                  <ul>
+                    {(siteData.footer?.contact || []).map((c, idx) => (
+                      <li key={idx}><a href={c.href}>{c.label}</a></li>
+                    ))}
+                  </ul>
+                </div>)}
+              </div>
+
+              {siteData.section_visibility?.footer_bottom !== false && (<div className="footer-bottom">
+                <div>{siteData.footer?.copyright}</div>
+                <div>{siteData.footer?.payments}</div>
+              </div>)}
+            </div>
+          </footer>
+          )}
+
+        </div>
+      );
+    }
+
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+      }
+      static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+      }
+      componentDidCatch(error, errorInfo) {
+        console.error("React Component Error:", error, errorInfo);
+      }
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div style={{ padding: 40, textAlign: 'center', fontFamily: 'Prompt, sans-serif' }}>
+              <h2>เกิดข้อผิดพลาดในการโหลดหน้าเว็บ</h2>
+              <p style={{ color: '#666', marginTop: 8 }}>{this.state.error?.toString()}</p>
+              <button onClick={() => window.location.reload()} style={{ padding: '10px 24px', background: '#072F1F', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', marginTop: 16, fontSize: 16 }}>
+                รีโหลดหน้าเว็บ
+              </button>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    );
+  </script>
+</body>
+</html>

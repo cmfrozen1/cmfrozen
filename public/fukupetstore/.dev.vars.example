@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local development
+# This file is git-ignored and used only by `wrangler dev`
+ADMIN_USER=admin
+ADMIN_PASS=fukupet2026

@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>หมอนโคซี่ – Fukupetstore</title>
+  <meta name="description" content="หมอนโคซี่ Fukupetstore หมอนสุขภาพใบใหญ่ที่ปรับความสูงได้เอง ไส้ไฮเปอร์เมมโมรี่โฟมนุ่มฟูเหมือนนอนบนปุยเมฆ ช่วยให้ต้นคอและกระดูกสันหลังอยู่ในแนวตรงตลอดคืน">
+  <link rel="shortcut icon" href="https://www.chowa.in.th/cdn/shop/files/Favicon_chowa_new_f8d6d5a3-43e0-4c92-a69e-f581dd6fb9d9_32x32.png?v=1643772777" type="image/png">
+  
+  <!-- Google Fonts: Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    /* -------------------------------------------------------------
+       GLOBAL RESET & TYPOGRAPHY (FUKUPETSTORE BRANDING)
+    ------------------------------------------------------------- */
+    :root {
+      --primary-color: #1E306E;
+      --primary-dark: #152352;
+      --primary-light: #eaf0fb;
+      --accent-bg: #F5F7FD;
+      --text-main: #151515;
+      --text-muted: #555555;
+      --border-color: #e4e7f0;
+      --star-color: #efca58;
+      --badge-red: #d72c2c;
+      --font-family: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+      --site-max-width: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family) !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: clip;
+    }
+
+    body {
+      background-color: #ffffff;
+      color: var(--text-main);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: clip;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .container {
+      max-width: var(--site-max-width);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* -------------------------------------------------------------
+       1. TOP ANNOUNCEMENT BAR & COUNTDOWN
+    ------------------------------------------------------------- */
+    .top-bar {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      text-align: center;
+      position: relative;
+      z-index: 50;
+    }
+
+    .top-bar-inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .top-bar-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .top-bar-timer {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* -------------------------------------------------------------
+       2. NAVIGATION HEADER
+    ------------------------------------------------------------- */
+    .site-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      gap: 20px;
+    }
+
+    .header-logo img {
+      height: 38px;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      list-style: none;
+    }
+
+    .nav-link {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-main);
+      transition: color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--primary-color);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: var(--primary-color);
+      transition: background 0.2s ease;
+    }
+
+    .header-btn:hover {
+      background: var(--accent-bg);
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: var(--badge-red);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+    }
+
+    /* -------------------------------------------------------------
+       3. HERO / PRODUCT SECTION
+    ------------------------------------------------------------- */
+    .product-section {
+      padding: 40px 0 60px;
+      background: #ffffff;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 50px;
+      align-items: start;
+    }
+
+    /* Left: Image Gallery */
+    .gallery-container {
+      position: sticky;
+      top: 90px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .gallery-main {
+      position: relative;
+      background: #fbfbfb;
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+
+    .gallery-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.25s ease-in-out;
+    }
+
+    .gallery-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-color);
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .gallery-nav-btn:hover {
+      background: #ffffff;
+      transform: translateY(-50%) scale(1.06);
+    }
+
+    .gallery-nav-btn.prev { left: 12px; }
+    .gallery-nav-btn.next { right: 12px; }
+
+    .gallery-thumbs {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+    }
+
+    .gallery-thumb {
+      flex: 0 0 76px;
+      height: 76px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      opacity: 0.65;
+      transition: all 0.2s ease;
+      background: #f8f8f8;
+    }
+
+    .gallery-thumb.active, .gallery-thumb:hover {
+      border-color: var(--primary-color);
+      opacity: 1;
+    }
+
+    .gallery-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Trust Badges under Gallery */
+    .trust-badges-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+      padding: 16px;
+      background: var(--accent-bg);
+      border-radius: 12px;
+    }
+
+    .trust-badge-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+    }
+
+    .trust-badge-item img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+    }
+
+    .trust-badge-item span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-color);
+      line-height: 1.3;
+    }
+
+    /* Right: Product Info & Form */
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .product-header-rating {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .stars {
+      color: var(--star-color);
+      letter-spacing: 1px;
+    }
+
+    .sold-badge {
+      background: #eef2ff;
+      color: var(--primary-color);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .product-title {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--primary-color);
+      line-height: 1.2;
+    }
+
+    .product-price-box {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .current-price {
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .compare-price {
+      font-size: 20px;
+      color: #999999;
+      text-decoration: line-through;
+    }
+
+    .discount-tag {
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .urgency-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #e9fbf0;
+      color: #15803d;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .urgency-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    /* Size Selector */
+    .option-group-label {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .size-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .size-option {
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.2s ease;
+      background: #ffffff;
+    }
+
+    .size-option:hover {
+      border-color: var(--primary-color);
+    }
+
+    .size-option.active {
+      border-color: var(--primary-color);
+      background: var(--accent-bg);
+      box-shadow: 0 0 0 1px var(--primary-color);
+    }
+
+    .size-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .size-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Deal / Bundle Selector (Kaching Bundles Clone) */
+    .bundle-section {
+      background: #fbfbfd;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bundle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .deal-card {
+      border: 1.5px solid #d8e0f0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: #ffffff;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .deal-card:hover {
+      border-color: var(--primary-color);
+    }
+
+    .deal-card.active {
+      border-color: var(--primary-color);
+      background: #f5f8ff;
+      box-shadow: 0 0 0 1.5px var(--primary-color);
+    }
+
+    .deal-badge {
+      position: absolute;
+      top: -10px;
+      right: 14px;
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .deal-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .deal-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #b0becc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .deal-card.active .deal-radio {
+      border-color: var(--primary-color);
+    }
+
+    .deal-card.active .deal-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary-color);
+    }
+
+    .deal-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .deal-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .deal-right {
+      text-align: right;
+    }
+
+    .deal-price {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .deal-savings {
+      font-size: 12px;
+      color: #059669;
+      font-weight: 600;
+    }
+
+    /* Upsell Checkbox Box */
+    .upsell-box {
+      border: 1.5px dashed #c0cde6;
+      border-radius: 10px;
+      padding: 14px;
+      background: #fafcff;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .upsell-box:hover {
+      border-color: var(--primary-color);
+    }
+
+    .upsell-box.active {
+      border-color: var(--primary-color);
+      border-style: solid;
+      background: #f0f4ff;
+    }
+
+    .upsell-img {
+      width: 54px;
+      height: 54px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #fff;
+    }
+
+    .upsell-details {
+      flex: 1;
+    }
+
+    .upsell-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .upsell-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .upsell-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    /* CTA Buttons & Quantity */
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .qty-picker {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid var(--border-color);
+      border-radius: 30px;
+      overflow: hidden;
+      height: 52px;
+      background: #ffffff;
+    }
+
+    .qty-btn {
+      width: 44px;
+      height: 100%;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .qty-btn:hover {
+      background: var(--accent-bg);
+    }
+
+    .qty-val {
+      width: 40px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .btn-buy-now {
+      flex: 1;
+      height: 52px;
+      border-radius: 30px;
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(30, 48, 110, 0.25);
+    }
+
+    .btn-buy-now:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-add-cart {
+      height: 52px;
+      border-radius: 30px;
+      background: #ffffff;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      font-size: 16px;
+      font-weight: 600;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add-cart:hover {
+      background: var(--primary-light);
+    }
+
+    /* Product Tabs Accordion */
+    .product-accordions {
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+    }
+
+    .acc-item {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .acc-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 4px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-align: left;
+    }
+
+    .acc-icon {
+      font-size: 20px;
+      transition: transform 0.25s ease;
+    }
+
+    .acc-item.open .acc-icon {
+      transform: rotate(45deg);
+    }
+
+    .acc-content {
+      display: none;
+      padding: 0 4px 16px;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .acc-item.open .acc-content {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* -------------------------------------------------------------
+       4. FEATURE ROW (4 ICONS)
+    ------------------------------------------------------------- */
+    .features-row-sec {
+      background: var(--accent-bg);
+      padding: 44px 0;
+      border-top: 1px solid #eef1f9;
+      border-bottom: 1px solid #eef1f9;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .feature-card-icon {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feature-card-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .feature-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    /* -------------------------------------------------------------
+       5. BENEFIT CARDS ("ตื่นมาคอไม่ปวด หลับลึกได้ทั้งคืน")
+    ------------------------------------------------------------- */
+    .benefits-sec {
+      padding: 80px 0;
+      background: var(--accent-bg);
+    }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+
+    .section-title {
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--primary-color);
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .benefit-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      transition: all 0.3s ease;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(30, 48, 110, 0.1);
+    }
+
+    .benefit-img {
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .benefit-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .benefit-card:hover .benefit-img img {
+      transform: scale(1.04);
+    }
+
+    .benefit-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+
+    .benefit-text {
+      font-size: 16px;
+      color: #333333;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .benefit-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .benefit-bullets li {
+      position: relative;
+      padding-left: 24px;
+      font-size: 15px;
+      color: #333333;
+      line-height: 1.5;
+    }
+
+    .benefit-bullets li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+
+    .benefits-cta-wrap {
+      text-align: center;
+      margin-top: 44px;
+    }
+
+    .btn-section-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 14px 44px;
+      border-radius: 30px;
+      box-shadow: 0 4px 16px rgba(30, 48, 110, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .btn-section-cta:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .benefits-guarantee {
+      margin-top: 14px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* -------------------------------------------------------------
+       6. FUNCTION HOTSPOTS / 3D ANATOMY ("4 ชั้นที่ทำให้คุณหลับลึก")
+    ------------------------------------------------------------- */
+    .hotspots-sec {
+      padding: 80px 0;
+      background: #ffffff;
+    }
+
+    .hotspots-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 50px;
+      align-items: center;
+    }
+
+    .hotspots-figure-wrap {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #f9faff;
+      border: 1px solid var(--border-color);
+      padding: 10px;
+    }
+
+    .hotspots-figure-wrap img {
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+    }
+
+    /* Pulsing Pin */
+    .hotspot-pin {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ffffff;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      z-index: 5;
+    }
+
+    .hotspot-pin:hover, .hotspot-pin.active {
+      background: var(--primary-color);
+      color: #ffffff;
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    .hotspot-pin.active::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid var(--primary-color);
+      animation: pinPulse 1.8s infinite ease-out;
+    }
+
+    @keyframes pinPulse {
+      0% { transform: scale(1); opacity: 0.9; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    /* Hotspot Accordion Cards */
+    .hotspots-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .hotspot-card {
+      border: 1.5px solid var(--border-color);
+      border-radius: 14px;
+      background: #ffffff;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .hotspot-card.open {
+      border-color: var(--primary-color);
+      background: var(--accent-bg);
+      box-shadow: 0 4px 16px rgba(30, 48, 110, 0.08);
+    }
+
+    .hotspot-card-header {
+      width: 100%;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .hotspot-card-title {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .hotspot-card-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: transform 0.25s ease;
+    }
+
+    .hotspot-card.open .hotspot-card-badge {
+      transform: rotate(45deg);
+    }
+
+    .hotspot-card-body {
+      display: none;
+      padding: 0 20px 20px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .hotspot-card.open .hotspot-card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 20px;
+    }
+
+    .hotspot-prop-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 2px;
+    }
+
+    .hotspot-prop-desc {
+      font-size: 14px;
+      color: #333333;
+      line-height: 1.5;
+    }
+
+    /* -------------------------------------------------------------
+       7. COMPARISON TABLE ("ทำไมต้องหมอนโคซี่")
+    ------------------------------------------------------------- */
+    .comparison-sec {
+      padding: 80px 0;
+      background: var(--accent-bg);
+    }
+
+    .comparison-table-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+      padding: 30px;
+      overflow-x: auto;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 16px 14px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .comparison-table th:first-child, .comparison-table td:first-child {
+      text-align: left;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--primary-color);
+      padding-left: 20px;
+      width: 40%;
+    }
+
+    .comp-pillow-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comp-pillow-img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.1));
+    }
+
+    .comp-pillow-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .comp-icon-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .comp-icon-cross {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e2e4ea;
+      color: #888888;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* -------------------------------------------------------------
+       8. CUSTOMER REVIEWS (JUDGE.ME CLONE)
+    ------------------------------------------------------------- */
+    .reviews-sec {
+      padding: 80px 0;
+      background: #ffffff;
+    }
+
+    .reviews-summary-card {
+      background: var(--accent-bg);
+      border-radius: 16px;
+      padding: 30px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 36px;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .reviews-score-box {
+      text-align: center;
+      border-right: 1px solid var(--border-color);
+      padding-right: 20px;
+    }
+
+    .reviews-big-number {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--primary-color);
+      line-height: 1;
+    }
+
+    .reviews-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .bar-stars {
+      width: 60px;
+      color: var(--star-color);
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 10px;
+      background: #e4e7f0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--star-color);
+      border-radius: 5px;
+    }
+
+    .bar-count {
+      width: 50px;
+      text-align: right;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .reviews-filter-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 18px;
+      border-radius: 20px;
+      background: #f0f2f8;
+      color: var(--primary-color);
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--primary-color);
+      color: #ffffff;
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .review-card {
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 22px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+
+    .review-author-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .review-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 17px;
+    }
+
+    .review-author-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .review-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #108474;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .review-stars {
+      color: var(--star-color);
+      font-size: 14px;
+    }
+
+    .review-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .review-body {
+      font-size: 14px;
+      color: #444444;
+      line-height: 1.6;
+    }
+
+    .review-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .review-photo:hover {
+      transform: scale(1.05);
+    }
+
+    /* -------------------------------------------------------------
+       9. FAQ SECTION
+    ------------------------------------------------------------- */
+    .faq-sec {
+      padding: 80px 0;
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .faq-container {
+      max-width: 840px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .faq-trigger {
+      width: 100%;
+      padding: 22px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .faq-icon {
+      font-size: 24px;
+      font-weight: 300;
+      color: var(--primary-color);
+      transition: transform 0.25s ease;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-body {
+      display: none;
+      padding: 0 6px 22px;
+      font-size: 16px;
+      color: #444444;
+      line-height: 1.7;
+    }
+
+    .faq-item.open .faq-body {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* -------------------------------------------------------------
+       10. STICKY CTA BAR (BOTTOM FLOATING)
+    ------------------------------------------------------------- */
+    .sticky-cta-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(160%);
+      width: calc(100% - 32px);
+      max-width: 640px;
+      background: #ffffff;
+      border-radius: 40px;
+      box-shadow: 0 10px 30px rgba(30, 48, 110, 0.25);
+      padding: 10px 14px 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      z-index: 99;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(30, 48, 110, 0.1);
+    }
+
+    .sticky-cta-bar.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .sticky-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sticky-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .sticky-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary-color);
+      line-height: 1.2;
+    }
+
+    .sticky-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .sticky-btn {
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 30px;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .sticky-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    /* -------------------------------------------------------------
+       11. CART DRAWER (SLIDE-OUT)
+    ------------------------------------------------------------- */
+    .cart-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(2px);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .cart-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      background: #ffffff;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+    }
+
+    .cart-drawer.open {
+      transform: translateX(0);
+    }
+
+    .cart-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .cart-drawer-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .cart-close-btn {
+      font-size: 24px;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-progress-bar {
+      background: #e9fbf0;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #15803d;
+      text-align: center;
+    }
+
+    .cart-items-wrap {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 14px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .cart-item-img {
+      width: 68px;
+      height: 68px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f7f7f7;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .cart-item-variant {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .cart-item-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .cart-item-remove {
+      font-size: 12px;
+      color: #999999;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .cart-drawer-footer {
+      padding: 20px;
+      border-top: 1px solid var(--border-color);
+      background: #fbfbfd;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .cart-subtotal-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .cart-total-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .btn-checkout {
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 16px;
+      border-radius: 30px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .btn-checkout:hover {
+      background: var(--primary-dark);
+    }
+
+    /* -------------------------------------------------------------
+       12. FOOTER & FUKUPETSTORE CLUB
+    ------------------------------------------------------------- */
+    .chowa-club-sec {
+      background: #dfe9f9;
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    .chowa-club-inner {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .club-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+
+    .club-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .club-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    .club-input {
+      flex: 1;
+      height: 48px;
+      padding: 0 16px;
+      border-radius: 24px;
+      border: 1px solid #c8d5ea;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .club-input:focus {
+      border-color: var(--primary-color);
+    }
+
+    .club-btn {
+      height: 48px;
+      padding: 0 24px;
+      background: var(--primary-color);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 24px;
+      transition: background 0.2s;
+    }
+
+    .club-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .site-footer {
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+      padding: 60px 0 30px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+
+    .footer-about img {
+      height: 34px;
+      margin-bottom: 16px;
+    }
+
+    .footer-about p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .footer-col h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-col li a {
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .footer-col li a:hover {
+      color: var(--primary-color);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border-color);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #888888;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* -------------------------------------------------------------
+       RESPONSIVE ADAPTATIONS (MOBILE)
+    ------------------------------------------------------------- */
+    @media (max-width: 900px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      .gallery-container {
+        position: static;
+      }
+      .hotspots-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .reviews-summary-card {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .reviews-score-box {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 20px;
+      }
+      .reviews-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+      .nav-links {
+        display: none;
+      }
+      .mobile-menu-toggle {
+        display: block;
+        font-size: 24px;
+        color: var(--primary-color);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .section-title {
+        font-size: 28px;
+      }
+      .product-title {
+        font-size: 28px;
+      }
+      .current-price {
+        font-size: 28px;
+      }
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px 10px;
+      }
+      .sticky-cta-bar {
+        bottom: 0;
+        left: 0;
+        transform: translateY(110%);
+        width: 100%;
+        max-width: none;
+        border-radius: 0;
+        padding: 10px 16px;
+      }
+      .sticky-cta-bar.visible {
+        transform: translateY(0);
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+      .hotspot-card.open .hotspot-card-body {
+        grid-template-columns: 1fr;
+      }
+      .top-bar {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =============================================================
+       1. TOP ANNOUNCEMENT BAR & COUNTDOWN
+  ============================================================= -->
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="top-bar-item">
+        <span>🚚 ส่งฟรีทั่วไทย เก็บเงินปลายทางได้</span>
+      </div>
+      <div class="top-bar-item">
+        <span>💳 ผ่อน 0% นานสูงสุด 4 เดือน</span>
+      </div>
+      <div class="top-bar-item">
+        <span>⭐ ลูกค้ากว่า 100,000 คนไว้วางใจ</span>
+      </div>
+      <div class="top-bar-item">
+        <span>🔥 โปรโมชั่นพิเศษหมดเวลาใน:</span>
+        <span class="top-bar-timer" id="topTimer">08:42:15</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       2. NAVIGATION HEADER
+  ============================================================= -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="#" class="header-logo">
+          <img src="https://www.chowa.in.th/cdn/shop/files/Chowa_logo_CMYK_Logo_Blue_croped.png?v=1781661303&width=400" alt="Fukupetstore Logo">
+        </a>
+        
+        <ul class="nav-links">
+          <li><a href="#product" class="nav-link active">หมอนสุขภาพ</a></li>
+          <li><a href="#benefits" class="nav-link">จุดเด่น</a></li>
+          <li><a href="#hotspots" class="nav-link">โครงสร้าง 4 ชั้น</a></li>
+          <li><a href="#comparison" class="nav-link">เปรียบเทียบ</a></li>
+          <li><a href="#reviews" class="nav-link">รีวิวจากลูกค้า</a></li>
+          <li><a href="#faq" class="nav-link">คำถามที่พบบ่อย</a></li>
+        </ul>
+
+        <div class="header-actions">
+          <button class="header-btn" title="ค้นหา">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </button>
+          <button class="header-btn" id="openCartBtn" title="ตะกร้าสินค้า">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="cart-badge" id="cartCount">1</span>
+          </button>
+          <button class="mobile-menu-toggle" id="mobileMenuBtn">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =============================================================
+       3. HERO / PRODUCT SECTION
+  ============================================================= -->
+  <section class="product-section" id="product">
+    <div class="container">
+      <div class="product-grid">
+        
+        <!-- Gallery Column (Left) -->
+        <div class="gallery-container">
+          <div class="gallery-main">
+            <img id="mainGalleryImg" src="https://www.chowa.in.th/cdn/shop/files/product-699926_1400x.png?v=1738616200" alt="หมอนโคซี่ Fukupetstore">
+            <button class="gallery-nav-btn prev" id="prevSlideBtn">‹</button>
+            <button class="gallery-nav-btn next" id="nextSlideBtn">›</button>
+          </div>
+
+          <!-- Thumbnails -->
+          <div class="gallery-thumbs" id="galleryThumbs">
+            <div class="gallery-thumb active" data-src="https://www.chowa.in.th/cdn/shop/files/product-699926_1400x.png?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-699926_400x.png?v=1738616200" alt="หมอนโคซี่">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-496375_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-496375_400x.jpg?v=1738616200" alt="หมอนโคซี่บนเตียง">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-123819_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-123819_400x.jpg?v=1738616200" alt="โครงสร้างหมอน">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-655523_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-655523_400x.jpg?v=1738616200" alt="เทไส้ปรับความสูง">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-447802_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-447802_400x.jpg?v=1738616200" alt="คู่มือความสูง">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-594772_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-594772_400x.jpg?v=1738616200" alt="แนวคอเวลานอน">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-597736_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-597736_400x.jpg?v=1738616200" alt="ทดสอบความนุ่ม">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-408032_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-408032_400x.jpg?v=1738616200" alt="มาตรฐาน CertiPUR-US">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-997234_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-997234_400x.jpg?v=1738616200" alt="ปลอก SnowMax">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-983423_1400x.png?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-983423_400x.png?v=1738616200" alt="คอลลาจรีวิว">
+            </div>
+            <div class="gallery-thumb" data-src="https://www.chowa.in.th/cdn/shop/files/product-144433_1400x.jpg?v=1738616200">
+              <img src="https://www.chowa.in.th/cdn/shop/files/product-144433_400x.jpg?v=1738616200" alt="ขนาดหมอน 2 ขนาด">
+            </div>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="trust-badges-row">
+            <div class="trust-badge-item">
+              <img src="https://ucarecdn.com/3c9e7ad4-72cd-4778-9d52-e200ff0c8606/-/format/auto/-/preview/240x240/-/quality/lighter/Artboard%201.png" alt="นอนฟรี 7 วัน">
+              <span>ทดลองนอนฟรี<br>7 วัน</span>
+            </div>
+            <div class="trust-badge-item">
+              <img src="https://ucarecdn.com/eb4711a8-4f97-4b60-be98-eac7f004d304/-/format/auto/-/preview/240x240/-/quality/lighter/Artboard%205.png" alt="รับประกัน 100%">
+              <span>รับประกันสินค้า<br>แท้ 100%</span>
+            </div>
+            <div class="trust-badge-item">
+              <img src="https://ucarecdn.com/fb814f37-d63a-4598-ae3f-3b444f3a56af/-/format/auto/-/preview/240x240/-/quality/lighter/Artboard%203.png" alt="ผ่อน 0%">
+              <span>ผ่อน 0% นาน<br>สูงสุด 4 เดือน</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Form Column (Right) -->
+        <div class="product-info">
+          
+          <div class="product-header-rating">
+            <span class="stars">★★★★★</span>
+            <span style="color: var(--primary-color); font-weight: 600;">5.0</span>
+            <span style="color: var(--text-muted);">(1,955+ รีวิว)</span>
+            <span class="sold-badge">🔥 ขายแล้วกว่า 10,000+ ใบ</span>
+          </div>
+
+          <h1 class="product-title">หมอนโคซี่</h1>
+
+          <div class="product-price-box">
+            <span class="current-price" id="displayPrice">฿2,690</span>
+            <span class="compare-price" id="displayCompare">฿4,400</span>
+            <span class="discount-tag" id="displaySave">ประหยัด ฿1,710</span>
+          </div>
+
+          <div class="urgency-pill">
+            <span class="urgency-dot"></span>
+            <span>⚡ มีสินค้า พร้อมส่งทันที จัดส่งฟรีทั่วไทย</span>
+          </div>
+
+          <!-- Size Selector -->
+          <div>
+            <div class="option-group-label">เลือกขนาดหมอน:</div>
+            <div class="size-selector">
+              <div class="size-option active" data-size="standard" data-price="2690" data-compare="4400">
+                <span class="size-title">มาตรฐาน (Standard)</span>
+                <span class="size-sub">ขนาด 18 x 26 นิ้ว (฿2,690)</span>
+              </div>
+              <div class="size-option" data-size="king" data-price="2990" data-compare="4890">
+                <span class="size-title">ใหญ่พิเศษ (King)</span>
+                <span class="size-sub">ขนาด 18 x 35 นิ้ว (฿2,990)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deal / Bundle Selector (Kaching Bundles Clone) -->
+          <div class="bundle-section">
+            <div class="bundle-header">
+              <span>🎁 โปรโมชั่นพิเศษ (ยิ่งซื้อ ยิ่งคุ้ม)</span>
+              <span style="color: #059669; font-weight: 700;">ส่งฟรีทุกออเดอร์</span>
+            </div>
+
+            <!-- Deal 1 -->
+            <div class="deal-card active" data-bundle="1" data-discount="0">
+              <div class="deal-left">
+                <div class="deal-radio"></div>
+                <div>
+                  <div class="deal-name">1 ใบ (เซ็ตทดลอง)</div>
+                  <div class="deal-desc">หมอนโคซี่ + ถุงรีฟิลไส้เมมโมรี่โฟม</div>
+                </div>
+              </div>
+              <div class="deal-right">
+                <div class="deal-price" id="bundlePrice1">฿2,690</div>
+                <div class="deal-savings">ลด 39% จากราคาเต็ม</div>
+              </div>
+            </div>
+
+            <!-- Deal 2 -->
+            <div class="deal-card" data-bundle="2" data-discount="10">
+              <span class="deal-badge">Best Seller 10% OFF</span>
+              <div class="deal-left">
+                <div class="deal-radio"></div>
+                <div>
+                  <div class="deal-name">2 ใบ (สำหรับคนรู้ใจ)</div>
+                  <div class="deal-desc">หมอน 2 ใบ + ถุงรีฟิล 2 ถุง</div>
+                </div>
+              </div>
+              <div class="deal-right">
+                <div class="deal-price" id="bundlePrice2">฿4,842</div>
+                <div class="deal-savings" id="bundleSave2">ประหยัดเพิ่ม ฿538</div>
+              </div>
+            </div>
+
+            <!-- Deal 3 -->
+            <div class="deal-card" data-bundle="4" data-discount="free1">
+              <span class="deal-badge" style="background: #e11d48;">แถมฟรี 1 ใบ คุ้มที่สุด</span>
+              <div class="deal-left">
+                <div class="deal-radio"></div>
+                <div>
+                  <div class="deal-name">ซื้อ 3 แถม 1 (ได้ 4 ใบ)</div>
+                  <div class="deal-desc">แถมฟรีอีก 1 ใบ สำหรับครอบครัว</div>
+                </div>
+              </div>
+              <div class="deal-right">
+                <div class="deal-price" id="bundlePrice3">฿8,070</div>
+                <div class="deal-savings">ประหยัด ฿2,690 (แถมฟรี 1 ใบ)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upsell Checkbox -->
+          <div class="upsell-box" id="upsellBox">
+            <input type="checkbox" id="upsellCheck" style="width: 20px; height: 20px; accent-color: var(--primary-color);">
+            <img class="upsell-img" src="https://www.chowa.in.th/cdn/shop/files/tencel-lyocell-631776.png?height=200&v=1738616201" alt="ปลอกหมอน Tencel Lyocell">
+            <div class="upsell-details">
+              <div class="upsell-title">+ เพิ่ม ปลอกหมอน Tencel Lyocell</div>
+              <div class="upsell-meta">สัมผัสเย็น นุ่มลื่นดุจผ้าไหม อ่อนโยนต่อผิว</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="upsell-price">+฿790</div>
+              <div style="font-size: 11px; color: #999; text-decoration: line-through;">฿1,290</div>
+            </div>
+          </div>
+
+          <!-- Action Buttons Row -->
+          <div class="cta-row">
+            <div class="qty-picker">
+              <button class="qty-btn" id="qtyMinus">−</button>
+              <div class="qty-val" id="qtyVal">1</div>
+              <button class="qty-btn" id="qtyPlus">+</button>
+            </div>
+            <button class="btn-buy-now" id="buyNowBtn">
+              <span>สั่งซื้อเลย</span>
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <button class="btn-add-cart" id="addToCartBtn" title="เพิ่มลงในรถเข็น">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </button>
+          </div>
+
+          <div style="text-align: center; font-size: 13px; color: var(--text-muted);">
+            🛡️ รับประกันความพึงพอใจ คืนเงินเต็มจำนวนใน 7 วัน
+          </div>
+
+          <!-- Product Accordion Tabs -->
+          <div class="product-accordions">
+            <div class="acc-item open">
+              <button class="acc-trigger">
+                <span>ทำไมต้องใช้หมอนโคซี่?</span>
+                <span class="acc-icon">+</span>
+              </button>
+              <div class="acc-content">
+                • <strong>ลดอาการปวดคอ:</strong> ปรับความสูงและต่ำได้ตามสรีระของผู้ใช้ ช่วยให้กระดูกสันหลังอยู่ในแนวที่ถูกต้อง ลดอาการตึงและปวดคอได้จริง<br>
+                • <strong>หลับลึกสบายตลอดคืน:</strong> วัสดุไฮเปอร์เมมโมรี่โฟมมีความนุ่มฟู ช่วยกระจายน้ำหนักกดทับ ลดการตื่นกลางดึก<br>
+                • <strong>นอนสบายทุกท่า:</strong> หมอนใบใหญ่ช่วยโอบอุ้มต้นคอและศีรษะอย่างพอดี ตอบโจทย์ทั้งท่านอนตะแคง หงาย และคว่ำ<br>
+                • <strong>นอนแล้วเย็นสบาย ไม่ร้อน:</strong> ปลอกหมอน SnowMax วัสดุให้สัมผัสเย็นเป็นพิเศษ ระบายอากาศได้ดี นุ่มนวลอ่อนโยนต่อผิว<br>
+                • <strong>ปลอดภัยต่อการใช้งาน:</strong> วัสดุเป็นมิตรต่อสิ่งแวดล้อม ผ่านการรับรองมาตรฐานความปลอดภัย ไร้สารพิษ CertiPUR-US
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger">
+                <span>ขนาดและวัสดุ</span>
+                <span class="acc-icon">+</span>
+              </button>
+              <div class="acc-content">
+                <strong>ขนาด:</strong><br>
+                • Standard: 18 x 26 นิ้ว (เหมาะกับเตียงเดี่ยวและเตียงควีนไซส์)<br>
+                • King: 18 x 35 นิ้ว (ขนาดใหญ่พิเศษ เหมาะกับเตียงคิงไซส์และคนที่ชอบพลิกตัว)<br><br>
+                <strong>วัสดุ:</strong><br>
+                • แกนหมอน: Shredded Hyper Memory Foam เกรดพรีเมียม นุ่มฟู คืนตัวช้า<br>
+                • ปลอกด้านใน: ผ้า Air Mesh ถ่ายเทอากาศได้ดีเยี่ยม<br>
+                • ปลอกหุ้มด้านนอก: ผ้า SnowMax สัมผัสเย็น ปรับสมดุลอุณหภูมิร่างกาย
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger">
+                <span>คำแนะนำในการดูแลรักษา</span>
+                <span class="acc-icon">+</span>
+              </button>
+              <div class="acc-content">
+                • <strong>ปลอกหมอนด้านนอก:</strong> สามารถถอดซักเครื่องได้ในโหมดถนอมผ้า ใช้น้ำเย็น ไม่ใส่น้ำยาปรับผ้านุ่ม และอบแห้งอุณหภูมิต่ำหรือผึ่งลมในที่ร่ม<br>
+                • <strong>แกนหมอนและปลอกด้านใน:</strong> แนะนำให้ผึ่งลมในที่ร่มเท่านั้น ห้ามซัก และหลีกเลี่ยงไม่ให้แกนเมมโมรี่โฟมโดนน้ำหรือแดดจัด
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger">
+                <span>การจัดส่งสินค้า</span>
+                <span class="acc-icon">+</span>
+              </button>
+              <div class="acc-content">
+                สินค้าทุกชิ้น <strong>จัดส่งฟรีและมีบริการเก็บเงินปลายทางฟรีทั่วประเทศ</strong> ผ่านทาง EMS บริษัทไปรษณีย์ไทย<br>
+                • กรุงเทพและปริมณฑล: 2-3 วันทำการ<br>
+                • ต่างจังหวัด: 3-5 วันทำการ (มีรหัส Tracking ตรวจสอบสถานะได้ 24 ชั่วโมง)
+              </div>
+            </div>
+
+            <div class="acc-item">
+              <button class="acc-trigger">
+                <span>นโยบายการรับประกันสินค้า</span>
+                <span class="acc-icon">+</span>
+              </button>
+              <div class="acc-content">
+                หากคุณได้รับสินค้าแล้ว รู้สึกว่าไม่ตอบโจทย์หรือไม่พอใจสินค้าในกรณีใดก็ตาม ทางบริษัทยินดี <strong>คืนเงินเต็มจำนวนภายใน 7 วัน</strong> นับตั้งแต่วันที่ได้รับสินค้าตามเงื่อนไขที่กำหนด พร้อมการรับประกันคุณภาพวัสดุ 1 ปีเต็ม
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================
+       4. FEATURE ROW (4 ICONS)
+  ============================================================= -->
+  <section class="features-row-sec">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <img src="https://ucarecdn.com/af853f1d-a2fd-4b6e-a6d0-3613c76f0d8f/-/format/auto/-/preview/240x240/-/quality/lighter/Pressure.png" alt="กระจายน้ำหนักกดทับ">
+          </div>
+          <div class="feature-card-title">กระจายน้ำหนักกดทับ</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <img src="https://ucarecdn.com/ea22384d-0934-47fd-9434-d4cbf05af369/-/format/auto/-/preview/240x240/-/quality/lighter/Bacteria.png" alt="ป้องกันแบคทีเรีย">
+          </div>
+          <div class="feature-card-title">ป้องกันแบคทีเรีย</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <img src="https://ucarecdn.com/3313a9e9-5c8c-4178-9de9-e5436ff3cb10/-/format/auto/-/preview/240x240/-/quality/lighter/Airflow.png" alt="ระบายอากาศ">
+          </div>
+          <div class="feature-card-title">ระบายอากาศยอดเยี่ยม</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <img src="https://ucarecdn.com/2f09d6de-fba4-4901-85d8-3ff2d53ad3bd/-/format/auto/-/preview/240x240/-/quality/lighter/Alignment.png" alt="รองรับสรีระ">
+          </div>
+          <div class="feature-card-title">รองรับสรีระตามหลักกายภาพ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================
+       5. BENEFIT CARDS ("ตื่นมาคอไม่ปวด หลับลึกได้ทั้งคืน")
+  ============================================================= -->
+  <section class="benefits-sec" id="benefits">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">ตื่นมาคอไม่ปวด หลับลึกได้ทั้งคืน</h2>
+        <p class="section-subtitle">หมอนสุขภาพที่ออกแบบมาเพื่อแก้ปัญหาการนอนอย่างแท้จริง โอบรับสรีระของคุณในทุกมิติ</p>
+      </div>
+
+      <div class="benefits-grid">
+        
+        <!-- Card 1 -->
+        <div class="benefit-card">
+          <div class="benefit-img">
+            <img src="https://www.chowa.in.th/cdn/shop/files/Benefit_cp_1.jpg?v=1787284838&width=630" alt="นุ่มฟูไม่แฟบ คอไม่ตึงตอนเช้า">
+          </div>
+          <h3 class="benefit-title">นุ่มฟูไม่แฟบ คอไม่ตึงตอนเช้า</h3>
+          <p class="benefit-text">หมอนเก่าที่แฟบจนหัวจมลงไป ทำให้คอตึงและพลิกไปมาทั้งคืน ไส้ไฮเปอร์เมมโมรี่โฟมคืนตัวได้ดี รับหัวและคอไว้เท่าเดิมทุกคืน</p>
+          <ul class="benefit-bullets">
+            <li>คงรูปไม่แฟบ ไม่ยุบเป็นก้อน</li>
+            <li>รับหัวและคอไว้ในแนวระนาบทั้งคืน</li>
+            <li>ตื่นมาคอไม่ตึง ไม่ปวดเมื่อยเหมือนเคย</li>
+          </ul>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="benefit-card">
+          <div class="benefit-img">
+            <img src="https://www.chowa.in.th/cdn/shop/files/Benefit_cp_2.jpg?v=1787284838&width=630" alt="ปรับความสูงให้พอดีตัวคุณได้เอง">
+          </div>
+          <h3 class="benefit-title">ปรับความสูงให้พอดีตัวคุณได้เอง</h3>
+          <p class="benefit-text">หมอนสูงไปหรือต่ำไปคือต้นเหตุที่ทำให้คอตึงตอนเช้า เติมหรือลดไส้ไฮเปอร์เมมโมรี่โฟมได้เองจนได้ความสูงที่พอดีกับสรีระคุณ</p>
+          <ul class="benefit-bullets">
+            <li>เติมหรือลดไส้ได้เองตามสรีระและความชอบ</li>
+            <li>ปรับระดับสูงต่ำได้จนพอดีแนวกระดูกคอ</li>
+            <li>จบปัญหาซื้อหมอนมาแล้วนอนไม่พอดี</li>
+          </ul>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="benefit-card">
+          <div class="benefit-img">
+            <img src="https://www.chowa.in.th/cdn/shop/files/Benefit_cp_3.jpg?v=1787284838&width=630" alt="นอนเย็นสบาย หลับลึกตลอดคืน">
+          </div>
+          <h3 class="benefit-title">นอนเย็นสบาย หลับลึกตลอดคืน</h3>
+          <p class="benefit-text">ปลอก SnowMax ช่วยระบายอากาศและปรับสมดุลอุณหภูมิ ไม่ร้อนไม่อับ หมดกังวลเรื่องเหงื่อสะสม หลับสบายยาวตลอดคืน</p>
+          <ul class="benefit-bullets">
+            <li>ระบายความร้อนได้ดีเยี่ยม ไม่อบศีรษะ</li>
+            <li>สัมผัสเย็นสบายผ่อนคลายตลอดทั้งคืน</li>
+            <li>ลดความอับชื้น ป้องกันไรฝุ่นและเหงื่อสะสม</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="benefits-cta-wrap">
+        <a href="#product" class="btn-section-cta">สั่งซื้อหมอนโคซี่เลย</a>
+        <div class="benefits-guarantee">🛡️ รับประกันความพึงพอใจ ยินดีคืนเงินภายใน 7 วัน</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================
+       6. FUNCTION HOTSPOTS / 3D ANATOMY ("4 ชั้นที่ทำให้คุณหลับลึก")
+  ============================================================= -->
+  <section class="hotspots-sec" id="hotspots">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">4 ชั้นที่ทำให้คุณหลับลึกทั้งคืน</h2>
+        <p class="section-subtitle">นวัตกรรมการออกแบบหมอนสุขภาพจากเกาหลี รวม 4 องค์ประกอบสำคัญเพื่อการพักผ่อนระดับพรีเมียม</p>
+      </div>
+
+      <div class="hotspots-grid">
+        
+        <!-- Hotspots 3D Figure with Interactive Pins -->
+        <div class="hotspots-figure-wrap">
+          <img src="https://www.chowa.in.th/cdn/shop/files/CP_3D_realistic_image_png.png?v=1787284641&width=1200" alt="โครงสร้าง 3 มิติ หมอนโคซี่">
+          
+          <!-- Exact Coordinates from Fukupetstore PDP -->
+          <button class="hotspot-pin active" data-id="1" style="left: 28%; top: 58%;" title="ไส้ Hyper Memory Foam">1</button>
+          <button class="hotspot-pin" data-id="2" style="left: 53%; top: 44%;" title="ปลอกใน Air Mesh">2</button>
+          <button class="hotspot-pin" data-id="3" style="left: 74%; top: 34%;" title="ปลอกนอก SnowMax">3</button>
+          <button class="hotspot-pin" data-id="4" style="left: 83%; top: 76%;" title="แถบ Gusset">4</button>
+        </div>
+
+        <!-- Hotspots Cards List -->
+        <div class="hotspots-list">
+          
+          <div class="hotspot-card open" data-id="1">
+            <div class="hotspot-card-header">
+              <span class="hotspot-card-title">1. ไส้ Hyper Memory Foam</span>
+              <span class="hotspot-card-badge">+</span>
+            </div>
+            <div class="hotspot-card-body">
+              <div>
+                <div class="hotspot-prop-label">คุณสมบัติ:</div>
+                <div class="hotspot-prop-desc">วัสดุนุ่มนิ่ม คืนตัวได้ดีเยี่ยม เติมหรือลดไส้หมอนได้เองตามชอบ</div>
+              </div>
+              <div>
+                <div class="hotspot-prop-label">ประโยชน์:</div>
+                <div class="hotspot-prop-desc">ปรับความสูงพอดีตัวคุณ นุ่มสบายรองรับสรีระ ไม่ยุบตัวเป็นหลุม</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hotspot-card" data-id="2">
+            <div class="hotspot-card-header">
+              <span class="hotspot-card-title">2. ปลอกใน Air Mesh</span>
+              <span class="hotspot-card-badge">+</span>
+            </div>
+            <div class="hotspot-card-body">
+              <div>
+                <div class="hotspot-prop-label">คุณสมบัติ:</div>
+                <div class="hotspot-prop-desc">ผ้าโครงข่ายเนื้อบางเบา ระบายอากาศและการไหลเวียนของลมได้ดี</div>
+              </div>
+              <div>
+                <div class="hotspot-prop-label">ประโยชน์:</div>
+                <div class="hotspot-prop-desc">ลดการสะสมของความร้อนและความอับชื้นตลอดทั้งคืน</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hotspot-card" data-id="3">
+            <div class="hotspot-card-header">
+              <span class="hotspot-card-title">3. ปลอกนอก SnowMax</span>
+              <span class="hotspot-card-badge">+</span>
+            </div>
+            <div class="hotspot-card-body">
+              <div>
+                <div class="hotspot-prop-label">คุณสมบัติ:</div>
+                <div class="hotspot-prop-desc">เนื้อผ้าเทคโนโลยี SnowMax ให้สัมผัสเย็นเฉียบ นุ่มนวล อ่อนโยนต่อผิวหน้า</div>
+              </div>
+              <div>
+                <div class="hotspot-prop-label">ประโยชน์:</div>
+                <div class="hotspot-prop-desc">เย็นสบายตั้งแต่วินาทีแรกที่หนุน ช่วยให้ผ่อนคลายและเข้าสู่สภาวะหลับลึกเร็วขึ้น</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hotspot-card" data-id="4">
+            <div class="hotspot-card-header">
+              <span class="hotspot-card-title">4. แถบ Gusset ด้านข้าง</span>
+              <span class="hotspot-card-badge">+</span>
+            </div>
+            <div class="hotspot-card-body">
+              <div>
+                <div class="hotspot-prop-label">คุณสมบัติ:</div>
+                <div class="hotspot-prop-desc">แถบขอบรอบหมอนเสริมโครงสร้างช่วยยึดทรงหมอนให้อยู่รูป</div>
+              </div>
+              <div>
+                <div class="hotspot-prop-label">ประโยชน์:</div>
+                <div class="hotspot-prop-desc">คงรูปทรงได้ยาวนานหลายปี ไม่ยวบแบนแม้ใช้งานทุกคืน</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================
+       7. COMPARISON TABLE ("ทำไมต้องหมอนโคซี่")
+  ============================================================= -->
+  <section class="comparison-sec" id="comparison">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">ทำไมต้องหมอนโคซี่</h2>
+        <p class="section-subtitle">เทียบให้เห็นชัดเจนว่าหมอนโคซี่เหนือกว่าหมอนทั่วไปอย่างไร</p>
+      </div>
+
+      <div class="comparison-table-wrap">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>คุณสมบัติ</th>
+              <th>
+                <div class="comp-pillow-header">
+                  <img class="comp-pillow-img" src="https://www.chowa.in.th/cdn/shop/files/Chowa_15_Rendering.3_copy.png?v=1787128546&width=300" alt="หมอนโคซี่ Fukupetstore">
+                  <span class="comp-pillow-name">หมอนโคซี่ Fukupetstore</span>
+                </div>
+              </th>
+              <th>
+                <div class="comp-pillow-header">
+                  <img class="comp-pillow-img" src="https://www.chowa.in.th/cdn/shop/files/pillow-other-brand.png?v=1785146409&width=300" alt="หมอนทั่วไป">
+                  <span class="comp-pillow-name" style="color: var(--text-muted);">หมอนทั่วไป</span>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ปรับความสูงได้เองตามสรีระ</td>
+              <td><span class="comp-icon-check">✓</span></td>
+              <td><span class="comp-icon-cross">✕</span></td>
+            </tr>
+            <tr>
+              <td>รองรับสรีระคอในแนวระนาบ</td>
+              <td><span class="comp-icon-check">✓</span></td>
+              <td><span class="comp-icon-cross">✕</span></td>
+            </tr>
+            <tr>
+              <td>ปลอกผ้าเย็น SnowMax ไม่อับร้อน</td>
+              <td><span class="comp-icon-check">✓</span></td>
+              <td><span class="comp-icon-cross">✕</span></td>
+            </tr>
+            <tr>
+              <td>โฟมแท้ คืนตัวดี ไม่ยุบยวบเป็นหลุม</td>
+              <td><span class="comp-icon-check">✓</span></td>
+              <td><span class="comp-icon-cross">✕</span></td>
+            </tr>
+            <tr>
+              <td>มาตรฐานความปลอดภัย CertiPUR-US</td>
+              <td><span class="comp-icon-check">✓</span></td>
+              <td><span class="comp-icon-cross">✕</span></td>
+            </tr>
+            <tr>
+              <td>การรับประกันทดลองนอน 7 วัน คืนเงินได้</td>
+              <td><span class="comp-icon-check">✓</span></td>
+              <td><span class="comp-icon-cross">✕</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="text-align: center; margin-top: 36px;">
+          <a href="#product" class="btn-section-cta">สั่งซื้อและรับสิทธิ์ทดลองนอน 7 วัน</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================
+       8. CUSTOMER REVIEWS (JUDGE.ME CLONE)
+  ============================================================= -->
+  <section class="reviews-sec" id="reviews">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">รีวิวจากลูกค้าจริง</h2>
+        <p class="section-subtitle">ประสบการณ์จริงจากผู้ใช้งานหมอนโคซี่ Fukupetstore ทั่วประเทศ</p>
+      </div>
+
+      <!-- Rating Summary Card -->
+      <div class="reviews-summary-card">
+        <div class="reviews-score-box">
+          <div class="reviews-big-number">4.9</div>
+          <div class="stars" style="font-size: 20px; margin: 6px 0;">★★★★★</div>
+          <div style="font-size: 14px; color: var(--text-muted); font-weight: 500;">จาก 1,955+ รีวิว</div>
+        </div>
+
+        <div class="reviews-bars">
+          <div class="bar-row">
+            <span class="bar-stars">5 ดาว</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 91%;"></div></div>
+            <span class="bar-count">1,778 (91%)</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-stars">4 ดาว</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 7%;"></div></div>
+            <span class="bar-count">140 (7%)</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-stars">3 ดาว</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 2%;"></div></div>
+            <span class="bar-count">30 (2%)</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-stars">2 ดาว</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 0.5%;"></div></div>
+            <span class="bar-count">1 (0%)</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-stars">1 ดาว</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 0.5%;"></div></div>
+            <span class="bar-count">6 (0%)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="reviews-filter-row">
+        <button class="filter-btn active">รีวิวทั้งหมด (1,955)</button>
+        <button class="filter-btn">มีรูปภาพ (420)</button>
+        <button class="filter-btn">5 ดาวเท่านั้น (1,778)</button>
+        <button class="filter-btn">ยืนยันการสั่งซื้อแล้ว</button>
+      </div>
+
+      <!-- Review Cards Grid -->
+      <div class="reviews-grid">
+        
+        <!-- Review 1 -->
+        <div class="review-card">
+          <div class="review-author-wrap">
+            <div class="review-avatar">C</div>
+            <div>
+              <div class="review-author-name">Chomcheun Sudsataya</div>
+              <div class="review-badge">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>ผู้ซื้อที่ได้รับการยืนยัน</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-title">เปลี่ยนมาใช้หมอนโคซี่กันทั้งครอบครัว 6 ใบ</div>
+          <div class="review-body">เปลี่ยนมาใช้หมอนโคซี่กันทั้งครอบครัว 6 ใบ ทุกคนชอบมาก หลับสบายขึ้น ตื่นมาแล้วสดชื่น ดีจริงๆค่ะ ปรับเอาไส้ออกนิดหน่อยนอนพอดีมาก ไม่ปวดคอเลย แนะนำเลยค่ะ</div>
+          <img class="review-photo" src="https://www.chowa.in.th/cdn/shop/files/product-983423_400x.png?v=1738616200" alt="รูปรีวิว">
+        </div>
+
+        <!-- Review 2 -->
+        <div class="review-card">
+          <div class="review-author-wrap">
+            <div class="review-avatar" style="background: #2563eb;">อ</div>
+            <div>
+              <div class="review-author-name">อัมพร รักเกียรตินักรบ</div>
+              <div class="review-badge">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>ผู้ซื้อที่ได้รับการยืนยัน</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-title">คุณภาพการนอนหลับดี คุ้มค่าสมราคา จัดส่งรวดเร็วครับ</div>
+          <div class="review-body">ให้ความรู้สึกเกี่ยวกับสุขภาพของการนอนหลับที่ดีมากๆ หลับได้นานขึ้นและตื่นมารู้สึกกระปรี้กระเปร่า มีความสุขกับการนอนมากขึ้น ไม่ตื่นกลางดึกเหมือนเมื่อก่อน</div>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="review-card">
+          <div class="review-avatar-wrap" style="display: flex; align-items: center; gap: 12px;">
+            <div class="review-avatar" style="background: #059669;">ส</div>
+            <div>
+              <div class="review-author-name">สมศักดิ์ เศวตรัตนเสถียร</div>
+              <div class="review-badge">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>ผู้ซื้อที่ได้รับการยืนยัน</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-title">นอนหลับสบาย ปลอกหมอนเย็นจริง</div>
+          <div class="review-body">ตอนแรกกังวลว่าจะสูงไป แต่พอแกะตักโฟมออกใส่ถุงรีฟิลตามที่แนะนำ ได้ระดับที่พอดีมาก นอนตะแคงก็ไม่กดทับหัวไหล่ ปลอกหมอนเย็นสัมผัสดีมาก คุ้มค่าเงินครับ</div>
+          <img class="review-photo" src="https://www.chowa.in.th/cdn/shop/files/product-655523_400x.jpg?v=1738616200" alt="รูปรีวิว">
+        </div>
+
+        <!-- Review 4 -->
+        <div class="review-card">
+          <div class="review-author-wrap">
+            <div class="review-avatar" style="background: #d97706;">ว</div>
+            <div>
+              <div class="review-author-name">วิศิษฎ์ กิจเจริญ</div>
+              <div class="review-badge">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span>ผู้ซื้อที่ได้รับการยืนยัน</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-title">แก้ปัญหาคอเคล็ดได้จริงครับ</div>
+          <div class="review-body">เคยซื้อหมอนมาหลายแบรนด์ทั้งแพงและถูก นอนไม่เคยจบ มาจบที่หมอนโคซี่ใบนี้ โฟมนุ่มแน่นกำลังดี คืนตัวเนียนมาก ไม่ยวบแฟบ สั่งเพิ่มให้คุณแม่เรียบร้อยครับ</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================
+       9. FAQ SECTION
+  ============================================================= -->
+  <section class="faq-sec" id="faq">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">คำถามที่พบบ่อย</h2>
+        <p class="section-subtitle">ข้อสงสัยยอดนิยมเกี่ยวกับหมอนโคซี่ Fukupetstore</p>
+      </div>
+
+      <div class="faq-container">
+        
+        <div class="faq-item open">
+          <button class="faq-trigger">
+            <span>หมอนโคซี่เหมาะกับใคร?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-body">
+            เหมาะกับคนที่ต้องการหลับลึกและหลับสบายขึ้น ชอบสัมผัสนุ่มฟูสบายตัวแบบโรงแรมระดับ 5 ดาว และต้องการหมอนที่ปรับความสูงได้เองให้เข้ากับแนวกระดูกคอและสรีระส่วนบุคคลอย่างสมบูรณ์แบบ
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>ปรับความสูงของหมอนอย่างไร?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-body">
+            คุณสามารถรูดซิปเปิดปลอกหมอนแล้วเติมหรือตักไส้ไฮเปอร์เมมโมรี่โฟมออกได้เองตามความชอบ โดยในกล่องจะมีถุงซิปล็อกสำหรับเก็บไส้ที่นำออกมาให้อย่างสะดวก ปรับระดับความสูงและความนุ่มให้พอดีกับตัวเองได้อย่างง่ายดาย
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>ใช้ไปนานๆ หมอนจะยุบหรือเสียทรงไหม?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-body">
+            ไส้ไฮเปอร์เมมโมรี่โฟมแท้ 100% ไม่ใช่ใยสังเคราะห์ จึงไม่ยุบยวบแบนเป็นหลุม ออกแบบโครงสร้างให้คงรูปทรง คืนตัวช้าๆ อย่างนุ่มนวล และทนทานต่อการใช้งานทุกคืนได้ยาวนานหลายปี
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>มีกลิ่นสารเคมีไหม ปลอดภัยหรือเปล่า?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-body">
+            อาจมีกลิ่นธรรมชาติของเมมโมรี่โฟมใหม่อ่อนๆ ในช่วงแรกที่เปิดกล่อง ซึ่งจะจางหายไปเองหลังจากผึ่งลม 1-2 วัน และวัสดุทั้งหมดผ่านการรับรองมาตรฐานสากล CertiPUR-US และ OEKO-TEX Standard 100 ปลอดจากสารเคมีอันตราย วางใจได้ 100%
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>ใช้กี่คืนถึงจะเริ่มรู้สึกสบายขึ้น?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-body">
+            ผู้ใช้ส่วนใหญ่รู้สึกสบายและหลับลึกขึ้นตั้งแต่คืนแรกที่ใช้ บางท่านอาจใช้เวลาปรับตัวประมาณ 3-5 คืน โดยแนะนำให้ทดลองปรับปริมาณไส้โฟมให้เข้ากับท่านอนประจำ (นอนหงาย ตะแคง หรือคว่ำ) เพื่อให้ได้ความสูงที่สมบูรณ์แบบที่สุด
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>จำเป็นต้องซื้อปลอกหมอนแยกไหม?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-body">
+            ไม่จำเป็นครับ ตัวหมอนมาพร้อมปลอก SnowMax สัมผัสเย็นคุณภาพสูงที่ถอดซักได้ หรือหากต้องการใช้ปลอกหมอนมาตรฐานทั่วไปที่คุณมีอยู่ที่บ้านก็สามารถสวมทับได้ทันที
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>ทำความสะอาดหมอนอย่างไร?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-body">
+            • <strong>ปลอกหมอน:</strong> ถอดซักเครื่องได้ในโหมดถนอมผ้า ใช้น้ำเย็น ไม่ใส่น้ำยาปรับผ้านุ่ม อบแห้งอุณหภูมิต่ำหรือผึ่งลมในที่ร่ม<br>
+            • <strong>แกนหมอนและปลอกด้านใน:</strong> แนะนำให้ผึ่งลมในที่ร่มเท่านั้น ห้ามนำไปซักน้ำ และหลีกเลี่ยงแสงแดดจัด
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger">
+            <span>หากนอนแล้วไม่พอใจ คืนสินค้าได้ไหม?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-body">
+            สามารถคืนได้ครับ เรามีนโยบายรับประกันความพึงพอใจ <strong>ให้คุณทดลองนอนฟรี 7 วัน</strong> หากรู้สึกว่าหมอนไม่ตอบโจทย์ สามารถส่งคืนเพื่อขอรับเงินคืนเต็มจำนวนได้ทันที พร้อมรับประกันคุณภาพวัสดุยาวนาน 1 ปีเต็ม
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================
+       10. STICKY CTA BAR (BOTTOM FLOATING)
+  ============================================================= -->
+  <div class="sticky-cta-bar" id="stickyBar">
+    <div class="sticky-info">
+      <img class="sticky-thumb" src="https://www.chowa.in.th/cdn/shop/files/product-699926_400x.png?v=1738616200" alt="หมอนโคซี่">
+      <div>
+        <div class="sticky-title">หมอนโคซี่ Fukupetstore</div>
+        <div class="sticky-price" id="stickyPriceText">฿2,690 <span style="font-size: 12px; color: #888; text-decoration: line-through;">฿4,400</span></div>
+      </div>
+    </div>
+    <button class="sticky-btn" id="stickyBuyBtn">สั่งซื้อเลย</button>
+  </div>
+
+  <!-- =============================================================
+       11. CART DRAWER (SLIDE-OUT)
+  ============================================================= -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <span class="cart-drawer-title">ตะกร้าสินค้าของคุณ</span>
+      <button class="cart-close-btn" id="closeCartBtn">×</button>
+    </div>
+
+    <div class="cart-progress-bar">
+      🎉 คุณได้รับสิทธิ์ <strong>จัดส่งฟรีทั่วไทย</strong> สำหรับออเดอร์นี้!
+    </div>
+
+    <div class="cart-items-wrap" id="cartItemsList">
+      <!-- Item will render dynamically via JavaScript -->
+    </div>
+
+    <div class="cart-drawer-footer">
+      <div class="cart-subtotal-row">
+        <span>ยอดรวมทั้งหมด:</span>
+        <span class="cart-total-price" id="cartTotal">฿2,690</span>
+      </div>
+      <button class="btn-checkout" onclick="Swal.fire({ icon: 'info', title: 'Secure Checkout', text: 'ไปยังหน้าชำระเงินที่ปลอดภัย', confirmButtonText: 'ตกลง' });">
+        ดำเนินการสั่งซื้อ (Checkout)
+      </button>
+      <div style="text-align: center; font-size: 12px; color: #888;">
+        🔒 ชำระเงินปลอดภัย รองรับบัตรเครดิต, โอนเงิน, พร้อมเพย์ และเก็บเงินปลายทาง
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       12. FOOTER & FUKUPETSTORE CLUB
+  ============================================================= -->
+  <section class="chowa-club-sec">
+    <div class="chowa-club-inner">
+      <h3 class="club-title">เข้าร่วม Fukupetstore Club</h3>
+      <p class="club-desc">รับส่วนลดพิเศษ 10% สำหรับการสั่งซื้อครั้งแรก พร้อมสาระความรู้เรื่องการนอนหลับ</p>
+      <form class="club-form" onsubmit="event.preventDefault(); Swal.fire({ icon: 'success', title: 'สมัครสมาชิกสำเร็จ', text: 'ขอบคุณที่สมัครสมาชิก Fukupetstore Club! เราได้ส่งโค้ดส่วนลดไปยังอีเมลของคุณแล้ว', confirmButtonText: 'ตกลง' });">
+        <input type="email" class="club-input" placeholder="กรอกอีเมลของคุณ..." required>
+        <button type="submit" class="club-btn">รับส่วนลด</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <img src="https://www.chowa.in.th/cdn/shop/files/Chowa_logo_CMYK_Logo_Blue_croped.png?v=1781661303&width=400" alt="Fukupetstore Logo">
+          <p>Fukupetstore แบรนด์นวัตกรรมการนอนเพื่อสุขภาพชั้นนำ มุ่งมั่นพัฒนาหมอน ท็อปเปอร์ และเครื่องนอนที่ตอบโจทย์หลักสรีรศาสตร์ เพื่อยกระดับคุณภาพการนอนและชีวิตที่ดีขึ้นในทุกๆ วัน</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>สินค้าของเรา</h4>
+          <ul>
+            <li><a href="#product">หมอนโคซี่ (Cozy Pillow)</a></li>
+            <li><a href="#product">หมอนลูน่า (Luna Pillow)</a></li>
+            <li><a href="#product">หมอน NeckFit</a></li>
+            <li><a href="#product">ท็อปเปอร์ยางพาราไฮบริด</a></li>
+            <li><a href="#product">ปลอกหมอน Tencel Lyocell</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>การบริการและช่วยเหลือ</h4>
+          <ul>
+            <li><a href="#faq">คำถามที่พบบ่อย</a></li>
+            <li><a href="#product">นโยบายทดลองนอน 7 วัน</a></li>
+            <li><a href="#product">การรับประกันสินค้า</a></li>
+            <li><a href="#product">ตรวจสอบสถานะพัสดุ</a></li>
+            <li><a href="#product">นโยบายความเป็นส่วนตัว</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>ติดต่อเรา</h4>
+          <ul>
+            <li><a href="#">LINE: @fukupetstore</a></li>
+            <li><a href="#">Facebook: Fukupetstore</a></li>
+            <li><a href="#">Instagram: @fukupetstore</a></li>
+            <li><a href="#">TikTok: @fukupetstore</a></li>
+            <li><a href="#">โทร: 02-XXX-XXXX (09:00 - 18:00)</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 Fukupetstore Copyright. All rights reserved.</div>
+        <div>การชำระเงินที่ปลอดภัย: Visa, Mastercard, PromptPay, ShopeePay, TrueMoney, เก็บเงินปลายทาง (COD)</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =============================================================
+       JAVASCRIPT: INTERACTION & LOGIC
+  ============================================================= -->
+  <script>
+    // State management
+    const state = {
+      selectedSize: 'standard', // 'standard' or 'king'
+      basePrices: {
+        standard: { price: 2690, compare: 4400, name: 'มาตรฐาน (Standard)' },
+        king: { price: 2990, compare: 4890, name: 'ใหญ่พิเศษ (King)' }
+      },
+      selectedBundle: 1, // 1, 2, or 4 (3+1)
+      upsellAdded: false,
+      upsellPrice: 790,
+      quantity: 1
+    };
+
+    // DOM Elements
+    const displayPrice = document.getElementById('displayPrice');
+    const displayCompare = document.getElementById('displayCompare');
+    const displaySave = document.getElementById('displaySave');
+    const sizeOptions = document.querySelectorAll('.size-option');
+    const dealCards = document.querySelectorAll('.deal-card');
+    const upsellBox = document.getElementById('upsellBox');
+    const upsellCheck = document.getElementById('upsellCheck');
+    const qtyVal = document.getElementById('qtyVal');
+    const qtyMinus = document.getElementById('qtyMinus');
+    const qtyPlus = document.getElementById('qtyPlus');
+    const buyNowBtn = document.getElementById('buyNowBtn');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const stickyBar = document.getElementById('stickyBar');
+    const stickyPriceText = document.getElementById('stickyPriceText');
+    const stickyBuyBtn = document.getElementById('stickyBuyBtn');
+
+    // Cart Elements
+    const cartOverlay = document.getElementById('cartOverlay');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const openCartBtn = document.getElementById('openCartBtn');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartItemsList = document.getElementById('cartItemsList');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartCount = document.getElementById('cartCount');
+
+    // Gallery Elements
+    const mainGalleryImg = document.getElementById('mainGalleryImg');
+    const galleryThumbs = document.querySelectorAll('.gallery-thumb');
+    const prevSlideBtn = document.getElementById('prevSlideBtn');
+    const nextSlideBtn = document.getElementById('nextSlideBtn');
+    let currentSlideIndex = 0;
+
+    // Hotspot Elements
+    const hotspotPins = document.querySelectorAll('.hotspot-pin');
+    const hotspotCards = document.querySelectorAll('.hotspot-card');
+
+    // Accordions (Product & FAQ)
+    document.querySelectorAll('.acc-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.acc-item');
+        item.classList.toggle('open');
+      });
+    });
+
+    document.querySelectorAll('.faq-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.faq-item');
+        item.classList.toggle('open');
+      });
+    });
+
+    // 1. Price & Bundle Calculation
+    function calculateTotal() {
+      const base = state.basePrices[state.selectedSize];
+      let unitPrice = base.price;
+      let total = 0;
+      let compareTotal = 0;
+
+      if (state.selectedBundle === 1) {
+        total = unitPrice * state.quantity;
+        compareTotal = base.compare * state.quantity;
+      } else if (state.selectedBundle === 2) {
+        // 10% OFF on 2 items
+        const raw = unitPrice * 2;
+        total = Math.round(raw * 0.9) * state.quantity;
+        compareTotal = (base.compare * 2) * state.quantity;
+      } else if (state.selectedBundle === 4) {
+        // Buy 3 Get 1 Free = Pay for 3, get 4
+        total = (unitPrice * 3) * state.quantity;
+        compareTotal = (base.compare * 4) * state.quantity;
+      }
+
+      if (state.upsellAdded) {
+        total += state.upsellPrice * state.quantity;
+        compareTotal += 1290 * state.quantity;
+      }
+
+      const savings = compareTotal - total;
+
+      displayPrice.textContent = `฿${total.toLocaleString()}`;
+      displayCompare.textContent = `฿${compareTotal.toLocaleString()}`;
+      displaySave.textContent = `ประหยัด ฿${savings.toLocaleString()}`;
+      stickyPriceText.innerHTML = `฿${total.toLocaleString()} <span style="font-size: 12px; color: #888; text-decoration: line-through;">฿${compareTotal.toLocaleString()}</span>`;
+
+      // Update bundle cards text
+      document.getElementById('bundlePrice1').textContent = `฿${base.price.toLocaleString()}`;
+      const b2Price = Math.round(base.price * 2 * 0.9);
+      document.getElementById('bundlePrice2').textContent = `฿${b2Price.toLocaleString()}`;
+      document.getElementById('bundleSave2').textContent = `ประหยัดเพิ่ม ฿${(base.price * 2 - b2Price).toLocaleString()}`;
+      const b3Price = base.price * 3;
+      document.getElementById('bundlePrice3').textContent = `฿${b3Price.toLocaleString()}`;
+
+      updateCartView(total);
+    }
+
+    // 2. Size Selector Interaction
+    sizeOptions.forEach(opt => {
+      opt.addEventListener('click', () => {
+        sizeOptions.forEach(s => s.classList.remove('active'));
+        opt.classList.add('active');
+        state.selectedSize = opt.getAttribute('data-size');
+        calculateTotal();
+      });
+    });
+
+    // 3. Deal / Bundle Interaction
+    dealCards.forEach(card => {
+      card.addEventListener('click', () => {
+        dealCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        state.selectedBundle = parseInt(card.getAttribute('data-bundle'));
+        calculateTotal();
+      });
+    });
+
+    // 4. Upsell Checkbox Interaction
+    upsellBox.addEventListener('click', (e) => {
+      if (e.target !== upsellCheck) {
+        upsellCheck.checked = !upsellCheck.checked;
+      }
+      state.upsellAdded = upsellCheck.checked;
+      upsellBox.classList.toggle('active', state.upsellAdded);
+      calculateTotal();
+    });
+
+    // 5. Quantity Stepper
+    qtyMinus.addEventListener('click', () => {
+      if (state.quantity > 1) {
+        state.quantity--;
+        qtyVal.textContent = state.quantity;
+        calculateTotal();
+      }
+    });
+
+    qtyPlus.addEventListener('click', () => {
+      state.quantity++;
+      qtyVal.textContent = state.quantity;
+      calculateTotal();
+    });
+
+    // 6. Gallery Thumbnails & Arrows
+    function setSlide(index) {
+      if (index < 0) index = galleryThumbs.length - 1;
+      if (index >= galleryThumbs.length) index = 0;
+      currentSlideIndex = index;
+
+      galleryThumbs.forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === currentSlideIndex);
+      });
+
+      const newSrc = galleryThumbs[currentSlideIndex].getAttribute('data-src');
+      mainGalleryImg.style.opacity = 0;
+      setTimeout(() => {
+        mainGalleryImg.src = newSrc;
+        mainGalleryImg.style.opacity = 1;
+      }, 150);
+
+      galleryThumbs[currentSlideIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    galleryThumbs.forEach((thumb, index) => {
+      thumb.addEventListener('click', () => setSlide(index));
+    });
+
+    prevSlideBtn.addEventListener('click', () => setSlide(currentSlideIndex - 1));
+    nextSlideBtn.addEventListener('click', () => setSlide(currentSlideIndex + 1));
+
+    // 7. Hotspots & 3D Interactive Anatomy
+    function activateHotspot(id) {
+      hotspotPins.forEach(pin => {
+        pin.classList.toggle('active', pin.getAttribute('data-id') === id);
+      });
+      hotspotCards.forEach(card => {
+        const isOpen = card.getAttribute('data-id') === id;
+        card.classList.toggle('open', isOpen);
+        if (isOpen) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+
+    hotspotPins.forEach(pin => {
+      pin.addEventListener('click', () => activateHotspot(pin.getAttribute('data-id')));
+    });
+
+    hotspotCards.forEach(card => {
+      const header = card.querySelector('.hotspot-card-header');
+      header.addEventListener('click', () => {
+        const id = card.getAttribute('data-id');
+        activateHotspot(id);
+      });
+    });
+
+    // 8. Sticky CTA Bar on Scroll
+    window.addEventListener('scroll', () => {
+      const hero = document.getElementById('product');
+      const rect = hero.getBoundingClientRect();
+      if (rect.bottom < 150) {
+        stickyBar.classList.add('visible');
+      } else {
+        stickyBar.classList.remove('visible');
+      }
+    });
+
+    stickyBuyBtn.addEventListener('click', () => {
+      openCart();
+    });
+
+    buyNowBtn.addEventListener('click', () => {
+      openCart();
+    });
+
+    addToCartBtn.addEventListener('click', () => {
+      openCart();
+    });
+
+    // 9. Cart Drawer Logic
+    function openCart() {
+      cartOverlay.classList.add('open');
+      cartDrawer.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCart() {
+      cartOverlay.classList.remove('open');
+      cartDrawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    openCartBtn.addEventListener('click', openCart);
+    closeCartBtn.addEventListener('click', closeCart);
+    cartOverlay.addEventListener('click', closeCart);
+
+    function updateCartView(total) {
+      const base = state.basePrices[state.selectedSize];
+      let bundleDesc = '1 ใบ';
+      if (state.selectedBundle === 2) bundleDesc = 'เซ็ต 2 ใบ (Best Seller 10% OFF)';
+      if (state.selectedBundle === 4) bundleDesc = 'ซื้อ 3 แถม 1 (รวม 4 ใบ)';
+
+      let itemsHtml = `
+        <div class="cart-item">
+          <img class="cart-item-img" src="https://www.chowa.in.th/cdn/shop/files/product-699926_400x.png?v=1738616200" alt="หมอนโคซี่">
+          <div class="cart-item-info">
+            <div class="cart-item-title">หมอนโคซี่ Fukupetstore</div>
+            <div class="cart-item-variant">ขนาด: ${base.name} | ${bundleDesc} (x${state.quantity})</div>
+            <div class="cart-item-price">฿${(total - (state.upsellAdded ? state.upsellPrice * state.quantity : 0)).toLocaleString()}</div>
+          </div>
+        </div>
+      `;
+
+      if (state.upsellAdded) {
+        itemsHtml += `
+          <div class="cart-item">
+            <img class="cart-item-img" src="https://www.chowa.in.th/cdn/shop/files/tencel-lyocell-631776.png?height=200&v=1738616201" alt="ปลอกหมอน">
+            <div class="cart-item-info">
+              <div class="cart-item-title">ปลอกหมอน Tencel Lyocell</div>
+              <div class="cart-item-variant">ขนาดเข้าชุด | สีเทา Elegant Grey (x${state.quantity})</div>
+              <div class="cart-item-price">฿${(state.upsellPrice * state.quantity).toLocaleString()}</div>
+            </div>
+            <span class="cart-item-remove" onclick="removeUpsell()">ลบ</span>
+          </div>
+        `;
+      }
+
+      cartItemsList.innerHTML = itemsHtml;
+      cartTotal.textContent = `฿${total.toLocaleString()}`;
+      cartCount.textContent = (state.upsellAdded ? 2 : 1) * state.quantity;
+    }
+
+    window.removeUpsell = function() {
+      upsellCheck.checked = false;
+      state.upsellAdded = false;
+      upsellBox.classList.remove('active');
+      calculateTotal();
+    };
+
+    // 10. Countdown Timer
+    let secondsRemaining = 8 * 3600 + 42 * 60 + 15;
+    setInterval(() => {
+      secondsRemaining--;
+      if (secondsRemaining <= 0) secondsRemaining = 12 * 3600;
+      const h = String(Math.floor(secondsRemaining / 3600)).padStart(2, '0');
+      const m = String(Math.floor((secondsRemaining % 3600) / 60)).padStart(2, '0');
+      const s = String(secondsRemaining % 60).padStart(2, '0');
+      document.getElementById('topTimer').textContent = `${h}:${m}:${s}`;
+    }, 1000);
+
+    // Initial calculation
+    calculateTotal();
+  </script>
+</body>
+</html>

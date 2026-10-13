@@ -1,0 +1,16 @@
+{
+  "name": "cmfacc-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create cmfacc_db",
+    "db:migrate": "wrangler d1 execute cmfacc_db --file=../schema.sql",
+    "db:migrate:local": "wrangler d1 execute cmfacc_db --local --file=../schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^3.80.0",
+    "typescript": "^5.5.0"
+  }
+}

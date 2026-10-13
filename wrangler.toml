@@ -1,0 +1,25 @@
+name = "cmfacc-api"
+main = "worker/src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# --- D1 ---
+[[d1_databases]]
+binding = "DB"
+database_name = "cmfacc_db"
+database_id = "186a6fa7-1e1c-434f-8d7b-1a43a7d96c02"
+
+# --- R2 (เก็บไฟล์อัปโหลด) --- ปิดชั่วคราวถ้ายังไม่ได้เปิด R2 ใน Dashboard
+# หากเปิด R2 แล้วให้ uncomment 3 บรรทัดนี้แล้ว deploy ใหม่
+# [[r2_buckets]]
+# binding = "UPLOADS"
+# bucket_name = "cmfacc-uploads"
+
+# --- Vars ---
+[vars]
+ENV = "production"
+MAX_UPLOAD_MB = "20"
+ALLOWED_ORIGINS = "*"
+
+# หาก deploy แยก worker กับ Pages Functions ให้ใช้ route
+# routes = [{ pattern = "api.cmfrozen.example/*", zone_name = "example.com" }]

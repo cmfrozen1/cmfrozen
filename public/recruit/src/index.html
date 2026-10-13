@@ -1,0 +1,2669 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    :root{--navy:#17365d;--blue:#1f4e78;--light:#eef5fb;--line:#d9e2f3;--red:#c62828;--green:#2e7d32;--text:#1f2937}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,"Noto Sans Thai",sans-serif;background:#f5f7fb;color:var(--text)}
+    .wrap{max-width:1400px;margin:auto;padding:20px}
+    h1{margin:0 0 6px;font-size:26px;color:var(--navy)}
+    .sub{color:#64748b;margin-bottom:18px}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .card .label{font-size:13px;color:#64748b}.card .num{font-size:30px;font-weight:700;margin-top:5px}
+
+    /* ===== สรุปด่วนรายแผนก แบบย่อ ===== */
+    .dept-summary-wrap{margin:4px 0 18px}
+    .dept-summary-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+    .dept-summary-title{font-size:14px;font-weight:800;color:#334155}
+    .dept-summary-note{font-size:11px;color:#94a3b8}
+    .dept-mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:9px}
+    .dept-mini-card{background:#1e293b;border:1px solid #3b4b63;border-radius:12px;padding:11px 12px;color:#e2e8f0;box-shadow:0 2px 7px rgba(15,23,42,.13);min-width:0}
+    .dept-mini-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+    .dept-mini-icon{width:32px;height:32px;border-radius:8px;background:#173c5a;display:flex;align-items:center;justify-content:center;font-size:17px;flex:0 0 32px}
+    .dept-mini-code{font-size:15px;font-weight:800;color:#38bdf8;line-height:1.1}
+    .dept-mini-name{font-size:9px;color:#94a3b8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+    .dept-stat-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;margin-top:5px}
+    .dept-stat-label{color:#cbd5e1;white-space:nowrap}
+    .dept-stat-value{font-weight:800;color:#f8fafc}
+    .dept-sub{font-size:10px;color:#94a3b8;margin-top:2px}
+    .dept-target{color:#f8fafc}
+    .dept-hired{color:#2dd4bf}
+    .dept-balance{color:#fb923c}
+    .dept-complete{color:#4ade80}
+    .dept-progress{height:7px;background:#334155;border-radius:999px;overflow:hidden;margin-top:9px}
+    .dept-progress-bar{height:100%;background:linear-gradient(90deg,#38bdf8,#2dd4bf);border-radius:999px;transition:width .35s ease}
+    .danger{color:var(--red)} .success{color:var(--green)}
+    .panel{background:#fff;border:1px solid #e5e7eb;border-radius:14px;margin-bottom:16px;overflow:hidden}
+    .panel-title{background:var(--navy);color:#fff;padding:12px 16px;font-weight:700}
+    .panel-title.hire-title{background:#2e7d32}
+    .section-help{font-size:12px;color:#64748b;margin:-2px 0 14px;line-height:1.6}
+    .request-info{padding:9px 11px;border-radius:8px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:12px;color:#166534;min-height:38px}
+    .panel-body{padding:16px}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(180px,1fr));gap:12px}
+    label{font-size:12px;font-weight:700;color:#475569;display:block;margin-bottom:5px}
+    input,select,textarea{width:100%;padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-size:14px}
+    .date-input.invalid-date{border-color:#dc2626;background:#fff7f7;box-shadow:0 0 0 2px rgba(220,38,38,.08)}
+    textarea{min-height:70px;resize:vertical}
+    .span2{grid-column:span 2}.span4{grid-column:1/-1}
+    .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+    button{border:0;border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:700}
+    button:disabled{cursor:not-allowed;opacity:.75}
+    .btn-spinner{display:inline-block;width:14px;height:14px;margin-right:6px;vertical-align:-2px;border-radius:50%;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;animation:loadSpin .7s linear infinite}
+    .primary{background:var(--blue);color:#fff}.secondary{background:#e2e8f0;color:#334155}.red{background:#fee2e2;color:#b91c1c}
+    .tiny{padding:6px 9px;font-size:12px}
+    .panel-title-action{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .print-summary-btn{background:#fff;color:var(--navy);padding:6px 11px;border-radius:7px;font-size:12px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+    .print-summary-btn:hover{background:#f8fafc}
+    .vacancy-preview{font-weight:700;padding:9px 12px;border-radius:8px;background:#f8fafc}
+    .filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+    .filters select,.filters input{width:auto;min-width:180px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:var(--blue);color:#fff;text-align:left;padding:9px;border:1px solid #dbe4ef;position:sticky;top:0}
+    td{padding:8px;border:1px solid #e5e7eb;vertical-align:top}
+    tbody tr:nth-child(even){background:#f8fafc}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}
+    .badge-red{background:#fee2e2;color:#b91c1c}.badge-green{background:#dcfce7;color:#166534}.badge-gray{background:#e2e8f0;color:#475569}
+    .scroll{overflow:auto;max-height:520px}
+    details{margin-top:12px;border-top:1px solid #e5e7eb;padding-top:10px}
+    summary{cursor:pointer;font-weight:700;color:var(--blue)}
+    
+    /* Hide edit/delete columns by default */
+    .col-action { display: none; }
+    body.logged-in .col-action { display: table-cell; }
+
+    /* ===== Loading Overlay ===== */
+    #loadOverlay{
+      position:fixed;inset:0;z-index:99999;
+      display:none;align-items:center;justify-content:center;
+      background:rgba(15,23,42,.58);backdrop-filter:blur(3px);
+    }
+    #loadOverlay.show{display:flex}
+    .load-overlay-box{
+      min-width:230px;max-width:88vw;background:#fff;border-radius:16px;
+      padding:22px 24px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.22);
+    }
+    .load-spinner{
+      width:42px;height:42px;margin:0 auto 12px;border-radius:50%;
+      border:4px solid #dbeafe;border-top-color:var(--blue);
+      animation:loadSpin .8s linear infinite;
+    }
+    .load-overlay-title{font-size:15px;font-weight:800;color:var(--navy)}
+    .load-overlay-text{font-size:12px;color:#64748b;margin-top:5px}
+    @keyframes loadSpin{to{transform:rotate(360deg)}}
+    .realtime-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .realtime-status{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:#64748b;background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:5px 8px;white-space:nowrap}
+    .realtime-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.12)}
+    .realtime-dot.checking{background:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.12)}
+    .realtime-dot.error{background:#ef4444;box-shadow:0 0 0 2px rgba(239,68,68,.12)}
+    @media(max-width:900px){.cards,.grid{grid-template-columns:1fr 1fr}.span4{grid-column:1/-1}.dept-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.cards,.grid{grid-template-columns:1fr}.span2,.span4{grid-column:auto}.dept-mini-grid{grid-template-columns:1fr 1fr}.dept-mini-card{padding:10px}.dept-mini-name{max-width:95px}}
+    @media(max-width:420px){.dept-mini-grid{grid-template-columns:1fr}}
+
+    /* ===== Tabs ===== */
+    .tab-wrap{background:#fff;border:1px solid #e5e7eb;border-radius:14px;margin-bottom:16px;overflow:hidden}
+    .tab-header{display:flex;border-bottom:2px solid #e5e7eb;background:#f8fafc}
+    .tab-btn{flex:1;padding:12px 16px;border:0;background:transparent;cursor:pointer;font-size:14px;font-weight:700;color:#64748b;text-align:center;position:relative;transition:color .2s,background .2s}
+    .tab-btn:hover{background:#eef2f7;color:#1f4e78}
+    .tab-btn.active{color:#1f4e78;background:#fff}
+    .tab-btn.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;background:#1f4e78;border-radius:3px 3px 0 0}
+    .tab-btn.hire-tab.active::after{background:#2e7d32}
+    .tab-btn.hire-tab.active{color:#2e7d32}
+    .tab-btn .tab-icon{margin-right:6px}
+    .tab-body{display:none;padding:16px}
+    .tab-body.active{display:block}
+
+    /* ===== Searchable Select (2026) ===== */
+    .searchable-wrap{position:relative}
+    .searchable-input{
+      width:100%;padding:9px 34px 9px 10px;
+      border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-size:13px;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3-3'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 10px center;
+      transition:border-color .15s, box-shadow .15s;
+    }
+    .searchable-input:focus{outline:none;border-color:#6366F1;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+    .searchable-input.has-value{background-image:none}
+    .searchable-dropdown{
+      position:absolute;left:0;right:0;top:calc(100% + 4px);
+      max-height:220px;overflow:auto;
+      background:#fff;border:1px solid #e2e8f0;border-radius:10px;
+      box-shadow:0 8px 24px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06);
+      z-index:40;display:none;
+    }
+    .searchable-dropdown.show{display:block}
+    .searchable-option{padding:8px 10px;cursor:pointer;font-size:13px;color:#0f172a;line-height:1.4}
+    .searchable-option:hover{background:#f1f5f9}
+    .searchable-option.active{background:#eef2ff;color:#3730a3}
+    .searchable-option.no-result{color:#94a3b8;cursor:default}
+    .searchable-option small{color:#64748b;font-size:11px;margin-left:6px}
+    .searchable-clear{
+      position:absolute;right:28px;top:50%;transform:translateY(-50%);
+      width:18px;height:18px;border-radius:99px;border:0;background:#f1f5f9;color:#64748b;
+      display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer;line-height:1;
+    }
+    .searchable-clear.show{display:flex}
+    .searchable-clear:hover{background:#e2e8f0}
+
+    /* ===== Login Screen ===== */
+    #loginScreen{
+      position:fixed;inset:0;z-index:99998;
+      background:rgba(15,23,42,0.7);backdrop-filter:blur(5px);
+      display:flex;align-items:center;justify-content:center;
+    }
+    #loginScreen.hidden{display:none}
+    .login-hint{margin-top:14px;padding-top:12px;border-top:1px dashed #e2e8f0;font-size:11px;color:#94a3b8;text-align:center;line-height:1.6}
+    .login-box{
+      background:#fff;border-radius:20px;padding:40px 36px;
+      width:100%;max-width:420px;box-shadow:0 30px 80px rgba(0,0,0,.35);
+      text-align:center;position:relative;
+    }
+    .login-close{
+      position:absolute;top:16px;right:16px;
+      background:transparent;border:0;font-size:24px;cursor:pointer;color:#94a3b8;
+    }
+    .login-close:hover{color:#475569;}
+    .login-logo{font-size:48px;margin-bottom:12px}
+    .login-title{font-size:22px;font-weight:800;color:#17365d;margin-bottom:4px}
+    .login-sub{font-size:13px;color:#64748b;margin-bottom:28px}
+    .login-field{margin-bottom:16px;text-align:left}
+    .login-field label{font-size:12px;font-weight:700;color:#475569;display:block;margin-bottom:6px}
+    .login-field input{
+      width:100%;padding:12px 14px;border:1.5px solid #cbd5e1;
+      border-radius:10px;font-size:14px;transition:border-color .15s,box-shadow .15s;
+    }
+    .login-field input:focus{outline:none;border-color:#1f4e78;box-shadow:0 0 0 3px rgba(31,78,120,.12)}
+    .login-btn{
+      width:100%;padding:13px;background:linear-gradient(135deg,#17365d,#1f4e78);
+      color:#fff;border:0;border-radius:10px;font-size:15px;font-weight:700;
+      cursor:pointer;margin-top:4px;transition:opacity .15s;
+    }
+    .login-btn:hover{opacity:.9}
+    .login-btn:disabled{opacity:.6;cursor:not-allowed}
+    .login-error{background:#fee2e2;color:#b91c1c;padding:10px 12px;border-radius:8px;font-size:13px;margin-top:12px;display:none}
+    .login-error.show{display:block}
+
+    /* ===== Manage Data Toggle Button ===== */
+    .manage-data-bar{
+      display:flex;align-items:center;justify-content:space-between;
+      background:#fff;border:1px solid #e5e7eb;border-radius:12px;
+      padding:12px 16px;margin-bottom:14px;gap:12px;
+    }
+    .manage-data-info{font-size:13px;color:#475569}
+    .manage-data-info strong{color:#17365d}
+    .btn-manage-data{
+      background:linear-gradient(135deg,#17365d,#1f4e78);color:#fff;
+      border:0;border-radius:8px;padding:9px 16px;font-size:13px;
+      font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;
+      white-space:nowrap;transition:opacity .15s;
+    }
+    .btn-manage-data:hover{opacity:.88}
+    .btn-manage-data.active{background:linear-gradient(135deg,#2e7d32,#1b5e20)}
+    .btn-logout{
+      background:#fee2e2;color:#b91c1c;border:0;border-radius:8px;
+      padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;
+      white-space:nowrap;transition:opacity .15s;
+    }
+    .btn-logout:hover{opacity:.85}
+  </style>
+</head>
+<body>
+<!-- ===== Login Screen ===== -->
+<div id="loginScreen" class="hidden">
+  <div class="login-box">
+    <button class="login-close" onclick="closeLogin()">&times;</button>
+    <div class="login-logo">🏭</div>
+    <div class="login-title">CM Frozen</div>
+    <div class="login-sub">ระบบสรรหาพนักงานตามตำแหน่ง<br>กรุณาเข้าสู่ระบบก่อนใช้งาน</div>
+    <div class="login-field">
+      <label for="loginUsername">Username</label>
+      <input type="text" id="loginUsername" placeholder="กรอก Username" autocomplete="username" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div class="login-field">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="กรอก Password" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">🔒 ระบบจะจำการเข้าสู่ระบบไว้ในเครื่องนี้<br>ตราบใดที่คุณยังไม่กด “ออกจากระบบ”</div>
+  </div>
+</div>
+
+<!-- Loading Overlay: แสดงระหว่างติดต่อ Google Sheet -->
+<div id="loadOverlay" role="status" aria-live="polite" aria-hidden="true">
+  <div class="load-overlay-box">
+    <div class="load-spinner"></div>
+    <div id="loadOverlayTitle" class="load-overlay-title">กำลังโหลดข้อมูล...</div>
+    <div id="loadOverlayText" class="load-overlay-text">กรุณารอสักครู่</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <h1>สรุปการรับพนักงานตามตำแหน่ง</h1>
+  <div class="sub">แยกคีย์ 2 ส่วน: ① เป้าหมาย/ใบคำขอ ② รับแล้ว/วันเข้างาน — ระบบยังสรุปจำนวนขาดและระยะเวลาสรรหาให้อัตโนมัติ</div>
+
+  <!-- แถบจัดการข้อมูล -->
+  <div class="manage-data-bar">
+    <div class="manage-data-info">
+      สวัสดี, <strong id="currentUserLabel">-</strong> &nbsp;|&nbsp; ระบบสรรหาพนักงาน CM Frozen
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn-manage-data" id="btnManageData" onclick="toggleManageData()">
+        ✏️ จัดการข้อมูล
+      </button>
+      <button type="button" class="btn-logout" id="btnLogout" style="display:none" onclick="doLogout()">🚪 ออกจากระบบ</button>
+    </div>
+  </div>
+
+<div class="cards">
+    <div class="card"><div class="label">เป้าหมายรวม</div><div id="kTarget" class="num">0</div></div>
+    <div class="card"><div class="label">รับแล้วรวม</div><div id="kHired" class="num success">0</div></div>
+    <div class="card"><div class="label">ยังขาดรวม</div><div id="kVacancy" class="num danger">0</div></div>
+    <div class="card"><div class="label">ตำแหน่งที่ครบ</div><div id="kComplete" class="num success">0</div></div>
+  </div>
+
+  <!-- สรุปด่วนทุกแผนก -->
+  <div class="dept-summary-wrap">
+    <div class="dept-summary-head">
+      <div class="dept-summary-title">สรุปด่วนรายแผนก</div>
+      <div class="realtime-tools">
+        <span id="realtimeStatus" class="realtime-status"><span id="realtimeDot" class="realtime-dot"></span><span id="realtimeText">อัปเดตอัตโนมัติทุก 10 วินาที</span></span>
+        <button class="secondary tiny" type="button" onclick="manualRefresh()">↻ รีเฟรช</button>
+      </div>
+    </div>
+    <div id="departmentMiniCards" class="dept-mini-grid"></div>
+  </div>
+
+  <!-- Tabs: คีย์เป้าหมาย / คีย์รับแล้ว -->
+  <div class="tab-wrap" id="inputTabs" style="display:none">
+    <div class="tab-header">
+      <button type="button" class="tab-btn active" onclick="switchTab('target')"><span class="tab-icon">📋</span>คีย์เป้าหมาย / ใบคำขอ</button>
+      <button type="button" class="tab-btn hire-tab" onclick="switchTab('hire')"><span class="tab-icon">👥</span>คีย์รับแล้ว / วันเข้างาน</button>
+    </div>
+
+    <!-- Tab 1: คีย์เป้าหมาย / ใบคำขอ -->
+    <div class="tab-body active" id="tab-target">
+      <div class="section-help">ส่วนนี้ใช้กรอก <b>เป้าหมายชาย/หญิง + วันที่เขียนคำขอ + วันที่ได้รับคำขอ</b> เท่านั้น ยังไม่ต้องกรอกข้อมูลคนที่รับแล้ว</div>
+      <div class="grid">
+        <div>
+          <label>แผนก *</label>
+          <select id="targetDept" onchange="refreshTargetPositionOptions()"></select>
+        </div>
+        <div>
+          <label>ตำแหน่งงาน *</label>
+          <div style="display:flex;gap:6px">
+            <select id="targetPosition" style="flex:1"></select>
+            <button class="secondary tiny" type="button" onclick="addNewPosition('target')">+ เพิ่ม</button>
+          </div>
+        </div>
+        <div>
+          <label>เป้าหมายรวม (คน)</label>
+          <input id="targetTotal" type="number" min="0" value="0" readonly style="background:#f1f5f9;font-weight:700">
+        </div>
+        <div>
+          <label>วันที่บันทึก</label>
+          <input id="targetDate" type="text" class="date-input" inputmode="numeric" maxlength="10" placeholder="dd/mm/yyyy" autocomplete="off">
+        </div>
+
+        <div>
+          <label>เป้าหมายชาย</label>
+          <input id="targetMale" type="number" min="0" oninput="calculateTargetTotal()">
+        </div>
+        <div>
+          <label>เป้าหมายหญิง</label>
+          <input id="targetFemale" type="number" min="0" oninput="calculateTargetTotal()">
+        </div>
+        <div style="display:flex;align-items:center;padding-top:25px;">
+          <label style="margin:0;display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input id="targetUnspecified" type="checkbox" style="width:auto;" onchange="toggleTargetGenderInputs()"> ไม่ระบุเพศ
+          </label>
+        </div>
+        <div>
+          <label>วันที่เขียนคำขอ</label>
+          <input id="requestWrittenDate" type="text" class="date-input" inputmode="numeric" maxlength="10" placeholder="dd/mm/yyyy" autocomplete="off">
+        </div>
+        <div>
+          <label>วันที่ได้รับคำขอ</label>
+          <input id="requestReceivedDate" type="text" class="date-input" inputmode="numeric" maxlength="10" placeholder="dd/mm/yyyy" autocomplete="off">
+        </div>
+
+        <div class="span2">
+          <label>หมายเหตุ</label>
+          <input id="targetNote" type="text" placeholder="เช่น เร่งด่วน / รออนุมัติ">
+        </div>
+        <div class="span2">
+          <label>หมายเหตุใบคำขอ</label>
+          <input id="targetRequestNote" type="text" placeholder="รายละเอียดเพิ่มเติมของใบคำขอ">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="saveTargetBtn" class="primary" onclick="saveTargetRecord()">บันทึกเป้าหมาย</button>
+        <button class="secondary" onclick="resetTargetForm()">ล้างฟอร์ม</button>
+      </div>
+    </div>
+
+    <!-- Tab 2: คีย์รับแล้ว / วันเข้างาน -->
+    <div class="tab-body" id="tab-hire">
+      <div class="section-help">เลือกแผนกและตำแหน่ง แล้วเลือก <b>รอบคำขอ</b> ที่ต้องการรับคนเข้า ระบบจะดึง “วันที่ได้รับคำขอ” มาใช้คำนวณ <b>ระยะเวลาสรรหา</b> อัตโนมัติ</div>
+      <div class="grid">
+        <div>
+          <label>แผนก *</label>
+          <select id="hireDept" onchange="refreshHirePositionOptions()"></select>
+        </div>
+        <div>
+          <label>ตำแหน่งงาน *</label>
+          <select id="hirePosition" onchange="refreshRequestOptions()"></select>
+        </div>
+        <div class="span2">
+          <label>รอบคำขอ / วันที่ได้รับคำขอ *</label>
+          <select id="requestRef" onchange="onRequestSelected()"></select>
+        </div>
+
+        <div class="span4">
+          <div id="requestInfo" class="request-info">เลือกแผนกและตำแหน่งก่อน เพื่อเลือกรอบคำขอที่ยังรับไม่ครบ</div>
+        </div>
+
+        <div>
+          <label>รับแล้วรวม (คน)</label>
+          <input id="hiredTotal" type="number" min="0" value="0" readonly style="background:#f1f5f9;font-weight:700">
+        </div>
+        <div>
+          <label>รับแล้วชาย</label>
+          <input id="hireMale" type="number" min="0" oninput="calculateHiredTotal()">
+        </div>
+        <div>
+          <label>รับแล้วหญิง</label>
+          <input id="hireFemale" type="number" min="0" oninput="calculateHiredTotal()">
+        </div>
+        <div style="display:flex;align-items:center;padding-top:25px;">
+          <label style="margin:0;display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input id="hireUnspecified" type="checkbox" style="width:auto;" onchange="toggleHireGenderInputs()"> ไม่ระบุเพศ
+          </label>
+        </div>
+        <div>
+          <label>ใช้เวลาสรรหา</label>
+          <div id="recruitmentDaysPreview" class="vacancy-preview">-</div>
+        </div>
+
+        <div>
+          <label>กำหนดเข้างาน</label>
+          <input id="hireScheduledStart" type="text" class="date-input" inputmode="numeric" maxlength="10" placeholder="dd/mm/yyyy" autocomplete="off">
+        </div>
+        <div>
+          <label>เข้างานจริง</label>
+          <input id="hireActualStart" type="text" class="date-input" inputmode="numeric" maxlength="10" placeholder="dd/mm/yyyy" autocomplete="off">
+        </div>
+        <div class="span2">
+          <label>หมายเหตุการรับเข้า</label>
+          <input id="hireNote" type="text" placeholder="เช่น เริ่มงานตามกำหนด / เลื่อนวันเริ่มงาน">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="saveHireBtn" class="primary" style="background:#2e7d32" onclick="saveHireRecord()">บันทึกรับแล้ว</button>
+        <button class="secondary" onclick="resetHireForm()">ล้างฟอร์ม</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title panel-title-action">
+      <span>ตำแหน่งที่ขาด / สรุปตามตำแหน่ง</span>
+      <div>
+        <button type="button" class="print-summary-btn" onclick="showKpiChart()" style="margin-right:6px">📊 กราฟ KPI ประจำเดือน</button>
+        <button type="button" class="print-summary-btn" onclick="printPositionSummary()">🖨️ Print สรุป</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="filters">
+        <select id="vacancyDeptFilter" onchange="onManualVacancyFilter()"><option value="">ทุกแผนก</option></select>
+        <input id="vacancySearch" type="text" placeholder="ค้นหาตำแหน่ง..." oninput="onManualVacancyFilter()">
+        <label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400">
+          <input id="onlyVacancy" type="checkbox" checked onchange="toggleVacancyFilter('onlyVacancy')" style="width:auto"> แสดงเฉพาะตำแหน่งที่ขาด
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;margin-left:12px">
+          <input id="onlyComplete" type="checkbox" onchange="toggleVacancyFilter('onlyComplete')" style="width:auto"> แสดงเฉพาะตำแหน่งที่ครบ
+        </label>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>รหัส</th><th>แผนก</th><th>ตำแหน่งงาน</th><th>เป้าหมาย</th><th>รับแล้ว</th><th class="col-hired-gender">ชาย</th><th class="col-hired-gender">หญิง</th><th class="col-vacancy">ขาด</th><th>ใช้เวลาเฉลี่ย</th><th>สถานะ</th><th class="col-action" style="text-align:center">แก้ไข</th><th class="col-action" style="text-align:center">ลบ</th></tr></thead>
+          <tbody id="vacancyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let master = [];
+let departments = [];
+let openRequests = [];
+let vacancies = [];
+let dataVersion = '';
+let realtimeTimer = null;
+let dashboardLoading = false;
+let pendingReload = false;
+let realtimeTick = 0;
+let allRequests = [];
+let allHires = [];
+let currentUser = '';
+let manageDataOpen = false;
+// editingTargetId / editingHireId ไม่ใช้แล้ว — แก้ไขผ่าน Modal
+const REALTIME_INTERVAL_MS = 10000;
+const MAX_LOAD_RETRY = 2;
+const APP_VERSION = '2.0.38';
+
+// =========================================================
+// LOGIN / LOGOUT
+// =========================================================
+
+// ---- Session: จำการเข้าสู่ระบบไว้ ตราบใดที่ยังไม่กดออกจากระบบ ----
+const SESSION_STORE_KEY = 'recruitment_login_session_v1';
+
+function saveSession_(username, token) {
+  if (!username || !token) return;
+  const payload = JSON.stringify({ u: username, t: token });
+  try { localStorage.setItem(SESSION_STORE_KEY, payload); return; } catch (e) {}
+  try { sessionStorage.setItem(SESSION_STORE_KEY, payload); } catch (e) {}
+}
+
+function readSession_() {
+  let raw = '';
+  try { raw = localStorage.getItem(SESSION_STORE_KEY) || ''; } catch (e) {}
+  if (!raw) { try { raw = sessionStorage.getItem(SESSION_STORE_KEY) || ''; } catch (e) {}
+  }
+  if (!raw) return null;
+  try {
+    const s = JSON.parse(raw);
+    return (s && s.u && s.t) ? s : null;
+  } catch (e) { return null; }
+}
+
+function clearSession_() {
+  try { localStorage.removeItem(SESSION_STORE_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(SESSION_STORE_KEY); } catch (e) {}
+}
+
+// เข้าสู่ระบบแล้ว — ใช้ร่วมกันทั้งตอนกรอก password และตอนระบบจำเซสชันกลับมาอัตโนมัติ
+function enterApp(username, options) {
+  const opts = options || {};
+  currentUser = username;
+  document.getElementById('currentUserLabel').textContent = currentUser;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('btnLogout').style.display = 'inline-block';
+  document.body.classList.add('logged-in');
+  setupDateInputs();
+  initAllSearchable();
+  document.getElementById('targetDate').value = formatDateDisplay(new Date());
+
+  if (opts.openManage) {
+    // เปิดส่วนจัดการข้อมูลให้อัตโนมัติ (ตรงกับพฤติกรรมหลัง login ใหม่)
+    const tabs = document.getElementById('inputTabs');
+    const manageBtn = document.getElementById('btnManageData');
+    manageDataOpen = true;
+    tabs.style.display = '';
+    manageBtn.classList.add('active');
+    manageBtn.innerHTML = '✅ ปิดการจัดการข้อมูล';
+    if (!opts.noScroll) tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ตอนเปิดหน้าเว็บ: ตรวจเซสชันที่จำไว้ ถ้ายังไม่ logout → เข้าใช้งานต่อทันที
+function restoreLoginSession() {
+  if (currentUser) return;
+  const sess = readSession_();
+  if (!sess) return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.success) {
+        if (currentUser) return; // ผู้ใช้ login ก่อนที่เซสชันจะยืนยันกลับมา
+        enterApp(res.username || sess.u, { openManage: true, noScroll: true });
+      } else {
+        clearSession_(); // ถูก logout จากเครื่องอื่น / โทเค่นไม่ถูกต้อง
+      }
+    })
+    .withFailureHandler(function() { /* เงียบ — ยังใช้งานหน้าเว็บแบบผู้ชมได้ตามเดิม */ })
+    .restoreSession(sess.u, sess.t);
+}
+
+function doLogin(){
+  const username = (document.getElementById('loginUsername').value || '').trim();
+  const password = (document.getElementById('loginPassword').value || '').trim();
+  const btn = document.getElementById('loginBtn');
+  const errEl = document.getElementById('loginError');
+
+  if (!username || !password) {
+    errEl.textContent = 'กรุณากรอก Username และ Password';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลังตรวจสอบ...';
+  errEl.classList.remove('show');
+
+  google.script.run
+    .withSuccessHandler(function(res){
+      btn.disabled = false;
+      btn.textContent = 'เข้าสู่ระบบ';
+      if (res && res.success) {
+        // จำการเข้าสู่ระบบไว้ในเครื่องนี้ จนกว่าจะกดออกจากระบบ
+        saveSession_(res.username || username, res.token || '');
+        enterApp(res.username || username, { openManage: true });
+      } else {
+        errEl.textContent = (res && res.message) ? res.message : 'เข้าสู่ระบบไม่สำเร็จ';
+        errEl.classList.add('show');
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginPassword').focus();
+      }
+    })
+    .withFailureHandler(function(err){
+      btn.disabled = false;
+      btn.textContent = 'เข้าสู่ระบบ';
+      errEl.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + (err && err.message ? err.message : String(err));
+      errEl.classList.add('show');
+    })
+    .validateLogin(username, password);
+}
+
+function doLogout(){
+  Swal.fire({
+    title: 'ออกจากระบบ',
+    text: 'ต้องการออกจากระบบใช่หรือไม่?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'ออกจากระบบ',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#c62828'
+  }).then(function(result){
+    if (!result.isConfirmed) return;
+
+    // ล้างเซสชันที่จำไว้ทั้งฝั่งหน้าเว็บและฝั่งเซิร์ฟเวอร์ → เครื่องนี้ต้อง login ใหม่
+    const sess = readSession_();
+    clearSession_();
+    if (sess && sess.u && sess.t) {
+      try { google.script.run.clearSession(sess.u, sess.t); } catch (e) {}
+    }
+
+    currentUser = '';
+    document.getElementById('currentUserLabel').textContent = 'บุคคลทั่วไป';
+    document.getElementById('btnLogout').style.display = 'none';
+    document.body.classList.remove('logged-in');
+    
+    if (manageDataOpen) {
+      const tabs = document.getElementById('inputTabs');
+      const btn = document.getElementById('btnManageData');
+      manageDataOpen = false;
+      tabs.style.display = 'none';
+      btn.classList.remove('active');
+      btn.innerHTML = '✏️ จัดการข้อมูล';
+    }
+    
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').classList.remove('show');
+  });
+}
+
+function toggleManageData(){
+  if (!currentUser) {
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('loginUsername').focus();
+    return;
+  }
+  
+  const tabs = document.getElementById('inputTabs');
+  const btn = document.getElementById('btnManageData');
+  manageDataOpen = !manageDataOpen;
+  if (manageDataOpen) {
+    tabs.style.display = '';
+    btn.classList.add('active');
+    btn.innerHTML = '✅ ปิดการจัดการข้อมูล';
+    tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    tabs.style.display = 'none';
+    btn.classList.remove('active');
+    btn.innerHTML = '✏️ จัดการข้อมูล';
+  }
+}
+
+function closeLogin() {
+  document.getElementById('loginScreen').classList.add('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  const vb = document.getElementById('verBadge');
+  if (vb) vb.textContent = 'v' + APP_VERSION;
+  
+  document.getElementById('currentUserLabel').textContent = 'บุคคลทั่วไป';
+
+  loadAll(true);
+  startRealtimeRefresh();
+  restoreLoginSession(); // เข้าใช้งานต่อจากเซสชันเดิม ถ้ายังไม่ได้ logout
+});
+
+
+// โหลด Dashboard แบบกันคำสั่งซ้อน + retry อัตโนมัติ
+function loadAll(showLoading = true, attempt = 0){
+  if (dashboardLoading) {
+    pendingReload = true;
+    return;
+  }
+
+  dashboardLoading = true;
+  setRealtimeStatus('checking', attempt > 0 ? 'กำลังลองโหลดใหม่...' : 'กำลังอัปเดตรายงาน...');
+  if (showLoading) {
+    showLoadOverlay('กำลังโหลดข้อมูล...', attempt > 0 ? 'Google Sheet ตอบช้า กำลังลองใหม่ครั้งที่ ' + (attempt + 1) : 'กำลังอ่านข้อมูลจาก Google Sheet');
+    // failsafe: ป้องกันค้างกรณี google.script.run ไม่ตอบกลับ
+    setTimeout(function(){
+      if (dashboardLoading && document.getElementById('loadOverlay') && document.getElementById('loadOverlay').classList.contains('show')) {
+        dashboardLoading = false;
+        hideLoadOverlay();
+        setRealtimeStatus('error', 'โหลดช้า — ลองกดรีเฟรชอีกครั้ง');
+      }
+    }, 12000);
+  }
+
+  google.script.run
+    .withSuccessHandler(function(data){
+      dashboardLoading = false;
+      if (showLoading) hideLoadOverlay();
+
+      master = data.master || [];
+      departments = data.departments || [];
+      openRequests = data.openRequests || [];
+      vacancies = data.vacancies || [];
+      allRequests = data.allRequests || [];
+      allHires = data.allHires || [];
+      if (data.dataVersion) dataVersion = String(data.dataVersion);
+
+      fillDepartments();
+      renderKpis(data.summary || {});
+      renderDepartmentMiniCards();
+      renderVacancies();
+      fillEditSelects();
+      setRealtimeStatus('ok', 'อัปเดตแล้ว ' + formatClock(new Date()));
+
+      if (pendingReload) {
+        pendingReload = false;
+        setTimeout(function(){ loadAll(false); }, 150);
+      }
+    })
+    .withFailureHandler(function(err){
+      dashboardLoading = false;
+
+      if (attempt < MAX_LOAD_RETRY) {
+        if (showLoading) updateLoadOverlay('กำลังเชื่อมต่อใหม่...', 'กำลังลองโหลดข้อมูลอีกครั้ง');
+        setRealtimeStatus('checking', 'เชื่อมต่อช้า กำลังลองใหม่...');
+        setTimeout(function(){ loadAll(showLoading, attempt + 1); }, 900 * (attempt + 1));
+        return;
+      }
+
+      if (showLoading) hideLoadOverlay();
+      setRealtimeStatus('error', 'โหลดไม่สำเร็จ — กดรีเฟรชได้');
+      showError(err);
+    })
+    .getDashboardData();
+}
+
+function startRealtimeRefresh(){
+  if (realtimeTimer) clearInterval(realtimeTimer);
+  realtimeTimer = setInterval(function(){
+    realtimeTick++;
+    // ทุก 10 วินาทีตรวจ version แบบเบา ๆ
+    // และทุกประมาณ 60 วินาทีบังคับโหลดเต็ม 1 ครั้งเป็น fallback
+    checkRealtimeUpdate(realtimeTick % 6 === 0);
+  }, REALTIME_INTERVAL_MS);
+
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden) checkRealtimeUpdate(true);
+  });
+  window.addEventListener('focus', function(){ checkRealtimeUpdate(true); });
+  window.addEventListener('online', function(){ checkRealtimeUpdate(true); });
+}
+
+function checkRealtimeUpdate(forceFullReload = false){
+  if (document.hidden || dashboardLoading) return;
+
+  if (forceFullReload) {
+    loadAll(false);
+    return;
+  }
+
+  setRealtimeStatus('checking', 'กำลังตรวจข้อมูลใหม่...');
+  google.script.run
+    .withSuccessHandler(function(meta){
+      if (!meta || !meta.success) {
+        setRealtimeStatus('error', 'ตรวจอัปเดตไม่ได้');
+        return;
+      }
+      const newVersion = String(meta.version || '');
+      if (!dataVersion || (newVersion && newVersion !== dataVersion)) {
+        dataVersion = newVersion;
+        loadAll(false);
+      } else {
+        setRealtimeStatus('ok', 'ล่าสุด ' + formatClock(new Date()));
+      }
+    })
+    .withFailureHandler(function(){
+      setRealtimeStatus('error', 'การเชื่อมต่อช้า');
+    })
+    .getDataVersion();
+}
+
+function manualRefresh(){
+  if (dashboardLoading) return;
+  showLoadOverlay('กำลังรีเฟรชรายงาน...', 'กำลังดึงข้อมูลล่าสุดจาก Google Sheet');
+  // loadAll จะไม่เปิด overlay ซ้ำ แต่เราต้องปิด overlay หลังสำเร็จ/ล้มเหลว
+  dashboardLoading = true;
+  setRealtimeStatus('checking', 'กำลังรีเฟรช...');
+  google.script.run
+    .withSuccessHandler(function(data){
+      dashboardLoading = false;
+      hideLoadOverlay();
+      master = data.master || [];
+      departments = data.departments || [];
+      openRequests = data.openRequests || [];
+      vacancies = data.vacancies || [];
+      allRequests = data.allRequests || [];
+      allHires = data.allHires || [];
+      if (data.dataVersion) dataVersion = String(data.dataVersion);
+      fillDepartments();
+      renderKpis(data.summary || {});
+      renderDepartmentMiniCards();
+      renderVacancies();
+      fillEditSelects();
+      setRealtimeStatus('ok', 'อัปเดตแล้ว ' + formatClock(new Date()));
+    })
+    .withFailureHandler(function(err){
+      dashboardLoading = false;
+      hideLoadOverlay();
+      setRealtimeStatus('error', 'โหลดไม่สำเร็จ');
+      showError(err);
+    })
+    .getDashboardData();
+}
+
+function setRealtimeStatus(state, text){
+  const dot = document.getElementById('realtimeDot');
+  const label = document.getElementById('realtimeText');
+  if (!dot || !label) return;
+  dot.className = 'realtime-dot' + (state === 'checking' ? ' checking' : (state === 'error' ? ' error' : ''));
+  label.textContent = text || 'อัปเดตอัตโนมัติทุก 10 วินาที';
+}
+
+function formatClock(date){
+  try {
+    return String(date.getHours()).padStart(2,'0') + ':' + String(date.getMinutes()).padStart(2,'0') + ':' + String(date.getSeconds()).padStart(2,'0');
+  } catch (e) { return ''; }
+}
+
+function fillDepartments(){
+  const targetDept = document.getElementById('targetDept');
+  const hireDept = document.getElementById('hireDept');
+  const filter = document.getElementById('vacancyDeptFilter');
+  const currentTarget = targetDept.value;
+  const currentHire = hireDept.value;
+  const currentTargetPosition = val('targetPosition');
+  const currentHirePosition = val('hirePosition');
+  const currentRequestId = val('requestRef');
+
+  targetDept.innerHTML = '<option value="">-- เลือกแผนก --</option>';
+  hireDept.innerHTML = '<option value="">-- เลือกแผนก --</option>';
+  filter.innerHTML = '<option value="">ทุกแผนก</option>';
+
+  const openDepts = {};
+  openRequests.forEach(function(r) {
+    if (r.dept && Number(r.remaining || 0) > 0) openDepts[r.dept] = true;
+  });
+
+  departments.forEach(function(d){
+    const text = d.code + ' — ' + d.dept;
+    targetDept.add(new Option(text, d.dept));
+    filter.add(new Option(text, d.dept));
+    if (openDepts[d.dept]) {
+      hireDept.add(new Option(text, d.dept));
+    }
+  });
+  if (currentTarget) targetDept.value = currentTarget;
+  if (currentHire) hireDept.value = currentHire;
+  syncSearchable('targetDept'); syncSearchable('hireDept'); syncSearchable('vacancyDeptFilter');
+  refreshTargetPositionOptions(currentTargetPosition);
+  refreshHirePositionOptions(currentHirePosition, currentRequestId);
+}
+
+function fillPositionSelect(selectId, dept, selected){
+  const pos = document.getElementById(selectId);
+  pos.innerHTML = '<option value="">-- เลือกตำแหน่ง --</option>';
+  master.filter(x => x.dept === dept).forEach(function(x){
+    pos.add(new Option(x.position, x.position));
+  });
+  if (selected) pos.value = selected;
+  syncSearchable(selectId);
+}
+
+function refreshTargetPositionOptions(selected){
+  fillPositionSelect('targetPosition', val('targetDept'), selected);
+}
+
+function refreshHirePositionOptions(selected, selectedRequestId){
+  const dept = val('hireDept');
+  const pos = document.getElementById('hirePosition');
+  pos.innerHTML = '<option value="">-- เลือกตำแหน่ง --</option>';
+  
+  const openPositions = {};
+  openRequests.forEach(function(r) {
+    if (r.dept === dept && Number(r.remaining || 0) > 0 && r.position) {
+      openPositions[r.position] = true;
+    }
+  });
+  
+  master.filter(x => x.dept === dept && openPositions[x.position]).forEach(function(x){
+    pos.add(new Option(x.position, x.position));
+  });
+  
+  if (selected) pos.value = selected;
+  syncSearchable('hirePosition');
+  
+  refreshRequestOptions(selectedRequestId);
+}
+
+function refreshRequestOptions(selectedId){
+  const dept = val('hireDept');
+  const position = val('hirePosition');
+  const sel = document.getElementById('requestRef');
+  sel.innerHTML = '<option value="">-- เลือกรอบคำขอที่ยังรับไม่ครบ --</option>';
+
+  const rows = openRequests.filter(function(r){
+    return r.dept === dept && r.position === position && Number(r.remaining || 0) > 0;
+  });
+
+  rows.forEach(function(r){
+    const received = formatDateDisplay(r.received_request_date) || 'ยังไม่ระบุวันที่ได้รับคำขอ';
+    const label = received + ' | เป้า ' + num(r.target) + ' | รับแล้ว ' + num(r.hired) + ' | เหลือ ' + num(r.remaining);
+    sel.add(new Option(label, r.id));
+  });
+  if (selectedId) sel.value = selectedId;
+  syncSearchable('requestRef');
+  onRequestSelected();
+}
+
+function getSelectedRequest(){
+  const id = val('requestRef');
+  return openRequests.find(function(r){ return String(r.id) === String(id); }) || null;
+}
+
+function onRequestSelected(){
+  const r = getSelectedRequest();
+  const info = document.getElementById('requestInfo');
+  if (!r) {
+    info.innerHTML = val('hirePosition') ? 'ไม่พบคำขอที่ยังเปิดสำหรับตำแหน่งนี้ หรือยังไม่ได้เลือกรอบคำขอ' : 'เลือกแผนกและตำแหน่งก่อน เพื่อเลือกรอบคำขอที่ยังรับไม่ครบ';
+    updateRecruitmentDaysPreview();
+    return;
+  }
+  info.innerHTML = '<b>วันที่ได้รับคำขอ:</b> ' + (esc(formatDateDisplay(r.received_request_date)) || '-') +
+    ' &nbsp; | &nbsp; <b>เป้าหมาย:</b> ' + num(r.target) +
+    ' &nbsp; | &nbsp; <b>รับแล้ว:</b> ' + num(r.hired) +
+    ' &nbsp; | &nbsp; <b>คงเหลือ:</b> ' + num(r.remaining) + ' คน';
+  updateRecruitmentDaysPreview();
+}
+
+function renderKpis(s){
+  document.getElementById('kTarget').textContent = num(s.totalTarget);
+  document.getElementById('kHired').textContent = num(s.totalHired);
+  document.getElementById('kVacancy').textContent = num(s.totalVacancy);
+  const totalComplete = vacancies.filter(function(v) { return v.target > 0 && v.vacancy <= 0; }).length;
+  document.getElementById('kComplete').textContent = num(totalComplete);
+}
+
+// =========================================================
+// สรุปด่วนรายแผนกแบบการ์ดเล็ก ตาม reference
+// ใช้ข้อมูล vacancies ที่มีอยู่แล้ว จึงไม่ต้องสร้าง Sheet เพิ่ม
+// =========================================================
+function renderDepartmentMiniCards(){
+  const box = document.getElementById('departmentMiniCards');
+  if (!box) return;
+
+  const map = {};
+
+  // สร้างการ์ดให้ทุกแผนก แม้ยังไม่ได้กรอกเป้าหมาย
+  departments.forEach(function(d){
+    map[d.dept] = {
+      code: d.code || '', dept: d.dept || '',
+      target: 0, targetMale: 0, targetFemale: 0,
+      hired: 0, hiredMale: 0, hiredFemale: 0,
+      vacancy: 0, vacancyMale: 0, vacancyFemale: 0,
+      over: 0
+    };
+  });
+
+  // รวมยอดทุกตำแหน่งในแต่ละแผนก
+  vacancies.forEach(function(v){
+    if (!map[v.dept]) {
+      map[v.dept] = {
+        code: v.code || '', dept: v.dept || '',
+        target: 0, targetMale: 0, targetFemale: 0,
+        hired: 0, hiredMale: 0, hiredFemale: 0,
+        vacancy: 0, vacancyMale: 0, vacancyFemale: 0,
+        over: 0
+      };
+    }
+
+    const d = map[v.dept];
+    const t = Number(v.target || 0);
+    const h = Number(v.hired || 0);
+    const tm = Number(v.target_male || 0);
+    const tf = Number(v.target_female || 0);
+    const hm = Number(v.hired_male || 0);
+    const hf = Number(v.hired_female || 0);
+
+    d.target += t;
+    d.hired += h;
+    d.targetMale += tm;
+    d.targetFemale += tf;
+    d.hiredMale += hm;
+    d.hiredFemale += hf;
+
+    // คิดจำนวนขาดเป็นรายตำแหน่ง เพื่อไม่ให้ตำแหน่งที่รับเกินไปหักกับอีกตำแหน่งที่ยังขาด
+    d.vacancy += Math.max(t - h, 0);
+    d.vacancyMale += Math.max(tm - hm, 0);
+    d.vacancyFemale += Math.max(tf - hf, 0);
+  });
+
+  const rows = Object.values(map).sort(function(a,b){
+    return String(a.code).localeCompare(String(b.code));
+  });
+
+  if (!rows.length) {
+    box.innerHTML = '<div style="color:#94a3b8;font-size:12px">ยังไม่มีข้อมูลแผนก</div>';
+    return;
+  }
+
+  box.innerHTML = rows.map(function(d){
+    d.over = d.vacancy <= 0 ? Math.max(d.hired - d.target, 0) : 0;
+    const pct = d.target > 0 ? Math.min((d.hired / d.target) * 100, 100) : 0;
+
+    let balanceText = 'คงเหลือ ' + num(d.vacancy);
+    let balanceClass = d.vacancy > 0 ? 'dept-balance' : 'dept-complete';
+    let genderText = 'เหลือ ชาย:' + num(d.vacancyMale) + ' หญิง:' + num(d.vacancyFemale);
+
+    if (d.vacancy <= 0 && d.over > 0) {
+      balanceText = 'เกิน ' + num(d.over);
+      balanceClass = 'dept-balance';
+      genderText = 'อัตรารวมเกินเป้าหมาย';
+    } else if (d.target > 0 && d.vacancy <= 0) {
+      balanceText = 'ครบ';
+      genderText = 'เหลือ ชาย:0 หญิง:0';
+    } else if (d.target <= 0) {
+      balanceText = 'ยังไม่กำหนด';
+      balanceClass = 'dept-stat-value';
+      genderText = 'เหลือ ชาย:0 หญิง:0';
+    }
+
+    return `
+      <div class="dept-mini-card" title="${esc(d.dept)}">
+        <div class="dept-mini-top">
+          <div class="dept-mini-icon">🧳</div>
+          <div style="min-width:0">
+            <div class="dept-mini-code">${esc(d.code || '-')}</div>
+            <div class="dept-mini-name">${esc(d.dept)}</div>
+          </div>
+        </div>
+
+        <div class="dept-stat-row">
+          <span class="dept-stat-label">🎯 เป้าหมาย</span>
+          <span class="dept-stat-value dept-target">${num(d.target)}</span>
+        </div>
+        <div class="dept-sub">ชาย:${num(d.targetMale)} | หญิง:${num(d.targetFemale)}</div>
+
+        <div class="dept-stat-row">
+          <span class="dept-stat-label">✅ รับแล้ว</span>
+          <span class="dept-stat-value dept-hired">${num(d.hired)}</span>
+        </div>
+        <div class="dept-sub">ชาย:${num(d.hiredMale)} | หญิง:${num(d.hiredFemale)}</div>
+
+        <div class="dept-stat-row">
+          <span class="dept-stat-label">⚖️ คงเหลือ/เกิน</span>
+          <span class="dept-stat-value ${balanceClass}">${balanceText}</span>
+        </div>
+        <div class="dept-sub">${genderText}</div>
+
+        <div class="dept-progress" title="รับแล้ว ${pct.toFixed(0)}% ของเป้าหมาย">
+          <div class="dept-progress-bar" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function getFilteredVacancies(){
+  const dept = document.getElementById('vacancyDeptFilter').value;
+  const q = document.getElementById('vacancySearch').value.trim().toLowerCase();
+  const onlyVacancy = document.getElementById('onlyVacancy').checked;
+  const onlyComplete = document.getElementById('onlyComplete').checked;
+
+  return vacancies.filter(function(v){
+    if (dept && v.dept !== dept) return false;
+    if (onlyVacancy && Number(v.vacancy) <= 0) return false;
+    if (onlyComplete && (Number(v.vacancy) > 0 || v.target <= 0)) return false;
+    if (q && (v.position + ' ' + v.dept + ' ' + v.code).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+}
+
+// ฟังก์ชันสำหรับ filter และ render KPI Chart
+let _kpiChartInstance = null;
+
+function downloadKpiChart() {
+  // อ่านค่า filter ปัจจุบันจาก modal
+  const yrEl = document.getElementById('kpiYearSel');
+  const moEl = document.getElementById('kpiMonthSel');
+  const filterYear  = yrEl ? yrEl.value : '';
+  const filterMonth = moEl ? moEl.value : '';
+
+  // แสดง loading บนปุ่ม
+  const btn = document.querySelector('.swal2-html-container button[onclick="downloadKpiChart()"]');
+  let btnText = '';
+  if (btn) { btnText = btn.innerHTML; btn.innerHTML = '⏳ กำลังสร้างภาพ...'; btn.disabled = true; }
+
+  const restoreBtn = () => { if (btn) { btn.innerHTML = btnText; btn.disabled = false; } };
+
+  // ดึงข้อมูล KPI
+  const { labels, targetData, hiredData, vacancyData, grandTarget, grandHired, deptData, totalTarget, totalVacancy } = _buildKpiData(filterYear, filterMonth);
+  const grandVacancy = totalVacancy;
+  const grandPct     = totalTarget > 0 ? Math.round(grandHired / totalTarget * 100) : 0;
+  const pctColor     = grandPct >= 80 ? '#2e7d32' : grandPct >= 50 ? '#e65100' : '#c62828';
+
+  const monthNames = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const periodLabel = filterYear
+    ? (filterMonth ? `เดือน ${monthNames[Number(filterMonth)]} ${filterYear}` : `ปี ${filterYear}`)
+    : 'ทั้งหมด';
+  const printDate = new Date().toLocaleString('th-TH', { dateStyle:'long', timeStyle:'short' });
+  const fileName  = 'KPI_' + new Date().toLocaleDateString('th-TH').replace(/\//g, '-') + '.jpg';
+
+  // ── สร้าง Export Container (ซ่อนอยู่นอกจอ) ──────────────────────────────
+  const EXPORT_W = 1200; // px ความกว้างของ container ที่ต้องการ
+
+  // สร้างแถวตาราง
+  let tableRows = '';
+  labels.forEach(function(code, i) {
+    const d   = deptData[code];
+    const vac = Math.max(d.target - d.hired, 0);
+    const pct = d.target > 0 ? Math.round(d.hired / d.target * 100) : 0;
+    const col = pct >= 80 ? '#2e7d32' : pct >= 50 ? '#e65100' : '#c62828';
+    const bar = Math.min(pct, 100);
+    const bg  = i % 2 === 0 ? '#f8fafc' : '#ffffff';
+    tableRows += `
+      <tr style="background:${bg};">
+        <td style="padding:8px 12px;font-weight:700;font-size:13px;border-bottom:1px solid #e2e8f0;">${code}</td>
+        <td style="padding:8px 12px;text-align:center;font-size:13px;border-bottom:1px solid #e2e8f0;">${d.target.toLocaleString()}</td>
+        <td style="padding:8px 12px;text-align:center;font-size:13px;font-weight:700;color:#2e7d32;border-bottom:1px solid #e2e8f0;">${d.hired.toLocaleString()}</td>
+        <td style="padding:8px 12px;text-align:center;font-size:13px;font-weight:700;color:${vac > 0 ? '#c62828' : '#64748b'};border-bottom:1px solid #e2e8f0;">${vac.toLocaleString()}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;min-width:140px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;background:#e2e8f0;border-radius:99px;height:10px;overflow:hidden;">
+              <div style="width:${bar}%;background:${col};height:100%;border-radius:99px;"></div>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:${col};min-width:36px;text-align:right;">${pct}%</span>
+          </div>
+        </td>
+      </tr>`;
+  });
+  if (!tableRows) tableRows = `<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">ไม่พบข้อมูลในช่วงเวลาที่เลือก</td></tr>`;
+
+  // สร้าง canvas สำหรับกราฟ (render แยก ไม่กระทบ modal)
+  const chartCanvas = document.createElement('canvas');
+  chartCanvas.width  = EXPORT_W - 64;  // เผื่อ padding
+  chartCanvas.height = 340;
+  chartCanvas.style.display = 'none';
+  document.body.appendChild(chartCanvas);
+
+  let exportChart = null;
+  try {
+    exportChart = new Chart(chartCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: labels.length ? labels : ['ไม่มีข้อมูล'],
+        datasets: [
+          { label: 'เป้าหมาย', data: targetData,  backgroundColor: 'rgba(31,78,120,0.85)',  borderRadius: 5 },
+          { label: 'รับแล้ว',  data: hiredData,   backgroundColor: 'rgba(46,125,50,0.85)',   borderRadius: 5 },
+          { label: 'ขาด',      data: vacancyData,  backgroundColor: 'rgba(198,40,40,0.75)',   borderRadius: 5 }
+        ]
+      },
+      options: {
+        responsive: false,
+        animation: false,
+        plugins: {
+          legend: { position: 'top', labels: { font: { size: 13, family: 'Arial,"Noto Sans Thai",sans-serif' }, padding: 14 } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 12 } }, grid: { color: '#f1f5f9' } }
+        }
+      }
+    });
+  } catch(e) { console.error(e); }
+
+  // สร้าง export wrapper
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = `
+    position:fixed; left:-9999px; top:0;
+    width:${EXPORT_W}px;
+    background:#ffffff;
+    font-family:Arial,"Noto Sans Thai",sans-serif;
+    color:#1f2937;
+    padding:32px;
+    box-sizing:border-box;
+  `;
+
+  wrapper.innerHTML = `
+    <!-- ── Header ── -->
+    <div style="background:linear-gradient(135deg,#17365d 0%,#1f4e78 100%);border-radius:12px;padding:20px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:0.5px;">📊 KPI ผลการสรรหาพนักงานตามแผนก</div>
+        <div style="font-size:13px;color:#93c5fd;margin-top:4px;">ช่วงเวลา: ${periodLabel}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:#93c5fd;">ออกรายงานเมื่อ</div>
+        <div style="font-size:12px;color:#dbeafe;font-weight:600;">${printDate}</div>
+      </div>
+    </div>
+
+    <!-- ── Summary Cards ── -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:#eef5fb;border-radius:12px;padding:16px;text-align:center;border:1px solid #dbeafe;">
+        <div style="font-size:11px;color:#64748b;margin-bottom:4px;font-weight:600;">🎯 เป้าหมายรวม (ทั้งหมด)</div>
+        <div style="font-size:32px;font-weight:800;color:#1f4e78;line-height:1;">${totalTarget.toLocaleString()}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">คน</div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:12px;padding:16px;text-align:center;border:1px solid #bbf7d0;">
+        <div style="font-size:11px;color:#64748b;margin-bottom:4px;font-weight:600;">✅ รับแล้วรวม (ตามช่วงเวลา)</div>
+        <div style="font-size:32px;font-weight:800;color:#2e7d32;line-height:1;">${grandHired.toLocaleString()}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">คน</div>
+      </div>
+      <div style="background:#ffebee;border-radius:12px;padding:16px;text-align:center;border:1px solid #fecaca;">
+        <div style="font-size:11px;color:#64748b;margin-bottom:4px;font-weight:600;">⚠️ ขาดรวม (ทั้งหมด)</div>
+        <div style="font-size:32px;font-weight:800;color:#c62828;line-height:1;">${grandVacancy.toLocaleString()}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">คน</div>
+      </div>
+      <div style="background:#fff8e1;border-radius:12px;padding:16px;text-align:center;border:1px solid #fde68a;">
+        <div style="font-size:11px;color:#64748b;margin-bottom:4px;font-weight:600;">📈 ความสำเร็จ</div>
+        <div style="font-size:32px;font-weight:800;color:${pctColor};line-height:1;">${grandPct}%</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${grandHired.toLocaleString()}/${totalTarget.toLocaleString()} คน</div>
+      </div>
+    </div>
+
+    <!-- ── Table ── -->
+    <div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:20px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#1f4e78;">
+            <th style="padding:10px 12px;text-align:left;color:#fff;font-size:13px;font-weight:600;">แผนก</th>
+            <th style="padding:10px 12px;text-align:center;color:#fff;font-size:13px;font-weight:600;">เป้าหมาย</th>
+            <th style="padding:10px 12px;text-align:center;color:#fff;font-size:13px;font-weight:600;">รับแล้ว</th>
+            <th style="padding:10px 12px;text-align:center;color:#fff;font-size:13px;font-weight:600;">ขาด</th>
+            <th style="padding:10px 12px;text-align:left;color:#fff;font-size:13px;font-weight:600;">ความสำเร็จ</th>
+          </tr>
+        </thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+    </div>
+
+    <!-- ── Chart placeholder (จะถูกแทนที่ด้วย canvas จาก Chart.js) ── -->
+    <div style="border:1px solid #e2e8f0;border-radius:10px;padding:16px;background:#fafafa;" id="_kpiExportChartSlot">
+      <div style="font-size:13px;font-weight:600;color:#1f4e78;margin-bottom:10px;">กราฟ KPI ตามแผนก</div>
+    </div>
+
+    <!-- ── Footer ── -->
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:11px;color:#94a3b8;">CM Frozen — ระบบสรรหาพนักงาน</div>
+      <div style="font-size:11px;color:#94a3b8;">${printDate}</div>
+    </div>
+  `;
+
+  document.body.appendChild(wrapper);
+
+  // วาง chart canvas เข้า slot
+  const slot = wrapper.querySelector('#_kpiExportChartSlot');
+  if (slot && exportChart) slot.appendChild(chartCanvas);
+  chartCanvas.style.display = '';
+
+  // รอให้ chart render เสร็จ (1 frame) แล้วค่อย capture
+  setTimeout(function() {
+    html2canvas(wrapper, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      scrollX: 0,
+      scrollY: 0,
+      width:  wrapper.scrollWidth,
+      height: wrapper.scrollHeight,
+      windowWidth:  wrapper.scrollWidth,
+      windowHeight: wrapper.scrollHeight
+    }).then(function(canvas) {
+      if (exportChart) { exportChart.destroy(); }
+      document.body.removeChild(wrapper);
+      restoreBtn();
+
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      link.click();
+    }).catch(function(err) {
+      console.error('html2canvas error:', err);
+      if (exportChart) { exportChart.destroy(); }
+      document.body.removeChild(wrapper);
+      restoreBtn();
+    });
+  }, 300);
+}
+
+
+// อ่านปี/เดือนจากสตริงวันที่ yyyy-MM-dd (หรือ yyyy-MM-ddThh:mm...) / dd/MM/yyyy
+// ไม่ใช้ new Date(str) ตรงๆ เพราะ timezone ของเบราว์เซอร์ทำให้เดือนเพี้ยนได้ (เช่น 01/เดือนถัดไป)
+function _kpiDateParts(str) {
+  if (!str) return null;
+  const s = String(str).trim();
+  if (!s) return null;
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return { y: Number(m[1]), m: Number(m[2]) };
+  m = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+  if (m) return { y: Number(m[3]), m: Number(m[2]) };
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) return { y: d.getFullYear(), m: d.getMonth() + 1 };
+  return null;
+}
+
+// วันที่รับเข้า = เข้างานจริง → กำหนดเข้างาน → วันสร้างรายการ
+function _kpiIntakeDate(rec) {
+  return (rec && (rec.actual_start || rec.scheduled_start || rec.created_at)) || '';
+}
+
+function _buildKpiData(filterYear, filterMonth) {
+  const deptData = {};
+  const hasFilter = !!(filterYear || filterMonth);
+
+  function ensureDept(dept) {
+    const code = String(dept).split('-')[0].trim();
+    if (!deptData[code]) deptData[code] = { target: 0, hired: 0 };
+    return deptData[code];
+  }
+
+  // กรองตามปี/เดือนของ "วันที่รับเข้า" เท่านั้น
+  function matchesFilter(dateStr) {
+    if (!hasFilter) return true;
+    const p = _kpiDateParts(dateStr);
+    if (!p) return false;
+    if (filterYear && String(p.y) !== String(filterYear)) return false;
+    if (filterMonth && String(p.m).padStart(2,'0') !== String(filterMonth)) return false;
+    return true;
+  }
+
+  // id ของใบคำขอที่มีการรับเข้าในช่วงเวลาที่กรอง — ใช้ผูก "เป้าหมาย" กับการรับเข้า
+  const intakeRequestIds = {};
+
+  // 1) รับแล้ว — นับตามวันที่รับเข้า
+  // 1.1 ข้อมูลเก่าแบบแถวเดียว (รับแล้ว/เข้างานจริง อยู่ในใบคำขอ)
+  allRequests.forEach(function(req) {
+    if (!req.dept || !(Number(req.hired) > 0)) return;
+    if (!matchesFilter(_kpiIntakeDate(req))) return;
+    ensureDept(req.dept).hired += Number(req.hired) || 0;
+    intakeRequestIds[String(req.id)] = true;
+  });
+  // 1.2 รายการรับแล้ว (RecruitmentHires)
+  allHires.forEach(function(hire) {
+    if (!hire.dept) return;
+    if (!matchesFilter(_kpiIntakeDate(hire))) return;
+    ensureDept(hire.dept).hired += Number(hire.hired) || 0;
+    if (hire.request_id) intakeRequestIds[String(hire.request_id)] = true;
+  });
+
+  // 2) เป้าหมาย — ผูกกับการรับเข้า: นับเฉพาะใบคำขอที่มีการรับเข้าในช่วงเวลาที่กรอง
+  //    (ถ้าไม่ได้กรองปี/เดือน นับเป้าหมายทั้งหมดตามเดิม)
+  allRequests.forEach(function(req) {
+    if (!req.dept) return;
+    if (hasFilter && !intakeRequestIds[String(req.id)]) return;
+    ensureDept(req.dept).target += Number(req.target) || 0;
+  });
+
+  const labels = Object.keys(deptData).sort();
+  const targetData = [], hiredData = [], vacancyData = [];
+  let grandTarget = 0, grandHired = 0;
+
+  labels.forEach(function(code) {
+    const d = deptData[code];
+    const vac = Math.max(d.target - d.hired, 0);
+    targetData.push(d.target);
+    hiredData.push(d.hired);
+    vacancyData.push(vac);
+    grandTarget += d.target;
+    grandHired += d.hired;
+  });
+
+  // ยอดรวมจริงทั้งหมด (ไม่แยกปี/เดือน) สำหรับการ์ด "เป้าหมายรวม" และ "ขาดรวม"
+  // ใช้ชุดข้อมูลเดียวกับการ์ดหน้าจอหลัก (global vacancies) ถ้ามี ไม่งั้นคำนวณจากข้อมูลดิบ
+  let totalTarget = 0, totalVacancy = 0;
+  const totalsSource = (typeof vacancies !== 'undefined' && vacancies && vacancies.length) ? vacancies : null;
+  if (totalsSource) {
+    totalsSource.forEach(function(v) {
+      totalTarget += Number(v.target) || 0;
+      totalVacancy += Number(v.vacancy) || 0;
+    });
+  } else {
+    let totalHired = 0;
+    allRequests.forEach(function(req) {
+      totalTarget += Number(req.target) || 0;
+      totalHired += Number(req.hired) || 0;
+    });
+    allHires.forEach(function(h) { totalHired += Number(h.hired) || 0; });
+    totalVacancy = Math.max(totalTarget - totalHired, 0);
+  }
+
+  return { labels, targetData, hiredData, vacancyData, grandTarget, grandHired, deptData, totalTarget, totalVacancy };
+}
+
+function _renderKpiChart(filterYear, filterMonth) {
+  const { labels, targetData, hiredData, vacancyData, grandTarget, grandHired, deptData, totalTarget, totalVacancy } = _buildKpiData(filterYear, filterMonth);
+
+  // การ์ดสรุป: เป้าหมายรวม / ขาดรวม = ยอดรวมทั้งหมด (ไม่แยกปี/เดือน), รับแล้วรวม = ตามปี/เดือนที่เลือก
+  const grandVacancy = totalVacancy;
+  const grandPct = totalTarget > 0 ? Math.round(grandHired / totalTarget * 100) : 0;
+  const pctColor = grandPct >= 80 ? '#2e7d32' : grandPct >= 50 ? '#e65100' : '#c62828';
+
+  // อัปเดต summary cards
+  const periodLabel = filterYear
+    ? (filterMonth ? `เดือน ${filterMonth}/${filterYear}` : `ปี ${filterYear}`)
+    : 'ทั้งหมด';
+  document.getElementById('kpiPeriodLabel').textContent = periodLabel;
+  document.getElementById('kpiGrandTarget').textContent = totalTarget.toLocaleString();
+  document.getElementById('kpiGrandHired').textContent = grandHired.toLocaleString();
+  document.getElementById('kpiGrandVacancy').textContent = grandVacancy.toLocaleString();
+  document.getElementById('kpiGrandPct').textContent = grandPct + '%';
+  document.getElementById('kpiGrandPct').style.color = pctColor;
+  document.getElementById('kpiGrandPctSub').textContent = grandHired + '/' + totalTarget + ' คน';
+
+  // อัปเดตตาราง
+  let tableRows = '';
+  labels.forEach(function(code) {
+    const d = deptData[code];
+    const vac = Math.max(d.target - d.hired, 0);
+    const pct = d.target > 0 ? Math.round(d.hired / d.target * 100) : 0;
+    const color = pct >= 80 ? '#2e7d32' : pct >= 50 ? '#e65100' : '#c62828';
+    const barWidth = Math.min(pct, 100);
+    tableRows += `<tr style="border-bottom:1px solid #e2e8f0;">
+      <td style="padding:6px 8px;font-weight:600;">${code}</td>
+      <td style="padding:6px 8px;text-align:center;">${d.target}</td>
+      <td style="padding:6px 8px;text-align:center;color:#2e7d32;font-weight:600;">${d.hired}</td>
+      <td style="padding:6px 8px;text-align:center;color:#c62828;font-weight:600;">${vac}</td>
+      <td style="padding:6px 8px;min-width:100px;">
+        <div style="background:#e2e8f0;border-radius:99px;height:8px;overflow:hidden;">
+          <div style="width:${barWidth}%;background:${color};height:100%;border-radius:99px;"></div>
+        </div>
+        <div style="text-align:right;font-size:10px;color:${color};margin-top:1px;">${pct}%</div>
+      </td>
+    </tr>`;
+  });
+  if (!tableRows) tableRows = '<tr><td colspan="5" style="text-align:center;padding:12px;color:#94a3b8;">ไม่พบข้อมูลในช่วงเวลาที่เลือก</td></tr>';
+  document.getElementById('kpiTableBody').innerHTML = tableRows;
+
+  // อัปเดต chart
+  if (_kpiChartInstance) { _kpiChartInstance.destroy(); _kpiChartInstance = null; }
+  const canvas = document.getElementById('kpiChartCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  _kpiChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels.length ? labels : ['ไม่มีข้อมูล'],
+      datasets: [
+        { label: 'เป้าหมาย', data: targetData, backgroundColor: 'rgba(31,78,120,0.85)', borderRadius: 4 },
+        { label: 'รับแล้ว',  data: hiredData,  backgroundColor: 'rgba(46,125,50,0.85)',  borderRadius: 4 },
+        { label: 'ขาด',      data: vacancyData, backgroundColor: 'rgba(198,40,40,0.75)',  borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 12 }, padding: 12 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} คน` } }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } }
+      }
+    }
+  });
+}
+
+function showKpiChart() {
+  if (!allRequests || !allRequests.length) {
+    return alertWarning('ไม่มีข้อมูล', 'ยังไม่มีข้อมูลใบคำขอสำหรับแสดงกราฟ');
+  }
+
+  // สร้าง option ปี/เดือน จาก "วันที่รับเข้า" จริง (เข้างานจริง → กำหนดเข้างาน → วันสร้างรายการ)
+  const yearSet = new Set();
+  allHires.forEach(function(h) {
+    const p = _kpiDateParts(_kpiIntakeDate(h));
+    if (p) yearSet.add(String(p.y));
+  });
+  allRequests.forEach(function(r) {
+    if (!(Number(r.hired) > 0)) return; // ข้อมูลเก่าที่รับแล้วอยู่ในแถวใบคำขอ
+    const p = _kpiDateParts(_kpiIntakeDate(r));
+    if (p) yearSet.add(String(p.y));
+  });
+  const years = Array.from(yearSet).sort().reverse();
+  const thisYear = String(new Date().getFullYear());
+  const thisMonth = String(new Date().getMonth() + 1).padStart(2,'0');
+
+  const yearOptions = '<option value="">ทุกปี</option>' + years.map(y =>
+    `<option value="${y}" ${y === thisYear ? 'selected' : ''}>${y}</option>`
+  ).join('');
+
+  const monthNames = ['01-ม.ค.','02-ก.พ.','03-มี.ค.','04-เม.ย.','05-พ.ค.','06-มิ.ย.',
+                      '07-ก.ค.','08-ส.ค.','09-ก.ย.','10-ต.ค.','11-พ.ย.','12-ธ.ค.'];
+  const monthOptions = '<option value="">ทุกเดือน</option>' + monthNames.map(m => {
+    const val = m.slice(0,2);
+    return `<option value="${val}" ${val === thisMonth ? 'selected' : ''}>${m}</option>`;
+  }).join('');
+
+  const html = `
+    <div style="text-align:left;">
+      <!-- Filter Bar -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:10px 12px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
+        <span style="font-size:12px;color:#64748b;font-weight:600;">🗓 กรองข้อมูล:</span>
+        <select id="kpiYearSel" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;background:#fff;" onchange="_renderKpiChart(this.value, document.getElementById('kpiMonthSel').value)">
+          ${yearOptions}
+        </select>
+        <select id="kpiMonthSel" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;background:#fff;" onchange="_renderKpiChart(document.getElementById('kpiYearSel').value, this.value)">
+          ${monthOptions}
+        </select>
+        <span id="kpiPeriodLabel" style="margin-left:auto;font-size:11px;color:#94a3b8;"></span>
+      </div>
+
+      <!-- Summary Cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
+        <div style="background:#eef5fb;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:10px;color:#64748b;margin-bottom:3px;">🎯 เป้าหมายรวม (ทั้งหมด)</div>
+          <div id="kpiGrandTarget" style="font-size:20px;font-weight:700;color:#1f4e78;">0</div>
+          <div style="font-size:10px;color:#94a3b8;">คน</div>
+        </div>
+        <div style="background:#e8f5e9;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:10px;color:#64748b;margin-bottom:3px;">✅ รับแล้วรวม (ตามช่วงเวลา)</div>
+          <div id="kpiGrandHired" style="font-size:20px;font-weight:700;color:#2e7d32;">0</div>
+          <div style="font-size:10px;color:#94a3b8;">คน</div>
+        </div>
+        <div style="background:#ffebee;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:10px;color:#64748b;margin-bottom:3px;">⚠️ ขาดรวม (ทั้งหมด)</div>
+          <div id="kpiGrandVacancy" style="font-size:20px;font-weight:700;color:#c62828;">0</div>
+          <div style="font-size:10px;color:#94a3b8;">คน</div>
+        </div>
+        <div style="background:#fff8e1;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:10px;color:#64748b;margin-bottom:3px;">📊 สำเร็จ</div>
+          <div id="kpiGrandPct" style="font-size:20px;font-weight:700;">0%</div>
+          <div id="kpiGrandPctSub" style="font-size:10px;color:#94a3b8;">0/0 คน</div>
+        </div>
+      </div>
+
+      <!-- Per-dept Table -->
+      <div style="max-height:120px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:12px;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead style="position:sticky;top:0;background:#1f4e78;z-index:1;">
+            <tr>
+              <th style="padding:5px 8px;text-align:left;color:#fff;font-weight:600;">แผนก</th>
+              <th style="padding:5px 8px;text-align:center;color:#fff;font-weight:600;">เป้าหมาย</th>
+              <th style="padding:5px 8px;text-align:center;color:#fff;font-weight:600;">รับแล้ว</th>
+              <th style="padding:5px 8px;text-align:center;color:#fff;font-weight:600;">ขาด</th>
+              <th style="padding:5px 8px;text-align:left;color:#fff;font-weight:600;">ความสำเร็จ</th>
+            </tr>
+          </thead>
+          <tbody id="kpiTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Chart -->
+      <div style="position:relative;height:240px;">
+        <canvas id="kpiChartCanvas"></canvas>
+      </div>
+
+      <!-- Download Button -->
+      <div style="text-align:right;margin-top:10px;">
+        <button onclick="downloadKpiChart()" style="padding:7px 16px;background:#1f4e78;color:#fff;border:none;border-radius:8px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          ⬇️ ดาวน์โหลดกราฟ (JPG)
+        </button>
+      </div>
+    </div>`;
+
+  Swal.fire({
+    title: '📊 KPI ตามแผนก',
+    html: html,
+    width: 840,
+    showConfirmButton: true,
+    confirmButtonText: 'ปิด',
+    didOpen: () => {
+      _kpiChartInstance = null;
+      const yr = document.getElementById('kpiYearSel').value;
+      const mo = document.getElementById('kpiMonthSel').value;
+      _renderKpiChart(yr, mo);
+    },
+    willClose: () => {
+      if (_kpiChartInstance) { _kpiChartInstance.destroy(); _kpiChartInstance = null; }
+    }
+  });
+}
+
+
+function printPositionSummary(){
+  const rows = getFilteredVacancies();
+  if (!rows.length) {
+    return alertWarning('ไม่มีข้อมูลสำหรับพิมพ์', 'ไม่พบตำแหน่งตามตัวกรองที่เลือก');
+  }
+
+  const deptValue = document.getElementById('vacancyDeptFilter').value;
+  const deptText = document.getElementById('vacancyDeptFilter').selectedOptions[0]
+    ? document.getElementById('vacancyDeptFilter').selectedOptions[0].text
+    : 'ทุกแผนก';
+  const searchText = document.getElementById('vacancySearch').value.trim();
+  const onlyVacancy = document.getElementById('onlyVacancy').checked;
+
+  const totalTarget = rows.reduce((sum, r) => sum + Number(r.target || 0), 0);
+  const totalHired = rows.reduce((sum, r) => sum + Number(r.hired || 0), 0);
+  const totalVacancy = rows.reduce((sum, r) => sum + Number(r.vacancy || 0), 0);
+  const printDate = formatDateTimeDisplay(new Date());
+
+  const rowHtml = rows.map(function(v, i){
+    let status = 'ครบ';
+    let statusClass = 'ok';
+    const vm = Math.max(Number(v.target_male||0) - Number(v.hired_male||0), 0);
+    const vf = Math.max(Number(v.target_female||0) - Number(v.hired_female||0), 0);
+    if (Number(v.target || 0) <= 0) {
+      status = 'ยังไม่กำหนด';
+      statusClass = 'muted';
+    } else if (Number(v.vacancy || 0) > 0) {
+      status = 'ขาด ' + num(v.vacancy) + ' คน';
+      statusClass = 'bad';
+    }
+    return `
+      <tr>
+        <td class="center">${i + 1}</td>
+        <td class="center">${esc(v.code)}</td>
+        <td>${esc(v.dept)}</td>
+        <td>${esc(v.position)}</td>
+        <td class="numcell">${num(v.target)}<div style="font-size:8px;color:#64748b">ช:${num(v.target_male)} ญ:${num(v.target_female)}</div></td>
+        <td class="numcell">${num(v.hired)}</td>
+        <td class="numcell" style="color:#1e40af">${num(v.hired_male)}</td>
+        <td class="numcell" style="color:#be185d">${num(v.hired_female)}</td>
+        <td class="numcell strong">${num(v.vacancy)}${(function(){let pp=[]; if(vm>0) pp.push('ช:'+num(vm)); if(vf>0) pp.push('ญ:'+num(vf)); return pp.length ? '<div style="font-size:7px;color:#64748b">'+pp.join(' ')+'</div>' : ''})()}</td>
+        <td class="center">${v.recruitment_cycles ? '<b>'+num(v.avg_recruitment_days)+' วัน</b>' + (v.recruitment_cycles > 1 ? '<div style="font-size:9px">เฉลี่ย '+num(v.recruitment_cycles)+' รอบ</div>' : '') + (v.latest_received_date && v.latest_actual_start ? '<div style="font-size:9px">'+esc(formatDateDisplay(v.latest_received_date))+' → '+esc(formatDateDisplay(v.latest_actual_start))+'</div>' : '') : '-'}</td>
+        <td class="center ${statusClass}">${status}</td>
+      </tr>`;
+  }).join('');
+
+  const filterParts = [];
+  filterParts.push('แผนก: ' + esc(deptValue ? deptText : 'ทุกแผนก'));
+  if (searchText) filterParts.push('ค้นหา: ' + esc(searchText));
+  filterParts.push(onlyVacancy ? 'เฉพาะตำแหน่งที่ขาด' : (onlyComplete ? 'เฉพาะตำแหน่งที่ครบ' : 'ทุกสถานะ'));
+
+  const w = window.open('', '_blank', 'width=1200,height=800');
+  if (!w) {
+    return alertWarning('ไม่สามารถเปิดหน้าพิมพ์ได้', 'กรุณาอนุญาต Pop-up สำหรับเว็บไซต์นี้ แล้วลองอีกครั้ง');
+  }
+
+  w.document.open();
+  w.document.write(`<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>สรุปตามตำแหน่ง</title>
+<style>
+  @page{size:A4 landscape;margin:10mm}
+  *{box-sizing:border-box}
+  body{font-family:Arial,"Noto Sans Thai",sans-serif;color:#111827;margin:0;font-size:11px}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #17365d;padding-bottom:8px;margin-bottom:10px}
+  h1{font-size:20px;color:#17365d;margin:0 0 3px}
+  .meta{font-size:10px;color:#64748b;line-height:1.5}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+  .box{border:1px solid #dbe4ef;border-radius:8px;padding:8px 10px}
+  .box .label{font-size:9px;color:#64748b}.box .value{font-size:18px;font-weight:800;margin-top:2px}
+  table{width:100%;border-collapse:collapse;table-layout:auto}
+  th{background:#1f4e78;color:#fff;padding:6px;border:1px solid #aebdce;font-size:10px}
+  td{padding:5px 6px;border:1px solid #d1d5db;vertical-align:top}
+  tr:nth-child(even) td{background:#f8fafc}
+  .center{text-align:center}.numcell{text-align:right}.strong{font-weight:800}
+  .bad{color:#b91c1c;font-weight:800}.ok{color:#166534;font-weight:800}.muted{color:#64748b}
+  .foot{margin-top:8px;font-size:9px;color:#64748b;text-align:right}
+  @media print{button{display:none!important}}
+</style>
+</head>
+<body>
+  <div class="head">
+    <div>
+  <h1>สรุปการรับพนักงานตามตำแหน่ง <span style="font-size:12px;font-weight:400;color:#94a3b8" id="verBadge"></span></h1>
+      <div class="meta">${filterParts.join(' &nbsp; | &nbsp; ')}</div>
+    </div>
+    <div class="meta" style="text-align:right">พิมพ์เมื่อ ${esc(printDate)}<br>จำนวน ${num(rows.length)} ตำแหน่ง</div>
+  </div>
+
+  <div class="summary">
+    <div class="box"><div class="label">จำนวนตำแหน่ง</div><div class="value">${num(rows.length)}</div></div>
+    <div class="box"><div class="label">เป้าหมายรวม</div><div class="value">${num(totalTarget)}</div></div>
+    <div class="box"><div class="label">รับแล้วรวม</div><div class="value">${num(totalHired)}</div></div>
+    <div class="box"><div class="label">ยังขาดรวม</div><div class="value">${num(totalVacancy)}</div></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th style="width:36px">#</th><th style="width:55px">รหัส</th><th>แผนก</th><th>ตำแหน่งงาน</th><th style="width:70px">เป้าหมาย</th><th style="width:70px">รับแล้ว</th><th style="width:50px">ชาย</th><th style="width:50px">หญิง</th><th style="width:65px">ขาด</th><th style="width:90px">ใช้เวลาเฉลี่ย</th><th style="width:95px">สถานะ</th></tr>
+    </thead>
+    <tbody>${rowHtml}</tbody>
+  </table>
+  <div class="foot">ระบบสรุปการรับพนักงานตามตำแหน่ง</div>
+<script>
+  window.onload = function(){ setTimeout(function(){ window.print(); }, 250); };
+<\/script>
+</body>
+</html>`);
+  w.document.close();
+}
+
+function onManualVacancyFilter(){
+  renderVacancies();
+}
+
+function toggleVacancyFilter(source){
+  const onlyVacancy = document.getElementById('onlyVacancy');
+  const onlyComplete = document.getElementById('onlyComplete');
+  // 2 checkbox เป็นแบบสลับกัน (mutually exclusive)
+  if (source === 'onlyVacancy' && onlyVacancy.checked) onlyComplete.checked = false;
+  if (source === 'onlyComplete' && onlyComplete.checked) onlyVacancy.checked = false;
+  renderVacancies();
+}
+
+function renderVacancies(){
+  const body = document.getElementById('vacancyBody');
+  const rows = getFilteredVacancies();
+
+  body.innerHTML = rows.length ? rows.map(function(v){
+    const vm = Math.max(Number(v.target_male||0) - Number(v.hired_male||0), 0);
+    const vf = Math.max(Number(v.target_female||0) - Number(v.hired_female||0), 0);
+    const badge = v.target <= 0 ? '<span class="badge badge-gray">ยังไม่กำหนด</span>'
+      : (v.vacancy > 0 ? '<span class="badge badge-red">ขาด '+num(v.vacancy)+' คน</span>'
+      : '<span class="badge badge-green">ครบ</span>');
+    const hasRecords = allRequests.some(function(r){ return r.dept === v.dept && r.position === v.position; })
+      || allHires.some(function(h){ return h.dept === v.dept && h.position === v.position; });
+    const editBtn = hasRecords
+      ? '<button type="button" class="secondary tiny" style="white-space:nowrap" onclick=\'quickEditPosition(' + JSON.stringify(v.dept) + ',' + JSON.stringify(v.position) + ')\'>แก้ไข</button>'
+      : '<span style="color:#94a3b8;font-size:11px">-</span>';
+    const delBtn = hasRecords
+      ? '<button type="button" class="red tiny" style="white-space:nowrap" onclick=\'quickDeletePosition(' + JSON.stringify(v.dept) + ',' + JSON.stringify(v.position) + ')\'>ลบ</button>'
+      : '<span style="color:#94a3b8;font-size:11px">-</span>';
+    return '<tr>'+
+      '<td>'+esc(v.code)+'</td>'+
+      '<td>'+esc(v.dept)+'</td>'+
+      '<td><b>'+esc(v.position)+'</b></td>'+
+      '<td>'+num(v.target)+'<div style="font-size:10px;color:#64748b">ช:'+num(v.target_male)+' ญ:'+num(v.target_female)+'</div></td>'+
+      '<td>'+num(v.hired)+'</td>'+
+      '<td class="col-hired-gender" style="text-align:center;color:#1e40af;font-weight:700">'+num(v.hired_male)+'</td>'+
+      '<td class="col-hired-gender" style="text-align:center;color:#be185d;font-weight:700">'+num(v.hired_female)+'</td>'+
+      '<td class="col-vacancy"><b class="'+(v.vacancy>0?'danger':'success')+'">'+num(v.vacancy)+'</b>'+(function(){ if(v.vacancy<=0) return ''; let p=[]; if(vm>0) p.push('ช:'+num(vm)); if(vf>0) p.push('ญ:'+num(vf)); return p.length ? '<div style="font-size:10px;color:#64748b">'+p.join(' ')+'</div>' : ''; })()+'</td>'+
+      '<td>'+(v.recruitment_cycles ? '<b>'+num(v.avg_recruitment_days)+' วัน</b>' + (v.recruitment_cycles > 1 ? '<div style="font-size:10px;color:#64748b">เฉลี่ย '+num(v.recruitment_cycles)+' รอบ</div>' : '') + (v.latest_received_date && v.latest_actual_start ? '<div style="font-size:10px;color:#64748b">ล่าสุด '+esc(formatDateDisplay(v.latest_received_date))+' → '+esc(formatDateDisplay(v.latest_actual_start))+'</div>' : '') : '-')+'</td>'+
+      '<td>'+badge+'</td>'+
+      '<td class="col-action" style="text-align:center">'+editBtn+'</td>'+
+      '<td class="col-action" style="text-align:center">'+delBtn+'</td>'+
+    '</tr>';
+  }).join('') : '<tr><td colspan="12" style="text-align:center;color:#64748b">ไม่พบตำแหน่งตามตัวกรอง</td></tr>';
+  // อัปเดตการซ่อนคอลัมน์ตามตัวกรองหลัง render
+  setTimeout(updateVacancyColumns, 0);
+}
+
+function updateVacancyColumns(){
+  const onlyVacancy = document.getElementById('onlyVacancy');
+  const onlyComplete = document.getElementById('onlyComplete');
+  const showGender = !(onlyVacancy && onlyVacancy.checked);
+  const showVacancy = !(onlyComplete && onlyComplete.checked);
+  document.querySelectorAll('.col-hired-gender').forEach(function(el){
+    el.style.display = showGender ? '' : 'none';
+  });
+  document.querySelectorAll('.col-vacancy').forEach(function(el){
+    el.style.display = showVacancy ? '' : 'none';
+  });
+}
+
+function fillEditSelects(){
+  updateSaveButtonLabel();
+}
+
+// ===== Searchable Select =====
+function makeSearchable(selectId, placeholder){
+  const sel = document.getElementById(selectId);
+  if (!sel || sel.dataset.searchableInit) return;
+  sel.dataset.searchableInit = "1";
+  sel.style.display = "none";
+  const wrap = document.createElement("div");
+  wrap.className = "searchable-wrap";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "searchable-input";
+  input.placeholder = placeholder || "ค้นหา...";
+  input.autocomplete = "off";
+  const clearBtn = document.createElement("button");
+  clearBtn.type = "button";
+  clearBtn.className = "searchable-clear";
+  clearBtn.textContent = "×";
+  clearBtn.tabIndex = -1;
+  const dropdown = document.createElement("div");
+  dropdown.className = "searchable-dropdown";
+  sel.parentNode.insertBefore(wrap, sel);
+  wrap.appendChild(input);
+  wrap.appendChild(clearBtn);
+  wrap.appendChild(dropdown);
+  wrap.appendChild(sel);
+  let activeIndex = -1;
+  function getOptions(){
+    return Array.from(sel.options).map(function(o){ return {value:o.value, text:o.text, disabled:o.disabled}; });
+  }
+  function syncInput(){
+    const opt = sel.options[sel.selectedIndex];
+    if (opt && opt.value) {
+      input.value = opt.text;
+      input.classList.add("has-value");
+      clearBtn.classList.add("show");
+    } else {
+      input.value = "";
+      input.classList.remove("has-value");
+      clearBtn.classList.remove("show");
+      if (placeholder) input.placeholder = placeholder;
+    }
+  }
+  function renderList(filter){
+    const opts = getOptions();
+    const q = (filter||"").trim().toLowerCase();
+    const placeholderOpt = opts.find(function(o){ return o.value === ""; });
+    dropdown.innerHTML = "";
+    let list = opts.filter(function(o){ return o.value !== ""; });
+    if (q) list = list.filter(function(o){ return o.text.toLowerCase().indexOf(q) !== -1; });
+    if (placeholderOpt && !q) {
+      const div = document.createElement("div");
+      div.className = "searchable-option" + (sel.value === "" ? " active" : "");
+      div.textContent = placeholderOpt.text;
+      div.dataset.value = "";
+      div.addEventListener("mousedown", function(e){ e.preventDefault(); sel.value=""; syncInput(); dropdown.classList.remove("show"); sel.dispatchEvent(new Event("change",{bubbles:true})); });
+      dropdown.appendChild(div);
+    }
+    if (list.length === 0) {
+      const div = document.createElement("div");
+      div.className = "searchable-option no-result";
+      div.textContent = "ไม่พบข้อมูล";
+      dropdown.appendChild(div);
+    } else {
+      list.forEach(function(o){
+        const div = document.createElement("div");
+        div.className = "searchable-option" + (o.value === sel.value ? " active" : "");
+        div.textContent = o.text;
+        div.dataset.value = o.value;
+        div.addEventListener("mousedown", function(e){
+          e.preventDefault();
+          sel.value = o.value;
+          syncInput();
+          dropdown.classList.remove("show");
+          sel.dispatchEvent(new Event("change",{bubbles:true}));
+        });
+        dropdown.appendChild(div);
+      });
+    }
+    activeIndex = -1;
+  }
+  input.addEventListener("focus", function(){ renderList(input.value); dropdown.classList.add("show"); });
+  input.addEventListener("input", function(){ renderList(input.value); dropdown.classList.add("show"); input.classList.remove("has-value"); clearBtn.classList.remove("show"); });
+  input.addEventListener("blur", function(){
+    setTimeout(function(){
+      const opts = getOptions();
+      const typed = input.value.trim().toLowerCase();
+      const exact = opts.find(function(o){ return o.text.toLowerCase() === typed; });
+      if (exact) {
+        sel.value = exact.value;
+      } else if (!input.value.trim()) {
+        sel.value = "";
+      }
+      const stillTyped = input.value.trim() && !opts.some(function(o){ return o.text === input.value; });
+      if (stillTyped) syncInput();
+      dropdown.classList.remove("show");
+    }, 160);
+  });
+  clearBtn.addEventListener("click", function(e){
+    e.preventDefault();
+    sel.value = "";
+    syncInput();
+    renderList("");
+    sel.dispatchEvent(new Event("change",{bubbles:true}));
+    input.focus();
+  });
+  input.addEventListener("keydown", function(e){
+    const opts = dropdown.querySelectorAll(".searchable-option:not(.no-result)");
+    if (!dropdown.classList.contains("show")) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); activeIndex = Math.min(activeIndex+1, opts.length-1); updateActive(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); activeIndex = Math.max(activeIndex-1, 0); updateActive(); }
+    else if (e.key === "Enter") { e.preventDefault(); if (activeIndex>=0 && opts[activeIndex]) opts[activeIndex].dispatchEvent(new Event("mousedown")); }
+    else if (e.key === "Escape") { dropdown.classList.remove("show"); }
+  });
+  function updateActive(){
+    const opts = dropdown.querySelectorAll(".searchable-option:not(.no-result)");
+    opts.forEach(function(el,i){ el.classList.toggle("active", i===activeIndex); });
+    if (activeIndex>=0 && opts[activeIndex]) opts[activeIndex].scrollIntoView({block:"nearest"});
+  }
+  document.addEventListener("click", function(e){ if (!wrap.contains(e.target)) dropdown.classList.remove("show"); });
+  sel._searchableSync = syncInput;
+  sel._searchableRender = function(){ renderList(input.value); };
+  syncInput();
+}
+function syncSearchable(selectId){
+  const sel = document.getElementById(selectId);
+  if (sel && sel._searchableSync) sel._searchableSync();
+}
+function initAllSearchable(){
+  makeSearchable("targetDept", "ค้นหาแผนก...");
+  makeSearchable("targetPosition", "ค้นหาตำแหน่ง...");
+  makeSearchable("hireDept", "ค้นหาแผนก...");
+  makeSearchable("hirePosition", "ค้นหาตำแหน่ง...");
+  makeSearchable("requestRef", "ค้นหารอบคำขอ...");
+  makeSearchable("vacancyDeptFilter", "ทุกแผนก...");
+}
+
+function openHireEditModal(h){
+  const deptOptions = departments.map(function(d){
+    return '<option value="' + esc(d.dept) + '"' + (d.dept === h.dept ? ' selected' : '') + '>' + esc(d.code + ' — ' + d.dept) + '</option>';
+  }).join('');
+  const posOptions = master.filter(function(x){ return x.dept === h.dept; }).map(function(x){
+    return '<option value="' + esc(x.position) + '"' + (x.position === h.position ? ' selected' : '') + '>' + esc(x.position) + '</option>';
+  }).join('');
+
+  const html = `
+    <div style="text-align:left;font-size:13px">
+      <div style="margin-bottom:10px"><label style="font-weight:700">แผนก *</label><select id="mHireDept" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px" onchange="updateModalHirePositions()">${deptOptions}</select></div>
+      <div style="margin-bottom:10px"><label style="font-weight:700">ตำแหน่งงาน *</label><select id="mHirePos" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px">${posOptions}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div><label style="font-weight:700">รับแล้วชาย</label><input id="mHireMale" type="number" min="0" value="${h.hired_male == null ? '' : h.hired_male}" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+        <div><label style="font-weight:700">รับแล้วหญิง</label><input id="mHireFemale" type="number" min="0" value="${h.hired_female == null ? '' : h.hired_female}" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div><label style="font-weight:700">กำหนดเข้างาน</label><input id="mHireSched" type="text" value="${esc(formatDateDisplay(h.scheduled_start))}" placeholder="dd/mm/yyyy" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+        <div><label style="font-weight:700">เข้างานจริง</label><input id="mHireActual" type="text" value="${esc(formatDateDisplay(h.actual_start))}" placeholder="dd/mm/yyyy" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+      </div>
+      <div><label style="font-weight:700">หมายเหตุ</label><input id="mHireNote" type="text" value="${esc(h.note || '')}" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+    </div>`;
+
+  Swal.fire({
+    title: 'แก้ไขรายการรับแล้ว',
+    html: html,
+    showCancelButton: true,
+    confirmButtonText: 'บันทึก',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#2e7d32',
+    width: 520,
+    preConfirm: function(){
+      const male = Number(document.getElementById('mHireMale').value || 0);
+      const female = Number(document.getElementById('mHireFemale').value || 0);
+      if (male + female <= 0) { Swal.showValidationMessage('กรุณากรอกจำนวนรับแล้วอย่างน้อย 1 คน'); return false; }
+      return true;
+    }
+  }).then(function(result){
+    if (!result.isConfirmed) return;
+    const data = {
+      id: h.id,
+      request_id: h.request_id,
+      dept: document.getElementById('mHireDept').value,
+      position: document.getElementById('mHirePos').value,
+      hired_male: document.getElementById('mHireMale').value,
+      hired_female: document.getElementById('mHireFemale').value,
+      scheduled_start: dateDisplayToIso(document.getElementById('mHireSched').value) || '',
+      actual_start: dateDisplayToIso(document.getElementById('mHireActual').value) || '',
+      note: document.getElementById('mHireNote').value
+    };
+    showLoadOverlay('กำลังบันทึก...', 'กรุณารอสักครู่');
+    google.script.run
+      .withSuccessHandler(function(res){
+        hideLoadOverlay();
+        if (!res || !res.success) return alertError('บันทึกไม่สำเร็จ', res && res.message ? res.message : 'เกิดข้อผิดพลาด');
+        loadAll(false);
+        alertSuccess('บันทึกสำเร็จ', res.message || 'แก้ไขรายการรับแล้วเรียบร้อย');
+      })
+      .withFailureHandler(function(err){ hideLoadOverlay(); showError(err); })
+      .updateHireData(data);
+  });
+}
+
+function updateModalHirePositions(){
+  const dept = document.getElementById('mHireDept').value;
+  const sel = document.getElementById('mHirePos');
+  const current = sel.value;
+  sel.innerHTML = master.filter(function(x){ return x.dept === dept; }).map(function(x){
+    return '<option value="' + esc(x.position) + '"' + (x.position === current ? ' selected' : '') + '>' + esc(x.position) + '</option>';
+  }).join('');
+}
+
+function findRequestById(id){
+  const target = String(id || '').trim();
+  if (!target) return null;
+  let r = allRequests.find(function(x){ return String(x.id) === target; });
+  if (!r) r = openRequests.find(function(x){ return String(x.id) === target; });
+  return r || null;
+}
+
+function openTargetEditModal(r){
+  const deptOptions = departments.map(function(d){
+    return '<option value="' + esc(d.dept) + '"' + (d.dept === r.dept ? ' selected' : '') + '>' + esc(d.code + ' — ' + d.dept) + '</option>';
+  }).join('');
+  const posOptions = master.filter(function(x){ return x.dept === r.dept; }).map(function(x){
+    return '<option value="' + esc(x.position) + '"' + (x.position === r.position ? ' selected' : '') + '>' + esc(x.position) + '</option>';
+  }).join('');
+
+  const html = `
+    <div style="text-align:left;font-size:13px">
+      <div style="margin-bottom:10px"><label style="font-weight:700">แผนก *</label><select id="mTargetDept" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px" onchange="updateModalTargetPositions()">${deptOptions}</select></div>
+      <div style="margin-bottom:10px"><label style="font-weight:700">ตำแหน่งงาน *</label><select id="mTargetPos" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px">${posOptions}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div><label style="font-weight:700">เป้าหมายชาย</label><input id="mTargetMale" type="number" min="0" value="${r.target_male == null ? '' : r.target_male}" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+        <div><label style="font-weight:700">เป้าหมายหญิง</label><input id="mTargetFemale" type="number" min="0" value="${r.target_female == null ? '' : r.target_female}" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div><label style="font-weight:700">วันที่เขียนคำขอ</label><input id="mTargetReqWritten" type="text" value="${esc(formatDateDisplay(r.request_date))}" placeholder="dd/mm/yyyy" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+        <div><label style="font-weight:700">วันที่ได้รับคำขอ</label><input id="mTargetReqReceived" type="text" value="${esc(formatDateDisplay(r.hire_date))}" placeholder="dd/mm/yyyy" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+      </div>
+      <div style="margin-bottom:10px"><label style="font-weight:700">หมายเหตุ</label><input id="mTargetNote" type="text" value="${esc(r.note || '')}" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+      <div><label style="font-weight:700">หมายเหตุใบคำขอ</label><input id="mTargetReqNote" type="text" value="${esc(r.request_note || '')}" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:8px;margin-top:4px"></div>
+    </div>`;
+
+  Swal.fire({
+    title: 'แก้ไขใบคำขอ',
+    html: html,
+    showCancelButton: true,
+    confirmButtonText: 'บันทึก',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#1f4e78',
+    width: 520,
+    preConfirm: function(){
+      const male = Number(document.getElementById('mTargetMale').value || 0);
+      const female = Number(document.getElementById('mTargetFemale').value || 0);
+      if (male + female <= 0) { Swal.showValidationMessage('กรุณากรอกเป้าหมายอย่างน้อย 1 คน'); return false; }
+      return true;
+    }
+  }).then(function(result){
+    if (!result.isConfirmed) return;
+    const data = {
+      id: r.id,
+      dept: document.getElementById('mTargetDept').value,
+      position: document.getElementById('mTargetPos').value,
+      target_male: document.getElementById('mTargetMale').value,
+      target_female: document.getElementById('mTargetFemale').value,
+      request_date: dateDisplayToIso(document.getElementById('mTargetReqWritten').value) || '',
+      hire_date: dateDisplayToIso(document.getElementById('mTargetReqReceived').value) || '',
+      note: document.getElementById('mTargetNote').value,
+      request_note: document.getElementById('mTargetReqNote').value
+    };
+    showLoadOverlay('กำลังบันทึก...', 'กรุณารอสักครู่');
+    google.script.run
+      .withSuccessHandler(function(res){
+        hideLoadOverlay();
+        if (!res || !res.success) return alertError('บันทึกไม่สำเร็จ', res && res.message ? res.message : 'เกิดข้อผิดพลาด');
+        loadAll(false);
+        alertSuccess('บันทึกสำเร็จ', res.message || 'แก้ไขใบคำขอเรียบร้อย');
+      })
+      .withFailureHandler(function(err){ hideLoadOverlay(); showError(err); })
+      .updateTargetData(data);
+  });
+}
+
+function updateModalTargetPositions(){
+  const dept = document.getElementById('mTargetDept').value;
+  const sel = document.getElementById('mTargetPos');
+  const current = sel.value;
+  sel.innerHTML = master.filter(function(x){ return x.dept === dept; }).map(function(x){
+    return '<option value="' + esc(x.position) + '"' + (x.position === current ? ' selected' : '') + '>' + esc(x.position) + '</option>';
+  }).join('');
+}
+
+function loadTargetForEditById(id){
+  showLoadOverlay('กำลังดึงข้อมูล...', 'กรุณารอสักครู่');
+  google.script.run
+    .withSuccessHandler(function(rec){
+      hideLoadOverlay();
+      if (rec) { openTargetEditModal(rec); return; }
+      const cached = findRequestById(id);
+      if (cached) { openTargetEditModal(cached); return; }
+      alertWarning('ไม่พบข้อมูลนี้ในชีต', 'รายการนี้อาจถูกลบไปจาก Google Sheet แล้ว — กดรีเฟรชเพื่อดูข้อมูลล่าสุด');
+    })
+    .withFailureHandler(function(err){ hideLoadOverlay(); showError(err); })
+    .getTargetRecordById(id);
+}
+
+function scrollToPanel(id){
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function switchTab(tab){
+  try {
+    document.querySelectorAll('.tab-btn').forEach(function(btn){ btn.classList.remove('active'); });
+    document.querySelectorAll('.tab-body').forEach(function(body){ body.classList.remove('active'); });
+    if (tab === 'hire') {
+      const b = document.querySelector('.tab-btn.hire-tab');
+      const p = document.getElementById('tab-hire');
+      if (b) b.classList.add('active');
+      if (p) p.classList.add('active');
+    } else {
+      const b = document.querySelector('.tab-btn:not(.hire-tab)');
+      const p = document.getElementById('tab-target');
+      if (b) b.classList.add('active');
+      if (p) p.classList.add('active');
+    }
+  } catch(e){ console.error('switchTab', e); }
+}
+
+// editingTargetId ไม่ใช้แล้ว — แก้ไขผ่าน Modal
+
+function loadHireForEditById(id){
+  showLoadOverlay('กำลังดึงข้อมูล...', 'กรุณารอสักครู่');
+  google.script.run
+    .withSuccessHandler(function(rec){
+      hideLoadOverlay();
+      if (rec) { openHireEditModal(rec); return; }
+      const cached = allHires.find(function(x){ return String(x.id) === String(id); });
+      if (cached) { openHireEditModal(cached); return; }
+      alertWarning('ไม่พบข้อมูลนี้ในชีต', 'รายการนี้อาจถูกลบไปจาก Google Sheet แล้ว — กดรีเฟรชเพื่อดูข้อมูลล่าสุด');
+    })
+    .withFailureHandler(function(err){ hideLoadOverlay(); showError(err); })
+    .getHireRecordById(id);
+}
+
+// editingHireId ไม่ใช้แล้ว — แก้ไขผ่าน Modal
+
+function deleteTargetRecord(id, dept, position){
+  Swal.fire({
+    title: 'ยืนยันการลบ',
+    html: 'ต้องการลบใบคำขอ<br><b>' + esc(dept) + '</b> — <b>' + esc(position) + '</b> ใช่หรือไม่?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#c62828',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'ลบ',
+    cancelButtonText: 'ยกเลิก'
+  }).then(function(result){
+    if (!result.isConfirmed) return;
+    showLoadOverlay('กำลังลบข้อมูล...', 'กรุณารอสักครู่');
+    google.script.run
+      .withSuccessHandler(function(res){
+        hideLoadOverlay();
+        if (!res || !res.success) return alertError('ลบไม่สำเร็จ', res && res.message ? res.message : 'เกิดข้อผิดพลาด');
+        loadAll(false);
+        alertSuccess('ลบสำเร็จ', res.message || 'ลบใบคำขอเรียบร้อยแล้ว');
+      })
+      .withFailureHandler(function(err){ hideLoadOverlay(); showError(err); })
+      .deleteData(id);
+  });
+}
+
+function deleteHireRecord(id, dept, position){
+  Swal.fire({
+    title: 'ยืนยันการลบ',
+    html: 'ต้องการลบรายการรับแล้ว<br><b>' + esc(dept) + '</b> — <b>' + esc(position) + '</b> ใช่หรือไม่?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#c62828',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'ลบ',
+    cancelButtonText: 'ยกเลิก'
+  }).then(function(result){
+    if (!result.isConfirmed) return;
+    showLoadOverlay('กำลังลบข้อมูล...', 'กรุณารอสักครู่');
+    google.script.run
+      .withSuccessHandler(function(res){
+        hideLoadOverlay();
+        if (!res || !res.success) return alertError('ลบไม่สำเร็จ', res && res.message ? res.message : 'เกิดข้อผิดพลาด');
+        loadAll(false);
+        alertSuccess('ลบสำเร็จ', res.message || 'ลบรายการรับแล้วเรียบร้อยแล้ว');
+      })
+      .withFailureHandler(function(err){ hideLoadOverlay(); showError(err); })
+      .deleteHireData(id);
+  });
+}
+
+function showRecordActions(dept, position, options){
+  const opts = options || {};
+  const reqs = allRequests.filter(function(r){ return r.dept === dept && r.position === position; });
+  const hires = allHires.filter(function(h){ return h.dept === dept && h.position === position; });
+  if (!reqs.length && !hires.length) {
+    return alertWarning('ไม่พบข้อมูล', 'ไม่มีรายการใบคำขอหรือรับแล้วสำหรับตำแหน่งนี้');
+  }
+  // เรียงรายการล่าสุดขึ้นก่อน เพื่อให้เลือกแก้ไขได้ง่าย
+  reqs.sort(function(a,b){ return String(b.hire_date||b.request_date||'').localeCompare(String(a.hire_date||a.request_date||'')); });
+  hires.sort(function(a,b){ return String(b.actual_start||b.scheduled_start||'').localeCompare(String(a.actual_start||a.scheduled_start||'')); });
+
+  let html = '<div style="text-align:left;font-size:13px">';
+
+  if (reqs.length) {
+    html += '<div style="font-weight:700;margin-bottom:6px;color:#1f4e78">📋 ใบคำขอ / เป้าหมาย (' + reqs.length + ' รายการ)</div>';
+    reqs.forEach(function(r){
+      const total = Number(r.target) || ((Number(r.target_male)||0) + (Number(r.target_female)||0));
+      const split = (Number(r.target_male)||0) + (Number(r.target_female)||0);
+      const splitText = split > 0 ? ' <span style="color:#64748b;font-size:11px">(ช:' + num(r.target_male) + ' ญ:' + num(r.target_female) + ')</span>' : '';
+      const date = formatDateDisplay(r.hire_date) || formatDateDisplay(r.request_date) || '-';
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:4px;background:#f8fafc">'
+        + '<span style="flex:1">เป้า <b>' + num(total) + '</b> คน' + splitText + ' | ' + esc(date) + '</span>'
+        + '<button type="button" class="secondary tiny" onclick=\'Swal.close();loadTargetForEditById(' + JSON.stringify(String(r.id)) + ')\'>แก้ไข</button>'
+        + '<button type="button" class="red tiny" onclick=\'Swal.close();deleteTargetRecord(' + JSON.stringify(String(r.id)) + ',' + JSON.stringify(dept) + ',' + JSON.stringify(position) + ')\'>ลบ</button>'
+        + '</div>';
+    });
+  }
+
+  if (hires.length) {
+    html += '<div style="font-weight:700;margin:10px 0 6px;color:#2e7d32">✅ รายการรับแล้ว (' + hires.length + ' รายการ)</div>';
+    hires.forEach(function(h){
+      const hired = Number(h.hired) || ((Number(h.hired_male)||0) + (Number(h.hired_female)||0));
+      const split = (Number(h.hired_male)||0) + (Number(h.hired_female)||0);
+      const splitText = split > 0 ? ' <span style="color:#64748b;font-size:11px">(ช:' + num(h.hired_male) + ' ญ:' + num(h.hired_female) + ')</span>' : '';
+      const date = formatDateDisplay(h.actual_start) || formatDateDisplay(h.scheduled_start) || '-';
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:4px;background:#f8fafc">'
+        + '<span style="flex:1">รับ <b>' + num(hired) + '</b> คน' + splitText + ' | ' + esc(date) + '</span>'
+        + '<button type="button" class="secondary tiny" onclick=\'Swal.close();loadHireForEditById(' + JSON.stringify(String(h.id)) + ')\'>แก้ไข</button>'
+        + '<button type="button" class="red tiny" onclick=\'Swal.close();deleteHireRecord(' + JSON.stringify(String(h.id)) + ',' + JSON.stringify(dept) + ',' + JSON.stringify(position) + ')\'>ลบ</button>'
+        + '</div>';
+    });
+  }
+
+  html += '</div>';
+
+  Swal.fire({
+    title: opts.title || 'จัดการข้อมูล',
+    html: '<div style="font-size:12px;color:#64748b;margin-bottom:8px"><b>' + esc(dept) + '</b> — ' + esc(position) + '</div>'
+      + (opts.hint ? '<div style="font-size:12px;color:#1f4e78;margin-bottom:8px;font-weight:600">' + esc(opts.hint) + '</div>' : '')
+      + html,
+    showConfirmButton: false,
+    showCancelButton: true,
+    cancelButtonText: 'ปิด',
+    cancelButtonColor: '#64748b',
+    width: 520
+  });
+}
+
+// กดแก้ไข/ลบจากตาราง → เปิดModalแก้ไขทันที ไม่ต้องผ่านหน้าจัดการ
+function quickEditPosition(dept, position){
+  const reqs = allRequests.filter(function(r){ return r.dept === dept && r.position === position; });
+  const hires = allHires.filter(function(h){ return h.dept === dept && h.position === position; });
+  if (!reqs.length && !hires.length) return alertWarning('ไม่พบข้อมูล', 'ไม่มีรายการสำหรับตำแหน่งนี้');
+  // ถ้าบันทึกไว้หลายรายการ (ใบคำขอ/รับแล้วรวมกันมากกว่า 1)
+  // ให้แสดง "รายการย่อย" ให้ผู้ใช้เลือกแก้ไขทีละรายการ แทนการแก้เฉพาะรายการล่าสุด
+  if (reqs.length + hires.length > 1) {
+    return showRecordActions(dept, position, {
+      title: 'เลือกรายการที่ต้องการแก้ไข',
+      hint: 'ตำแหน่งนี้มี ' + (reqs.length + hires.length) + ' รายการที่บันทึกไว้ — กด "แก้ไข" รายการที่ต้องการแก้ไข'
+    });
+  }
+  if (reqs.length) return loadTargetForEditById(reqs[0].id);
+  return loadHireForEditById(hires[0].id);
+}
+
+function quickDeletePosition(dept, position){
+  const reqs = allRequests.filter(function(r){ return r.dept === dept && r.position === position; });
+  const hires = allHires.filter(function(h){ return h.dept === dept && h.position === position; });
+  if (!reqs.length && !hires.length) return alertWarning('ไม่พบข้อมูล', 'ไม่มีรายการสำหรับตำแหน่งนี้');
+  if (reqs.length) {
+    reqs.sort(function(a,b){ return String(b.hire_date||b.request_date||'').localeCompare(String(a.hire_date||a.request_date||'')); });
+    const r = reqs[0];
+    // ถ้ามีหลายรายการ บอกรวมและให้ไปจัดการแบบละเอียดได้
+    if (reqs.length > 1 || hires.length) {
+      return showRecordActions(dept, position);
+    }
+    return deleteTargetRecord(r.id, dept, position);
+  }
+  hires.sort(function(a,b){ return String(b.actual_start||'').localeCompare(String(a.actual_start||'')); });
+  const h = hires[0];
+  if (hires.length > 1) return showRecordActions(dept, position);
+  return deleteHireRecord(h.id, dept, position);
+}
+
+function updateSaveButtonLabel(){
+  // ปุ่มบันทึกใช้สำหรับสร้างรายการใหม่เท่านั้น — แก้ไขผ่าน Modal
+}
+
+function collectTargetForm(){
+  return {
+    dept: val('targetDept'),
+    position: val('targetPosition'),
+    target_male: val('targetMale'),
+    target_female: val('targetFemale'),
+    target_total: val('targetTotal'),
+    target_unspecified: document.getElementById('targetUnspecified').checked,
+    date: val('targetDate'),
+    note: val('targetNote'),
+    request_date: val('requestWrittenDate'),
+    hire_date: val('requestReceivedDate'),
+    request_note: val('targetRequestNote')
+  };
+}
+
+function saveTargetRecord(){
+  const btn = document.getElementById('saveTargetBtn');
+  const data = collectTargetForm();
+  if (!data.dept || !data.position) return alertWarning('ข้อมูลไม่ครบ', 'กรุณาเลือกแผนกและตำแหน่งงาน');
+  if (!data.target_unspecified && Number(data.target_male || 0) + Number(data.target_female || 0) <= 0) {
+    return alertWarning('ยังไม่ได้ระบุเป้าหมาย', 'กรุณากรอกเป้าหมายชายหรือหญิงอย่างน้อย 1 คน');
+  }
+  const dateCheck = normalizeSpecificDatesForSave(data, TARGET_DATE_FIELDS);
+  if (!dateCheck.success) return alertWarning('รูปแบบวันที่ไม่ถูกต้อง', dateCheck.message + '\nกรุณากรอกเป็น dd/mm/yyyy เช่น 31/08/2026');
+
+  setSaveButtonLoading(btn, true, 'บันทึกเป้าหมาย');
+  google.script.run
+    .withSuccessHandler(function(res){
+      setSaveButtonLoading(btn, false, 'บันทึกเป้าหมาย');
+      if (!res || !res.success) return alertError('บันทึกเป้าหมายไม่สำเร็จ', res && res.message ? res.message : 'เกิดข้อผิดพลาด');
+      resetTargetForm();
+      loadAll(false);
+      alertSuccess('บันทึกเป้าหมายสำเร็จ', res.message || 'บันทึกข้อมูลเรียบร้อยแล้ว');
+    })
+    .withFailureHandler(function(err){ setSaveButtonLoading(btn, false, 'บันทึกเป้าหมาย'); showError(err); })
+    .saveTargetData(data);
+}
+
+function collectHireForm(){
+  return {
+    request_id: val('requestRef'),
+    dept: val('hireDept'),
+    position: val('hirePosition'),
+    hired_male: val('hireMale'),
+    hired_female: val('hireFemale'),
+    hired_total: val('hiredTotal'),
+    hired_unspecified: document.getElementById('hireUnspecified').checked,
+    scheduled_start: val('hireScheduledStart'),
+    actual_start: val('hireActualStart'),
+    note: val('hireNote')
+  };
+}
+
+function saveHireRecord(){
+  const btn = document.getElementById('saveHireBtn');
+  const data = collectHireForm();
+  const req = getSelectedRequest();
+  if (!data.dept || !data.position) return alertWarning('ข้อมูลไม่ครบ', 'กรุณาเลือกแผนกและตำแหน่งงาน');
+  if (!data.request_id) return alertWarning('ยังไม่ได้เลือกรอบคำขอ', 'กรุณาเลือกรอบคำขอ/วันที่ได้รับคำขอก่อนบันทึกรับแล้ว');
+  const total = Number(data.hired_male || 0) + Number(data.hired_female || 0);
+  if (total <= 0) return alertWarning('ยังไม่ได้กรอกจำนวนรับแล้ว', 'กรุณากรอกจำนวนชายหรือหญิงอย่างน้อย 1 คน');
+  if (!req) return alertWarning('ยังไม่ได้เลือกรอบคำขอ', 'กรุณาเลือกรอบคำขอ/วันที่ได้รับคำขอก่อนบันทึกรับแล้ว');
+  if (total > Number(req.remaining || 0)) return alertWarning('จำนวนเกินอัตราคงเหลือ', 'รอบคำขอนี้เหลือ ' + num(req.remaining) + ' คน แต่กำลังกรอก ' + num(total) + ' คน');
+
+  const dateCheck = normalizeSpecificDatesForSave(data, HIRE_DATE_FIELDS);
+  if (!dateCheck.success) return alertWarning('รูปแบบวันที่ไม่ถูกต้อง', dateCheck.message + '\nกรุณากรอกเป็น dd/mm/yyyy เช่น 31/08/2026');
+  if (req && req.received_request_date && data.actual_start && data.actual_start < req.received_request_date) {
+    return alertWarning('วันที่ไม่ถูกต้อง', 'วันเข้างานจริงต้องไม่น้อยกว่าวันที่ได้รับคำขอ');
+  }
+
+  setSaveButtonLoading(btn, true, 'บันทึกรับแล้ว');
+  google.script.run
+    .withSuccessHandler(function(res){
+      setSaveButtonLoading(btn, false, 'บันทึกรับแล้ว');
+      if (!res || !res.success) return alertError('บันทึกรับแล้วไม่สำเร็จ', res && res.message ? res.message : 'เกิดข้อผิดพลาด');
+      resetHireForm();
+      loadAll(false);
+      alertSuccess('บันทึกรับแล้วสำเร็จ', res.message || 'บันทึกข้อมูลเรียบร้อยแล้ว');
+    })
+    .withFailureHandler(function(err){ setSaveButtonLoading(btn, false, 'บันทึกรับแล้ว'); showError(err); })
+    .saveHireData(data);
+}
+
+function addNewPosition(source){
+  const dept = source === 'hire' ? val('hireDept') : val('targetDept');
+  if (!dept) return alertWarning('ยังไม่ได้เลือกแผนก', 'กรุณาเลือกแผนกก่อนเพิ่มตำแหน่งงาน');
+
+  Swal.fire({
+    title:'เพิ่มตำแหน่งงานใหม่', text:dept, input:'text', inputLabel:'ชื่อตำแหน่งงาน',
+    inputPlaceholder:'กรอกชื่อตำแหน่งงาน', showCancelButton:true,
+    confirmButtonText:'เพิ่มตำแหน่ง', cancelButtonText:'ยกเลิก', confirmButtonColor:'#1f4e78',
+    inputValidator:(value)=>{ if (!value || !value.trim()) return 'กรุณากรอกชื่อตำแหน่งงาน'; }
+  }).then(function(result){
+    if (!result.isConfirmed) return;
+    const p = String(result.value || '').trim();
+    showLoadOverlay('กำลังเพิ่มตำแหน่ง...', 'กำลังบันทึกตำแหน่งใหม่ลง MasterPositions');
+    google.script.run
+      .withSuccessHandler(function(res){
+        if (!res || !res.success) { hideLoadOverlay(); return alertError('เพิ่มตำแหน่งไม่สำเร็จ', res && res.message ? res.message : 'เกิดข้อผิดพลาด'); }
+        google.script.run
+          .withSuccessHandler(function(list){
+            hideLoadOverlay();
+            master = list || [];
+            // rebuild departments from new master so dept selector stays in sync
+            departments = (function(m){
+              const map={}; m.forEach(function(x){ if(!map[x.dept]) map[x.dept]={code:x.code,dept:x.dept}; });
+              return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return a.code.localeCompare(b.code);});
+            })(master);
+            fillDepartments();
+            if (source === 'hire') { document.getElementById('hireDept').value=dept; refreshHirePositionOptions(p); }
+            else { document.getElementById('targetDept').value=dept; refreshTargetPositionOptions(p); }
+            alertSuccess('เพิ่มตำแหน่งสำเร็จ', res.message || p);
+          })
+          .withFailureHandler(function(err){ hideLoadOverlay(); showError(err); })
+          .getMasterPositions();
+      })
+      .withFailureHandler(function(err){ hideLoadOverlay(); showError(err); })
+      .addPosition(dept, p);
+  });
+}
+
+function resetTargetForm(){
+  setVal('targetDept','');
+  syncSearchable('targetDept');
+  setVal('targetPosition','');
+  syncSearchable('targetPosition');
+  setVal('targetMale',''); setVal('targetFemale',''); setVal('targetTotal',0);
+  document.getElementById('targetUnspecified').checked = false;
+  toggleTargetGenderInputs();
+  setVal('targetDate', formatDateDisplay(new Date()));
+  setVal('requestWrittenDate',''); setVal('requestReceivedDate','');
+  setVal('targetNote',''); setVal('targetRequestNote','');
+  refreshTargetPositionOptions();
+}
+
+function resetHireForm(){
+  setVal('hireDept','');
+  syncSearchable('hireDept');
+  setVal('hirePosition','');
+  syncSearchable('hirePosition');
+  setVal('requestRef','');
+  syncSearchable('requestRef');
+  setVal('hireMale',''); setVal('hireFemale',''); setVal('hiredTotal',0);
+  document.getElementById('hireUnspecified').checked = false;
+  toggleHireGenderInputs();
+  setVal('hireScheduledStart',''); setVal('hireActualStart',''); setVal('hireNote','');
+  onRequestSelected();
+}
+
+function toggleTargetGenderInputs() {
+  const isChecked = document.getElementById('targetUnspecified').checked;
+  const m = document.getElementById('targetMale');
+  const f = document.getElementById('targetFemale');
+  const t = document.getElementById('targetTotal');
+  if (isChecked) {
+    m.value = ''; m.disabled = true;
+    f.value = ''; f.disabled = true;
+    t.readOnly = false;
+    t.style.background = '#fff';
+    t.focus();
+  } else {
+    m.disabled = false;
+    f.disabled = false;
+    t.readOnly = true;
+    t.style.background = '#f1f5f9';
+    calculateTargetTotal();
+  }
+}
+
+function toggleHireGenderInputs() {
+  const isChecked = document.getElementById('hireUnspecified').checked;
+  const m = document.getElementById('hireMale');
+  const f = document.getElementById('hireFemale');
+  const t = document.getElementById('hiredTotal');
+  if (isChecked) {
+    m.value = ''; m.disabled = true;
+    f.value = ''; f.disabled = true;
+    t.readOnly = false;
+    t.style.background = '#fff';
+    t.focus();
+  } else {
+    m.disabled = false;
+    f.disabled = false;
+    t.readOnly = true;
+    t.style.background = '#f1f5f9';
+    calculateHiredTotal();
+  }
+}
+
+function calculateTargetTotal(){
+  if (!document.getElementById('targetUnspecified').checked) {
+    setVal('targetTotal', Number(val('targetMale') || 0) + Number(val('targetFemale') || 0));
+  }
+}
+
+function calculateHiredTotal(){
+  if (!document.getElementById('hireUnspecified').checked) {
+    setVal('hiredTotal', Number(val('hireMale') || 0) + Number(val('hireFemale') || 0));
+  }
+}
+
+function updateRecruitmentDaysPreview(){
+  const el = document.getElementById('recruitmentDaysPreview');
+  if (!el) return;
+  const req = getSelectedRequest();
+  const receivedIso = req ? req.received_request_date : '';
+  const actualIso = dateDisplayToIso(val('hireActualStart'));
+  if (!receivedIso || !actualIso) {
+    el.textContent = '-'; el.className = 'vacancy-preview'; return;
+  }
+  const received = new Date(receivedIso + 'T00:00:00Z');
+  const actual = new Date(actualIso + 'T00:00:00Z');
+  const days = Math.round((actual.getTime() - received.getTime()) / 86400000);
+  if (days < 0) {
+    el.textContent = 'วันที่ไม่ถูกต้อง'; el.className = 'vacancy-preview danger'; return;
+  }
+  el.textContent = num(days) + ' วัน'; el.className = 'vacancy-preview success';
+}
+
+// =========================================================
+// DATE FORMAT: dd/mm/yyyy
+// หน้าจอแสดง dd/mm/yyyy แต่ก่อนส่ง Backend จะแปลงเป็น yyyy-mm-dd
+// =========================================================
+const TARGET_DATE_FIELDS = [
+  { id:'targetDate', key:'date', label:'วันที่บันทึก' },
+  { id:'requestWrittenDate', key:'request_date', label:'วันที่เขียนคำขอ' },
+  { id:'requestReceivedDate', key:'hire_date', label:'วันที่ได้รับคำขอ' }
+];
+const HIRE_DATE_FIELDS = [
+  { id:'hireScheduledStart', key:'scheduled_start', label:'กำหนดเข้างาน' },
+  { id:'hireActualStart', key:'actual_start', label:'เข้างานจริง' }
+];
+const DATE_FIELDS = TARGET_DATE_FIELDS.concat(HIRE_DATE_FIELDS);
+
+function pad2(v){ return String(v).padStart(2,'0'); }
+
+function formatDateDisplay(value){
+  if (value === undefined || value === null || value === '') return '';
+
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    return pad2(value.getDate()) + '/' + pad2(value.getMonth()+1) + '/' + value.getFullYear();
+  }
+
+  const text = String(value).trim();
+  if (!text) return '';
+
+  // yyyy-mm-dd หรือ ISO timestamp
+  let m = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/);
+  if (m) return m[3] + '/' + m[2] + '/' + m[1];
+
+  // dd/mm/yyyy อยู่แล้ว
+  m = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if (m) return pad2(m[1]) + '/' + pad2(m[2]) + '/' + m[3];
+
+  const d = new Date(text);
+  if (!isNaN(d.getTime())) {
+    return pad2(d.getDate()) + '/' + pad2(d.getMonth()+1) + '/' + d.getFullYear();
+  }
+  return text;
+}
+
+function formatDateTimeDisplay(value){
+  const d = value instanceof Date ? value : new Date(value);
+  if (isNaN(d.getTime())) return formatDateDisplay(value);
+  return formatDateDisplay(d) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+}
+
+function dateDisplayToIso(value){
+  const text = String(value || '').trim();
+  if (!text) return '';
+
+  let m = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) {
+    return isValidDateParts(Number(m[1]), Number(m[2]), Number(m[3])) ? text : null;
+  }
+
+  m = text.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if (!m) return null;
+
+  const day = Number(m[1]);
+  const month = Number(m[2]);
+  const year = Number(m[3]);
+  if (!isValidDateParts(year, month, day)) return null;
+  return year + '-' + pad2(month) + '-' + pad2(day);
+}
+
+function isValidDateParts(year, month, day){
+  if (year < 1900 || year > 9999 || month < 1 || month > 12 || day < 1 || day > 31) return false;
+  const d = new Date(year, month - 1, day);
+  return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day;
+}
+
+function normalizeSpecificDatesForSave(data, fields){
+  for (const f of fields) {
+    const raw = String(val(f.id) || '').trim();
+    const iso = dateDisplayToIso(raw);
+    const el = document.getElementById(f.id);
+    if (raw && !iso) {
+      if (el) el.classList.add('invalid-date');
+      return { success:false, message:f.label + ' ไม่ถูกต้อง' };
+    }
+    if (el) el.classList.remove('invalid-date');
+    data[f.key] = iso || '';
+  }
+  return { success:true };
+}
+
+function setupDateInputs(){
+  if (setupDateInputs._done) return; // กันแนบ listener ซ้ำ (login ใหม่ + เซสชันอัตโนมัติ)
+  setupDateInputs._done = true;
+  DATE_FIELDS.forEach(function(f){
+    const el = document.getElementById(f.id);
+    if (!el) return;
+
+    el.addEventListener('input', function(){
+      // input mask: 31082026 -> 31/08/2026
+      const digits = this.value.replace(/\D/g,'').slice(0,8);
+      let out = digits;
+      if (digits.length > 4) out = digits.slice(0,2) + '/' + digits.slice(2,4) + '/' + digits.slice(4);
+      else if (digits.length > 2) out = digits.slice(0,2) + '/' + digits.slice(2);
+      this.value = out;
+      this.classList.remove('invalid-date');
+      if (f.id === 'hireActualStart') updateRecruitmentDaysPreview();
+    });
+
+    el.addEventListener('blur', function(){
+      if (!this.value.trim()) {
+        this.classList.remove('invalid-date');
+        return;
+      }
+      const iso = dateDisplayToIso(this.value);
+      if (iso) {
+        this.value = formatDateDisplay(iso);
+        this.classList.remove('invalid-date');
+      } else {
+        this.classList.add('invalid-date');
+      }
+      if (f.id === 'hireActualStart') updateRecruitmentDaysPreview();
+    });
+  });
+}
+
+// =========================================================
+// LOAD OVERLAY
+// =========================================================
+function showLoadOverlay(title = 'กำลังโหลดข้อมูล...', text = 'กรุณารอสักครู่'){
+  const overlay = document.getElementById('loadOverlay');
+  if (!overlay) return;
+  document.getElementById('loadOverlayTitle').textContent = title;
+  document.getElementById('loadOverlayText').textContent = text;
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function updateLoadOverlay(title, text){
+  const overlay = document.getElementById('loadOverlay');
+  if (!overlay || !overlay.classList.contains('show')) {
+    showLoadOverlay(title, text);
+    return;
+  }
+  if (title !== undefined) document.getElementById('loadOverlayTitle').textContent = title;
+  if (text !== undefined) document.getElementById('loadOverlayText').textContent = text;
+}
+
+function hideLoadOverlay(){
+  const overlay = document.getElementById('loadOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+// =========================================================
+// SAVE BUTTON LOADING STATE
+// =========================================================
+function setSaveButtonLoading(btn, loading, originalText){
+  if (!btn) return;
+  if (loading) {
+    btn.dataset.originalText = originalText !== undefined ? originalText : btn.textContent;
+    btn.disabled = true;
+    btn.classList.add('disabled');
+    btn.innerHTML = '<span class="btn-spinner"></span> กำลังบันทึกข้อมูล...';
+  } else {
+    btn.disabled = false;
+    btn.classList.remove('disabled');
+    btn.textContent = btn.dataset.originalText || originalText || btn.textContent;
+  }
+}
+
+function val(id){ return document.getElementById(id).value; }
+function setVal(id,v){ document.getElementById(id).value = v; }
+function num(v){ return Number(v||0).toLocaleString('th-TH'); }
+function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+function jsEsc(v){ return String(v).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function showError(e){
+  const message = (e && e.message) ? e.message : String(e || 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ');
+  alertError('เกิดข้อผิดพลาด', message);
+}
+
+function alertSuccess(title, text){
+  return Swal.fire({
+    icon: 'success',
+    title: title || 'สำเร็จ',
+    text: text || '',
+    confirmButtonText: 'ตกลง',
+    confirmButtonColor: '#1f4e78',
+    timer: 2200,
+    timerProgressBar: true
+  });
+}
+
+function alertError(title, text){
+  return Swal.fire({
+    icon: 'error',
+    title: title || 'เกิดข้อผิดพลาด',
+    text: text || '',
+    confirmButtonText: 'ตกลง',
+    confirmButtonColor: '#c62828'
+  });
+}
+
+function alertWarning(title, text){
+  return Swal.fire({
+    icon: 'warning',
+    title: title || 'กรุณาตรวจสอบข้อมูล',
+    text: text || '',
+    confirmButtonText: 'ตกลง',
+    confirmButtonColor: '#1f4e78'
+  });
+}
+</script>
+</body>
+</html>

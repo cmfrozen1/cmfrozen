@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "LINE BOT MCP",
+  "version": "1.0.3",
+  "description": "LINE inbox ครบวงจร — อ่าน/ไม่อ่าน สมบูรณ์, ปุ่มย้อนกลับ/หลับ, รหัสตัวเลข, AI multi-provider",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "LINE BOT MCP — Inbox",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage", "alarms", "notifications", "sidePanel"],
+  "host_permissions": [
+    "https://script.google.com/*",
+    "https://script.googleusercontent.com/*",
+    "https://lh3.googleusercontent.com/*",
+    "https://drive.google.com/*",
+    "https://ui-avatars.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.openai.com/*",
+    "https://api.anthropic.com/*",
+    "https://api.chnwt.dev/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.html", "popup.js", "sweetalert2.min.js", "fontawesome.min.css", "icons/*", "webfonts/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

@@ -1,0 +1,1379 @@
+<html lang="th"><head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบประเมินและวิเคราะห์ความเครียดด้วยตนเอง</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>        :root {
+            --ink: #0f1636;
+            --ink-soft: #4a5480;
+            --blue: #2563eb;
+            --cyan: #22d3ff;
+            --card: rgba(255, 255, 255, 0.96);
+            --radius: 18px;
+            --shadow: 0 24px 50px rgba(2, 6, 40, 0.45);
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'Sarabun', 'TH Sarabun New', sans-serif; margin: 0 auto; max-width: 880px; color: #eaf1ff; line-height: 1.6; padding: 26px 16px 70px; position: relative; z-index: 1; }
+        .header { text-align: center; margin-bottom: 18px; position: relative; }
+        .header h2 {
+            position: relative; display: inline-block; margin: 0; overflow: hidden;
+            font-family: 'Kanit', sans-serif; font-weight: 700; font-size: clamp(20px, 4.4vw, 28px);
+            padding: 14px 34px; border-radius: 999px; color: #fff;
+            background: linear-gradient(180deg, #5ec8ff 0%, #2f6bff 45%, #1e3a8a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.55), inset 0 -10px 20px rgba(0,0,0,0.25), 0 14px 30px rgba(37,99,255,0.45);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+            animation: floaty 4s ease-in-out infinite;
+        }
+        .header h2::after {
+            content: ''; position: absolute; top: 0; bottom: 0; width: 45%; left: -60%;
+            background: linear-gradient(105deg, transparent, rgba(255,255,255,0.75), transparent);
+            transform: skewX(-18deg); animation: shine 3.6s ease-in-out 2s infinite;
+        }
+        .instructions {
+            text-align: center; margin-bottom: 18px; font-size: 15px; color: #dbe7ff;
+            background: rgba(255, 255, 255, 0.08); border: 1px dashed rgba(148, 197, 255, 0.5);
+            padding: 12px 18px; border-radius: 14px; backdrop-filter: blur(6px);
+        }
+        #stressForm {
+            background: transparent;
+            color: var(--ink); padding: 0; border-radius: var(--radius);
+            border: none;
+            box-shadow: none;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 14px; background: #fff; border: 1px solid #b9cdf2; border-radius: 12px; overflow: hidden; }
+        th, td { border: 1px solid #c8d8f5; padding: 7px 9px; vertical-align: middle; }
+        th { font-family: 'Kanit', sans-serif; font-weight: 600; text-align: center; color: #12205a; background: linear-gradient(180deg, #f7fbff, #dce9ff); }
+        thead tr:first-child th { background: linear-gradient(180deg, #3d7dff, #1e4fd6); color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.35); border-color: #2c5ce0; }
+        thead tr:last-child th { background: linear-gradient(180deg, #f2f7ff, #d7e6ff); color: #1c2f78; }
+        tbody tr:nth-child(odd) { background: #f4f8ff; }
+        tbody tr:hover { background: #e6f2ff; }
+        tbody td:first-child { font-weight: 600; color: #16204d; }
+        tfoot td { background: linear-gradient(180deg, #f3f7ff, #e4ecff); border-color: #b9cdf2; font-weight: bold; color: #1c2f78; }
+        .col-question { text-align: left; width: 60%; }
+        .col-score { width: 10%; text-align: center; }
+        .col-score small { color: #4b5da3; font-weight: 500; }
+        .center-text { text-align: center; }
+        .right-text { text-align: right; font-weight: bold; }
+        input[type="radio"] {
+            appearance: none; -webkit-appearance: none; cursor: pointer; width: 18px; height: 18px;
+            border-radius: 50%; border: 2px solid #94a3d8; margin: 0; vertical-align: middle;
+            background: radial-gradient(circle at 30% 30%, #fff, #e2e8f0);
+            transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+        }
+        input[type="radio"]:hover { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(37, 99, 255, 0.15); }
+        input[type="radio"]:checked {
+            border-color: var(--blue); transform: scale(1.12);
+            background: radial-gradient(circle, #fff 0 25%, var(--blue) 27% 100%);
+            box-shadow: 0 0 12px rgba(37, 99, 255, 0.6);
+        }
+        input[type="radio"]:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+        .btn-container { text-align: center; margin-top: 24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .btn-submit, .btn-pdf, .btn-print {
+            position: relative; overflow: hidden;
+            font-family: 'Kanit', sans-serif; font-weight: 600; color: #fff;
+            border: none; border-radius: 999px; padding: 13px 26px; font-size: 16px; cursor: pointer;
+            letter-spacing: 0.2px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -8px 16px rgba(0,0,0,0.22), 0 10px 20px rgba(4,10,50,0.3);
+            transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+        }
+        .btn-submit::after, .btn-pdf::after, .btn-print::after {
+            content: ''; position: absolute; left: 8%; right: 8%; top: 3px; height: 38%; border-radius: 99px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0)); pointer-events: none;
+        }
+        .btn-submit { background: linear-gradient(180deg, #57e39a, #16a34a 55%, #12813c); }
+        .btn-pdf { background: linear-gradient(180deg, #7cc4ff, #2563eb 55%, #1d4ed8); }
+        .btn-print { background: linear-gradient(180deg, #d3a6ff, #9333ea 55%, #7e22ce); }
+        .btn-submit:hover, .btn-pdf:hover, .btn-print:hover {
+            transform: translateY(-2px); filter: brightness(1.08) saturate(1.1);
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.55), 0 14px 26px rgba(4,10,50,0.38);
+        }
+        .btn-submit:active, .btn-pdf:active, .btn-print:active { transform: translateY(1px) scale(0.98); filter: brightness(0.96); }
+        .btn-submit:focus-visible, .btn-pdf:focus-visible, .btn-print:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+        .btn-submit:disabled, .btn-pdf:disabled, .btn-print:disabled {
+            background: linear-gradient(180deg, #e2e8f0, #b6c0d3); color: #7b869c;
+            box-shadow: none; cursor: not-allowed; transform: none; filter: none; text-shadow: none;
+        }
+        .btn-submit:disabled::after, .btn-pdf:disabled::after, .btn-print:disabled::after { display: none; }
+        #loading { display: none; text-align: center; margin-top: 16px; font-weight: bold; color: #1d4ed8; font-size: 15px; }
+        #loading::before {
+            content: ''; display: inline-block; width: 15px; height: 15px; margin-right: 9px;
+            border: 3px solid #bfdbfe; border-top-color: #2563eb; border-radius: 50%;
+            animation: spin 0.8s linear infinite; vertical-align: -3px;
+        }
+
+        /* ===== Dialog แจ้งเตือนในหน้า (แทน alert ธรรมดา) ===== */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 10000; display: none;
+            align-items: center; justify-content: center; padding: 20px;
+            background: rgba(4, 8, 30, 0.62); backdrop-filter: blur(5px);
+        }
+        .modal-overlay.open { display: flex; animation: fadeIn 0.18s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box {
+            width: min(430px, 100%); border-radius: 20px; padding: 26px 24px 20px;
+            text-align: center; color: var(--ink);
+            background: linear-gradient(180deg, #ffffff, #eef4ff);
+            border: 2px solid #2563eb;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff;
+            animation: popIn 0.3s cubic-bezier(0.2, 1.35, 0.4, 1);
+        }
+        .modal-icon {
+            font-size: 40px; line-height: 1; margin-bottom: 10px;
+            animation: bounceIn 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
+        }
+        @keyframes bounceIn { 0% { transform: scale(0.2); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+        /* ===== ไอคอน Font Awesome (แทน emoji เดิม: แสดงผลเหมือนกันทุกอุปกรณ์/ทุกภาษา) ===== */
+        i.fa-solid, i.fa-regular, i.fa-brands {
+            font-style: normal; display: inline-block; line-height: 1;
+            vertical-align: -0.125em; margin-right: 0.4em;
+        }
+        i.ico-end { margin-right: 0; margin-left: 0.35em; }
+        .modal-overlay[data-type="success"] .modal-icon { color: #16a34a; }
+        .modal-overlay[data-type="error"] .modal-icon { color: #ef4444; }
+        .modal-overlay[data-type="warning"] .modal-icon { color: #f59e0b; }
+        .modal-overlay[data-type="info"] .modal-icon { color: #2563eb; }
+        .splash-logo i { color: #ffd54a; }
+        .modal-msg {
+            font-size: 16px; font-weight: 600; color: #1e2a5a; line-height: 1.6;
+            white-space: pre-line; word-break: break-word;
+        }
+        .modal-btn {
+            margin-top: 20px; min-width: 130px;
+            font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 16px; color: #fff;
+            border: none; border-radius: 999px; padding: 11px 30px; cursor: pointer;
+            background: linear-gradient(180deg, #7cc4ff, #2563eb 55%, #1d4ed8);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -8px 16px rgba(0,0,0,0.22), 0 10px 20px rgba(4,10,50,0.3);
+            transition: transform 0.15s, filter 0.15s;
+        }
+        .modal-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+        .modal-btn:active { transform: translateY(1px) scale(0.98); }
+        .modal-btn:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+        .modal-overlay[data-type="success"] .modal-box { border-color: #16a34a; }
+        .modal-overlay[data-type="error"] .modal-box { border-color: #ef4444; }
+        .modal-overlay[data-type="warning"] .modal-box { border-color: #f59e0b; }
+        .modal-overlay[data-type="info"] .modal-box { border-color: #2563eb; }
+
+        /* ===== พื้นหลังแบบอวกาศ + ลูกโป่งลอย (กลิ่นอายเว็บ Flash ยุคเก่า) ===== */
+        .fx-bg {
+            position: fixed; inset: 0; z-index: -2;
+            background:
+                radial-gradient(1100px 700px at 12% -10%, rgba(124, 58, 237, 0.55), transparent 60%),
+                radial-gradient(1000px 700px at 110% 10%, rgba(37, 99, 255, 0.5), transparent 55%),
+                radial-gradient(900px 900px at 50% 120%, rgba(34, 211, 255, 0.28), transparent 60%),
+                linear-gradient(165deg, #0a0e2e 0%, #151046 48%, #050a22 100%);
+        }
+        .fx-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+        .fx-orbs span {
+            position: absolute; top: 0; left: 8%; width: 64px; height: 64px; border-radius: 50%; opacity: 0;
+            background: radial-gradient(circle at 32% 30%, rgba(255,255,255,0.95), rgba(56,189,248,0.4) 45%, rgba(56,189,248,0) 72%);
+            animation: orbRise 18s linear infinite;
+        }
+        .fx-orbs span:nth-child(2) { left: 28%; width: 34px; height: 34px; animation-duration: 13s; animation-delay: -4s;
+            background: radial-gradient(circle at 32% 30%, rgba(255,255,255,0.9), rgba(255,176,32,0.45) 45%, rgba(255,176,32,0) 72%); }
+        .fx-orbs span:nth-child(3) { left: 54%; width: 86px; height: 86px; animation-duration: 22s; animation-delay: -9s; }
+        .fx-orbs span:nth-child(4) { left: 72%; width: 44px; height: 44px; animation-duration: 15s; animation-delay: -2s;
+            background: radial-gradient(circle at 32% 30%, rgba(255,255,255,0.9), rgba(196,132,252,0.5) 45%, rgba(196,132,252,0) 72%); }
+        .fx-orbs span:nth-child(5) { left: 90%; width: 56px; height: 56px; animation-duration: 19s; animation-delay: -12s; }
+        @keyframes orbRise {
+            0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+            12% { opacity: 0.65; }
+            85% { opacity: 0.5; }
+            100% { transform: translateY(-25vh) scale(1.15); opacity: 0; }
+        }
+
+        /* ===== Splash / Preloader แบบ Flash สมัยก่อน ===== */
+        #splash {
+            position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle at 50% 40%, #1b1464, #070b28 70%);
+            animation: splashOut 0.5s ease 1.6s forwards;
+        }
+        @keyframes splashOut { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+        .splash-box {
+            text-align: center; padding: 34px 40px; border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.28);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+            backdrop-filter: blur(10px);
+            animation: splashIn 0.6s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+        }
+        @keyframes splashIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .splash-logo {
+            font-family: 'Kanit', sans-serif; font-weight: 800; font-size: 30px; letter-spacing: 1px;
+            background: linear-gradient(180deg, #fff 20%, #8fd4ff 60%, #3b82f6);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .splash-sub { font-size: 14px; color: #c9d8ff; margin-top: 4px; }
+        .splash-bar {
+            width: 230px; height: 14px; margin: 18px auto 8px; border-radius: 99px;
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35);
+            overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+        }
+        .splash-bar i {
+            display: block; height: 100%; width: 0; border-radius: 99px;
+            background: linear-gradient(90deg, #22d3ff, #7c3aed 55%, #ffb020);
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.9);
+            animation: loadBar 1.5s cubic-bezier(0.5, 0.1, 0.3, 1) forwards;
+        }
+        @keyframes loadBar { 0% { width: 4%; } 35% { width: 52%; } 70% { width: 78%; } 100% { width: 100%; } }
+        .splash-tip { font-size: 13px; color: #9fb6ef; }
+
+        /* ===== แอนิเมชันอื่น ๆ ===== */
+        @keyframes shine { 0% { left: -60%; } 55% { left: 130%; } 100% { left: 130%; } }
+        @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.92) translateY(14px); } 100% { opacity: 1; transform: none; } }
+        @keyframes rowIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        #questionBody tr { animation: rowIn 0.45s ease backwards; }
+        #questionBody tr:nth-child(1) { animation-delay: 0.02s; }
+        #questionBody tr:nth-child(2) { animation-delay: 0.05s; }
+        #questionBody tr:nth-child(3) { animation-delay: 0.08s; }
+        #questionBody tr:nth-child(4) { animation-delay: 0.11s; }
+        #questionBody tr:nth-child(5) { animation-delay: 0.14s; }
+        #questionBody tr:nth-child(6) { animation-delay: 0.17s; }
+        #questionBody tr:nth-child(7) { animation-delay: 0.2s; }
+        #questionBody tr:nth-child(8) { animation-delay: 0.23s; }
+        #questionBody tr:nth-child(9) { animation-delay: 0.26s; }
+        #questionBody tr:nth-child(10) { animation-delay: 0.29s; }
+        #questionBody tr:nth-child(11) { animation-delay: 0.32s; }
+        #questionBody tr:nth-child(12) { animation-delay: 0.35s; }
+        #questionBody tr:nth-child(13) { animation-delay: 0.38s; }
+        #questionBody tr:nth-child(14) { animation-delay: 0.41s; }
+        #questionBody tr:nth-child(15) { animation-delay: 0.44s; }
+        #questionBody tr:nth-child(16) { animation-delay: 0.47s; }
+        #questionBody tr:nth-child(17) { animation-delay: 0.5s; }
+        #questionBody tr:nth-child(18) { animation-delay: 0.53s; }
+        #questionBody tr:nth-child(19) { animation-delay: 0.56s; }
+        #questionBody tr:nth-child(20) { animation-delay: 0.59s; }
+
+        /* ===== CAI Wizard: แสดงทีละข้อ + ปุ่ม ถัดไป/ย้อนกลับ ===== */
+        .wizard-hud {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            background: linear-gradient(180deg, #101a4a, #1d2d73);
+            border: 1px solid rgba(122, 168, 255, 0.45);
+            border-radius: 16px; padding: 10px 14px; margin-bottom: 16px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 10px 22px rgba(3,8,40,0.35);
+        }
+        .hud-chip {
+            font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 14px; color: #08123f;
+            background: linear-gradient(180deg, #ffeab0, #ffc23d);
+            border-radius: 999px; padding: 6px 14px; white-space: nowrap;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.75), 0 4px 10px rgba(0,0,0,0.35);
+        }
+        .hud-bar {
+            flex: 1 1 160px; min-width: 120px; height: 16px; border-radius: 999px;
+            background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.3);
+            overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+        }
+        .hud-bar i {
+            display: block; height: 100%; width: 0%; border-radius: 999px;
+            background: linear-gradient(90deg, #22d3ff, #7c3aed 55%, #ffb020);
+            box-shadow: 0 0 12px rgba(56,189,248,0.85); transition: width 0.45s ease;
+        }
+        .hud-pct { font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 14px; color: #cfe0ff; }
+        .hud-done { font-size: 13px; color: #9fd8ff; white-space: nowrap; }
+        .step { display: none; }
+        .step.active { display: block; animation: stepIn 0.4s cubic-bezier(0.2, 1.2, 0.4, 1) both; }
+        @keyframes stepIn { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
+        .q-card {
+            background: linear-gradient(180deg, #ffffff, #f2f7ff);
+            color: var(--ink); border-radius: var(--radius); padding: 20px 18px 18px;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: var(--shadow), inset 0 1px 0 #fff;
+        }
+        .q-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .q-num {
+            font-family: 'Kanit', sans-serif; font-weight: 800; font-size: 15px; color: #fff;
+            background: linear-gradient(180deg, #5ec8ff, #2f6bff 55%, #1e3a8a);
+            border-radius: 14px; padding: 8px 14px; white-space: nowrap;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), 0 8px 16px rgba(37,99,255,0.4);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+        }
+        .q-text {
+            font-family: 'Kanit', sans-serif; font-weight: 600;
+            font-size: clamp(17px, 3.6vw, 21px); color: #12205a; line-height: 1.45;
+        }
+        .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .choice {
+            position: relative; display: flex; align-items: center; gap: 12px; cursor: pointer;
+            padding: 13px 14px; border-radius: 14px;
+            background: linear-gradient(180deg, #ffffff, #edf3ff);
+            border: 2px solid #c9d8f7;
+            box-shadow: 0 6px 14px rgba(20,45,120,0.12), inset 0 1px 0 #fff;
+            transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s, background 0.15s;
+        }
+        .choice:hover { transform: translateY(-2px); border-color: #7ea6ff; }
+        .choice input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+        .choice .choice-score {
+            font-family: 'Kanit', sans-serif; font-weight: 800; font-size: 21px;
+            width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; color: #1e3a8a; border: 2px solid #b7c9f2;
+            background: radial-gradient(circle at 30% 25%, #ffffff, #dbe7ff);
+        }
+        .choice .choice-label { font-weight: 600; font-size: 16px; color: #25306b; }
+        .choice.selected {
+            border-color: #16a34a;
+            background: linear-gradient(180deg, #f4fff8, #dcfce7);
+            box-shadow: 0 10px 20px rgba(22,163,74,0.25), inset 0 1px 0 #fff;
+            transform: translateY(-2px);
+        }
+        .choice.selected .choice-score {
+            color: #fff; border-color: #0f7a37;
+            background: radial-gradient(circle at 30% 25%, #6ee7a8, #16a34a 60%, #12813c);
+            box-shadow: 0 0 14px rgba(22,163,74,0.55);
+        }
+        .choice.selected .choice-label { color: #14532d; }
+        .choice:focus-within { outline: 3px solid var(--cyan); outline-offset: 3px; }
+        .q-hint {
+            margin-top: 14px; font-size: 14px; color: #4b5da3;
+            background: #eef4ff; border: 1px dashed #a9c0f5; border-radius: 10px; padding: 8px 12px;
+        }
+        .legend-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
+        .legend-chip {
+            font-size: 13.5px; color: #1e2a5a; background: #fff; border: 1px solid #c3d3f2;
+            border-radius: 999px; padding: 6px 13px; box-shadow: 0 3px 8px rgba(20,45,120,0.1);
+        }
+        .legend-chip b {
+            display: inline-block; min-width: 22px; text-align: center; color: #fff;
+            background: linear-gradient(180deg, #5ec8ff, #2f6bff); border-radius: 999px;
+            padding: 1px 6px; margin-right: 6px; font-family: 'Kanit', sans-serif;
+        }
+        .summary-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(238,246,255,0.97));
+            color: var(--ink); border-radius: var(--radius); padding: 20px 18px;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: var(--shadow), inset 0 1px 0 #fff; margin-bottom: 16px;
+        }
+        .summary-title {
+            font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 18px; color: #12205a;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+        }
+        .summary-who {
+            font-size: 14.5px; color: #4b5da3; margin-bottom: 14px;
+            padding-bottom: 10px; border-bottom: 1px dashed #b9cdf2;
+        }
+        #totalDisplay { color: #2563eb; }
+        .wizard-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+        .btn-nav {
+            position: relative; overflow: hidden;
+            font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 16px; color: #fff;
+            border: none; border-radius: 999px; padding: 13px 26px; cursor: pointer; letter-spacing: 0.2px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -8px 16px rgba(0,0,0,0.22), 0 10px 20px rgba(4,10,50,0.3);
+            transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+        }
+        .btn-nav::after {
+            content: ''; position: absolute; left: 8%; right: 8%; top: 3px; height: 38%; border-radius: 99px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0)); pointer-events: none;
+        }
+        .btn-prev { background: linear-gradient(180deg, #cbd8f5, #64748b 55%, #475569); }
+        .btn-next { background: linear-gradient(180deg, #57e39a, #16a34a 55%, #12813c); }
+        .btn-nav:hover { transform: translateY(-2px); filter: brightness(1.08) saturate(1.1); }
+        .btn-nav:active { transform: translateY(1px) scale(0.98); filter: brightness(0.96); }
+        .btn-nav:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+        .btn-nav:disabled {
+            background: linear-gradient(180deg, #e2e8f0, #b6c0d3); color: #7b869c;
+            box-shadow: none; cursor: not-allowed; transform: none; filter: none; text-shadow: none;
+        }
+        .btn-nav:disabled::after { display: none; }
+        .nav-status {
+            flex: 1 1 auto; text-align: center; font-size: 13.5px; color: #cfe0ff;
+            background: rgba(255,255,255,0.08); border: 1px dashed rgba(148,197,255,0.5);
+            border-radius: 999px; padding: 9px 14px; backdrop-filter: blur(4px);
+        }
+        .pdf-preview-title {
+            font-family: 'Kanit', sans-serif; font-weight: 700; font-size: 16px; color: #12205a;
+            text-align: center; margin: 4px 0 10px;
+        }
+        .pdf-frame {
+            overflow-x: auto; background: #e8eefc; border: 1px dashed #8fb0ff;
+            border-radius: 14px; padding: 14px;
+        }
+
+        /* ===== มือถือ ===== */
+        @media (max-width: 640px) {
+            body { padding: 18px 10px 50px; }
+            #stressForm { padding: 16px 12px 20px; }
+            .header h2 { padding: 12px 20px; }
+            th, td { padding: 5px 4px; font-size: 13.5px; }
+            .btn-submit, .btn-pdf, .btn-print { width: 100%; max-width: 320px; }
+            .choice-grid { grid-template-columns: 1fr; }
+            .q-card { padding: 16px 12px 14px; }
+            .q-head { flex-wrap: wrap; gap: 8px; }
+            .wizard-hud { gap: 8px; padding: 8px 10px; }
+            .hud-done { display: none; }
+            .wizard-nav { flex-wrap: wrap; }
+            .btn-nav { flex: 1 1 45%; padding: 13px 14px; }
+            .nav-status { order: 3; flex-basis: 100%; }
+            .summary-card { padding: 16px 12px; }
+        }
+        @media screen and (max-width: 840px) {
+            #pdfTemplate { zoom: 0.52; }
+        }
+
+        /* ===== เคารพ prefers-reduced-motion ===== */
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
+            #splash { display: none !important; }
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 5mm;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #pdfTemplate, #pdfTemplate * {
+                visibility: visible;
+            }
+            #pdfTemplate {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 200mm !important;
+                height: auto !important;
+                margin: 0;
+                padding: 5mm;
+            }
+            .fx-bg, .fx-orbs, #splash {
+                display: none !important;
+            }
+            /* กันแอนิเมชันค้างตอนพิมพ์ (เช่น เพิ่งเข้าหน้าสรุปผล แล้วรีบกดพิมพ์ -> หน้ากระดาษอาจว่างเปล่า) */
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+            /* ซ่อน UI ทั้งหมด เหลือเฉพาะหน้าเอกสารฟอร์มเดิม (ใช้ได้ทุกขั้น รวมถึง Ctrl+P) */
+            .wizard-hud, .wizard-nav, #stepInfo, #questionSteps,
+            #stepSummary > *:not(#pdfFrame) {
+                display: none !important;
+            }
+            #stepSummary {
+                display: block !important;
+            }
+            #pdfFrame {
+                background: none; border: none; padding: 0;
+                overflow: visible; border-radius: 0;
+            }
+        }
+        .user-info-section {
+            background: linear-gradient(180deg, #f5faff, #e9f2ff);
+            border: 1px solid #cadfff;
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+            box-shadow: inset 0 1px 0 #fff, 0 6px 16px rgba(20, 45, 120, 0.1);
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .form-group {
+            flex: 1 1 200px;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .form-group label {
+            font-family: 'Kanit', sans-serif; font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 15px;
+            color: #1e2a5a;
+        }
+        .form-group .required {
+            color: #ef4444;
+        }
+        .form-group input {
+            font-family: inherit;
+            font-size: 15px;
+            padding: 10px 14px;
+            border: 1.5px solid #c3d3f2;
+            border-radius: 10px;
+            outline: none;
+            box-sizing: border-box;
+            width: 100%;
+            background: #fff;
+            color: var(--ink);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            box-shadow: inset 0 2px 4px rgba(16, 24, 64, 0.06);
+        }
+        .form-group input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 255, 0.18);
+        }
+        .result-card {
+            margin-top: 26px;
+            padding: 22px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, #ffffff, #f2fff8);
+            border: 2px solid #198754;
+            box-shadow: 0 18px 40px rgba(9, 60, 30, 0.18);
+            animation: popIn 0.5s cubic-bezier(0.2, 1.35, 0.4, 1);
+        }
+        .result-header {
+            font-family: 'Kanit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #15803d;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #b7e4cd;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .result-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 15px;
+            background: #f7fbff;
+            border: 1px solid #dbe7ff;
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+        .result-badge-wrap {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .score-box, .status-box {
+            flex: 1 1 180px;
+            padding: 16px;
+            border-radius: 14px;
+            text-align: center;
+            background: linear-gradient(180deg, #f9fbff, #eaf1ff);
+            border: 1px solid #d3e0ff;
+            box-shadow: inset 0 1px 0 #fff, 0 6px 14px rgba(20, 45, 120, 0.1);
+        }
+        .badge-label {
+            font-size: 13px;
+            color: #5b6796;
+            margin-bottom: 4px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .badge-value {
+            font-family: 'Kanit', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        #resScore {
+            color: #2563eb;
+        }
+        .advice-box {
+            background: linear-gradient(180deg, #f7faff, #eef4ff);
+            padding: 14px 16px;
+            border-left: 5px solid #198754;
+            border-radius: 10px;
+            font-size: 14px;
+            box-shadow: inset 0 1px 0 #fff;
+        }
+        .advice-title {
+            font-family: 'Kanit', sans-serif;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1e2a5a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="fx-bg" aria-hidden="true"></div>
+    <div class="fx-orbs" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div id="splash" aria-hidden="true">
+        <div class="splash-box">
+            <div class="splash-logo"><i class="fa-solid fa-bolt"></i>STRESS CHECK</div>
+            <div class="splash-sub">แบบประเมินและวิเคราะห์ความเครียดด้วยตนเอง</div>
+            <div class="splash-bar"><i></i></div>
+            <div class="splash-tip">กำลังโหลดแบบประเมิน...</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <h2>แบบประเมินและวิเคราะห์ความเครียดด้วยตนเอง</h2>
+    </div>
+
+    <div class="instructions">
+        ในระยะเวลา 2 เดือนที่ผ่านมานี้ ท่านมีอาการ พฤติกรรมหรือความรู้สึกต่อไปนี้มากน้อยเพียงใด<br>
+        ระบบจะแสดงคำถามทีละข้อ เลือกคำตอบแล้วกด “ถัดไป” จนครบ 20 ข้อ เมื่อจบระบบจะสรุปผลและแสดงหน้าเอกสารให้ตรวจสอบ
+    </div>
+
+    <form id="stressForm">
+        <div class="wizard-hud">
+            <span class="hud-chip" id="stepChip"><i class="fa-solid fa-pen-to-square"></i>ข้อมูลผู้ประเมิน</span>
+            <div class="hud-bar"><i id="progressFill"></i></div>
+            <span class="hud-pct" id="progressPct">0%</span>
+            <span class="hud-done" id="answeredCount">ตอบแล้ว 0/20 ข้อ</span>
+        </div>
+
+        <section class="step active" data-step="0" id="stepInfo">
+        <div class="user-info-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">ชื่อ <span class="required">*</span></label>
+                    <input type="text" id="firstName" name="firstName" placeholder="กรอกชื่อ" required="">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">นามสกุล <span class="required">*</span></label>
+                    <input type="text" id="lastName" name="lastName" placeholder="กรอกนามสกุล" required="">
+                </div>
+                <div class="form-group">
+                    <label for="assessmentDate">วันที่ประเมิน <span class="required">*</span></label>
+                    <input type="date" id="assessmentDate" name="assessmentDate" required="">
+                </div>
+            </div>
+        </div>
+
+            <div class="legend-row">
+                <span class="legend-chip"><b>0</b> ไม่เคยเลย</span>
+                <span class="legend-chip"><b>1</b> เป็นครั้งคราว</span>
+                <span class="legend-chip"><b>2</b> เป็นบ่อย</span>
+                <span class="legend-chip"><b>3</b> เป็นประจำ</span>
+            </div>
+        </section>
+
+        <div id="questionSteps"></div>
+
+        <section class="step" data-step="21" id="stepSummary">
+            <div class="summary-card">
+                <div class="summary-title"><i class="fa-solid fa-chart-bar"></i>สรุปผลการประเมิน</div>
+                <div class="summary-who" id="summaryWho">-</div>
+                <div class="result-badge-wrap">
+                    <div class="score-box">
+                        <div class="badge-label">คะแนนรวม</div>
+                        <div class="badge-value" id="totalDisplay">0</div>
+                        <small style="color: #6c757d;">(จากเต็ม 60 คะแนน)</small>
+                    </div>
+                    <div class="status-box">
+                        <div class="badge-label">ผลการประเมิน</div>
+                        <div class="badge-value" id="resultDisplay" style="color: #198754;">เครียดน้อย</div>
+                    </div>
+                </div>
+                <div class="advice-box">
+                    <div class="advice-title">คำแนะนำในการปฏิบัติตน:</div>
+                    <div id="summaryAdvice">-</div>
+                </div>
+            </div>
+
+        <div class="btn-container">
+            <button type="submit" class="btn-submit" id="submitBtn">บันทึกข้อมูล</button>
+            <button type="button" class="btn-pdf" id="pdfBtn" onclick="exportToPDF()"><i class="fa-solid fa-file-pdf"></i>พิมพ์หรือบันทึก PDF</button>
+            <button type="button" class="btn-print" id="printBtn" onclick="printForm()"><i class="fa-solid fa-print"></i>พิมพ์แบบฟอร์ม</button>
+        </div>
+        <div id="loading">กำลังบันทึกข้อมูล... กรุณารอสักครู่</div>
+
+        
+        <div id="resultCard" class="result-card" style="display: none;">
+            <div class="result-header">
+                <i class="fa-solid fa-circle-check"></i>บันทึกข้อมูลและประเมินผลเรียบร้อยแล้ว
+            </div>
+            <div class="result-body">
+                <div class="result-info-grid">
+                    <div><strong>ผู้ทำแบบประเมิน:</strong> <span id="resUserName">-</span></div>
+                    <div><strong>วันที่ประเมิน:</strong> <span id="resDate">-</span></div>
+                </div>
+                <div class="result-badge-wrap">
+                    <div class="score-box">
+                        <div class="badge-label">คะแนนรวม</div>
+                        <div class="badge-value" id="resScore">0</div>
+                        <small style="color: #6c757d;">(จากเต็ม 60 คะแนน)</small>
+                    </div>
+                    <div class="status-box" id="resStatusBox">
+                        <div class="badge-label">ผลการประเมิน</div>
+                        <div class="badge-value" id="resStatusText">เครียดน้อย</div>
+                    </div>
+                </div>
+                <div class="advice-box" id="resAdviceBox">
+                    <div class="advice-title">คำแนะนำในการปฏิบัติตน:</div>
+                    <div id="resAdviceText">-</div>
+                </div>
+                <div style="text-align: center; margin-top: 15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" class="btn-pdf" onclick="exportToPDF()"><i class="fa-solid fa-file-pdf"></i>พิมพ์หรือบันทึก PDF</button>
+                    <button type="button" class="btn-print" onclick="printForm()"><i class="fa-solid fa-print"></i>พิมพ์เอกสาร</button>
+                    <button type="button" class="btn-submit" onclick="restartAssessment()"><i class="fa-solid fa-rotate-right"></i>ทำแบบประเมินใหม่</button>
+                </div>
+            </div>
+        </div>
+
+            <div class="pdf-preview-title"><i class="fa-solid fa-file-pdf"></i>เอกสารแบบประเมินตามฟอร์มเดิม (ตรวจสอบก่อนพิมพ์)</div>
+            <div id="pdfFrame" class="pdf-frame"></div>
+        </section>
+
+        <div class="wizard-nav">
+            <button type="button" class="btn-nav btn-prev" id="prevBtn" onclick="prevStep()"><i class="fa-solid fa-arrow-left"></i>ย้อนกลับ</button>
+            <div class="nav-status" id="navStatus"><i class="fa-solid fa-lightbulb"></i>กรอกข้อมูลให้ครบถ้วน แล้วกดเริ่มได้เลย</div>
+            <button type="button" class="btn-nav btn-next" id="nextBtn" onclick="nextStep()"><i class="fa-solid fa-rocket"></i>เริ่มทำแบบประเมิน</button>
+        </div>
+    </form>
+
+    
+    <div id="pdfTemplate" style="display: none; width: 200mm; margin: 0 auto; background: #fff; padding: 5mm; font-family: 'Sarabun', 'TH Sarabun New', sans-serif; color: #000; box-sizing: border-box; line-height: 1.2;">
+        <div style="text-align: center; margin-bottom: 8px;">
+            <h2 style="font-size: 21px; font-weight: bold; margin: 0 0 3px 0;">แบบประเมินและวิเคราะห์ความเครียดด้วยตนเอง</h2>
+            <div style="font-size: 12px; color: #333;">(กรมสุขภาพจิต กระทรวงสาธารณสุข)</div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 7px; font-size: 12px; border-bottom: 1px solid #999; padding-bottom: 5px;">
+            <div><strong>ชื่อ-นามสกุล ผู้ประเมิน:</strong> <span id="pdfName" style="border-bottom: 1px dotted #000; padding: 0 10px;"></span></div>
+            <div><strong>วันที่ประเมิน:</strong> <span id="pdfDate" style="border-bottom: 1px dotted #000; padding: 0 10px;"></span></div>
+        </div>
+
+        <div style="font-size: 11px; margin-bottom: 7px; line-height: 1.25;">
+            <strong>คำชี้แจง:</strong> ในระยะเวลา 2 เดือนที่ผ่านมานี้ ท่านมีอาการ พฤติกรรมหรือความรู้สึกต่อไปนี้มากน้อยเพียงใด<br>
+            โปรดขีดเครื่องหมาย ✓ ลงในช่องแสดงระดับอาการที่เกิดขึ้นกับท่าน ตามความเป็นจริงมากที่สุด
+        </div>
+
+        <table style="width: 100%; height: 205mm; border-collapse: collapse; font-size: 11px; line-height: 1.2; border: 1px solid #000;">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="border: 1px solid #000; padding: 4px 5px; text-align: left; width: 68%; background: #f8f9fa; color: #000; text-shadow: none;">อาการ พฤติกรรมหรือความรู้สึก</th>
+                    <th colspan="4" style="border: 1px solid #000; padding: 4px; text-align: center; background: #f8f9fa; color: #000; text-shadow: none;">ระดับอาการ</th>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 8%;">0<br><span style="font-size: 9px;">ไม่เคยเลย</span></th>
+                    <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 8%;">1<br><span style="font-size: 9px;">เป็นครั้งคราว</span></th>
+                    <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 8%;">2<br><span style="font-size: 9px;">เป็นบ่อย</span></th>
+                    <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 8%;">3<br><span style="font-size: 9px;">เป็นประจำ</span></th>
+                </tr>
+            </thead>
+            <tbody id="pdfQuestionBody"></tbody>
+            <tfoot>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 4px 6px; text-align: right; font-weight: bold;">คะแนนรวม</td>
+                    <td colspan="4" style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; font-size: 12px;" id="pdfTotalScore">0</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 4px 6px; text-align: right; font-weight: bold;">ผลการประเมิน</td>
+                    <td colspan="4" style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold; font-size: 12px;" id="pdfResult">-</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div style="margin-top: 7px; border: 1px solid #777; padding: 7px 9px; font-size: 11px; line-height: 1.25; page-break-inside: avoid;">
+            <div style="font-weight: bold; margin-bottom: 4px;">คำแนะนำในการปฏิบัติตน:</div>
+            <div id="pdfAdvice">-</div>
+        </div>
+
+        <div style="margin-top: 7px; border: 1px solid #777; padding: 6px 8px; font-size: 9.5px; line-height: 1.2; background: #fafafa; page-break-inside: avoid;">
+            <div style="font-weight: bold; margin-bottom: 6px; white-space: nowrap;">เกณฑ์การแปลผลคะแนน <span style="font-weight: normal; color: #555;">(คะแนนเต็ม 60)</span></div>
+            <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; line-height: 1.2; text-align: center;">
+                <div style="padding: 2px 5px; border-right: 1px solid #ccc;"><strong>0–5</strong><br>ตอบไม่ตรงความจริง</div>
+                <div style="padding: 2px 5px; border-right: 1px solid #ccc;"><strong>6–17</strong><br>ปกติ</div>
+                <div style="padding: 2px 5px; border-right: 1px solid #ccc;"><strong>18–25</strong><br>เครียดสูงกว่าปกติเล็กน้อย</div>
+                <div style="padding: 2px 5px; border-right: 1px solid #ccc;"><strong>26–29</strong><br>เครียดปานกลาง</div>
+                <div style="padding: 2px 5px;"><strong>30–60</strong><br>เครียดมาก</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="appModal" data-type="info" role="alertdialog" aria-modal="true" aria-labelledby="modalMsg">
+        <div class="modal-box" id="modalBox">
+            <div class="modal-icon" id="modalIcon"><i class="fa-solid fa-circle-info"></i></div>
+            <div class="modal-msg" id="modalMsg" aria-live="assertive"></div>
+            <button type="button" class="modal-btn" id="modalOkBtn">ตกลง</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== Dialog แจ้งเตือนในหน้า (ใช้แทน alert() ธรรมดา) =====
+        var APP_MODAL_TYPES = {
+            success: { icon: '<i class="fa-solid fa-circle-check"></i>' },
+            error: { icon: '<i class="fa-solid fa-circle-xmark"></i>' },
+            warning: { icon: '<i class="fa-solid fa-triangle-exclamation"></i>' },
+            info: { icon: '<i class="fa-solid fa-circle-info"></i>' }
+        };
+
+        function detectAlertType_(msg) {
+            if (msg.indexOf('กรุณา') === 0) return 'warning';
+            if (msg.indexOf('เกิดข้อผิดพลาด') === 0 || msg.indexOf('ไม่สามารถ') === 0 || msg.indexOf('ไม่พบ') === 0) return 'error';
+            return 'info';
+        }
+
+        function showAlert(message, type) {
+            var overlay = document.getElementById('appModal');
+            var text = (message === undefined || message === null) ? '' : String(message);
+            if (!overlay) {
+                // กันพลาด: ถ้า markup หายไปอย่างน้อยต้องยังแจ้งเตือนผู้ใช้
+                if (window.console && console.error) console.error('showAlert: #appModal not found:', text);
+                return;
+            }
+            var kind = APP_MODAL_TYPES[type] ? type : detectAlertType_(text);
+            overlay.setAttribute('data-type', kind);
+            document.getElementById('modalIcon').innerHTML = APP_MODAL_TYPES[kind].icon;
+            document.getElementById('modalMsg').textContent = text;
+            overlay.classList.add('open');
+        }
+
+        function hideAppModal() {
+            var overlay = document.getElementById('appModal');
+            if (overlay) overlay.classList.remove('open');
+        }
+
+        // ปิดด้วยปุ่มตกลง / คลิกพื้นหลัง / Enter หรือ Esc
+        document.addEventListener('click', function (e) {
+            var overlay = document.getElementById('appModal');
+            if (!overlay || !overlay.classList.contains('open')) return;
+            if (e.target === overlay || (e.target && e.target.id === 'modalOkBtn')) hideAppModal();
+        });
+        document.addEventListener('keydown', function (e) {
+            var overlay = document.getElementById('appModal');
+            if (!overlay || !overlay.classList.contains('open')) return;
+            if (e.key === 'Escape' || e.key === 'Enter') {
+                e.preventDefault();
+                hideAppModal();
+            }
+        });
+    </script>
+
+    <script>
+        const QUESTIONS = [
+            'นอนไม่หลับเพราะคิดมากหรือกังวลใจ',
+            'รู้สึกหงุดหงิด รำคาญใจ',
+            'ทำอะไรไม่ได้เลยเพราะประสาทตึงเครียด',
+            'มีความวุ่นวายใจ',
+            'ไม่อยากพบปะผู้คน',
+            'ปวดหัวข้างเดียว หรือปวดบริเวณขมับทั้ง 2 ข้าง',
+            'รู้สึกไม่มีความสุขและเศร้าหมอง',
+            'รู้สึกหมดหวังในชีวิต',
+            'รู้สึกว่าตนเองไม่มีคุณค่า',
+            'กระวนกระวายอยู่ตลอดเวลา',
+            'รู้สึกว่าตนเองไม่มีสมาธิ',
+            'รู้สึกเพลียไม่มีแรงทำอะไร',
+            'รู้สึกเหนื่อยไม่อยากทำอะไร',
+            'มีอาการหัวใจเต้นแรง',
+            'เสียงสั่น ปากสั่น มือสั่นเวลาไม่พอใจ',
+            'รู้สึกกลัวผิดพลาดในการทำสิ่งต่าง ๆ',
+            'ปวด หรือเกร็งกล้ามเนื้อ บริเวณท้ายทอย หลัง หรือไหล่',
+            'ตื่นเต้นง่ายกับเหตุการณ์ที่ไม่คุ้นเคย',
+            'มึนงง หรือเวียนศีรษะ',
+            'ความสุขทางเพศลดลง'
+        ];
+
+        
+        const CHOICES = [
+            { v: 0, label: 'ไม่เคยเลย' },
+            { v: 1, label: 'เป็นครั้งคราว' },
+            { v: 2, label: 'เป็นบ่อย' },
+            { v: 3, label: 'เป็นประจำ' }
+        ];
+        const STEP_INFO = 0;
+        const STEP_SUMMARY = QUESTIONS.length + 1; // 21
+        let currentStep = STEP_INFO;
+
+        // สร้างหน้าคำถามทีละข้อ (สไตล์ CAI: ข้อละหน้า + ปุ่มถัดไป/ย้อนกลับ)
+        (function buildWizard() {
+            const wrap = document.getElementById('questionSteps');
+            let html = '';
+            QUESTIONS.forEach((q, idx) => {
+                const n = idx + 1;
+                html += `<section class="step" data-step="${n}">\n                    <div class="q-card">\n                        <div class="q-head">\n                            <span class="q-num">ข้อ ${n}</span>\n                            <div class="q-text">${n}. ${q}</div>\n                        </div>\n                        <div class="choice-grid">`;
+                CHOICES.forEach(c => {
+                    html += `<label class="choice">\n                                <input type="radio" name="q${n}" value="${c.v}" onclick="onChoicePick(this)">\n                                <span class="choice-score">${c.v}</span>\n                                <span class="choice-label">${c.label}</span>\n                            </label>`;
+                });
+                html += `</div>\n                        <div class="q-hint"><i class="fa-solid fa-lightbulb"></i>เลือกคำตอบที่ตรงกับความรู้สึกของท่านมากที่สุด แล้วกด “ถัดไป” เพื่อไปข้อถัดไป</div>\n                    </div>\n                </section>`;
+            });
+            wrap.innerHTML = html;
+        })();
+
+        // ย้ายหน้าเอกสาร PDF (ฟอร์มเดิม) เข้ามาแสดงในหน้าสรุปผล
+        document.getElementById('pdfFrame').appendChild(document.getElementById('pdfTemplate'));
+
+        function onChoicePick(input) {
+            const group = document.querySelectorAll('input[name="' + input.name + '"]');
+            for (let i = 0; i < group.length; i++) {
+                const card = group[i].closest('.choice');
+                if (card) card.classList.toggle('selected', group[i].checked);
+            }
+            calcTotal();
+            updateHud();
+            updateNav();
+        }
+
+        function answeredCount() {
+            let c = 0;
+            for (let i = 1; i <= QUESTIONS.length; i++) {
+                if (document.querySelector('input[name="q' + i + '"]:checked')) c++;
+            }
+            return c;
+        }
+
+        function updateHud() {
+            const total = QUESTIONS.length;
+            const pct = Math.round((currentStep / STEP_SUMMARY) * 100);
+            const chip = document.getElementById('stepChip');
+            if (currentStep === STEP_INFO) {
+                chip.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>ข้อมูลผู้ประเมิน';
+            } else if (currentStep === STEP_SUMMARY) {
+                chip.innerHTML = '<i class="fa-solid fa-flag-checkered"></i>สรุปผลการประเมิน';
+            } else {
+                chip.innerHTML = '<i class="fa-solid fa-circle-question"></i>ข้อ ' + currentStep + ' / ' + total;
+            }
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressPct').innerText = pct + '%';
+            document.getElementById('answeredCount').innerText = 'ตอบแล้ว ' + answeredCount() + '/' + total + ' ข้อ';
+        }
+
+        function updateNav() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const status = document.getElementById('navStatus');
+            prevBtn.disabled = (currentStep === STEP_INFO);
+            prevBtn.innerHTML = (currentStep === STEP_SUMMARY) ? '<i class="fa-solid fa-arrow-left"></i>แก้ไขคำตอบ' : '<i class="fa-solid fa-arrow-left"></i>ย้อนกลับ';
+            if (currentStep === STEP_SUMMARY) {
+                nextBtn.style.display = 'none';
+                status.innerHTML = '<i class="fa-solid fa-circle-check"></i>ทำแบบประเมินครบแล้ว ตรวจสอบเอกสารด้านล่างได้เลย';
+                return;
+            }
+            nextBtn.style.display = '';
+            if (currentStep === STEP_INFO) {
+                nextBtn.innerHTML = '<i class="fa-solid fa-rocket"></i>เริ่มทำแบบประเมิน';
+                status.innerHTML = '<i class="fa-solid fa-lightbulb"></i>กรอกข้อมูลให้ครบถ้วน แล้วกดเริ่มได้เลย';
+            } else {
+                nextBtn.innerHTML = (currentStep === QUESTIONS.length) ? 'ดูสรุปผล<i class="fa-solid fa-circle-check ico-end"></i>' : 'ถัดไป<i class="fa-solid fa-arrow-right ico-end"></i>';
+                status.innerHTML = document.querySelector('input[name="q' + currentStep + '"]:checked')
+                    ? '<i class="fa-solid fa-circle-check"></i>ตอบข้อนี้แล้ว กด “ถัดไป” เพื่อไปข้อถัดไป'
+                    : '<i class="fa-solid fa-lightbulb"></i>เลือกคำตอบ 1 ข้อ แล้วกด “ถัดไป”';
+            }
+        }
+
+        function validateInfo() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const assessmentDate = document.getElementById('assessmentDate').value;
+            if (!firstName) { showAlert('กรุณากรอกชื่อ'); document.getElementById('firstName').focus(); return false; }
+            if (!lastName) { showAlert('กรุณากรอกนามสกุล'); document.getElementById('lastName').focus(); return false; }
+            if (!assessmentDate) { showAlert('กรุณาเลือกวันที่ประเมิน'); document.getElementById('assessmentDate').focus(); return false; }
+            return true;
+        }
+
+        function nextStep() {
+            if (currentStep === STEP_INFO) {
+                if (!validateInfo()) return;
+            } else if (currentStep <= QUESTIONS.length) {
+                if (!document.querySelector('input[name="q' + currentStep + '"]:checked')) {
+                    showAlert('กรุณาตอบคำถามข้อ ' + currentStep + ' ก่อนกดถัดไป');
+                    return;
+                }
+            } else {
+                return;
+            }
+            goStep(currentStep + 1);
+        }
+
+        function prevStep() {
+            if (currentStep > STEP_INFO) goStep(currentStep - 1);
+        }
+
+        function goStep(n) {
+            if (n < STEP_INFO || n > STEP_SUMMARY) return;
+            currentStep = n;
+            const steps = document.querySelectorAll('.step');
+            for (let i = 0; i < steps.length; i++) {
+                const s = steps[i];
+                s.classList.toggle('active', parseInt(s.getAttribute('data-step'), 10) === currentStep);
+            }
+            if (currentStep === STEP_SUMMARY) enterSummary();
+            updateHud();
+            updateNav();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function collectFormData() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const assessmentDate = document.getElementById('assessmentDate').value;
+            const answers = [];
+            let complete = true;
+            for (let i = 1; i <= QUESTIONS.length; i++) {
+                const selected = document.querySelector('input[name="q' + i + '"]:checked');
+                if (selected) answers.push(parseInt(selected.value, 10));
+                else complete = false;
+            }
+            const totalScore = answers.reduce((a, b) => a + b, 0);
+            return {
+                name: (firstName + ' ' + lastName).trim(),
+                date: assessmentDate,
+                answers: answers,
+                totalScore: totalScore,
+                result: getAssessmentLevel(totalScore).text,
+                complete: complete
+            };
+        }
+
+        // หน้าสรุปผล: แสดงคะแนน + ย้ายหน้า PDF ฟอร์มเดิมขึ้นมาให้ดู/พิมพ์
+        function enterSummary() {
+            for (let i = 1; i <= QUESTIONS.length; i++) {
+                if (!document.querySelector('input[name="q' + i + '"]:checked')) {
+                    showAlert('กรุณาตอบคำถามข้อ ' + i + ' ให้ครบถ้วน');
+                    goStep(i);
+                    return;
+                }
+            }
+            const data = collectFormData();
+            const assess = getAssessmentLevel(data.totalScore);
+            document.getElementById('totalDisplay').innerText = data.totalScore;
+            const resDisplay = document.getElementById('resultDisplay');
+            resDisplay.innerText = assess.text;
+            resDisplay.style.color = assess.color;
+            document.getElementById('summaryAdvice').innerText = assess.advice;
+            document.getElementById('summaryWho').innerText = data.name + ' · ' + data.date;
+            renderPdfTemplate(data);
+            document.getElementById('pdfTemplate').style.display = 'block';
+        }
+
+        function restartAssessment() {
+            document.getElementById('stressForm').reset();
+            const selectedCards = document.querySelectorAll('.choice.selected');
+            for (let i = 0; i < selectedCards.length; i++) selectedCards[i].classList.remove('selected');
+            lastSubmissionData = null;
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('pdfTemplate').style.display = 'none';
+            document.getElementById('pdfName').innerText = '';
+            document.getElementById('pdfDate').innerText = '';
+            document.getElementById('pdfQuestionBody').innerHTML = '';
+            document.getElementById('pdfTotalScore').innerText = '0';
+            document.getElementById('pdfResult').innerText = '-';
+            document.getElementById('totalDisplay').innerText = '0';
+            const resDisplay = document.getElementById('resultDisplay');
+            resDisplay.innerText = 'เครียดน้อย';
+            resDisplay.style.color = '#198754';
+            document.getElementById('summaryAdvice').innerText = '-';
+            document.getElementById('summaryWho').innerText = '-';
+            setDefaultDate();
+            goStep(STEP_INFO);
+        }
+
+        // กด Enter ในช่องกรอกข้อความ = ถัดไป (ยกเว้นตอนมีกล่องแจ้งเตือนขึ้นอยู่)
+        document.getElementById('stressForm').addEventListener('keydown', function (e) {
+            const overlay = document.getElementById('appModal');
+            if (overlay && overlay.classList.contains('open')) return;
+            if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT' && e.target.type !== 'radio') {
+                e.preventDefault();
+                if (currentStep !== STEP_SUMMARY) nextStep();
+            }
+        });
+
+        updateHud();
+        updateNav();
+
+        
+        function setDefaultDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const dateInput = document.getElementById('assessmentDate');
+            if (dateInput) {
+                dateInput.value = `${yyyy}-${mm}-${dd}`;
+            }
+        }
+        setDefaultDate();
+
+        
+        function getAssessmentLevel(score) {
+            if (score <= 5) {
+                return {
+                    text: 'ตอบไม่ตรงความจริง',
+                    color: '#6c757d',
+                    advice: 'คะแนนอยู่ในช่วงที่อาจสะท้อนว่าคำตอบไม่ตรงกับความรู้สึกหรือประสบการณ์จริง กรุณาทบทวนคำตอบและประเมินใหม่ตามความเป็นจริง'
+                };
+            } else if (score <= 17) {
+                return {
+                    text: 'ปกติ',
+                    color: '#198754',
+                    advice: 'ผลประเมินอยู่ในระดับปกติ ควรดูแลสุขภาพ พักผ่อนให้เพียงพอ และทำกิจกรรมที่ช่วยผ่อนคลายอย่างสม่ำเสมอ'
+                };
+            } else if (score <= 25) {
+                return {
+                    text: 'เครียดสูงกว่าปกติเล็กน้อย',
+                    color: '#ffc107',
+                    advice: 'ท่านมีความเครียดสูงกว่าปกติเล็กน้อย ควรสังเกตปัจจัยที่ทำให้เครียด จัดเวลาพักผ่อน และพูดคุยกับคนที่ไว้ใจ'
+                };
+            } else if (score <= 29) {
+                return {
+                    text: 'เครียดปานกลาง',
+                    color: '#fd7e14',
+                    advice: 'ท่านมีความเครียดระดับปานกลาง ควรฝึกผ่อนคลาย พักผ่อนให้เพียงพอ และปรึกษาผู้เชี่ยวชาญหากความเครียดต่อเนื่องหรือกระทบชีวิตประจำวัน'
+                };
+            } else {
+                return {
+                    text: 'เครียดมาก',
+                    color: '#842029',
+                    advice: 'ท่านมีความเครียดมาก ควรขอคำปรึกษาจากแพทย์หรือผู้เชี่ยวชาญด้านสุขภาพจิต หากต้องการความช่วยเหลือ โทรสายด่วนสุขภาพจิต 1323'
+                };
+            }
+        }
+        
+        function calcTotal() {
+            let total = 0;
+            for (let i = 1; i <= 20; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) total += parseInt(selected.value, 10);
+            }
+            document.getElementById('totalDisplay').innerText = total;
+
+            const assess = getAssessmentLevel(total);
+            const resDisplay = document.getElementById('resultDisplay');
+            if (resDisplay) {
+                resDisplay.innerText = assess.text;
+                resDisplay.style.color = assess.color;
+            }
+            return total;
+        }
+
+        let lastSubmissionData = null;
+        let lastSubmittedInfo = { name: '', date: '' };
+
+        document.getElementById('stressForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            
+            if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                showAlert('ไม่พบระบบ Google Apps Script\nกรุณาเปิดหน้านี้ผ่านลิงก์ Web App (ลงท้ายด้วย /exec) เท่านั้น');
+                return;
+            }
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const assessmentDate = document.getElementById('assessmentDate').value;
+
+            if (!firstName) {
+                showAlert('กรุณากรอกชื่อ');
+                document.getElementById('firstName').focus();
+                return;
+            }
+            if (!lastName) {
+                showAlert('กรุณากรอกนามสกุล');
+                document.getElementById('lastName').focus();
+                return;
+            }
+            if (!assessmentDate) {
+                showAlert('กรุณาเลือกวันที่ประเมิน');
+                document.getElementById('assessmentDate').focus();
+                return;
+            }
+
+            lastSubmittedInfo = {
+                name: `${firstName} ${lastName}`,
+                date: assessmentDate
+            };
+
+            const formData = {
+                firstName: firstName,
+                lastName: lastName,
+                assessmentDate: assessmentDate
+            };
+
+            const currentAnswers = [];
+            for (let i = 1; i <= 20; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (!selected) {
+                    showAlert(`กรุณาตอบคำถามข้อ ${i} ให้ครบถ้วน`);
+                    return;
+                }
+                const v = parseInt(selected.value, 10);
+                formData['q' + i] = v;
+                currentAnswers.push(v);
+            }
+            const totalScore = calcTotal();
+            formData.totalScore = totalScore;
+
+            lastSubmissionData = {
+                name: `${firstName} ${lastName}`,
+                date: assessmentDate,
+                answers: currentAnswers,
+                totalScore: totalScore,
+                result: getAssessmentLevel(totalScore).text
+            };
+
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('loading').style.display = 'block';
+
+            google.script.run
+                .withSuccessHandler(onSuccess)
+                .withFailureHandler(onFailure)
+                .saveFormResponse(formData);
+        });
+
+        function onSuccess(res) {
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('loading').style.display = 'none';
+
+            if (res && res.status === 'success') {
+                const assess = getAssessmentLevel(res.score);
+
+                
+                document.getElementById('resUserName').innerText = res.name || lastSubmittedInfo.name || '-';
+                document.getElementById('resDate').innerText = lastSubmittedInfo.date || '-';
+                document.getElementById('resScore').innerText = res.score;
+                
+                const statusEl = document.getElementById('resStatusText');
+                statusEl.innerText = res.result;
+                statusEl.style.color = assess.color;
+
+                const cardEl = document.getElementById('resultCard');
+                cardEl.style.borderColor = assess.color;
+                document.getElementById('resAdviceBox').style.borderLeftColor = assess.color;
+                document.getElementById('resAdviceText').innerText = assess.advice;
+                cardEl.style.display = 'block';
+
+                
+                cardEl.scrollIntoView({ behavior: 'smooth' });
+
+                
+                // คงคำตอบไว้เพื่อให้พิมพ์ PDF ได้จากหน้าสรุปผล (กด “ทำแบบประเมินใหม่” เพื่อเริ่มคนใหม่)
+            } else {
+                showAlert('เกิดข้อผิดพลาด: ' + (res ? res.message : 'ไม่ได้รับการตอบกลับ'));
+            }
+        }
+
+        function onFailure(err) {
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('loading').style.display = 'none';
+            showAlert('ไม่สามารถเชื่อมต่อกับระบบได้: ' + (err && err.message ? err.message : err));
+        }
+
+        
+        function preparePdfContent() {
+            let firstName = document.getElementById('firstName').value.trim();
+            let lastName = document.getElementById('lastName').value.trim();
+            let assessmentDate = document.getElementById('assessmentDate').value;
+            let answers = [];
+
+            let formHasData = true;
+            for (let i = 1; i <= 20; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) {
+                    answers.push(parseInt(selected.value, 10));
+                } else {
+                    formHasData = false;
+                }
+            }
+
+            
+            if (!firstName || !lastName || !assessmentDate || !formHasData) {
+                if (lastSubmissionData) {
+                    return lastSubmissionData;
+                }
+                if (!firstName) {
+                    showAlert('กรุณากรอกชื่อก่อนส่งออกเป็น PDF');
+                    document.getElementById('firstName').focus();
+                    return null;
+                }
+                if (!lastName) {
+                    showAlert('กรุณากรอกนามสกุลก่อนส่งออกเป็น PDF');
+                    document.getElementById('lastName').focus();
+                    return null;
+                }
+                if (!assessmentDate) {
+                    showAlert('กรุณาเลือกวันที่ก่อนส่งออกเป็น PDF');
+                    document.getElementById('assessmentDate').focus();
+                    return null;
+                }
+                showAlert('กรุณาตอบคำถามให้ครบทั้ง 20 ข้อก่อนส่งออกเป็น PDF');
+                return null;
+            }
+
+            const total = answers.reduce((a, b) => a + b, 0);
+            return {
+                name: `${firstName} ${lastName}`,
+                date: assessmentDate,
+                answers: answers,
+                totalScore: total,
+                result: getAssessmentLevel(total).text
+            };
+        }
+
+        
+        function renderPdfTemplate(data) {
+            document.getElementById('pdfName').innerText = data.name;
+            document.getElementById('pdfDate').innerText = data.date;
+            document.getElementById('pdfTotalScore').innerText = data.totalScore + ' คะแนน';
+            document.getElementById('pdfResult').innerText = data.result;
+            document.getElementById('pdfAdvice').innerText = getAssessmentLevel(data.totalScore).advice;
+
+            const pdfBody = document.getElementById('pdfQuestionBody');
+            let rowsHtml = '';
+            QUESTIONS.forEach((q, idx) => {
+                const n = idx + 1;
+                const userChoice = data.answers[idx];
+                rowsHtml += `<tr>
+                    <td style="border: 1px solid #000; padding: 1px 3px; line-height: 1.05;">${n}. ${q}</td>`;
+                for (let v = 0; v <= 3; v++) {
+                    const isChecked = (userChoice === v);
+                    const checkMark = isChecked ? '<span style="font-size: 14px; font-weight: bold; color: #000;">&#10003;</span>' : '';
+                    rowsHtml += `<td style="border: 1px solid #000; padding: 0; text-align: center;">${checkMark}</td>`;
+                }
+                rowsHtml += '</tr>';
+            });
+            pdfBody.innerHTML = rowsHtml;
+        }
+
+        // เปิดหน้าต่างพิมพ์เพื่อให้เลือกบันทึกแบบประเมินเป็น PDF
+        function exportToPDF() {
+            const data = preparePdfContent();
+            if (!data) return;
+
+            renderPdfTemplate(data);
+            const pdfContainer = document.getElementById('pdfTemplate');
+            pdfContainer.style.display = 'block';
+            const cleanName = data.name.replace(/[^a-zA-Z0-9ก-๙]/g, '_');
+            pdfContainer.getBoundingClientRect();
+
+            const originalTitle = document.title;
+            document.title = `แบบประเมินความเครียด_${cleanName}_${data.date}`;
+            const cleanup = () => {
+                pdfContainer.style.display = 'block';
+                document.title = originalTitle;
+                window.removeEventListener('afterprint', cleanup);
+            };
+
+            window.addEventListener('afterprint', cleanup, { once: true });
+            window.print();
+        }
+
+        
+        function printForm() {
+            const data = preparePdfContent();
+            if (!data) return;
+
+            renderPdfTemplate(data);
+            const pdfContainer = document.getElementById('pdfTemplate');
+            pdfContainer.style.display = 'block';
+            pdfContainer.getBoundingClientRect();
+
+            window.print();
+
+            setTimeout(() => {
+                pdfContainer.style.display = 'block';
+            }, 600);
+        }
+    </script>
+
+    <script>
+        // กัน splash ค้างถ้าแอนิเมชันไม่ทำงาน (เช่น เบราว์เซอร์ปิดแอนิเมชัน)
+        setTimeout(function () {
+            var s = document.getElementById('splash');
+            if (s) s.style.display = 'none';
+        }, 2200);
+    </script>
+
+</body></html>

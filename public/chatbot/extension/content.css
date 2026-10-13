@@ -1,0 +1,39 @@
+/* LINE BOT MCP — content widget bottom-right */
+#lmc-widget-btn {
+  position: fixed !important;
+  right: 16px !important;
+  bottom: 16px !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  background: #00b900 !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25) !important;
+  cursor: pointer !important;
+  z-index: 2147483646 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 22px !important;
+}
+#lmc-widget-btn:hover { background: #00cc00 !important; }
+#lmc-widget-frame {
+  position: fixed !important;
+  right: 16px !important;
+  bottom: 80px !important;
+  width: 380px !important;
+  height: 580px !important;
+  max-height: 88vh !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35) !important;
+  z-index: 2147483647 !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  display: none !important;
+}
+#lmc-widget-frame.open { display: block !important; }
+@media (max-width: 480px) {
+  #lmc-widget-frame { width: 100vw !important; height: 100dvh !important; right: 0 !important; bottom: 0 !important; border-radius: 0 !important; }
+}

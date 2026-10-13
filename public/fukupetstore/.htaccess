@@ -1,0 +1,25 @@
+# Protect sensitive files from direct web access
+# Data files (site content & orders backup) must only be read/written via api.php
+<FilesMatch "\.(json|sql)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Block the one-time DB diagnostic/setup script from public access
+<Files "dbsetup.php">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</Files>
+
+# Never list the images directory contents
+Options -Indexes

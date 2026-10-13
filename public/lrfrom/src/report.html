@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบลา - CM 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.4/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.4/dist/sweetalert2.all.min.js" defer></script>
+    <style>
+        @page { size: 210mm 148.5mm; margin: 0; }
+        * { box-sizing: border-box; font-family: 'Sarabun', 'TH Sarabun PSK', sans-serif; }
+        body { background-color: #f5f5f5; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .paper { background: #fff; width: 210mm; height: 148.5mm; padding: 6mm 12mm; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); position: relative; color: #000; font-size: 12.5px; line-height: 1.35; overflow: hidden; }
+        .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .box-border { border: 1.2px solid #000; padding: 1px 10px; font-weight: bold; font-size: 12px; display: inline-block; }
+        .doc-title { text-align: center; font-size: 19px; font-weight: bold; margin: 0 0 4px 0; line-height: 1.2; }
+        .row { display: flex; align-items: baseline; margin-bottom: 4px; width: 100%; white-space: nowrap; }
+        .row.between { justify-content: space-between; }
+        .dot-line { border-bottom: 1px dotted #000; flex-grow: 1; display: inline-block; margin: 0 3px; height: 1.1em; text-align: center; position: relative; }
+        .inline-dot { border-bottom: 1px dotted #000; display: inline-block; margin: 0 3px; height: 1.1em; text-align: center; position: relative; }
+        .leave-type-group { margin: 3px 0 5px 0; text-align: center; word-spacing: 14px; }
+        .leave-table { width: 100%; border-collapse: collapse; margin: 3px 0 5px 0; font-size: 11.5px; }
+        .leave-table th, .leave-table td { border: 1px solid #000; padding: 1px 6px; text-align: left; line-height: 1.25; }
+        .leave-table th { text-align: center; font-weight: bold; font-size: 10.5px; }
+        .leave-table td:nth-child(2), .leave-table td:nth-child(4) { text-align: center; }
+        .declaration { margin-top: 4px; text-indent: 2.5em; font-size: 12px; }
+        .sub-declaration { text-align: center; width: 48%; margin: 3px 0 8px 0; font-size: 12px; }
+        .signature-section { display: flex; justify-content: space-between; }
+        .sig-col { width: 48%; display: flex; flex-direction: column; gap: 4px; }
+        .sig-row { display: flex; align-items: baseline; font-size: 12px; }
+        .text-center { text-align: center; }
+        .sig-img { position: absolute; left: 50%; bottom: -2px; transform: translateX(-50%); height: 24px; max-width: 100%; }
+        @media print { body { background: none; padding: 0; display: block; } .paper { box-shadow: none; margin: 0; page-break-after: avoid; page-break-inside: avoid; } }
+        .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; justify-content: center; align-items: center; z-index: 9999; font-size: 20px; }
+    </style>
+</head>
+<body>
+<div id="loader" class="loader">กำลังดึงข้อมูล...</div>
+<div class="paper" style="visibility:hidden;" id="paper">
+    <div class="header-top">
+        <div class="box-border">แผนกบุคคลธุรการ</div>
+        <div class="box-border">CM 2</div>
+    </div>
+    <div class="doc-title">ใบลา</div>
+    <div class="row between">
+        <div><strong>เรื่อง</strong> &nbsp;ขอลาหยุดงาน</div>
+        <div>
+            วันที่ <span class="inline-dot" style="width: 45px;" id="fd"></span>
+            เดือน <span class="inline-dot" style="width: 90px;" id="fm"></span>
+            พ.ศ. <span class="inline-dot" style="width: 55px;" id="fy"></span>
+        </div>
+    </div>
+    <div class="leave-type-group" id="empType">
+        (&nbsp;&nbsp;&nbsp;) รายเดือน &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (&nbsp;&nbsp;&nbsp;) รายวัน &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (&nbsp;&nbsp;&nbsp;) ต่างด้าว
+    </div>
+    <div class="row">
+        <strong>เรียน</strong> <span class="dot-line" id="to"></span>
+    </div>
+    <div class="row">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <strong>ข้าพเจ้า</strong> <span class="dot-line" style="flex-grow: 3;" id="name"></span>
+        รหัส <span class="dot-line" style="flex-grow: 1;" id="code"></span>
+        แผนก <span class="dot-line" style="flex-grow: 1;" id="dept"></span>
+    </div>
+    <div class="row">
+        มีความประสงค์ขอลา <span class="dot-line" style="flex-grow: 1;" id="leaveType"></span>
+        เนื่องจาก <span class="dot-line" style="flex-grow: 2;" id="reason"></span>
+    </div>
+    <div class="row">
+        จึงขอลาตั้งแต่วันที่ <span class="inline-dot" style="width: 35px;" id="f1"></span>
+        เดือน <span class="inline-dot" style="width: 80px;" id="f2"></span>
+        พ.ศ. <span class="inline-dot" style="width: 45px;" id="f3"></span>
+        ถึงวันที่ <span class="inline-dot" style="width: 35px;" id="t1"></span>
+        เดือน <span class="inline-dot" style="width: 80px;" id="t2"></span>
+        พ.ศ. <span class="inline-dot" style="width: 45px;" id="t3"></span>
+    </div>
+    <div class="row">
+        รวม <span class="inline-dot" style="width: 60px;" id="qty"></span> <span id="unit">วัน / ชั่วโมง / นาที</span>
+        &nbsp;( ตั้งแต่เวลา <span class="inline-dot" style="width: 55px;" id="tFrom"></span> น. ถึงเวลา <span class="inline-dot" style="width: 55px;" id="tTo"></span> น. )
+    </div>
+    <div class="row" style="margin-top: 4px; margin-bottom: 0;">
+        <strong>ก่อนการลาครั้งนี้ มีสถิติการลาดังนี้</strong>
+    </div>
+    <table class="leave-table">
+        <thead>
+            <tr>
+                <th style="width: 32%;">ประเภทการลา</th>
+                <th style="width: 18%;">จำนวนวัน : ชั่วโมง : นาที</th>
+                <th style="width: 32%;">ประเภทการลา</th>
+                <th style="width: 18%;">จำนวนวัน : ชั่วโมง : นาที</th>
+            </tr>
+        </thead>
+        <tbody id="statsBody">
+            <tr><td>ลากิจ</td><td id="s0"></td><td>ลาพักร้อน</td><td id="s1"></td></tr>
+            <tr><td>ลาป่วยมีใบรับรองแพทย์</td><td id="s2"></td><td>ลาคลอด</td><td id="s3"></td></tr>
+            <tr><td>ลาป่วยไม่มีใบรับรองแพทย์</td><td id="s4"></td><td>ลาทำหมัน</td><td id="s5"></td></tr>
+            <tr><td>ขาดงาน</td><td id="s6"></td><td>ลืมบัตร / ลืมรูดบัตร</td><td id="s7"></td></tr>
+            <tr><td>มาสาย / กลับก่อน</td><td id="s8"></td><td>อุบัติเหตุ / เจ็บป่วยในงาน</td><td id="s9"></td></tr>
+        </tbody>
+    </table>
+    <div class="declaration">ข้าพเจ้าขอรับรองว่าข้อความข้างต้นนี้เป็นความจริง หากเป็นเท็จข้าพเจ้ายินดีให้บริษัท พิจารณาโทษตามระเบียบบริษัท</div>
+    <div class="sub-declaration">จึงเรียนมาเพื่อทราบและโปรดพิจารณา</div>
+    <div class="signature-section">
+        <div class="sig-col">
+            <div class="sig-row">ลงชื่อ <span class="dot-line" id="sigApp"></span> ผู้ลา</div>
+            <div class="sig-row">แผนกบุคคลฯรับเอกสารวันที่ <span class="dot-line"></span></div>
+            <div class="sig-row">ลงชื่อ <span class="dot-line"></span></div>
+            <div class="sig-row">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( <span class="dot-line"></span> )</div>
+            <div class="sig-row text-center" style="justify-content: center; font-weight: bold;">แผนกบุคคลธุรการ</div>
+        </div>
+        <div class="sig-col">
+            <div class="sig-row" style="justify-content: center;" id="approvalBlock">
+                (&nbsp;&nbsp;&nbsp;) อนุมัติ &nbsp;&nbsp;&nbsp; (&nbsp;&nbsp;&nbsp;) ไม่อนุมัติ
+            </div>
+            <div class="sig-row">ลงชื่อ <span class="dot-line" id="sigForeman"></span> หัวหน้างาน</div>
+            <div class="sig-row">ลงชื่อ <span class="dot-line" id="sigHead"></span> หัวหน้าแผนก</div>
+            <div class="sig-row">ลงชื่อ <span class="dot-line" id="sigMgr"></span></div>
+            <div class="sig-row">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( <span class="dot-line" id="mgrName"></span> )</div>
+            <div class="sig-row text-center" style="justify-content: center; font-weight: bold;">ผู้ช่วย/รอง/ผู้จัดการฝ่าย/ผู้จัดการทั่วไป</div>
+        </div>
+    </div>
+</div>
+<script>
+function $(id){return document.getElementById(id);}
+function pd(dtStr){
+  const s = String(dtStr == null ? '' : dtStr).trim();
+  if(!s)return['','',''];
+  const MON = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  /* อ่าน YYYY-MM-DD ตรงๆ ไม่ผ่าน new Date() กันวันเพี้ยนจาก UTC แล้วแสดงเดือนเต็ม เหมือนหน้าดูตัวอย่างใบลา */
+  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s);
+  let y, mo, da;
+  if(m){ y = +m[1]; mo = +m[2]; da = +m[3]; }
+  else {
+    const d = new Date(s);
+    if(isNaN(d.getTime()))return['','',''];
+    y = d.getFullYear(); mo = d.getMonth() + 1; da = d.getDate();
+  }
+  if(!MON[mo-1])return['','',''];
+  return[String(da), MON[mo-1], String(y+543)];
+}
+const urlParams = new URLSearchParams(window.location.search);
+const leaveId = urlParams.get('id');
+const code = urlParams.get('c') || '';
+const dept = urlParams.get('d') || '';
+const role = urlParams.get('r') || 'head';
+
+function renderData(d) {
+      $('loader').style.display = 'none';
+      $('paper').style.visibility = 'visible';
+      if(!d) return;
+
+      const sub = pd(d.submitted);
+      $('fd').textContent = sub[0];
+      $('fm').textContent = sub[1];
+      $('fy').textContent = sub[2];
+      
+      const ck = (val) => d.employeeType === val ? '✓' : '&nbsp;&nbsp;&nbsp;';
+      $('empType').innerHTML = '('+ck('รายเดือน')+') รายเดือน &nbsp;&nbsp;&nbsp; ('+ck('รายวัน')+') รายวัน &nbsp;&nbsp;&nbsp; ('+ck('ต่างด้าว')+') ต่างด้าว';
+      
+      $('to').textContent = d.to || '';
+      $('name').textContent = (((d.prefix || '') + ' ' + (d.name || '')).replace(/\s+/g, ' ')).trim();
+      $('code').textContent = d.code || '';
+      $('dept').textContent = d.dept || '';
+      $('leaveType').textContent = d.leaveType || '';
+      $('reason').textContent = d.reason || '';
+
+      const f = pd(d.fromDate);
+      $('f1').textContent = f[0]; $('f2').textContent = f[1]; $('f3').textContent = f[2];
+      const t = pd(d.toDate);
+      $('t1').textContent = t[0]; $('t2').textContent = t[1]; $('t3').textContent = t[2];
+      
+      $('qty').textContent = d.qty || '';
+      $('unit').textContent = d.qty ? String(d.unit == null ? '' : d.unit).trim() : 'วัน / ชั่วโมง / นาที';
+      $('tFrom').textContent = d.fromTime || '';
+      $('tTo').textContent = d.toTime || '';
+
+      if(d.stats && d.stats.length){
+        for(let i=0;i<10;i++){
+           if($('s'+i)) $('s'+i).textContent = d.stats[i] || '';
+        }
+      }
+
+      const sigAppImg = d.sigApplicant || d.sigApp;
+      const sigForemanImg = d.sigForeman || '';
+      const sigHeadImg = d.sigHead || '';
+      const sigMgrImg = d.sigManager || d.sigMgr;
+      if(sigAppImg) $('sigApp').innerHTML = '<img class="sig-img" src="'+sigAppImg+'">';
+      if(sigForemanImg && $('sigForeman')) $('sigForeman').innerHTML = '<img class="sig-img" src="'+sigForemanImg+'">';
+      if(sigHeadImg) $('sigHead').innerHTML = '<img class="sig-img" src="'+sigHeadImg+'">';
+      if(sigMgrImg) $('sigMgr').innerHTML = '<img class="sig-img" src="'+sigMgrImg+'">';
+      
+      if(d.approverNames && d.approverNames.mgr) $('mgrName').textContent = d.approverNames.mgr;
+
+      const isApprove = d.mgrApproval === 'อนุมัติ' || d.headApproval === 'อนุมัติ' || d.foremanApproval === 'อนุมัติ';
+      const isReject = !isApprove && (d.mgrApproval === 'ไม่อนุมัติ' || d.headApproval === 'ไม่อนุมัติ' || d.foremanApproval === 'ไม่อนุมัติ');
+      $('approvalBlock').innerHTML = '('+(isApprove?'✓':'&nbsp;&nbsp;&nbsp;')+') อนุมัติ &nbsp;&nbsp;&nbsp; ('+(isReject?'✓':'&nbsp;&nbsp;&nbsp;')+') ไม่อนุมัติ';
+
+      setTimeout(() => { if(urlParams.get('noprint') !== '1') window.print(); }, 500);
+}
+
+if (leaveId && typeof google !== 'undefined' && google.script) {
+  google.script.run
+    .withSuccessHandler(renderData)
+    .withFailureHandler(err => {
+      $('loader').textContent = 'เกิดข้อผิดพลาด: ' + String(err);
+      $('paper').style.display = 'none';
+      /* หน้านี้ไม่มีฟังก์ชัน showLoginSwal — ใช้ SweetAlert ตรงๆ แล้วโหลดหน้าใหม่ (fallback เป็น alert ถ้า CDN ล่ม) */
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({title: 'เปิด PDF ไม่สำเร็จ', text: 'ไม่สามารถโหลดใบลาได้ กรุณาลองใหม่', icon: 'error', confirmButtonText: 'ตกลง'})
+          .then(() => { location.reload(); });
+      } else {
+        alert('เปิด PDF ไม่สำเร็จ: ' + String(err));
+      }
+    })
+    .getApprovedLeavePdfData(leaveId, code, dept, role);
+} else {
+  // Listen for data from parent window (for preview in modal)
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'render_report') {
+      renderData(event.data.data);
+    }
+  });
+  
+  if (!window.parent || window.parent === window) {
+    $('loader').style.display = 'none';
+    $('paper').style.display = 'block';
+    $('paper').style.visibility = 'visible';
+  }
+}
+</script>
+</body>
+</html>
